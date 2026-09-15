@@ -1,0 +1,9 @@
+{
+  "updated": "2026-09-16",
+  "gates": {
+    "G1": {"name": "Data reliability", "status": "IN_PROGRESS"},
+    "G2": {"name": "Commercial data rights", "status": "OPEN"},
+    "G3": {"name": "Strategy evidence", "status": "NOT_STARTED"},
+    "G4": {"name": "Customer value", "status": "NOT_STARTED"}
+  }
+}

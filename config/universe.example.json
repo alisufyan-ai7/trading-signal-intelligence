@@ -1,0 +1,15 @@
+{
+  "mt5": [
+    {"canonical": "EUR/USD", "source_symbol": "EURUSD", "asset_class": "fx"},
+    {"canonical": "GBP/USD", "source_symbol": "GBPUSD", "asset_class": "fx"},
+    {"canonical": "USD/JPY", "source_symbol": "USDJPY", "asset_class": "fx"},
+    {"canonical": "XAU/USD", "source_symbol": "XAUUSD", "asset_class": "metal"},
+    {"canonical": "XAG/USD", "source_symbol": "XAGUSD", "asset_class": "metal"}
+  ],
+  "binance_spot": [
+    {"canonical": "BTC/USDT", "source_symbol": "BTCUSDT", "asset_class": "crypto"},
+    {"canonical": "ETH/USDT", "source_symbol": "ETHUSDT", "asset_class": "crypto"},
+    {"canonical": "SOL/USDT", "source_symbol": "SOLUSDT", "asset_class": "crypto"}
+  ],
+  "notes": "MT5 source_symbol values are placeholders until the probe discovers the exact Exness demo-server naming. Do not assume indices/energy names; map them after discovery."
+}

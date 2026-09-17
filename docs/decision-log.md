@@ -54,3 +54,17 @@ Sources:
 **Decision:** Once live testing starts, the system stores original signal parameters immutably and automatically evaluates outcomes.
 
 **Reason:** The long-term product moat should be evidence and transparency rather than unverifiable "AI confidence" marketing.
+
+## 2026-09-17 — D008: G1 adapter concept passed initial live probe
+
+**Decision:** Continue with the local MT5/Exness research adapter and direct Binance adapter because the first live probe successfully returned a 357-symbol MT5 universe, live EURUSD bid/ask, normalized H1 MT5 bars, and normalized Binance BTCUSDT H1 bars on a common UTC schema.
+
+**Status:** This is a prototype pass only. History depth, gaps, spread distributions, session behavior, long-running reliability and representative multi-asset coverage remain to be validated before G1 is fully passed.
+
+## 2026-09-17 — D009: Canonical symbol mapping must be explicit and source-aware
+
+**Decision:** Do not infer canonical instruments solely from broker `currency_base` / `currency_profit` metadata. Maintain an explicit mapping registry using source symbol, path/category, description, and verified canonical identity.
+
+**Reason:** The Exness MT5 probe showed inconsistent crypto metadata for several token/USD instruments even though source names and descriptions were clear. Silent inference could contaminate strategy research and cross-source comparisons.
+
+**Implication:** Strategy code consumes canonical symbols only after source-specific normalization; broker metadata remains auxiliary evidence rather than the canonical identity authority.

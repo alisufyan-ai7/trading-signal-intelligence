@@ -6,135 +6,89 @@ _Last updated: 2026-09-17_
 
 `PASS — RESEARCH DATA`.
 
-The earlier GBPUSD/USDJPY H1 recency issue is closed for current research use. A recent-window refresh restored both stored H1 datasets through `2026-09-17 13:00 UTC`.
+The earlier GBPUSD/USDJPY H1 recency issue is closed for current research use. The persisted datasets are current through 2026-09-17.
 
 ## Current G3 status
 
 ### S01
 
-S01 Trend Pullback v0.1 is **REJECTED AS A GENERAL FX HYPOTHESIS**.
-
-Final archived OOS evidence:
-
-- EUR/USD validation/final: negative;
-- GBP/USD refreshed validation/final: negative;
-- USD/JPY refreshed validation/final: negative;
-- XAU/USD: near-flat validation, strong only in already-observed 2025–2026 period.
-
-Do not optimize S01 v0.1 in place. Keep it as a regression benchmark and retain XAU only as a separate research lead.
+S01 Trend Pullback v0.1 is **REJECTED AS A GENERAL FX HYPOTHESIS** and retained as a regression benchmark. Do not optimize it in place.
 
 ### S02
 
-S02 Structure Breakout v0.1 is now **FROZEN BEFORE FIRST RESULT**.
+S02 Structure Breakout v0.1 has completed its frozen four-market baseline and is now:
 
-The specification, engine, runner and sample-audit tool are in `main`. No S02 result had been viewed when the parameters were frozen.
+`RESEARCH — ROBUSTNESS WARRANTED; NOT CANDIDATE`
 
-Predeclared first universe:
+Baseline OOS net expectancy:
 
-- EUR/USD
-- GBP/USD
-- USD/JPY
-- XAU/USD
+| Instrument | Validation | Final test |
+|---|---:|---:|
+| EUR/USD | +0.0459R/trade | -0.0127R/trade |
+| GBP/USD | -0.1858R/trade | +0.0444R/trade |
+| USD/JPY | +0.1764R/trade | -0.1631R/trade |
+| XAU/USD | +0.0986R/trade | +0.2323R/trade |
 
-## 1. Pull the frozen S02 implementation
+EURUSD and XAUUSD candle-level audits passed 10/10 sampled trades. Independent ledger checks across all four markets also passed timing, overlap, 72-bar hold, stop/target and cost-accounting checks.
+
+XAU/USD is the only market positive in both OOS splits. Its OOS annual net expectancy is positive in 2023, 2024, 2025 and 2026-to-date, and it remains positive under substantial spread-cost stress. However, XAU development is negative and the OOS result is carried by longs; that directional fact was discovered after the baseline and cannot be retrofitted into v0.1.
+
+Detailed evidence: `research/experiments/EXP-2026-006-s02-structure-breakout-baseline.md`.
+
+## 1. Pull the frozen robustness runner
 
 ```powershell
 git pull
 ```
 
-## 2. Run all four untouched S02 baselines
+## 2. Run the predeclared S02 neighborhood sensitivity
 
-Do not change parameters between instruments or after seeing the first result.
-
-```powershell
-python scripts\run_s02_backtest.py `
-  --symbol EURUSD `
-  --canonical "EUR/USD" `
-  --output outputs\s02_eurusd_v0_1.csv
-
-python scripts\run_s02_backtest.py `
-  --symbol GBPUSD `
-  --canonical "GBP/USD" `
-  --output outputs\s02_gbpusd_v0_1.csv
-
-python scripts\run_s02_backtest.py `
-  --symbol USDJPY `
-  --canonical "USD/JPY" `
-  --output outputs\s02_usdjpy_v0_1.csv
-
-python scripts\run_s02_backtest.py `
-  --symbol XAUUSD `
-  --canonical "XAU/USD" `
-  --output outputs\s02_xauusd_v0_1.csv
-```
-
-Preserve the complete JSON output and each CSV ledger.
-
-## 3. Run candle-level implementation audits
-
-Run at least EUR/USD and XAU/USD samples after the four baseline runs:
+This is a robustness diagnostic, **not an optimizer**. Do not select a winning parameter set from the output.
 
 ```powershell
-python scripts\audit_s02_sample.py `
-  --symbol EURUSD `
-  --canonical "EUR/USD" `
-  --point-size 0.00001 `
-  --samples 10
-
-python scripts\audit_s02_sample.py `
-  --symbol XAUUSD `
-  --canonical "XAU/USD" `
-  --point-size 0.001 `
-  --samples 10
+python scripts\run_s02_robustness.py
 ```
 
-Expected integrity result:
+The runner evaluates the baseline plus one-at-a-time lower/higher neighbors for:
 
-`all_sample_assertions_pass: true`
+- structure window: 15 / 20 / 25;
+- breakout margin: 0.05 / 0.10 / 0.15 ATR;
+- true-range expansion: 1.10 / 1.25 / 1.40;
+- tick-volume expansion: 1.00 / 1.10 / 1.20;
+- H4 EMA slope lookback: 2 / 3 / 4;
+- stop: 1.50 / 1.75 / 2.00 ATR;
+- target: 2.0 / 2.5 / 3.0R;
+- timeout: 48 / 72 / 96 H1 bars.
 
-The audit checks:
+It runs the same frozen neighborhood on all four original markets and writes:
 
-- H4 regime availability by H1 signal close;
-- exact prior-20 H1 structure levels;
-- breakout margin;
-- gap-open exclusion;
-- candle direction;
-- true-range expansion;
-- tick-volume expansion;
-- next-bar entry;
-- 1.75ATR stop math;
-- 2.5R target math.
+- `outputs/s02_robustness_v0_1.json` — compact market summary + baseline cost stress;
+- `outputs/s02_robustness_v0_1.csv` — complete variant table.
 
-If an audit fails, diagnose the implementation before interpreting performance. Correcting a software bug does not authorize changing frozen alpha rules.
+Preserve/upload both files and paste the printed JSON summary.
 
-## 4. Interpret before optimizing
+## 3. Interpretation rule
 
-After all four results and the audits are available, compare:
+Do not promote S02 from a single attractive XAU result.
 
-- development / validation / final-test expectancy;
-- profit factor;
-- drawdown;
-- trade count;
-- long/short asymmetry;
-- year concentration;
-- market concentration.
+What we want from the neighborhood test is **stability**, not a better number:
 
-Do **not** run parameter-neighborhood searches yet.
+- nearby XAU settings should remain broadly positive in both validation and final test;
+- no narrow parameter cliff should be required;
+- trade counts should remain adequate;
+- drawdown should not explode under modest perturbations;
+- the other markets should be reported honestly even if they remain inconsistent.
 
-If baseline evidence is broadly negative, retain v0.1 as a failed benchmark and move on rather than searching for an attractive parameter island.
+If XAU survives this neighborhood broadly, the next step is a frozen rolling/walk-forward stability analysis and then additional predeclared market evidence. If it collapses under small perturbations, S02 remains only a historical research lead.
 
-If one or more markets show credible OOS evidence, first run the predeclared robustness work:
+## 4. Directional finding is diagnostic only
 
-- 1.0x / 1.5x / 2.0x cost stress;
-- parameter-neighborhood sensitivity;
-- walk-forward analysis;
-- regime/year breakdown;
-- broader market evidence where scientifically justified.
+Do not change v0.1 to XAU-long-only. The observed long/short asymmetry was learned after seeing the baseline. Any long-only hypothesis must become a separately versioned strategy and must rely on new evidence rather than the already-viewed 2023–2026 period.
 
 ## 5. G2 remains independent
 
 GitHub issue #1 tracks commercial data rights. Exness remains an R&D source rather than an assumed production commercial data source.
 
-## 6. G4 remains intentionally deferred
+## 6. G4 remains deferred
 
-Do not invest heavily in polished SaaS UI until at least one strategy family demonstrates credible OOS evidence and an immutable forward-test process is operating.
+Do not invest heavily in polished SaaS UI until at least one strategy family survives robustness work and an immutable forward-test process is operating.

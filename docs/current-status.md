@@ -38,6 +38,11 @@ EURUSD and XAUUSD broker H4 OHLC matched exact four-H1 reconstruction over every
 
 S01 remains a regression benchmark. Its already-observed XAU behavior is retained only as a separate research lead.
 
+Evidence:
+
+- `research/experiments/EXP-2026-003-s01-baseline.md`
+- `research/experiments/EXP-2026-008-s01-cross-fx-disposition.md`
+
 ## S02 Structure Breakout v0.1
 
 **Status:** RESEARCH — ROBUSTNESS WARRANTED; NOT CANDIDATE.
@@ -60,7 +65,11 @@ Important caveats:
 - the other three markets show substantial temporal instability;
 - historical robustness and genuinely new forward evidence are still required.
 
-Detailed evidence: `research/experiments/EXP-2026-006-s02-structure-breakout-baseline.md`.
+Detailed evidence: `research/experiments/EXP-2026-009-s02-structure-breakout-baseline.md`.
+
+## Experiment ID hygiene
+
+Canonical experiment IDs are now unique. The executed data-quality audit is EXP-2026-006, the merged collector soak plan is EXP-2026-007, the S01 cross-FX disposition is EXP-2026-008, and the S02 baseline is EXP-2026-009.
 
 ## Immediate next external input
 

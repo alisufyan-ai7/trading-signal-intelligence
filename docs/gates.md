@@ -4,29 +4,29 @@ This file is the concise checklist for advancing the project. Detailed evidence 
 
 ## G1 — Research data reliability
 
-**Status:** PROTOTYPE PASS — robustness validation in progress
+**Status:** PASS — RESEARCH DATA
 
-Evidence already obtained:
+Evidence:
 
 - local Windows MT5 + Python connection works;
-- Exness demo exposes 357 symbols;
-- live EURUSD bid/ask works;
-- normalized MT5 H1 bars work with UTC timestamps, tick volume, spread and open/closed state;
-- Binance Spot H1 bars normalize to the same schema.
+- Exness demo exposes 357 symbols across the target asset classes;
+- canonical mappings are explicit and source-aware;
+- representative H1 history is multi-year for EURUSD, XAUUSD, USTEC and USOIL;
+- all representative audit series are strictly increasing with zero duplicate timestamps;
+- tick volume is populated across all tested closed bars;
+- historical spread fields are available and asset-specific;
+- Binance Spot bars normalize to the same internal candle schema;
+- Exness/Binance BTCUSDT H1 return correlation over 998 consecutive samples was 0.999451;
+- Exness BTCUSDT history is only ~108 days, so Binance direct data is the documented primary crypto-history source.
 
-Remaining:
+Operational limitations / hardening still open:
 
-- [ ] complete symbol/category inventory;
-- [ ] verify canonical mappings for the initial universe;
-- [ ] audit H1 history depth on FX, metal, index, energy and crypto;
-- [ ] verify duplicates/gaps;
-- [ ] characterize spread distributions;
-- [ ] verify tick-volume coverage;
-- [ ] compare Exness BTCUSDT versus Binance BTCUSDT;
-- [ ] test long-running collection reliability;
-- [ ] document source/session limitations.
+- [ ] identify and classify the single observed 24h Exness BTCUSDT gap;
+- [ ] implement session-aware gap classification for non-24/7 instruments;
+- [ ] run EXP-2026-003 long-running collector soak test;
+- [ ] validate higher-fidelity tick/bid-ask execution-cost sensitivity before live-execution claims.
 
-Target next evidence: `research/experiments/EXP-2026-002-data-quality-audit.md`.
+These remaining items do not block historical strategy research. Detailed evidence: `research/experiments/EXP-2026-002-data-quality-audit.md`.
 
 ## G2 — Commercial source rights
 
@@ -41,8 +41,9 @@ R&D may continue while G2 is unresolved. Commercial launch must not assume right
 
 ## G3 — Strategy robustness
 
-**Status:** NOT STARTED
+**Status:** STARTING — BACKTEST INFRASTRUCTURE NEXT
 
+- [ ] implement reproducible normalized-data persistence/backfill;
 - [ ] complete reproducible backtest pipeline;
 - [ ] freeze S01 baseline rules before looking at final test results;
 - [ ] include spread/fees/slippage assumptions;

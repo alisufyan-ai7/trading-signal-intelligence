@@ -33,7 +33,7 @@ EURUSD and XAUUSD candle-level audits passed 10/10 sampled trades. Independent l
 
 XAU/USD is the only market positive in both OOS splits. Its OOS annual net expectancy is positive in 2023, 2024, 2025 and 2026-to-date, and it remains positive under substantial spread-cost stress. However, XAU development is negative and the OOS result is carried by longs; that directional fact was discovered after the baseline and cannot be retrofitted into v0.1.
 
-Detailed evidence: `research/experiments/EXP-2026-006-s02-structure-breakout-baseline.md`.
+Detailed evidence: `research/experiments/EXP-2026-009-s02-structure-breakout-baseline.md`.
 
 ## 1. Pull the frozen robustness runner
 
@@ -85,10 +85,24 @@ If XAU survives this neighborhood broadly, the next step is a frozen rolling/wal
 
 Do not change v0.1 to XAU-long-only. The observed long/short asymmetry was learned after seeing the baseline. Any long-only hypothesis must become a separately versioned strategy and must rely on new evidence rather than the already-viewed 2023–2026 period.
 
-## 5. G2 remains independent
+## 5. Experiment ID map
+
+Canonical IDs are unique:
+
+- EXP-2026-001: MT5 symbol discovery
+- EXP-2026-002: Binance normalization
+- EXP-2026-003: S01 frozen baseline
+- EXP-2026-004: source-rights research
+- EXP-2026-005: customer-value research plan
+- EXP-2026-006: data-quality / G1 audit
+- EXP-2026-007: collector soak test
+- EXP-2026-008: S01 cross-FX disposition
+- EXP-2026-009: S02 frozen baseline
+
+## 6. G2 remains independent
 
 GitHub issue #1 tracks commercial data rights. Exness remains an R&D source rather than an assumed production commercial data source.
 
-## 6. G4 remains deferred
+## 7. G4 remains deferred
 
 Do not invest heavily in polished SaaS UI until at least one strategy family survives robustness work and an immutable forward-test process is operating.

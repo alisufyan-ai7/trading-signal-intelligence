@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "notes": [
+    "This file is the authoritative mapping for the initial research universe.",
+    "Do not infer canonical symbols solely from broker currency_base/currency_profit metadata.",
+    "Exness entries are for R&D only until commercial derived-use rights are resolved."
+  ],
+  "instruments": [
+    {
+      "canonical": "EUR/USD",
+      "asset_class": "forex",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "EURUSD", "status": "include", "digits": 5}
+      }
+    },
+    {
+      "canonical": "GBP/USD",
+      "asset_class": "forex",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "GBPUSD", "status": "include", "digits": 5}
+      }
+    },
+    {
+      "canonical": "USD/JPY",
+      "asset_class": "forex",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "USDJPY", "status": "include", "digits": 3}
+      }
+    },
+    {
+      "canonical": "XAU/USD",
+      "asset_class": "metal",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "XAUUSD", "status": "include", "digits": 3}
+      },
+      "excluded_source_variants": ["XAUUSD247"]
+    },
+    {
+      "canonical": "XAG/USD",
+      "asset_class": "metal",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "XAGUSD", "status": "include", "digits": 3}
+      }
+    },
+    {
+      "canonical": "NASDAQ 100",
+      "asset_class": "index",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "USTEC", "status": "include", "digits": 2}
+      },
+      "excluded_source_variants": ["USTEC_x100"]
+    },
+    {
+      "canonical": "S&P 500",
+      "asset_class": "index",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "US500", "status": "include", "digits": 2}
+      },
+      "excluded_source_variants": ["US500_x100"]
+    },
+    {
+      "canonical": "DOW 30",
+      "asset_class": "index",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "US30", "status": "include", "digits": 1}
+      },
+      "excluded_source_variants": ["US30_x10"]
+    },
+    {
+      "canonical": "WTI",
+      "asset_class": "energy",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "USOIL", "status": "include", "digits": 3}
+      }
+    },
+    {
+      "canonical": "BTC/USDT",
+      "asset_class": "crypto",
+      "sources": {
+        "binance_spot": {"symbol": "BTCUSDT", "status": "primary"},
+        "exness_mt5_demo": {"symbol": "BTCUSDT", "status": "comparison_only", "digits": 2}
+      }
+    },
+    {
+      "canonical": "BTC/USD",
+      "asset_class": "crypto",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "BTCUSD", "status": "comparison_only", "digits": 2}
+      }
+    },
+    {
+      "canonical": "ETH/USD",
+      "asset_class": "crypto",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "ETHUSD", "status": "comparison_only", "digits": 2}
+      }
+    },
+    {
+      "canonical": "SOL/USD",
+      "asset_class": "crypto",
+      "sources": {
+        "exness_mt5_demo": {"symbol": "SOLUSD", "status": "exclude_trade_mode_0", "digits": 4}
+      }
+    }
+  ]
+}

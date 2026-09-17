@@ -10,59 +10,30 @@ Historical research can proceed. Operational hardening remains queued.
 
 ## Current G3 status
 
-S01 v0.1 has produced its first completed baseline on XAU/USD.
+S01 v0.1 has now completed baseline runs on XAU/USD and EUR/USD.
 
 Current interpretation:
 
-- overall XAU/USD result is positive;
-- development and validation are essentially flat after costs;
-- final test (2025 onward) is materially stronger;
-- ledger-level accounting/timing checks pass;
-- S01 is **not a candidate yet**;
-- EUR/USD result is still pending because its H4 backfill failed on a single large MT5 request.
+- XAU/USD: development and validation are essentially flat after costs, while 2025–2026 is materially stronger;
+- EUR/USD: development is near flat, while validation and final test are clearly negative;
+- both uploaded trade ledgers pass accounting/timing integrity checks;
+- the current rule set does **not** demonstrate robust cross-market generalization;
+- S01 v0.1 is **not a candidate**;
+- candle-level feature audits and H1/H4 consistency checks are the next priority before broader testing.
 
-EXP-2026-004 contains the detailed result and interpretation.
+EXP-2026-004 contains the detailed evidence.
 
-## 1. Pull the paginated MT5 backfill + audit tooling
+## 1. Pull the latest audit fixes
 
 ```powershell
 git pull
 ```
 
-The MT5 backfill command now requests history in smaller pages and retries transient terminal IPC failures. A candle-level S01 audit command has also been added.
+The S01 sample-audit field-name bug is fixed and a new H1/H4 consistency audit is available.
 
-## 2. Complete EUR/USD H4 and baseline
+## 2. Rerun candle-level S01 audit
 
-The EURUSD H1 dataset already exists locally. Re-run only H4:
-
-```powershell
-python scripts\backfill_mt5.py `
-  --symbol EURUSD `
-  --canonical "EUR/USD" `
-  --timeframe H4 `
-  --bars 50000
-```
-
-Then verify:
-
-```powershell
-python scripts\dataset_summary.py
-```
-
-Then run the unchanged frozen baseline:
-
-```powershell
-python scripts\run_s01_backtest.py `
-  --symbol EURUSD `
-  --canonical "EUR/USD" `
-  --output outputs\s01_eurusd_v0_1.csv
-```
-
-Do not modify S01 v0.1 based on the XAU/USD result.
-
-## 3. Candle-level engine audit on XAU/USD
-
-Run an evenly spaced sample of S01 trades back through the stored H1/H4 feature frame:
+Run on XAU/USD:
 
 ```powershell
 python scripts\audit_s01_sample.py `
@@ -72,22 +43,41 @@ python scripts\audit_s01_sample.py `
   --samples 10
 ```
 
-The audit reports, for each sampled trade:
+Optionally run the same audit on EUR/USD:
 
-- whether the selected H4 regime bar was available by H1 signal close;
-- whether entry is the next stored H1 bar;
-- whether direction matches the generated signal flag;
-- whether the full three-bar pullback window exists;
-- H4 EMA regime values;
-- H1 signal EMA/ATR values;
-- the three prior pullback bars;
-- entry/stop/target/exit and net R.
+```powershell
+python scripts\audit_s01_sample.py `
+  --symbol EURUSD `
+  --canonical "EUR/USD" `
+  --point-size 0.00001 `
+  --samples 10
+```
 
-`all_sample_assertions_pass` should be `true`. Preserve/paste the output for review before candidate promotion.
+`all_sample_assertions_pass` should be `true`.
 
-## 4. Broaden unchanged v0.1 evidence
+## 3. Verify broker H4 against H1 reconstruction
 
-After EUR/USD runs correctly and the XAU audit is clean, backfill and test unchanged v0.1 on:
+EURUSD H4 history reaches back to 1977 while the stored H1 series begins in 2018. This may be valid deep broker history, but it is unusual enough to verify rather than assume.
+
+Run:
+
+```powershell
+python scripts\audit_h1_h4_consistency.py `
+  --symbol EURUSD `
+  --canonical "EUR/USD" `
+  --point-size 0.00001
+
+python scripts\audit_h1_h4_consistency.py `
+  --symbol XAUUSD `
+  --canonical "XAU/USD" `
+  --point-size 0.001
+```
+
+The script compares stored broker H4 OHLC with H4 reconstructed from exact groups of four stored H1 bars over their shared history. Frequent/material mismatches must be understood before the H4 regime feed is considered fully verified.
+
+## 4. Only after the integrity audits are clean: broaden unchanged v0.1
+
+Backfill GBPUSD and USDJPY:
 
 ```powershell
 python scripts\backfill_mt5.py --symbol GBPUSD --canonical "GBP/USD" --timeframe H1 --bars 50000
@@ -96,28 +86,26 @@ python scripts\backfill_mt5.py --symbol USDJPY --canonical "USD/JPY" --timeframe
 python scripts\backfill_mt5.py --symbol USDJPY --canonical "USD/JPY" --timeframe H4 --bars 50000
 ```
 
-Then run S01 with the proper point sizes for those instruments.
+Then run unchanged S01 v0.1 on both. Do not change the rules based on the XAU/USD or EUR/USD evidence.
 
-Do not add USTEC/WTI until the first FX/metals implementation audit is complete.
+## 5. Robustness work after baseline integrity is confirmed
 
-## 5. Only after the baseline engine is audited
-
-Run the declared robustness work without rewriting v0.1:
+Without rewriting v0.1:
 
 - cost stress at 1.0x / 1.5x / 2.0x;
 - walk-forward analysis;
 - parameter-neighborhood sensitivity;
-- long/short diagnostic breakdown;
+- long/short diagnostics;
 - per-year and per-regime breakdown;
 - broader instruments.
 
-The already viewed 2025–2026 XAU/USD final-test period is no longer an untouched holdout for any new strategy version derived from these results. New versions must use genuinely new cross-instrument or forward evidence.
+The already viewed 2025–2026 XAU/USD and EUR/USD periods are no longer untouched holdouts for any new version influenced by these results. New strategy versions require genuinely new cross-instrument or forward evidence.
 
 ## 6. Crypto remains separate
 
 Exness BTCUSDT has only ~108 days of H1 history on the tested demo server and includes one unexplained 24-hour gap near the beginning of that history. Binance remains the primary long-horizon crypto research source.
 
-Exness BTCUSD and BTCUSDT are distinct instruments and must not be conflated. Cross-source comparisons should match quote asset where possible, e.g. Exness BTCUSDT vs Binance BTCUSDT.
+Exness BTCUSD and BTCUSDT are distinct instruments and must not be conflated. Cross-source comparisons should match quote asset where possible.
 
 ## G2 remains independent
 

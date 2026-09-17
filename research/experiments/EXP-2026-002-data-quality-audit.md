@@ -1,6 +1,6 @@
 # EXP-2026-002 — MT5 Inventory, History Depth, and Data-Quality Audit
 
-**Status:** READY TO RUN  
+**Status:** IN PROGRESS  
 **Created:** 2026-09-17
 
 ## Objective
@@ -19,43 +19,65 @@ This experiment must establish:
 
 ## Step A — inventory and canonical mapping
 
-Run:
+**Status: COMPLETE — 2026-09-17**
 
-```powershell
-python scripts\mt5_inventory.py
-```
+Observed category counts:
 
-Capture the full output.
+- Forex: 141
+- Stocks: 102
+- Forex_Indicator: 60
+- Crypto: 31
+- Indices: 11
+- CryptoCross: 6
+- Energies: 3
+- Idx_Enlarge: 3
 
-Expected target mappings to resolve:
+The authoritative mappings are now stored in `config/instruments.json`.
 
-- EUR/USD
-- GBP/USD
-- USD/JPY
-- XAU/USD
-- XAG/USD
-- NASDAQ 100
-- S&P 500
-- DOW 30
-- WTI
-- BTC/USD
-- BTC/USDT
-- ETH/USD
-- SOL/USD
+Baseline Exness MT5 symbols:
 
-Do not infer mappings solely from `currency_base` or `currency_profit`. EXP-2026-001 demonstrated inconsistent metadata on several crypto instruments.
+- EUR/USD → `EURUSD`
+- GBP/USD → `GBPUSD`
+- USD/JPY → `USDJPY`
+- XAU/USD → `XAUUSD`
+- XAG/USD → `XAGUSD`
+- NASDAQ 100 → `USTEC`
+- S&P 500 → `US500`
+- DOW 30 → `US30`
+- WTI → `USOIL`
+- BTC/USD → `BTCUSD`
+- BTC/USDT → `BTCUSDT`
+- ETH/USD → `ETHUSD`
+
+Initial exclusions/alternate variants:
+
+- `USTEC_x100`, `US500_x100`, `US30_x10`: enlarged-contract variants, not baseline symbols.
+- `XAUUSD247`: distinct 24/7 gold variant, not baseline XAU/USD.
+- `SOLUSD`: observed `trade_mode=0`, excluded from the initial Exness baseline.
+
+Do not infer mappings solely from `currency_base` or `currency_profit`; broker metadata is inconsistent for some crypto instruments.
 
 ## Step B — representative history audits
 
-Once exact source symbols are confirmed, run at least the following. Replace an index/energy source symbol if inventory discovery identifies a different Exness name.
+Run these exact baseline commands:
 
 ```powershell
 python scripts\mt5_history_audit.py --symbol EURUSD --canonical "EUR/USD" --timeframe H1 --bars 50000
 python scripts\mt5_history_audit.py --symbol XAUUSD --canonical "XAU/USD" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol USTEC --canonical "NASDAQ 100" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol USOIL --canonical "WTI" --timeframe H1 --bars 50000
 python scripts\mt5_history_audit.py --symbol BTCUSDT --canonical "BTC/USDT" --timeframe H1 --bars 50000
 ```
 
-Then add one representative index and WTI command using their exact discovered source symbols.
+Optional breadth checks after the representative set:
+
+```powershell
+python scripts\mt5_history_audit.py --symbol GBPUSD --canonical "GBP/USD" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol USDJPY --canonical "USD/JPY" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol XAGUSD --canonical "XAG/USD" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol US500 --canonical "S&P 500" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol US30 --canonical "DOW 30" --timeframe H1 --bars 50000
+```
 
 For each source record:
 

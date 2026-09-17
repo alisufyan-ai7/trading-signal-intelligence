@@ -33,8 +33,10 @@ Core baseline:
 - 48-H1-bar time stop
 - one position per instrument at a time
 - same-bar target+stop ambiguity resolves to stop first
-- transaction-cost proxy = 1.25 × entry-bar spread price
-- zero/missing entry spread falls back to trailing 20-bar non-zero median
+- transaction-cost proxy = 1.25 × **signal-bar** spread price
+- zero/missing signal spread falls back to a trailing 20-bar non-zero median using only prior information
+
+The signal-bar spread choice is intentional: the completed entry bar's historical spread field is not used because the strategy enters at that bar's open and doing so could introduce look-ahead.
 
 ## Fixed evaluation splits
 
@@ -87,10 +89,10 @@ Before any optimization, inspect a sample of trades to verify:
 - H4 data used by each signal was actually available at signal time;
 - entry occurs only on the next H1 bar;
 - no current/incomplete bars entered the research store;
-- spread fallback does not use future data;
+- spread/cost input uses only information known by the signal close;
 - stop/target direction is correct for longs and shorts;
 - time stop counts 48 bars as specified;
-- overlapping signals are ignored while a position is active;
+- overlapping signals are ignored only while a position is actually active;
 - final incomplete trades are excluded rather than assigned an artificial result.
 
 ## Decision discipline

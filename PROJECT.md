@@ -19,8 +19,8 @@ This is **not** an "AI predicts the market" product. The intended positioning is
 - Forex, metals, indices, energy and crypto signal research
 - MT5 + Python research connector on Windows
 - Exness demo account as an initial R&D feed
-- Binance direct market data for crypto
-- Historical backtesting with spread/transaction-cost assumptions
+- Binance direct market data as the primary long-horizon crypto research source
+- Historical backtesting with instrument-specific spread/transaction-cost assumptions
 - Walk-forward and out-of-sample validation
 - Signal quality scoring calibrated to historical outcomes
 - Immutable live forward-test ledger
@@ -41,34 +41,47 @@ This is **not** an "AI predicts the market" product. The intended positioning is
 
 | Gate | Question | Status |
 |---|---|---|
-| G1 | Can MT5/Exness and Binance reliably provide the research data we need? | **PROTOTYPE PASS — robustness validation in progress** |
-| G2 | Can each intended production source legally support commercial derived signals? | OPEN — Exness requires caution/written clarification |
-| G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | NOT STARTED |
+| G1 | Can MT5/Exness and Binance reliably provide the research data we need? | **PASS — RESEARCH DATA** |
+| G2 | Can each intended production source legally support commercial derived signals? | OPEN — Exness production assumption blocked pending clarification |
+| G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | **STARTING — S01 baseline frozen** |
 | G4 | Will traders pay for verified and explainable signals? | NOT STARTED |
 
-## G1 evidence so far
+## G1 evidence
 
-On 2026-09-17 the Windows MT5 probe successfully connected to `Exness-MT5Trial15`, discovered 357 instruments, returned a live EURUSD bid/ask quote, and returned 100 normalized H1 candles with UTC timestamps, tick volume, spread, and open/closed state. A separate Binance Spot probe returned 100 normalized BTCUSDT H1 candles on the same UTC timeline.
+Representative H1 audits completed on 2026-09-17:
 
-This proves the adapter concept, not long-run production reliability. Remaining G1 work includes symbol inventory/canonical mapping, maximum history depth, gaps/duplicates, representative multi-asset checks, spread/session behavior, and cross-source crypto comparison.
+- EURUSD: 50,000 bars, ~8.0 years, zero duplicate timestamps, full tick-volume coverage
+- XAUUSD: 50,000 bars, ~8.5 years, zero duplicates, full tick-volume coverage
+- USTEC: 41,412 bars, ~7.2 years, zero duplicates, full tick-volume coverage
+- USOIL: 50,000 bars, ~8.4 years, zero duplicates, full tick-volume coverage
+- Exness BTCUSDT: 2,575 bars, ~108 days; insufficient for long-horizon crypto backtests
+- Exness vs Binance BTCUSDT: 0.999451 H1 return correlation across 998 consecutive return samples
+
+This is sufficient to proceed with historical strategy research. Binance direct data is the documented alternative for multi-year crypto history.
+
+Operational hardening remains separate: session-aware gap classification, the single observed 24h Exness BTCUSDT gap, and a long-running collector soak test.
 
 ## Initial research universe
 
 - FX: EURUSD, GBPUSD, USDJPY
 - Metals: XAUUSD, XAGUSD
-- Indices: NAS100/USTEC, US500, US30
+- Indices: USTEC, US500, US30
 - Energy: USOIL
-- Crypto: BTCUSDT, ETHUSDT, SOLUSDT (Binance direct); broker CFD equivalents may be used only for comparison/research
+- Crypto: BTCUSDT and ETHUSDT primarily via Binance direct; broker CFD equivalents are comparison/execution-environment research feeds
 
-Broker symbols must be discovered dynamically and mapped to canonical internal symbols.
+The authoritative source mappings live in `config/instruments.json`.
 
-## Data-model rule discovered during G1
+## Data-model rules
 
-Do not derive canonical symbols from broker `currency_base` / `currency_profit` fields alone. Exness crypto metadata showed inconsistent base-currency values for some token symbols. Canonical mapping must be explicit and source-aware, using source symbol, broker path, description, and verified mappings.
+- Canonical symbols are explicit and source-aware; do not derive identity from broker currency metadata alone.
+- Strategies consume normalized Candle objects and must not import source-specific broker APIs directly.
+- Historical MT5 bar spread is preserved as a cost proxy, not assumed to be perfect executable bid/ask history.
+- Cost assumptions are instrument-specific and must be stress-tested.
+- Research datasets are persisted locally so strategy runs can be reproduced from frozen inputs.
 
 ## Initial strategy families
 
-- S01 Trend Pullback
+- S01 Trend Pullback — **v0.1 frozen before first result**
 - S02 Structure Breakout
 - S03 Momentum Continuation
 - S04 Mean Reversion
@@ -76,13 +89,16 @@ Do not derive canonical symbols from broker `currency_base` / `currency_profit` 
 
 A strategy is promoted only after reproducible evidence. Most hypotheses are expected to be rejected.
 
-## Success criteria for Phase 0
+## Phase status
 
-1. MT5 probe can connect to a local terminal and enumerate instruments. **DONE**
-2. Historical bars can be collected with UTC-safe timestamps and source metadata. **PROTOTYPE DONE**
-3. Binance historical/live crypto data can be normalized to the same schema. **HISTORICAL PROTOTYPE DONE; LIVE STREAM PENDING**
-4. Data-quality checks detect gaps, stale prices and obviously divergent feeds. **PENDING**
-5. One reproducible backtest pipeline runs end-to-end with costs and no look-ahead leakage. **PENDING**
+1. MT5 connection / symbol discovery — **DONE**
+2. Normalized MT5/Binance adapters — **DONE for historical research**
+3. Representative data-quality/history audit — **DONE / G1 PASS**
+4. Local reproducible persistence/backfill — **IMPLEMENTED; local run pending**
+5. Frozen S01 backtest pipeline — **IMPLEMENTED; first run pending**
+6. OOS / walk-forward / robustness evidence — **PENDING**
+7. Live immutable forward test — **PENDING**
+8. Customer-value validation / SaaS UI — **PENDING**
 
 ## Durable project-state rule
 

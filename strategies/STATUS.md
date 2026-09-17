@@ -2,8 +2,8 @@
 
 | ID | Strategy | Version | Status | Last result |
 |---|---|---:|---|---|
-| S01 | Trend Pullback | 0.1 | REJECTED — GENERAL FX; XAU LEAD RETAINED | EUR/USD, refreshed GBP/USD and refreshed USD/JPY are negative in validation/final test. XAU/USD is near-flat through validation but strong in 2025–26. See EXP-2026-004 and EXP-2026-005. |
-| S02 | Structure Breakout | 0.1 | RESEARCH — ROBUSTNESS WARRANTED; NOT CANDIDATE | Four-market frozen baseline complete. EUR/GBP/JPY are temporally unstable; XAU/USD is positive in validation and final test and survives cost stress, but development is negative and OOS strength is long-driven. See EXP-2026-006. |
+| S01 | Trend Pullback | 0.1 | REJECTED — GENERAL FX; XAU LEAD RETAINED | EUR/USD, refreshed GBP/USD and refreshed USD/JPY are negative in validation/final test. XAU/USD is near-flat through validation but strong in 2025–26. See EXP-2026-003 and EXP-2026-008. |
+| S02 | Structure Breakout | 0.1 | RESEARCH — ROBUSTNESS WARRANTED; NOT CANDIDATE | Four-market frozen baseline complete. EUR/GBP/JPY are temporally unstable; XAU/USD is positive in validation and final test and survives cost stress, but development is negative and OOS strength is long-driven. See EXP-2026-009. |
 | S03 | Momentum Continuation | 0.1 | IDEA | Not tested |
 | S04 | Mean Reversion | 0.1 | IDEA | Not tested |
 | S05 | Volatility Expansion | 0.1 | IDEA | Not tested |

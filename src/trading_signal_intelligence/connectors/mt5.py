@@ -59,8 +59,34 @@ class MT5Connector:
             raise RuntimeError(f"MT5 symbols_get() failed: {self._mt5().last_error()}")
         return result
 
+    def ensure_symbol(self, source_symbol: str) -> Any:
+        """Ensure a valid broker symbol is selected in Market Watch.
+
+        MT5 can expose symbols through symbols_get() while leaving them invisible in
+        Market Watch. Data calls may fail or return no data until the symbol is selected.
+        The connector handles that source-specific detail here so downstream code does
+        not need to know about MT5 visibility state.
+        """
+
+        mt5 = self._mt5()
+        info = mt5.symbol_info(source_symbol)
+        if info is None:
+            raise RuntimeError(f"Unknown MT5 symbol {source_symbol}: {mt5.last_error()}")
+
+        if not getattr(info, "visible", False):
+            if not mt5.symbol_select(source_symbol, True):
+                raise RuntimeError(
+                    f"MT5 symbol_select() failed for {source_symbol}: {mt5.last_error()}"
+                )
+            refreshed = mt5.symbol_info(source_symbol)
+            if refreshed is not None:
+                info = refreshed
+
+        return info
+
     def latest_quote(self, source_symbol: str, canonical_symbol: str) -> Quote:
         mt5 = self._mt5()
+        self.ensure_symbol(source_symbol)
         tick = mt5.symbol_info_tick(source_symbol)
         if tick is None:
             raise RuntimeError(f"No MT5 tick for {source_symbol}: {mt5.last_error()}")
@@ -86,6 +112,7 @@ class MT5Connector:
         current_bar_is_closed: bool = False,
     ) -> list[Candle]:
         mt5 = self._mt5()
+        self.ensure_symbol(source_symbol)
         constant_name = _TIMEFRAME_NAMES.get(timeframe.upper())
         if constant_name is None:
             raise ValueError(f"Unsupported timeframe: {timeframe}")

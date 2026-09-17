@@ -23,13 +23,13 @@ Current interpretation:
 
 EXP-2026-004 contains the detailed result and interpretation.
 
-## 1. Pull the paginated MT5 backfill fix
+## 1. Pull the paginated MT5 backfill + audit tooling
 
 ```powershell
 git pull
 ```
 
-The MT5 backfill command now requests history in smaller pages and retries transient terminal IPC failures.
+The MT5 backfill command now requests history in smaller pages and retries transient terminal IPC failures. A candle-level S01 audit command has also been added.
 
 ## 2. Complete EUR/USD H4 and baseline
 
@@ -62,20 +62,32 @@ Do not modify S01 v0.1 based on the XAU/USD result.
 
 ## 3. Candle-level engine audit on XAU/USD
 
-Before interpreting the strategy as genuine alpha, manually/reproducibly verify a sample of persisted trades against H1/H4 candles:
+Run an evenly spaced sample of S01 trades back through the stored H1/H4 feature frame:
 
-- H4 regime values were available at signal close;
-- pullback window uses only the three prior completed H1 bars;
-- signal entry is next available H1 bar open;
-- ATR/EMA values use only prior/current completed data;
-- spread fallback is backward-looking only;
-- weekend/session gaps do not accidentally create a future-data alignment artifact.
+```powershell
+python scripts\audit_s01_sample.py `
+  --symbol XAUUSD `
+  --canonical "XAU/USD" `
+  --point-size 0.001 `
+  --samples 10
+```
 
-A dedicated audit script should be added before candidate promotion.
+The audit reports, for each sampled trade:
+
+- whether the selected H4 regime bar was available by H1 signal close;
+- whether entry is the next stored H1 bar;
+- whether direction matches the generated signal flag;
+- whether the full three-bar pullback window exists;
+- H4 EMA regime values;
+- H1 signal EMA/ATR values;
+- the three prior pullback bars;
+- entry/stop/target/exit and net R.
+
+`all_sample_assertions_pass` should be `true`. Preserve/paste the output for review before candidate promotion.
 
 ## 4. Broaden unchanged v0.1 evidence
 
-After EUR/USD runs correctly, backfill and test unchanged v0.1 on:
+After EUR/USD runs correctly and the XAU audit is clean, backfill and test unchanged v0.1 on:
 
 ```powershell
 python scripts\backfill_mt5.py --symbol GBPUSD --canonical "GBP/USD" --timeframe H1 --bars 50000

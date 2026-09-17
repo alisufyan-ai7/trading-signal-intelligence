@@ -13,6 +13,7 @@
 - Historical backtest framework: WORKING
 - Candle-level strategy audit tooling: WORKING
 - H1↔H4 consistency audit tooling: WORKING
+- S02 one-at-a-time robustness runner: READY
 - Live forward immutable ledger: NOT YET IMPLEMENTED
 - SaaS UI: DELIBERATELY DEFERRED
 
@@ -20,14 +21,14 @@
 
 - G1 research data: **PASS**
 - G2 commercial source rights: **OPEN / EXNESS PRODUCTION USE BLOCKED PENDING WRITTEN CLARIFICATION**
-- G3 strategy evidence: **IN PROGRESS**
+- G3 strategy evidence: **IN PROGRESS — S02 WARRANTS ROBUSTNESS, NOT CANDIDATE**
 - G4 customer value: **NOT STARTED**
 
 ## Data state
 
 Research data is sufficient for historical testing. EURUSD, GBPUSD, USDJPY and XAUUSD have current H1 research datasets through 2026-09-17, with H4 regime data available.
 
-The earlier GBPUSD/USDJPY August H1 cutoff was diagnosed as a transient MT5 history-synchronization state. A 5,000-bar refresh restored both through 2026-09-17 13:00 UTC.
+The earlier GBPUSD/USDJPY August H1 cutoff was a transient MT5 history-synchronization state and has been repaired in the local research store.
 
 EURUSD and XAUUSD broker H4 OHLC matched exact four-H1 reconstruction over every complete overlapping group tested.
 
@@ -35,33 +36,32 @@ EURUSD and XAUUSD broker H4 OHLC matched exact four-H1 reconstruction over every
 
 **Disposition:** REJECTED AS A GENERAL FX HYPOTHESIS.
 
-Final archived evidence:
-
-- EUR/USD validation/final test: negative;
-- GBP/USD refreshed validation/final test: negative;
-- USD/JPY refreshed validation/final test: negative;
-- XAU/USD: near-flat through validation, then strong in the already-observed 2025–2026 period.
-
-S01 remains a regression benchmark. XAU behavior is retained only as a separate market/regime research lead.
-
-See:
-
-- `research/experiments/EXP-2026-004-s01-baseline.md`
-- `research/experiments/EXP-2026-005-s01-cross-fx-disposition.md`
+S01 remains a regression benchmark. Its already-observed XAU behavior is retained only as a separate research lead.
 
 ## S02 Structure Breakout v0.1
 
-**Status:** RESEARCH — FROZEN BEFORE FIRST RESULT.
+**Status:** RESEARCH — ROBUSTNESS WARRANTED; NOT CANDIDATE.
 
-Rules were frozen on 2026-09-17 before any S02 result was viewed. The initial predeclared universe is EUR/USD, GBP/USD, USD/JPY and XAU/USD.
+The frozen four-market baseline is complete and the EURUSD/XAUUSD candle-level sample audits both passed 10/10 sampled trades.
 
-Implementation is ready:
+OOS net expectancy:
 
-- `src/trading_signal_intelligence/backtesting/s02.py`
-- `scripts/run_s02_backtest.py`
-- `scripts/audit_s02_sample.py`
-- `research/experiments/EXP-2026-006-s02-structure-breakout-baseline.md`
+- EUR/USD: validation +0.0459R/trade; final test -0.0127R/trade
+- GBP/USD: validation -0.1858R/trade; final test +0.0444R/trade
+- USD/JPY: validation +0.1764R/trade; final test -0.1631R/trade
+- XAU/USD: validation +0.0986R/trade; final test +0.2323R/trade
+
+XAU/USD is the only market positive in both OOS splits and is positive in each observed OOS calendar year 2023–2026. It also remains positive when the existing ledger is repriced at 2x and 3x the baseline spread-cost proxy.
+
+Important caveats:
+
+- XAU development is negative;
+- XAU OOS strength is carried by longs, a post-result diagnostic that cannot be retrofitted into v0.1;
+- the other three markets show substantial temporal instability;
+- historical robustness and genuinely new forward evidence are still required.
+
+Detailed evidence: `research/experiments/EXP-2026-006-s02-structure-breakout-baseline.md`.
 
 ## Immediate next external input
 
-Run the unchanged S02 v0.1 baseline on all four predeclared instruments and preserve the complete JSON summaries + ledgers. Then run sample candle-level audits before interpreting/promoting the strategy.
+Run `python scripts\run_s02_robustness.py` after `git pull`, preserve `outputs/s02_robustness_v0_1.json` and `outputs/s02_robustness_v0_1.csv`, and review the full one-at-a-time neighborhood without selecting a best parameter set.

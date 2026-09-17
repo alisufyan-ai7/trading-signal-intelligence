@@ -6,103 +6,114 @@ _Last updated: 2026-09-17_
 
 `PASS — RESEARCH DATA`.
 
-EXP-2026-002 established sufficient historical research quality for FX/metals/index/energy and confirmed Binance as the primary long-horizon crypto-history source.
+Historical research can proceed. Operational hardening remains queued.
 
-Operational hardening remains queued but does not block strategy research.
+## Current G3 status
 
-## 1. Pull latest research/backtest code
+S01 v0.1 has produced its first completed baseline on XAU/USD.
+
+Current interpretation:
+
+- overall XAU/USD result is positive;
+- development and validation are essentially flat after costs;
+- final test (2025 onward) is materially stronger;
+- ledger-level accounting/timing checks pass;
+- S01 is **not a candidate yet**;
+- EUR/USD result is still pending because its H4 backfill failed on a single large MT5 request.
+
+EXP-2026-004 contains the detailed result and interpretation.
+
+## 1. Pull the paginated MT5 backfill fix
 
 ```powershell
 git pull
 ```
 
-## 2. Identify the exact Exness BTCUSDT 24h gap
+The MT5 backfill command now requests history in smaller pages and retries transient terminal IPC failures.
+
+## 2. Complete EUR/USD H4 and baseline
+
+The EURUSD H1 dataset already exists locally. Re-run only H4:
 
 ```powershell
-python scripts\mt5_gap_detail.py `
-  --symbol BTCUSDT `
-  --canonical "BTC/USDT" `
-  --timeframe H1 `
-  --bars 50000 `
-  --min-gap-hours 20
+python scripts\backfill_mt5.py `
+  --symbol EURUSD `
+  --canonical "EUR/USD" `
+  --timeframe H4 `
+  --bars 50000
 ```
 
-Record the timestamp in EXP-2026-002/003. This is operational evidence, not a blocker to S01 because Binance is the primary historical crypto source.
-
-## 3. Build frozen local MT5 research datasets
-
-Backfill both H1 and H4 for the first two S01 instruments:
-
-```powershell
-python scripts\backfill_mt5.py --symbol EURUSD --canonical "EUR/USD" --timeframe H1 --bars 50000
-python scripts\backfill_mt5.py --symbol EURUSD --canonical "EUR/USD" --timeframe H4 --bars 50000
-
-python scripts\backfill_mt5.py --symbol XAUUSD --canonical "XAU/USD" --timeframe H1 --bars 50000
-python scripts\backfill_mt5.py --symbol XAUUSD --canonical "XAU/USD" --timeframe H4 --bars 50000
-```
-
-The local database defaults to `data/research.sqlite` and is intentionally git-ignored.
-
-Check the stored datasets:
+Then verify:
 
 ```powershell
 python scripts\dataset_summary.py
 ```
 
-## 4. Run the first frozen S01 baseline
-
-The S01 v0.1 specification is already frozen in `strategies/S01-trend-pullback/v0.1.md`. Do not change the rules after seeing these outputs.
+Then run the unchanged frozen baseline:
 
 ```powershell
 python scripts\run_s01_backtest.py `
   --symbol EURUSD `
   --canonical "EUR/USD" `
   --output outputs\s01_eurusd_v0_1.csv
-
-python scripts\run_s01_backtest.py `
-  --symbol XAUUSD `
-  --canonical "XAU/USD" `
-  --output outputs\s01_xauusd_v0_1.csv
 ```
 
-Capture the JSON summaries and preserve the trade ledgers. The first result may be negative; do not optimize v0.1 in place.
+Do not modify S01 v0.1 based on the XAU/USD result.
 
-## 5. Only after the first engine/results are verified
+## 3. Candle-level engine audit on XAU/USD
 
-- inspect sample trades for alignment/look-ahead bugs;
-- add GBPUSD and USDJPY H1/H4 datasets;
-- run the unchanged v0.1 rules on those instruments;
-- run cost stress at 1.0x / 1.5x / 2.0x;
-- run walk-forward and parameter-neighborhood experiments;
-- decide whether v0.1 is rejected or merits candidate status.
+Before interpreting the strategy as genuine alpha, manually/reproducibly verify a sample of persisted trades against H1/H4 candles:
 
-## 6. Binance multi-year crypto persistence
+- H4 regime values were available at signal close;
+- pullback window uses only the three prior completed H1 bars;
+- signal entry is next available H1 bar open;
+- ATR/EMA values use only prior/current completed data;
+- spread fallback is backward-looking only;
+- weekend/session gaps do not accidentally create a future-data alignment artifact.
 
-After the MT5 baseline engine is verified, build direct crypto datasets with:
+A dedicated audit script should be added before candidate promotion.
+
+## 4. Broaden unchanged v0.1 evidence
+
+After EUR/USD runs correctly, backfill and test unchanged v0.1 on:
 
 ```powershell
-python scripts\backfill_binance.py `
-  --symbol BTCUSDT `
-  --canonical "BTC/USDT" `
-  --timeframe H1 `
-  --start "2018-01-01T00:00:00+00:00"
-
-python scripts\backfill_binance.py `
-  --symbol BTCUSDT `
-  --canonical "BTC/USDT" `
-  --timeframe H4 `
-  --start "2018-01-01T00:00:00+00:00"
+python scripts\backfill_mt5.py --symbol GBPUSD --canonical "GBP/USD" --timeframe H1 --bars 50000
+python scripts\backfill_mt5.py --symbol GBPUSD --canonical "GBP/USD" --timeframe H4 --bars 50000
+python scripts\backfill_mt5.py --symbol USDJPY --canonical "USD/JPY" --timeframe H1 --bars 50000
+python scripts\backfill_mt5.py --symbol USDJPY --canonical "USD/JPY" --timeframe H4 --bars 50000
 ```
 
-Do not apply the MT5 CFD spread model to Binance Spot. The crypto execution-cost specification must be frozen separately before evaluating crypto S01 performance.
+Then run S01 with the proper point sizes for those instruments.
+
+Do not add USTEC/WTI until the first FX/metals implementation audit is complete.
+
+## 5. Only after the baseline engine is audited
+
+Run the declared robustness work without rewriting v0.1:
+
+- cost stress at 1.0x / 1.5x / 2.0x;
+- walk-forward analysis;
+- parameter-neighborhood sensitivity;
+- long/short diagnostic breakdown;
+- per-year and per-regime breakdown;
+- broader instruments.
+
+The already viewed 2025–2026 XAU/USD final-test period is no longer an untouched holdout for any new strategy version derived from these results. New versions must use genuinely new cross-instrument or forward evidence.
+
+## 6. Crypto remains separate
+
+Exness BTCUSDT has only ~108 days of H1 history on the tested demo server and includes one unexplained 24-hour gap near the beginning of that history. Binance remains the primary long-horizon crypto research source.
+
+Exness BTCUSD and BTCUSDT are distinct instruments and must not be conflated. Cross-source comparisons should match quote asset where possible, e.g. Exness BTCUSDT vs Binance BTCUSDT.
 
 ## G2 remains independent
 
-GitHub issue #1 tracks commercial data rights. Exness is still an R&D source, not an assumed production data source. Strategy research may continue because source adapters are replaceable; paid/public launch remains blocked until production rights are resolved.
+GitHub issue #1 tracks commercial data rights. Exness remains an R&D source rather than an assumed production commercial data source.
 
 ## G3 tracking
 
-GitHub issue #2 tracks the reproducible backtest pipeline, S01 validation, OOS/walk-forward work and promotion/rejection decision.
+GitHub issue #2 tracks S01 engine verification, broader testing, robustness work and eventual promotion/rejection.
 
 ## G4 comes after evidence
 

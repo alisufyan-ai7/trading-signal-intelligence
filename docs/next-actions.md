@@ -2,55 +2,108 @@
 
 _Last updated: 2026-09-17_
 
-## Active experiment: EXP-2026-002
+## G1 status
 
-The symbol inventory is complete. Pull the latest connector changes first:
+`PASS — RESEARCH DATA`.
+
+EXP-2026-002 established sufficient historical research quality for FX/metals/index/energy and confirmed Binance as the primary long-horizon crypto-history source.
+
+Operational hardening remains queued but does not block strategy research.
+
+## 1. Pull latest research/backtest code
 
 ```powershell
 git pull
 ```
 
-Then run the representative history audits:
+## 2. Identify the exact Exness BTCUSDT 24h gap
 
 ```powershell
-python scripts\mt5_history_audit.py --symbol EURUSD --canonical "EUR/USD" --timeframe H1 --bars 50000
-python scripts\mt5_history_audit.py --symbol XAUUSD --canonical "XAU/USD" --timeframe H1 --bars 50000
-python scripts\mt5_history_audit.py --symbol USTEC --canonical "NASDAQ 100" --timeframe H1 --bars 50000
-python scripts\mt5_history_audit.py --symbol USOIL --canonical "WTI" --timeframe H1 --bars 50000
-python scripts\mt5_history_audit.py --symbol BTCUSDT --canonical "BTC/USDT" --timeframe H1 --bars 50000
+python scripts\mt5_gap_detail.py `
+  --symbol BTCUSDT `
+  --canonical "BTC/USDT" `
+  --timeframe H1 `
+  --bars 50000 `
+  --min-gap-hours 20
 ```
 
-Then run the cross-source crypto audit:
+Record the timestamp in EXP-2026-002/003. This is operational evidence, not a blocker to S01 because Binance is the primary historical crypto source.
+
+## 3. Build frozen local MT5 research datasets
+
+Backfill both H1 and H4 for the first two S01 instruments:
 
 ```powershell
-python scripts\cross_source_crypto_audit.py --mt5-symbol BTCUSDT --binance-symbol BTCUSDT --canonical "BTC/USDT" --timeframe H1 --bars 1000
+python scripts\backfill_mt5.py --symbol EURUSD --canonical "EUR/USD" --timeframe H1 --bars 50000
+python scripts\backfill_mt5.py --symbol EURUSD --canonical "EUR/USD" --timeframe H4 --bars 50000
+
+python scripts\backfill_mt5.py --symbol XAUUSD --canonical "XAU/USD" --timeframe H1 --bars 50000
+python scripts\backfill_mt5.py --symbol XAUUSD --canonical "XAU/USD" --timeframe H4 --bars 50000
 ```
 
-The MT5 connector now automatically selects valid symbols that are hidden from Market Watch before requesting quotes/history.
+The local database defaults to `data/research.sqlite` and is intentionally git-ignored.
 
-## What to evaluate from EXP-2026-002
+Check the stored datasets:
 
-- maximum H1 history depth actually returned by MT5
-- duplicates
-- gap patterns and whether they match expected sessions
-- tick-volume population
-- spread min/median/p95/max
-- data differences by asset class
-- Exness BTCUSDT vs Binance BTCUSDT basis and return correlation
+```powershell
+python scripts\dataset_summary.py
+```
 
-## After EXP-2026-002
+## 4. Run the first frozen S01 baseline
 
-1. Decide whether G1 qualifies for `RESEARCH DATA PASS`.
-2. Build persistence/backfill around normalized candles.
-3. Run EXP-2026-003 collector soak test.
-4. Implement a reproducible backtest engine with spread/cost handling.
-5. Freeze and test S01 Trend Pullback baseline before parameter optimization.
-6. Continue G2 commercial-data-rights investigation independently of strategy research.
+The S01 v0.1 specification is already frozen in `strategies/S01-trend-pullback/v0.1.md`. Do not change the rules after seeing these outputs.
+
+```powershell
+python scripts\run_s01_backtest.py `
+  --symbol EURUSD `
+  --canonical "EUR/USD" `
+  --output outputs\s01_eurusd_v0_1.csv
+
+python scripts\run_s01_backtest.py `
+  --symbol XAUUSD `
+  --canonical "XAU/USD" `
+  --output outputs\s01_xauusd_v0_1.csv
+```
+
+Capture the JSON summaries and preserve the trade ledgers. The first result may be negative; do not optimize v0.1 in place.
+
+## 5. Only after the first engine/results are verified
+
+- inspect sample trades for alignment/look-ahead bugs;
+- add GBPUSD and USDJPY H1/H4 datasets;
+- run the unchanged v0.1 rules on those instruments;
+- run cost stress at 1.0x / 1.5x / 2.0x;
+- run walk-forward and parameter-neighborhood experiments;
+- decide whether v0.1 is rejected or merits candidate status.
+
+## 6. Binance multi-year crypto persistence
+
+After the MT5 baseline engine is verified, build direct crypto datasets with:
+
+```powershell
+python scripts\backfill_binance.py `
+  --symbol BTCUSDT `
+  --canonical "BTC/USDT" `
+  --timeframe H1 `
+  --start "2018-01-01T00:00:00+00:00"
+
+python scripts\backfill_binance.py `
+  --symbol BTCUSDT `
+  --canonical "BTC/USDT" `
+  --timeframe H4 `
+  --start "2018-01-01T00:00:00+00:00"
+```
+
+Do not apply the MT5 CFD spread model to Binance Spot. The crypto execution-cost specification must be frozen separately before evaluating crypto S01 performance.
 
 ## G2 remains independent
 
-Exness is still an R&D source, not an assumed production data source. Continue seeking written clarification for commercial derived-signal use. Do not block strategy R&D while this is unresolved; keep source adapters replaceable.
+GitHub issue #1 tracks commercial data rights. Exness is still an R&D source, not an assumed production data source. Strategy research may continue because source adapters are replaceable; paid/public launch remains blocked until production rights are resolved.
+
+## G3 tracking
+
+GitHub issue #2 tracks the reproducible backtest pipeline, S01 validation, OOS/walk-forward work and promotion/rejection decision.
 
 ## G4 comes after evidence
 
-Do not spend significant effort on a polished SaaS interface yet. Once a credible live forward-test record begins accumulating, prototype the verified signal feed and transparent performance page, then test willingness to pay.
+Do not spend significant effort on the polished SaaS interface yet. Once a credible immutable forward-test record begins accumulating, prototype the verified signal feed and transparent performance page, then test willingness to pay.

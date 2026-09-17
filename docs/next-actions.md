@@ -1,55 +1,56 @@
-# Immediate Next Actions
+# Current Next Actions
 
-_Last updated: 2026-09-16_
+_Last updated: 2026-09-17_
 
-## 1. Run the local MT5 probe
+## Active experiment: EXP-2026-002
 
-On the Windows machine with MT5 open and logged into the Exness demo account:
-
-```powershell
-python scripts\mt5_probe.py --symbol EURUSD --canonical "EUR/USD" --timeframe H1 --bars 100
-```
-
-Then update `research/experiments/EXP-2026-001-mt5-symbol-discovery.md` with the non-sensitive findings.
-
-## 2. Run the Binance probe
+The symbol inventory is complete. Pull the latest connector changes first:
 
 ```powershell
-python scripts\binance_probe.py --symbol BTCUSDT --canonical "BTC/USDT" --timeframe H1 --bars 100
+git pull
 ```
 
-Confirm the normalized Candle schema works identically for the two source adapters.
+Then run the representative history audits:
 
-## 3. Expand G1 data diagnostics
+```powershell
+python scripts\mt5_history_audit.py --symbol EURUSD --canonical "EUR/USD" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol XAUUSD --canonical "XAU/USD" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol USTEC --canonical "NASDAQ 100" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol USOIL --canonical "WTI" --timeframe H1 --bars 50000
+python scripts\mt5_history_audit.py --symbol BTCUSDT --canonical "BTC/USDT" --timeframe H1 --bars 50000
+```
 
-After symbol discovery, add scripts/tests for:
+Then run the cross-source crypto audit:
 
-- historical-depth measurement by timeframe
-- missing-bar detection
-- duplicate-bar detection
-- stale quote detection
-- spread distribution summaries
-- MT5 vs Binance overlapping crypto comparison for sanity checking
+```powershell
+python scripts\cross_source_crypto_audit.py --mt5-symbol BTCUSDT --binance-symbol BTCUSDT --canonical "BTC/USDT" --timeframe H1 --bars 1000
+```
 
-## 4. Resolve G2 in parallel
+The MT5 connector now automatically selects valid symbols that are hidden from Market Watch before requesting quotes/history.
 
-Send the commercial-derived-signal use question in `docs/legal-data-rights.md` to Exness. Preserve the response (with personal/account data redacted) in this repository.
+## What to evaluate from EXP-2026-002
 
-Do not block strategy R&D while awaiting the answer; keep production source adapters replaceable.
+- maximum H1 history depth actually returned by MT5
+- duplicates
+- gap patterns and whether they match expected sessions
+- tick-volume population
+- spread min/median/p95/max
+- data differences by asset class
+- Exness BTCUSDT vs Binance BTCUSDT basis and return correlation
 
-## 5. Freeze S01 v0.1 baseline before backtesting
+## After EXP-2026-002
 
-Before broad parameter search, decide and record:
+1. Decide whether G1 qualifies for `RESEARCH DATA PASS`.
+2. Build persistence/backfill around normalized candles.
+3. Run EXP-2026-003 collector soak test.
+4. Implement a reproducible backtest engine with spread/cost handling.
+5. Freeze and test S01 Trend Pullback baseline before parameter optimization.
+6. Continue G2 commercial-data-rights investigation independently of strategy research.
 
-- pullback tolerance definition
-- EMA slope lookback
-- stop method for experiment 1
-- target (start with a fixed-R baseline)
-- spread/slippage assumptions per source/market
-- train/test date split
+## G2 remains independent
 
-Then implement the first backtest without changing rules based on results mid-run.
+Exness is still an R&D source, not an assumed production data source. Continue seeking written clarification for commercial derived-signal use. Do not block strategy R&D while this is unresolved; keep source adapters replaceable.
 
-## 6. Gate G4 comes after evidence
+## G4 comes after evidence
 
-Do not spend significant time on the polished SaaS interface yet. Once a credible forward-test record begins accumulating, prototype the signal feed + transparent performance page and validate willingness to pay.
+Do not spend significant effort on a polished SaaS interface yet. Once a credible live forward-test record begins accumulating, prototype the verified signal feed and transparent performance page, then test willingness to pay.

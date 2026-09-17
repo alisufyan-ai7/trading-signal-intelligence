@@ -173,15 +173,39 @@ Both uploaded XAUUSD and EURUSD trade ledgers passed the following independent c
 - reported net R matches gross P&L minus cost;
 - cost uses the configured 1.25 multiplier and source point size.
 
-This does not prove candle-level feature correctness; that is a separate audit.
+## Candle-level audit results
 
-## Candle-level audit status
+The corrected `scripts/audit_s01_sample.py` was run on 2026-09-17 for both completed baseline instruments.
 
-The first version of `scripts/audit_s01_sample.py` failed before producing samples because it referenced the old feature name `effective_spread_points`. The engine now uses `known_spread_points` after the no-lookahead cost fix.
+### XAU/USD
 
-This was an audit-tool bug, not a backtest-engine failure. The script has been corrected and must be rerun.
+- total trades: 1,124
+- sampled trades: 10 evenly spaced across the ledger
+- `all_sample_assertions_pass`: **true**
 
-Additionally, `scripts/audit_h1_h4_consistency.py` has been added to verify broker H4 bars against exact four-H1-bar reconstruction over the overlapping history.
+### EUR/USD
+
+- total trades: 1,021
+- sampled trades: 10 evenly spaced across the ledger
+- `all_sample_assertions_pass`: **true**
+
+Every sampled trade passed all implemented assertions:
+
+- the selected H4 regime bar was available by H1 signal close;
+- entry was the next stored H1 bar;
+- entry occurred after the signal bar open timestamp;
+- trade direction matched the strategy signal flag;
+- the prior pullback window contained all three required H1 bars.
+
+The sampled records also show the expected closed-bar EMA/ATR values, prior-three-bar pullback features, H4 regime values, signal-bar known spread, and entry/exit parameters. No sample-level evidence of look-ahead or H1/H4 timing leakage was found.
+
+This is still a sample audit, not a formal proof over every generated feature row. The remaining data-integrity check is H1→H4 reconstruction consistency.
+
+## H1/H4 consistency status
+
+`scripts/audit_h1_h4_consistency.py` is ready but has not yet been run for EURUSD/XAUUSD.
+
+The next integrity gate is to compare broker H4 OHLC against H4 reconstructed from exact groups of H1 candles over the overlapping history. This is especially important for EURUSD because the broker-provided H4 dataset extends back to 1977 while the persisted H1 dataset begins in 2018.
 
 ## Current interpretation
 
@@ -193,16 +217,16 @@ Evidence so far:
 2. EUR/USD is near-flat in development but clearly negative in validation and final test.
 3. Therefore the current rule set does not demonstrate robust cross-instrument generalization.
 4. XAU/USD's recent strength remains interesting as a possible market/regime-specific phenomenon, but it is already observed data and cannot justify retroactive rule selection.
-5. Before final rejection or a new hypothesis, complete candle-level and H1/H4 consistency audits, then run the unchanged baseline on GBPUSD and USDJPY.
+5. Ledger-level and sampled candle-level audits do not reveal an obvious engine/timing defect.
+6. H1/H4 reconstruction consistency still needs to be verified before broader strategy conclusions.
 
 The 2025–2026 periods already viewed are no longer untouched holdouts for any future strategy version influenced by these results.
 
 ## Next actions
 
-1. Rerun corrected candle-level audit on XAUUSD.
-2. Run H1/H4 consistency audit on EURUSD and XAUUSD.
-3. Backfill and run unchanged v0.1 on GBPUSD and USDJPY.
-4. Only after engine/data integrity is confirmed: cost stress, walk-forward and parameter-neighborhood diagnostics.
-5. Do not optimize v0.1 in place. Any revised idea becomes a new strategy version with new evidence requirements.
+1. Run H1/H4 consistency audit on EURUSD and XAUUSD.
+2. If consistency is clean, backfill and run unchanged v0.1 on GBPUSD and USDJPY.
+3. Only after engine/data integrity is confirmed: cost stress, walk-forward and parameter-neighborhood diagnostics.
+4. Do not optimize v0.1 in place. Any revised idea becomes a new strategy version with new evidence requirements.
 
 No single backtest passes G3 by itself.

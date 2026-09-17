@@ -22,28 +22,55 @@ Validate the first part of Gate G1 by confirming that the local Windows MT5 term
 
 No account login ID or credentials were recorded.
 
+## Full inventory findings
+
+The inventory script categorized all 357 symbols as follows:
+
+| Broker category | Count |
+|---|---:|
+| Forex | 141 |
+| Stocks | 102 |
+| Forex_Indicator | 60 |
+| Crypto | 31 |
+| Indices | 11 |
+| CryptoCross | 6 |
+| Energies | 3 |
+| Idx_Enlarge | 3 |
+
+This confirms broad multi-asset coverage for research. The broker path taxonomy is broker-specific: metals such as `XAUUSD` and `XAGUSD` are located under `Pro\\Forex`, so path/category labels must not be treated as universal asset-class semantics.
+
+### Exact first-universe broker mappings
+
+| Canonical instrument | Exness MT5 source symbol | Digits | Trade mode | Initial research status |
+|---|---|---:|---:|---|
+| EUR/USD | `EURUSD` | 5 | 4 | include |
+| GBP/USD | `GBPUSD` | 5 | 4 | include |
+| USD/JPY | `USDJPY` | 3 | 4 | include |
+| XAU/USD | `XAUUSD` | 3 | 4 | include |
+| XAG/USD | `XAGUSD` | 3 | 4 | include |
+| NASDAQ 100 | `USTEC` | 2 | 4 | include |
+| S&P 500 | `US500` | 2 | 4 | include |
+| Dow 30 | `US30` | 1 | 4 | include |
+| WTI crude | `USOIL` | 3 | 4 | include |
+| BTC/USD | `BTCUSD` | 2 | 4 | broker comparison/research |
+| BTC/USDT | `BTCUSDT` | 2 | 4 | broker comparison/research |
+| ETH/USD | `ETHUSD` | 2 | 4 | broker comparison/research |
+| SOL/USD | `SOLUSD` | 4 | 0 | exclude initially |
+
+`visible=false` on several instruments means they were not initially shown/selected in Market Watch; it is not interpreted as an unavailable instrument when `trade_mode=4`.
+
+### Explicitly excluded variants for the baseline universe
+
+- `USTEC_x100` — separate enlarged-contract NASDAQ-100 variant; baseline uses `USTEC`.
+- `US500_x100` — separate enlarged-contract S&P-500 variant; baseline uses `US500`.
+- `US30_x10` — separate enlarged-contract Dow-30 variant; baseline uses `US30`.
+- `XAUUSD247` — separate 24/7 gold variant; baseline uses standard `XAUUSD`.
+- Crosses such as `BTCXAU`, `BTCXAG`, `XAUAUD`, `XAUEUR`, etc. are not substitutes for the baseline USD instruments.
+- `SOLUSD` is excluded from the initial Exness research universe because the observed `trade_mode=0` differs from active baseline instruments.
+
+The authoritative mapping is now maintained in `config/instruments.json`; fuzzy inventory matches are discovery aids only.
+
 ## MT5 / Exness findings
-
-### Asset coverage
-
-The first symbol page alone confirmed a substantial crypto CFD universe under paths such as `Pro\\Crypto\\...`, including examples:
-
-- BTCUSD
-- BTCUSDT
-- ETHUSD
-- SOLUSD
-- XRPUSD
-- LTCUSD
-- BCHUSD
-- BNBUSD
-- ADAUSD
-- DOGEUSD
-- LINKUSD
-- DOTUSD
-- AAVEUSD
-- MATICUSD
-
-The complete 357-symbol inventory still needs categorization for FX, metals, indices, energy and stocks. This is the purpose of EXP-2026-002.
 
 ### EURUSD live quote
 
@@ -76,7 +103,7 @@ Example current bar at probe time:
 
 ### Metadata caveat discovered
 
-Do **not** infer canonical instruments solely from MT5 `currency_base` / `currency_profit` metadata. Several Exness crypto symbols expose inconsistent metadata; for example some token/USD symbols report `currency_base='USD'` even though the source symbol/description clearly identifies the token as the base asset.
+Do **not** infer canonical instruments solely from MT5 `currency_base` / `currency_profit` metadata. Several Exness crypto symbols expose inconsistent metadata; for example some token/USD symbols report `currency_base='USD'` even though the source symbol/description clearly identifies the token as the base asset. `BTCUSDT` also reported broker-specific `TET` metadata.
 
 Canonical mapping must therefore use an explicit symbol registry driven primarily by:
 
@@ -105,30 +132,30 @@ This confirms that source-specific adapters can feed a common downstream researc
 ## What this experiment proves
 
 1. Local MT5 Python connectivity works reliably enough to continue research.
-2. Exness demo exposes a large multi-asset symbol universe.
-3. Live bid/ask retrieval works.
-4. Historical H1 bar retrieval works.
-5. Tick volume and historical spread fields are available for EURUSD.
-6. Binance direct public data normalizes to the same internal schema.
-7. UTC normalization is consistent across both probes.
+2. Exness demo exposes a 357-symbol multi-asset universe with the required first-universe FX, metals, indices, energy and crypto instruments.
+3. Exact baseline source symbols have been established for the initial research universe.
+4. Live bid/ask retrieval works.
+5. Historical H1 bar retrieval works.
+6. Tick volume and historical spread fields are available for EURUSD.
+7. Binance direct public data normalizes to the same internal schema.
+8. UTC normalization is consistent across both probes.
 
 ## What this experiment does NOT yet prove
 
 - maximum history depth per asset/timeframe
 - historical gaps or duplicate rates
 - reliability over long-running collection sessions
-- exact FX/metals/indices/energy/stock symbol mappings
 - real-volume availability on MT5 instruments
-- spread distribution across sessions rather than one sample
+- spread distributions across sessions rather than one sample
 - crypto CFD price divergence versus Binance Spot
 - production/commercial data rights
 
 ## Gate impact
 
-**G1 moves from `IN PROGRESS` to `PROTOTYPE PASS — robustness validation in progress`.**
+**G1 remains `PROTOTYPE PASS — robustness validation in progress`.**
 
-The data architecture is technically viable. G1 should not be considered fully passed until history depth, gaps, session behavior, and representative multi-asset coverage are tested.
+The data architecture is technically viable and the baseline symbol universe is now explicit. G1 should not be considered fully passed until history depth, gaps, session behavior, representative multi-asset history, and cross-source crypto behavior are tested.
 
 ## Next experiment
 
-Proceed to **EXP-2026-002 — MT5 inventory, history depth, and data-quality audit**.
+Proceed to **EXP-2026-002 — MT5 inventory, history depth, and data-quality audit** using the authoritative baseline symbols above.

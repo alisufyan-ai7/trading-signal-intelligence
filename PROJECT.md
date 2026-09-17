@@ -43,7 +43,7 @@ This is **not** an "AI predicts the market" product. The intended positioning is
 |---|---|---|
 | G1 | Can MT5/Exness and Binance reliably provide the research data we need? | **PASS — RESEARCH DATA** |
 | G2 | Can each intended production source legally support commercial derived signals? | OPEN — Exness production assumption blocked pending clarification |
-| G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | **IN PROGRESS — S01 rejected for general FX; S02 frozen and ready** |
+| G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | **IN PROGRESS — S01 rejected; S02 XAU evidence warrants robustness but is not candidate** |
 | G4 | Will traders pay for verified and explainable signals? | NOT STARTED |
 
 ## G1 evidence
@@ -91,58 +91,68 @@ Frozen before first result and tested unchanged across EUR/USD, GBP/USD, USD/JPY
 Final disposition: **REJECTED AS A GENERAL FX HYPOTHESIS**.
 
 - EUR/USD: validation and final test clearly negative.
-- GBP/USD refreshed: validation -0.0543R/trade; final test -0.0686R/trade.
-- USD/JPY refreshed: validation -0.1232R/trade; final test -0.1798R/trade.
-- XAU/USD: near-flat through validation, then strong in the already-observed 2025–2026 period; retained only as a separate XAU/regime research lead.
+- GBP/USD refreshed: validation -0.0543R/trade; final -0.0686R/trade.
+- USD/JPY refreshed: validation -0.1232R/trade; final -0.1798R/trade.
+- XAU/USD: near-flat through validation, then strong in already-observed 2025–2026; retained only as a separate research lead.
 
-Ledger mechanics, sampled candle-level feature checks, and EUR/XAU H1↔H4 consistency audits did not identify an engine/data defect explaining the FX failures.
+Integrity audits did not identify an engine/data defect explaining the FX failures.
 
 Detailed evidence:
 
-- `research/experiments/EXP-2026-004-s01-baseline.md`
-- `research/experiments/EXP-2026-005-s01-cross-fx-disposition.md`
+- `research/experiments/EXP-2026-003-s01-baseline.md`
+- `research/experiments/EXP-2026-008-s01-cross-fx-disposition.md`
 
 ### S02 Structure Breakout v0.1
 
-**Status: RESEARCH — FROZEN BEFORE FIRST RESULT.**
+**Status: RESEARCH — ROBUSTNESS WARRANTED; NOT CANDIDATE.**
 
-Predeclared first universe:
+Frozen before first S02 result on the predeclared universe EUR/USD, GBP/USD, USD/JPY and XAU/USD.
 
-- EUR/USD
-- GBP/USD
-- USD/JPY
-- XAU/USD
+Baseline OOS net expectancy:
 
-Baseline design:
+- EUR/USD: validation +0.0459R/trade; final -0.0127R/trade
+- GBP/USD: validation -0.1858R/trade; final +0.0444R/trade
+- USD/JPY: validation +0.1764R/trade; final -0.1631R/trade
+- XAU/USD: validation +0.0986R/trade; final +0.2323R/trade
 
-- H1 20-bar prior structure breakout;
-- 0.10 ATR breakout margin;
-- gap-open exclusion;
-- true-range and tick-volume expansion confirmation;
-- H4 EMA50 regime/slope filter;
-- next-H1-open entry;
-- 1.75 ATR stop;
-- 2.5R target;
-- 72-H1-bar timeout;
-- conservative same-bar ambiguity;
-- same signal-bar spread cost convention as the research engine.
+EUR/USD and XAU/USD candle-level audits passed 10/10 sampled trades, and all four trade ledgers passed mechanical/accounting checks.
 
-Implementation and audit tooling are ready. No S02 result had been viewed when v0.1 was frozen.
+XAU/USD is the only market positive in both OOS splits and each observed OOS calendar year 2023–2026. Repricing the frozen XAU ledger at 2x and 3x the baseline spread proxy remains positive. However:
+
+- XAU development is negative;
+- OOS gains are carried by longs, a post-result diagnostic that cannot be retrofitted into v0.1;
+- the other markets show strong temporal instability;
+- parameter-neighborhood and rolling/walk-forward robustness remain required;
+- forward evidence remains required before candidate status.
 
 See:
 
 - `strategies/S02-structure-breakout/v0.1.md`
-- `research/experiments/EXP-2026-006-s02-structure-breakout-baseline.md`
+- `research/experiments/EXP-2026-009-s02-structure-breakout-baseline.md`
 
 ## Initial strategy families
 
 - S01 Trend Pullback — **v0.1 rejected for general FX; XAU lead retained**
-- S02 Structure Breakout — **v0.1 frozen, ready to run**
+- S02 Structure Breakout — **v0.1 baseline complete; robustness warranted; not candidate**
 - S03 Momentum Continuation — IDEA
 - S04 Mean Reversion — IDEA
 - S05 Volatility Expansion — IDEA
 
 Most hypotheses are expected to be rejected. Promotion requires reproducible after-cost evidence, robustness and forward testing.
+
+## Experiment ID map
+
+Canonical IDs are unique:
+
+- EXP-2026-001 — MT5 symbol discovery
+- EXP-2026-002 — Binance normalization
+- EXP-2026-003 — S01 frozen baseline
+- EXP-2026-004 — source-rights research
+- EXP-2026-005 — customer-value research plan
+- EXP-2026-006 — data-quality / G1 audit
+- EXP-2026-007 — collector soak test
+- EXP-2026-008 — S01 cross-FX disposition
+- EXP-2026-009 — S02 frozen baseline
 
 ## Phase status
 
@@ -151,8 +161,8 @@ Most hypotheses are expected to be rejected. Promotion requires reproducible aft
 3. Representative data-quality/history audit — **DONE / G1 PASS**
 4. Local reproducible persistence/backfill — **DONE for initial FX/XAU research universe**
 5. S01 frozen backtest + integrity audits + cross-FX disposition — **DONE / GENERAL FX REJECTED**
-6. S02 frozen specification + implementation — **DONE / READY TO RUN**
-7. S02 baseline / OOS / robustness evidence — **NEXT**
+6. S02 frozen specification + implementation + first baseline — **DONE**
+7. S02 parameter-neighborhood / rolling robustness — **NEXT**
 8. Live immutable forward test — **PENDING**
 9. Customer-value validation / SaaS UI — **PENDING**
 

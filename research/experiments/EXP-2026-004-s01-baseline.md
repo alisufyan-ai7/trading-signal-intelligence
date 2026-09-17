@@ -57,7 +57,7 @@ Persisted:
 - XAUUSD H1: 49,999 closed bars, 2018-03-28 14:00 UTC through 2026-09-17 11:00 UTC
 - XAUUSD H4: 16,194 closed bars, 2014-01-14 00:00 UTC through 2026-09-17 08:00 UTC
 
-The unusually deep EURUSD H4 start date is now an explicit integrity question. It is not assumed invalid, but H4 OHLC must be compared with H4 reconstructed from the overlapping H1 bars before relying on the regime feed without qualification. `scripts/audit_h1_h4_consistency.py` performs this check.
+The unusually deep EURUSD H4 start date was treated as an explicit integrity question and checked against H4 reconstructed from overlapping H1 history. The overlapping data matched exactly; see H1/H4 consistency results below.
 
 ## XAU/USD v0.1 result
 
@@ -191,21 +191,41 @@ The corrected `scripts/audit_s01_sample.py` was run on 2026-09-17 for both compl
 
 Every sampled trade passed all implemented assertions:
 
-- the selected H4 regime bar was available by H1 signal close;
+- selected H4 regime bar was available by H1 signal close;
 - entry was the next stored H1 bar;
 - entry occurred after the signal bar open timestamp;
-- trade direction matched the strategy signal flag;
-- the prior pullback window contained all three required H1 bars.
+- trade direction matched the generated signal flag;
+- prior pullback window contained all three required H1 bars.
 
-The sampled records also show the expected closed-bar EMA/ATR values, prior-three-bar pullback features, H4 regime values, signal-bar known spread, and entry/exit parameters. No sample-level evidence of look-ahead or H1/H4 timing leakage was found.
+No sample-level evidence of look-ahead or H1/H4 timing leakage was found.
 
-This is still a sample audit, not a formal proof over every generated feature row. The remaining data-integrity check is H1→H4 reconstruction consistency.
+## H1/H4 consistency results
 
-## H1/H4 consistency status
+`scripts/audit_h1_h4_consistency.py` was run on both EURUSD and XAUUSD on 2026-09-17.
 
-`scripts/audit_h1_h4_consistency.py` is ready but has not yet been run for EURUSD/XAUUSD.
+### EUR/USD
 
-The next integrity gate is to compare broker H4 OHLC against H4 reconstructed from exact groups of H1 candles over the overlapping history. This is especially important for EURUSD because the broker-provided H4 dataset extends back to 1977 while the persisted H1 dataset begins in 2018.
+- overlapping broker H4 bars: 12,920
+- complete four-H1 groups compared: **12,068**
+- incomplete groups skipped: 852
+- maximum OHLC difference: **0.0 points**
+- median maximum difference: **0.0 points**
+- p95 maximum difference: **0.0 points**
+- bars over half-point difference: **0**
+- match fraction within half point: **1.0**
+
+### XAU/USD
+
+- overlapping broker H4 bars: 13,538
+- complete four-H1 groups compared: **10,862**
+- incomplete groups skipped: 2,676
+- maximum OHLC difference: **0.0 points**
+- median maximum difference: **0.0 points**
+- p95 maximum difference: **0.0 points**
+- bars over half-point difference: **0**
+- match fraction within half point: **1.0**
+
+Interpretation: over every complete four-H1 group tested, broker-provided H4 OHLC exactly matches H4 reconstructed from H1. The 1977 EURUSD H4 start remains unusual as historical depth, but the overlapping 2018–2026 regime data used by this baseline is internally consistent with H1.
 
 ## Current interpretation
 
@@ -217,16 +237,17 @@ Evidence so far:
 2. EUR/USD is near-flat in development but clearly negative in validation and final test.
 3. Therefore the current rule set does not demonstrate robust cross-instrument generalization.
 4. XAU/USD's recent strength remains interesting as a possible market/regime-specific phenomenon, but it is already observed data and cannot justify retroactive rule selection.
-5. Ledger-level and sampled candle-level audits do not reveal an obvious engine/timing defect.
-6. H1/H4 reconstruction consistency still needs to be verified before broader strategy conclusions.
+5. Ledger-level, sampled candle-level, and H1/H4 reconstruction audits do not reveal an obvious engine/timing/data defect explaining the difference between instruments.
+6. The next useful evidence is unchanged cross-instrument testing on GBPUSD and USDJPY.
 
 The 2025–2026 periods already viewed are no longer untouched holdouts for any future strategy version influenced by these results.
 
 ## Next actions
 
-1. Run H1/H4 consistency audit on EURUSD and XAUUSD.
-2. If consistency is clean, backfill and run unchanged v0.1 on GBPUSD and USDJPY.
-3. Only after engine/data integrity is confirmed: cost stress, walk-forward and parameter-neighborhood diagnostics.
-4. Do not optimize v0.1 in place. Any revised idea becomes a new strategy version with new evidence requirements.
+1. Backfill H1/H4 and run unchanged S01 v0.1 on GBPUSD and USDJPY.
+2. Preserve the complete summaries and ledgers before any rule changes.
+3. After those cross-instrument baselines, decide whether v0.1 should be formally rejected or retained only as a diagnostic benchmark.
+4. Then run cost stress / walk-forward / parameter-neighborhood work only where it remains scientifically useful; do not optimize v0.1 in place.
+5. Any revised strategy hypothesis becomes a new version with new evidence requirements.
 
 No single backtest passes G3 by itself.

@@ -5,7 +5,6 @@ import json
 import statistics
 from collections import Counter
 from datetime import timedelta
-from decimal import Decimal
 
 from trading_signal_intelligence.connectors.mt5 import MT5Connector
 

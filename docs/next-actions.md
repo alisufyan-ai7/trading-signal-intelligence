@@ -4,25 +4,25 @@ _Last updated: 2026-09-17_
 
 ## G1 status
 
-`PASS — RESEARCH DATA`.
+`PASS — RESEARCH DATA`, with one new operational recency issue to diagnose.
 
-Historical research can proceed. Operational hardening remains queued.
+GBPUSD and USDJPY H1 backfills unexpectedly stopped at `2026-08-09 22:00 UTC`, while their H4 datasets extended through `2026-09-17 08:00 UTC`. This does not invalidate the historical S01 rejection, but future experiments should not rely on stale H1 data without understanding the cause.
 
 ## Current G3 status
 
-S01 v0.1 has completed baseline runs on XAU/USD and EUR/USD, plus ledger, sampled candle-level, and H1↔H4 consistency audits.
+S01 v0.1 has now been tested unchanged across EUR/USD, GBP/USD, USD/JPY and XAU/USD.
 
-Current interpretation:
+Disposition:
 
-- XAU/USD: development and validation are essentially flat after costs, while 2025–2026 is materially stronger;
-- EUR/USD: development is near flat, while validation and final test are clearly negative;
-- both trade ledgers pass accounting/timing checks;
-- 10/10 sampled trades on each instrument pass H4-availability, next-bar-entry, signal-direction, and pullback-window assertions;
-- broker H4 OHLC exactly matches H4 reconstructed from complete groups of stored H1 candles over the shared history for both instruments;
-- no current integrity finding explains the performance difference;
-- S01 v0.1 is **not a candidate**.
+- EUR/USD: validation/final test clearly negative;
+- GBP/USD: development, validation and final test all negative;
+- USD/JPY: development, validation and final test all negative;
+- XAU/USD: near-flat through validation, then unusually strong in 2025–2026;
+- integrity audits on the original EUR/XAU pipeline are clean;
+- **S01 v0.1 is rejected as a general FX strategy hypothesis**;
+- the XAU result is retained only as a separate market/regime research lead.
 
-The next evidence should be unchanged cross-instrument testing on GBPUSD and USDJPY.
+See `research/experiments/EXP-2026-005-s01-cross-fx-disposition.md`.
 
 ## 1. Pull latest project state
 
@@ -30,105 +30,64 @@ The next evidence should be unchanged cross-instrument testing on GBPUSD and USD
 git pull
 ```
 
-## 2. Backfill GBP/USD
+## 2. Diagnose GBPUSD/USDJPY H1 recency
+
+Run:
 
 ```powershell
-python scripts\backfill_mt5.py `
+python scripts\mt5_recency_probe.py `
   --symbol GBPUSD `
-  --canonical "GBP/USD" `
-  --timeframe H1 `
-  --bars 50000
+  --canonical "GBP/USD"
 
-python scripts\backfill_mt5.py `
-  --symbol GBPUSD `
-  --canonical "GBP/USD" `
-  --timeframe H4 `
-  --bars 50000
-```
-
-## 3. Backfill USD/JPY
-
-```powershell
-python scripts\backfill_mt5.py `
+python scripts\mt5_recency_probe.py `
   --symbol USDJPY `
-  --canonical "USD/JPY" `
-  --timeframe H1 `
-  --bars 50000
-
-python scripts\backfill_mt5.py `
-  --symbol USDJPY `
-  --canonical "USD/JPY" `
-  --timeframe H4 `
-  --bars 50000
+  --canonical "USD/JPY"
 ```
 
-Then verify persisted datasets:
+The probe compares the latest quote timestamp with the most recent H1 and H4 bars returned directly by MT5.
 
-```powershell
-python scripts\dataset_summary.py
-```
+Interpretation:
 
-## 4. Run the unchanged frozen S01 v0.1
+- if H1 now appears current, re-run the H1 backfills to fill the missing recent history;
+- if H1 is still stuck near 2026-08-09 while quotes/H4 are current, diagnose terminal history synchronization before new strategy work on these symbols.
 
-Do not alter the strategy parameters based on XAU/USD or EUR/USD.
+Do not rerun or optimize S01 merely because recent H1 bars become available. Its cross-FX disposition is already negative over large OOS samples.
 
-```powershell
-python scripts\run_s01_backtest.py `
-  --symbol GBPUSD `
-  --canonical "GBP/USD" `
-  --output outputs\s01_gbpusd_v0_1.csv
+## 3. Preserve S01 as a benchmark
 
-python scripts\run_s01_backtest.py `
-  --symbol USDJPY `
-  --canonical "USD/JPY" `
-  --output outputs\s01_usdjpy_v0_1.csv
-```
+Do not tune S01 v0.1 in place.
 
-The backtest runner reads point size from `config/instruments.json`; no manual point-size argument is required.
+Keep it for:
 
-Preserve/paste:
+- regression testing of the backtest engine;
+- cost-model comparisons;
+- future XAU-specific hypothesis generation;
+- checking whether future infrastructure changes alter known results unexpectedly.
 
-- dataset summary;
-- complete GBPUSD JSON result;
-- complete USDJPY JSON result;
-- generated trade ledgers.
+## 4. Move primary strategy research to S02
 
-## 5. What happens after GBPUSD/USDJPY
+After the recency probe is understood, freeze and implement **S02 Structure Breakout v0.1** before viewing results.
 
-Do **not** optimize v0.1 immediately.
+The S02 specification should define in advance:
 
-First compare all four instruments on:
+- exact breakout structure/window;
+- higher-timeframe trend/regime rule, if any;
+- confirmation rule;
+- entry timing;
+- ATR/structure stop;
+- target or trailing-exit logic;
+- timeout;
+- same-bar ambiguity policy;
+- cost model;
+- fixed development/validation/final-test splits;
+- promotion/rejection criteria.
 
-- development expectancy;
-- validation expectancy;
-- final-test expectancy;
-- profit factor;
-- maximum drawdown;
-- long/short behavior;
-- year-to-year stability.
+Do not reuse parameters selected from S01 outcomes unless they are justified independently.
 
-If GBPUSD/USDJPY also fail to show stable OOS evidence, S01 v0.1 should likely be formally rejected as a general multi-FX trend-pullback candidate and retained only as a benchmark/research artifact.
-
-If one or both unexpectedly show robust OOS performance, then we can justify cost stress, walk-forward analysis, and parameter-neighborhood sensitivity on the unchanged baseline before making a final disposition.
-
-## 6. Do not add USTEC/WTI yet
-
-FX cross-instrument evidence is the cleanest next comparison because the same strategy semantics, cost model, and market structure are more comparable. Index/energy testing can follow after S01's FX disposition is clearer.
-
-## 7. Crypto remains separate
-
-Exness BTCUSDT has only ~108 days of H1 history on the tested demo server and includes one unexplained 24-hour gap near the beginning of that history. Binance remains the primary long-horizon crypto research source.
-
-Exness BTCUSD and BTCUSDT are distinct instruments and must not be conflated. Cross-source comparisons should match quote asset where possible.
-
-## G2 remains independent
+## 5. G2 remains independent
 
 GitHub issue #1 tracks commercial data rights. Exness remains an R&D source rather than an assumed production commercial data source.
 
-## G3 tracking
+## 6. G4 remains intentionally deferred
 
-GitHub issue #2 tracks S01 evidence and eventual promotion/rejection.
-
-## G4 comes after evidence
-
-Do not spend significant effort on the polished SaaS interface yet. Once a credible immutable forward-test record begins accumulating, prototype the verified signal feed and transparent performance page, then test willingness to pay.
+Do not invest heavily in the polished SaaS UI until at least one strategy family demonstrates credible OOS evidence and an immutable forward-test process is running.

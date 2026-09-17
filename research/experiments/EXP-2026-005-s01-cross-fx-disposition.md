@@ -12,13 +12,35 @@ New instruments:
 - GBP/USD
 - USD/JPY
 
-## Data note
+## Data recency note
 
-The persisted GBPUSD and USDJPY H1 datasets unexpectedly stop at `2026-08-09 22:00 UTC`, while their H4 datasets extend through `2026-09-17 08:00 UTC`.
+The first persisted GBPUSD and USDJPY H1 backfills stopped at `2026-08-09 22:00 UTC`, while their H4 datasets extended through `2026-09-17 08:00 UTC`.
 
-This does not explain their negative validation history, but it is a pipeline recency issue that must be diagnosed before future experiments. `scripts/mt5_recency_probe.py` was added for this purpose.
+A direct MT5 recency probe was run later on 2026-09-17 and showed that the source was then serving current data for both instruments:
 
-## GBP/USD v0.1
+### GBPUSD
+
+- live quote: `2026-09-17 14:30:30 UTC`
+- latest H1 bar: `2026-09-17 14:00:00 UTC`
+- H1 lag vs quote: ~0.51 hours
+- latest H4 bar: `2026-09-17 12:00:00 UTC`
+- H4 lag vs quote: ~2.51 hours
+- both timeframes: `appears_recent = true`
+
+### USDJPY
+
+- live quote: `2026-09-17 14:30:36 UTC`
+- latest H1 bar: `2026-09-17 14:00:00 UTC`
+- H1 lag vs quote: ~0.51 hours
+- latest H4 bar: `2026-09-17 12:00:00 UTC`
+- H4 lag vs quote: ~2.51 hours
+- both timeframes: `appears_recent = true`
+
+Interpretation: the August H1 cutoff was a transient/local MT5 history-synchronization state during the earlier bulk backfill, not a persistent broker/source limitation. Before new experiments on these symbols, refresh the recent H1 window into the local research store.
+
+This recency issue does not alter the S01 rejection because the negative development/validation evidence and most of the final-test sample were already present, but the experiment should be rerun once after refresh so the archived benchmark ledger is current through the final available research date.
+
+## GBP/USD v0.1 — pre-refresh baseline
 
 Overall:
 
@@ -42,7 +64,7 @@ Directional diagnostics:
 
 Interpretation: no robust edge. Overall and every evaluation split are negative after costs.
 
-## USD/JPY v0.1
+## USD/JPY v0.1 — pre-refresh baseline
 
 Overall:
 
@@ -88,12 +110,14 @@ Reasons:
 3. Existing ledger, sampled candle, and H1/H4 consistency audits have not identified an engine defect that explains the pattern.
 4. XAU/USD's recent strength is market/regime-specific evidence and is not sufficient to rescue the general hypothesis.
 5. The XAU period is already observed and cannot be used as an untouched holdout for retroactive rule selection.
+6. The transient GBPUSD/USDJPY H1 recency issue does not explain their negative historical OOS results; current direct MT5 probes show both H1 feeds are live and recent.
 
 S01 v0.1 should remain in the repository as a benchmark and research artifact. A future XAU-specific hypothesis must be versioned separately and validated on genuinely new evidence.
 
-## Next actions
+## Final housekeeping before S02
 
-1. Diagnose the GBPUSD/USDJPY H1 recency cutoff before using those persisted datasets for future experiments.
-2. Do not spend broad optimization effort on S01 v0.1.
-3. Preserve XAU behavior as a separate research lead.
-4. Move primary G3 research to the next predeclared strategy family, S02 Structure Breakout, after the data-recency diagnostic is clean.
+1. Refresh the recent GBPUSD and USDJPY H1 windows into the local store.
+2. Rerun unchanged S01 once on both so the benchmark ledgers include the restored recent data.
+3. Preserve the rerun summaries; do not reinterpret them as a new optimization attempt.
+4. Move primary G3 research to S02 Structure Breakout.
+5. Do not spend broad optimization effort on S01 v0.1.

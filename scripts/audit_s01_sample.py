@@ -121,7 +121,7 @@ def main() -> None:
                     "short_pullback": bool(signal["short_pullback"]),
                     "long_signal": bool(signal["long_signal"]),
                     "short_signal": bool(signal["short_signal"]),
-                    "effective_spread_points": _json_value(signal["effective_spread_points"]),
+                    "known_spread_points": _json_value(signal["known_spread_points"]),
                 },
                 "h4_regime": {
                     "available_at": _json_value(h4_available),
@@ -148,10 +148,7 @@ def main() -> None:
             }
         )
 
-    all_assertions_pass = all(
-        all(item["assertions"].values())
-        for item in output
-    )
+    all_assertions_pass = all(all(item["assertions"].values()) for item in output)
 
     print(
         json.dumps(

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import timedelta
 from typing import Any
 
 import numpy as np
@@ -78,10 +77,18 @@ def _prepare_features(h1: pd.DataFrame, h4: pd.DataFrame, config: S01Config) -> 
     h1["short_touch"] = h1["high"] >= h1["ema20"] - config.pullback_tolerance_atr * h1["atr14"]
     h1["short_guard_ok"] = h1["high"] <= h1["ema50"] + config.guard_tolerance_atr * h1["atr14"]
 
-    prior_long_touch = h1["long_touch"].shift(1).rolling(config.pullback_window).max().fillna(0).astype(bool)
-    prior_long_guard = h1["long_guard_ok"].shift(1).rolling(config.pullback_window).min().fillna(0).astype(bool)
-    prior_short_touch = h1["short_touch"].shift(1).rolling(config.pullback_window).max().fillna(0).astype(bool)
-    prior_short_guard = h1["short_guard_ok"].shift(1).rolling(config.pullback_window).min().fillna(0).astype(bool)
+    prior_long_touch = (
+        h1["long_touch"].shift(1).rolling(config.pullback_window).max().fillna(0).astype(bool)
+    )
+    prior_long_guard = (
+        h1["long_guard_ok"].shift(1).rolling(config.pullback_window).min().fillna(0).astype(bool)
+    )
+    prior_short_touch = (
+        h1["short_touch"].shift(1).rolling(config.pullback_window).max().fillna(0).astype(bool)
+    )
+    prior_short_guard = (
+        h1["short_guard_ok"].shift(1).rolling(config.pullback_window).min().fillna(0).astype(bool)
+    )
 
     h1["long_pullback"] = prior_long_touch & prior_long_guard
     h1["short_pullback"] = prior_short_touch & prior_short_guard
@@ -95,7 +102,7 @@ def _prepare_features(h1: pd.DataFrame, h4: pd.DataFrame, config: S01Config) -> 
     ].rename(columns={"close": "h4_close"})
 
     # An H1 signal candle is only known after it closes. Merge the most recent H4
-    # bar whose close/availability time is <= the H1 signal close time.
+    # bar whose conservative availability time is <= the H1 signal close time.
     h1["signal_close_time"] = h1["timestamp_utc"] + pd.to_timedelta(1, unit="h")
     h1 = pd.merge_asof(
         h1.sort_values("signal_close_time"),
@@ -131,13 +138,16 @@ def _prepare_features(h1: pd.DataFrame, h4: pd.DataFrame, config: S01Config) -> 
         & (h1["close"] < h1["low"].shift(1))
     )
 
+    # Bar-level spread is treated as information available only after that bar is
+    # complete. At next-bar entry, use the signal bar's spread. If it is absent/zero,
+    # fall back only to prior non-zero bars; never read the entry bar's completed spread.
     valid_spread = h1["spread"].where(h1["spread"] > 0)
     h1["spread_fallback"] = (
         valid_spread.shift(1)
         .rolling(config.spread_fallback_window, min_periods=1)
         .median()
     )
-    h1["effective_spread_points"] = valid_spread.fillna(h1["spread_fallback"])
+    h1["known_spread_points"] = valid_spread.fillna(h1["spread_fallback"])
     return h1
 
 
@@ -159,7 +169,7 @@ def _simulate_trade(
     if not np.isfinite(atr) or atr <= 0:
         return None
 
-    spread_points = float(entry_bar["effective_spread_points"])
+    spread_points = float(signal["known_spread_points"])
     if not np.isfinite(spread_points) or spread_points <= 0:
         return None
 
@@ -268,10 +278,10 @@ def run_s01(
 
     frame = _prepare_features(h1, h4, config)
     trades: list[dict[str, Any]] = []
-    blocked_until = -1
+    next_signal_index = 0
 
     for index, row in frame.iterrows():
-        if index <= blocked_until:
+        if index < next_signal_index:
             continue
 
         direction = 0
@@ -292,7 +302,9 @@ def run_s01(
         if trade is None:
             continue
         trades.append(trade)
-        blocked_until = int(trade["exit_index"])
+        # A signal formed at the close of the exit bar may enter on the following bar,
+        # so the exit bar itself is eligible for a new signal evaluation.
+        next_signal_index = int(trade["exit_index"])
 
     trades_frame = pd.DataFrame(trades)
     return frame, trades_frame

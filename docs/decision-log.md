@@ -98,3 +98,21 @@ Sources:
 **Evidence:** A live Exness Market Watch screenshot showed both symbols simultaneously as separate instruments, with different quoted prices at the same moment. Both showed an approximately $7 bid/ask spread, but BTCUSDT was about $5 above BTCUSD in the captured snapshot.
 
 **Implication:** Cross-source comparison to Binance Spot should use Exness `BTCUSDT` versus Binance `BTCUSDT`. Exness `BTCUSD` may be studied separately and, if needed, compared to a true USD spot venue rather than to a USDT market. This avoids contaminating basis/strategy analysis with an avoidable USD-versus-USDT mismatch.
+
+## 2026-09-17 — D014: Reject S01 v0.1 as a general FX strategy
+
+**Decision:** S01 Trend Pullback v0.1 is rejected as a general FX strategy hypothesis and is retained only as a regression benchmark. XAU/USD behavior remains a separate market/regime research lead, not an accepted strategy.
+
+**Evidence:** The frozen v0.1 rules were tested unchanged across EUR/USD, GBP/USD, USD/JPY and XAU/USD. EUR/USD, refreshed GBP/USD and refreshed USD/JPY all produced negative validation and final-test expectancy after costs. XAU/USD was near-flat through validation and strong only in the already-observed 2025–2026 period. Ledger, sampled candle-level and H1↔H4 integrity checks did not identify an implementation defect explaining the FX failures.
+
+**Implication:** Do not optimize S01 v0.1 in place. Any XAU-specific follow-up becomes a separately versioned hypothesis with new evidence requirements.
+
+## 2026-09-17 — D015: Freeze S02 Structure Breakout v0.1 before first result
+
+**Decision:** S02 v0.1 is frozen before any S02 backtest result is viewed, with a predeclared first universe of EUR/USD, GBP/USD, USD/JPY and XAU/USD.
+
+**Frozen baseline:** H1 20-bar prior structure, 0.10 ATR breakout margin, gap-open exclusion, 1.25× prior-median true-range expansion, 1.10× prior-median tick-volume expansion, H4 EMA50 regime with 3-bar slope agreement, next-H1-open entry, 1.75 ATR stop, 2.5R target, 72-H1-bar timeout and the existing conservative signal-bar spread cost convention.
+
+**Reason:** The project should test an independently specified breakout-continuation hypothesis rather than tune S01 after failure. Predeclaring rules and markets preserves the value of negative as well as positive results.
+
+**Implication:** Implementation bugs may be corrected without changing alpha semantics. Any alpha-rule/parameter change after the first S02 result requires a new strategy version.

@@ -6,122 +6,135 @@ _Last updated: 2026-09-17_
 
 `PASS — RESEARCH DATA`.
 
-The earlier GBPUSD/USDJPY H1 cutoff at `2026-08-09 22:00 UTC` has been diagnosed as a transient/local MT5 history-synchronization state rather than a persistent source limitation.
-
-Direct recency probes on 2026-09-17 showed for both GBPUSD and USDJPY:
-
-- live quotes current near `14:30 UTC`;
-- latest H1 bar at `14:00 UTC`;
-- latest H4 bar at `12:00 UTC`;
-- H1 and H4 both `appears_recent = true`.
-
-Before new strategy work on these symbols, refresh the recent H1 window into the local research store.
+The earlier GBPUSD/USDJPY H1 recency issue is closed for current research use. A recent-window refresh restored both stored H1 datasets through `2026-09-17 13:00 UTC`.
 
 ## Current G3 status
 
-S01 v0.1 has been tested unchanged across EUR/USD, GBP/USD, USD/JPY and XAU/USD.
+### S01
 
-Disposition:
+S01 Trend Pullback v0.1 is **REJECTED AS A GENERAL FX HYPOTHESIS**.
 
-- EUR/USD: validation/final test clearly negative;
-- GBP/USD: development, validation and final test negative in the pre-refresh benchmark;
-- USD/JPY: development, validation and final test negative in the pre-refresh benchmark;
-- XAU/USD: near-flat through validation, then unusually strong in 2025–2026;
-- integrity audits on EUR/XAU are clean;
-- **S01 v0.1 is rejected as a general FX strategy hypothesis**;
-- XAU remains a separate market/regime research lead only.
+Final archived OOS evidence:
 
-See `research/experiments/EXP-2026-005-s01-cross-fx-disposition.md`.
+- EUR/USD validation/final: negative;
+- GBP/USD refreshed validation/final: negative;
+- USD/JPY refreshed validation/final: negative;
+- XAU/USD: near-flat validation, strong only in already-observed 2025–2026 period.
 
-## 1. Pull latest project state
+Do not optimize S01 v0.1 in place. Keep it as a regression benchmark and retain XAU only as a separate research lead.
+
+### S02
+
+S02 Structure Breakout v0.1 is now **FROZEN BEFORE FIRST RESULT**.
+
+The specification, engine, runner and sample-audit tool are in `main`. No S02 result had been viewed when the parameters were frozen.
+
+Predeclared first universe:
+
+- EUR/USD
+- GBP/USD
+- USD/JPY
+- XAU/USD
+
+## 1. Pull the frozen S02 implementation
 
 ```powershell
 git pull
 ```
 
-## 2. Refresh only the recent GBPUSD/USDJPY H1 windows
+## 2. Run all four untouched S02 baselines
 
-A 5,000-bar refresh is enough to overlap the stale cutoff and include the current H1 history. Existing rows are upserted; this does not discard older stored history.
+Do not change parameters between instruments or after seeing the first result.
 
 ```powershell
-python scripts\backfill_mt5.py `
+python scripts\run_s02_backtest.py `
+  --symbol EURUSD `
+  --canonical "EUR/USD" `
+  --output outputs\s02_eurusd_v0_1.csv
+
+python scripts\run_s02_backtest.py `
   --symbol GBPUSD `
   --canonical "GBP/USD" `
-  --timeframe H1 `
-  --bars 5000
+  --output outputs\s02_gbpusd_v0_1.csv
 
-python scripts\backfill_mt5.py `
+python scripts\run_s02_backtest.py `
   --symbol USDJPY `
   --canonical "USD/JPY" `
-  --timeframe H1 `
-  --bars 5000
+  --output outputs\s02_usdjpy_v0_1.csv
+
+python scripts\run_s02_backtest.py `
+  --symbol XAUUSD `
+  --canonical "XAU/USD" `
+  --output outputs\s02_xauusd_v0_1.csv
 ```
 
-Then verify:
+Preserve the complete JSON output and each CSV ledger.
+
+## 3. Run candle-level implementation audits
+
+Run at least EUR/USD and XAU/USD samples after the four baseline runs:
 
 ```powershell
-python scripts\dataset_summary.py
+python scripts\audit_s02_sample.py `
+  --symbol EURUSD `
+  --canonical "EUR/USD" `
+  --point-size 0.00001 `
+  --samples 10
+
+python scripts\audit_s02_sample.py `
+  --symbol XAUUSD `
+  --canonical "XAU/USD" `
+  --point-size 0.001 `
+  --samples 10
 ```
 
-Expected: GBPUSD and USDJPY H1 `last_timestamp_utc` should now be near the current trading hour instead of 2026-08-09.
+Expected integrity result:
 
-## 3. Rerun unchanged S01 once for archival completeness
+`all_sample_assertions_pass: true`
 
-This is not an optimization attempt and does not reopen the rejected general-FX hypothesis. It simply makes the stored benchmark results include the restored recent H1 data.
+The audit checks:
 
-```powershell
-python scripts\run_s01_backtest.py `
-  --symbol GBPUSD `
-  --canonical "GBP/USD" `
-  --output outputs\s01_gbpusd_v0_1_refreshed.csv
+- H4 regime availability by H1 signal close;
+- exact prior-20 H1 structure levels;
+- breakout margin;
+- gap-open exclusion;
+- candle direction;
+- true-range expansion;
+- tick-volume expansion;
+- next-bar entry;
+- 1.75ATR stop math;
+- 2.5R target math.
 
-python scripts\run_s01_backtest.py `
-  --symbol USDJPY `
-  --canonical "USD/JPY" `
-  --output outputs\s01_usdjpy_v0_1_refreshed.csv
-```
+If an audit fails, diagnose the implementation before interpreting performance. Correcting a software bug does not authorize changing frozen alpha rules.
 
-Preserve/paste:
+## 4. Interpret before optimizing
 
-- refreshed dataset summary;
-- complete GBPUSD JSON result;
-- complete USDJPY JSON result.
+After all four results and the audits are available, compare:
 
-## 4. Preserve S01 as a benchmark
+- development / validation / final-test expectancy;
+- profit factor;
+- drawdown;
+- trade count;
+- long/short asymmetry;
+- year concentration;
+- market concentration.
 
-Do not tune S01 v0.1 in place.
+Do **not** run parameter-neighborhood searches yet.
 
-Keep it for:
+If baseline evidence is broadly negative, retain v0.1 as a failed benchmark and move on rather than searching for an attractive parameter island.
 
-- regression testing of the backtest engine;
-- cost-model comparisons;
-- future XAU-specific hypothesis generation;
-- checking whether infrastructure changes alter known results unexpectedly.
+If one or more markets show credible OOS evidence, first run the predeclared robustness work:
 
-## 5. Move primary strategy research to S02
+- 1.0x / 1.5x / 2.0x cost stress;
+- parameter-neighborhood sensitivity;
+- walk-forward analysis;
+- regime/year breakdown;
+- broader market evidence where scientifically justified.
 
-After the refreshed benchmark is archived, freeze and implement **S02 Structure Breakout v0.1** before viewing any S02 results.
-
-The S02 specification must define in advance:
-
-- exact breakout structure/window;
-- higher-timeframe trend/regime rule, if any;
-- confirmation rule;
-- entry timing;
-- ATR/structure stop;
-- target or trailing-exit logic;
-- timeout;
-- same-bar ambiguity policy;
-- cost model;
-- fixed development/validation/final-test splits;
-- promotion/rejection criteria.
-
-Do not reuse parameters selected from S01 outcomes unless they are justified independently.
-
-## 6. G2 remains independent
+## 5. G2 remains independent
 
 GitHub issue #1 tracks commercial data rights. Exness remains an R&D source rather than an assumed production commercial data source.
 
-## 7. G4 remains intentionally deferred
+## 6. G4 remains intentionally deferred
 
-Do not invest heavily in the polished SaaS UI until at least one strategy family demonstrates credible OOS evidence and an immutable forward-test process is running.
+Do not invest heavily in polished SaaS UI until at least one strategy family demonstrates credible OOS evidence and an immutable forward-test process is operating.

@@ -126,3 +126,16 @@ Sources:
 **Protocol finding:** The local runner was frozen after the first S02 baseline and before its sensitivity results, but its values differ from the broader neighborhood written in the strategy specification before first result. The original specification includes ATR-period and H4-EMA perturbations and broader values for structure, breakout margin, expansion filters and H4 slope.
 
 **Implication:** The local XAU plateau is encouraging but not sufficient for candidate status. The exact original specification neighborhood is the next required robustness test. No parameter is selected from either sensitivity run.
+
+
+## 2026-09-18 — D017: S02 XAU passes the exact pre-first-result parameter-neighborhood robustness test
+
+**Decision:** Treat XAU/USD S02 v0.1 as a robust historical research lead across the originally frozen one-at-a-time parameter neighborhood, but do not promote it to candidate or forward-test status yet.
+
+**Evidence:** Across 23 exact-spec configurations, XAU/USD is positive in validation for 20/23 variants, positive in the final test for 23/23, and positive in both OOS splits for 20/23. Final-test expectancy ranges from approximately +0.1450R to +0.2765R/trade. The newly included ATR-period and H4-EMA perturbations remain positive in both OOS splits.
+
+**Failures:** The three validation-negative XAU variants are structure window 30, stop 1.50 ATR, and target 2.0R.
+
+**Critical limitation:** Development expectancy is negative for all 23 XAU configurations. The evidence therefore supports parameter robustness in a later market regime, not a stationary full-history edge.
+
+**Implication:** Freeze a temporal stability protocol using the unchanged v0.1 baseline only. Do not select a better robustness variant, do not retrofit long-only behavior, and do not claim candidate status from historical robustness alone.

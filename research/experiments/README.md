@@ -15,5 +15,6 @@ Canonical index:
 | EXP-2026-007 | MT5/Binance live collector soak test |
 | EXP-2026-008 | S01 cross-FX disposition |
 | EXP-2026-009 | S02 Structure Breakout frozen baseline |
+| EXP-2026-010 | S02 robustness protocol reconciliation and exact-spec neighborhood |
 
 See `research/README.md` for the broader research policy.

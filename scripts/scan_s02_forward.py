@@ -4,13 +4,14 @@ import argparse
 import json
 import math
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
 import trading_signal_intelligence.backtesting.s02 as s02_module
+import trading_signal_intelligence.forward.ledger as ledger_module
 from trading_signal_intelligence.backtesting.s02 import (
     S02Config,
     _candles_to_frame,
@@ -180,11 +181,32 @@ def main() -> None:
     config = S02Config()
     current_config_hash = sha256_json(asdict(config))
     strategy_path = Path(s02_module.__file__).resolve()
-    current_code_hash = sha256_file(strategy_path)
-    if current_config_hash != activation["config_sha256"]:
-        raise RuntimeError("Frozen S02 config hash no longer matches forward activation")
-    if current_code_hash != activation["strategy_code_sha256"]:
-        raise RuntimeError("S02 strategy source hash no longer matches forward activation")
+    scanner_path = Path(__file__).resolve()
+    ledger_path = Path(ledger_module.__file__).resolve()
+
+    current_strategy_hash = sha256_file(strategy_path)
+    current_scanner_hash = sha256_file(scanner_path)
+    current_ledger_hash = sha256_file(ledger_path)
+    current_bundle_hash = sha256_json(
+        {
+            "config_sha256": current_config_hash,
+            "strategy_code_sha256": current_strategy_hash,
+            "scanner_code_sha256": current_scanner_hash,
+            "ledger_code_sha256": current_ledger_hash,
+            "max_signal_age_minutes": int(activation["max_signal_age_minutes"]),
+        }
+    )
+
+    expected = {
+        "config_sha256": current_config_hash,
+        "strategy_code_sha256": current_strategy_hash,
+        "scanner_code_sha256": current_scanner_hash,
+        "ledger_code_sha256": current_ledger_hash,
+        "protocol_bundle_sha256": current_bundle_hash,
+    }
+    for field, actual in expected.items():
+        if actual != activation[field]:
+            raise RuntimeError(f"Frozen forward protocol mismatch for {field}")
 
     source = activation["source"]
     source_symbol = activation["source_symbol"]
@@ -356,8 +378,7 @@ def main() -> None:
             "cost_multiplier": config.cost_multiplier,
             "cost_price": cost_price,
             "max_hold_bars": config.max_hold_bars,
-            "config_sha256": current_config_hash,
-            "strategy_code_sha256": current_code_hash,
+            "protocol_bundle_sha256": current_bundle_hash,
             "quote_timestamp_utc": quote.timestamp_utc.isoformat(),
         }
         signal_record = ledger.append(

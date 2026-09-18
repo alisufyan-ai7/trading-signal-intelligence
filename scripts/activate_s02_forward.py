@@ -6,6 +6,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 import trading_signal_intelligence.backtesting.s02 as s02_module
+import trading_signal_intelligence.forward.ledger as ledger_module
 from trading_signal_intelligence.backtesting.s02 import S02Config
 from trading_signal_intelligence.forward import ForwardLedger, sha256_file, sha256_json, utc_now
 
@@ -34,7 +35,23 @@ def main() -> None:
     config = S02Config()
     config_payload = asdict(config)
     strategy_path = Path(s02_module.__file__).resolve()
+    scanner_path = Path(__file__).resolve().with_name("scan_s02_forward.py")
+    ledger_path = Path(ledger_module.__file__).resolve()
     activated_at = utc_now()
+
+    config_hash = sha256_json(config_payload)
+    strategy_hash = sha256_file(strategy_path)
+    scanner_hash = sha256_file(scanner_path)
+    ledger_hash = sha256_file(ledger_path)
+    protocol_bundle_hash = sha256_json(
+        {
+            "config_sha256": config_hash,
+            "strategy_code_sha256": strategy_hash,
+            "scanner_code_sha256": scanner_hash,
+            "ledger_code_sha256": ledger_hash,
+            "max_signal_age_minutes": args.max_signal_age_minutes,
+        }
+    )
 
     payload = {
         "strategy": STRATEGY,
@@ -44,9 +61,11 @@ def main() -> None:
         "canonical_symbol": args.canonical,
         "activated_at_utc": activated_at.isoformat(),
         "config": config_payload,
-        "config_sha256": sha256_json(config_payload),
-        "strategy_code_path": str(strategy_path),
-        "strategy_code_sha256": sha256_file(strategy_path),
+        "config_sha256": config_hash,
+        "strategy_code_sha256": strategy_hash,
+        "scanner_code_sha256": scanner_hash,
+        "ledger_code_sha256": ledger_hash,
+        "protocol_bundle_sha256": protocol_bundle_hash,
         "max_signal_age_minutes": args.max_signal_age_minutes,
         "anti_backfill_rule": (
             "candidate signals older than max_signal_age_minutes at discovery are logged "

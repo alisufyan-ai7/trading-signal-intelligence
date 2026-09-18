@@ -42,6 +42,9 @@ The ACTIVATION record commits to:
 - strategy/config identity;
 - SHA-256 of canonical S02 v0.1 config JSON;
 - SHA-256 of the S02 strategy source file;
+- SHA-256 of the live scanner source;
+- SHA-256 of the ledger implementation;
+- a protocol-bundle SHA-256 over those fingerprints, config hash and freshness limit;
 - source/canonical symbol;
 - freshness limit for live signal recording.
 

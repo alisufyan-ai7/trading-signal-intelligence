@@ -13,7 +13,8 @@
 - Historical backtest framework: WORKING
 - Candle-level strategy audit tooling: WORKING
 - H1↔H4 consistency audit tooling: WORKING
-- S02 one-at-a-time robustness runner: READY
+- S02 post-baseline local-sensitivity runner: COMPLETE
+- S02 exact predeclared-neighborhood runner: READY
 - Live forward immutable ledger: NOT YET IMPLEMENTED
 - SaaS UI: DELIBERATELY DEFERRED
 
@@ -21,7 +22,7 @@
 
 - G1 research data: **PASS**
 - G2 commercial source rights: **OPEN / EXNESS PRODUCTION USE BLOCKED PENDING WRITTEN CLARIFICATION**
-- G3 strategy evidence: **IN PROGRESS — S02 WARRANTS ROBUSTNESS, NOT CANDIDATE**
+- G3 strategy evidence: **IN PROGRESS — S02 XAU LOCAL SENSITIVITY ROBUST; EXACT SPEC NEIGHBORHOOD PENDING; NOT CANDIDATE**
 - G4 customer value: **NOT STARTED**
 
 ## Data state
@@ -45,7 +46,7 @@ Evidence:
 
 ## S02 Structure Breakout v0.1
 
-**Status:** RESEARCH — ROBUSTNESS WARRANTED; NOT CANDIDATE.
+**Status:** RESEARCH — ROBUSTNESS IN PROGRESS; NOT CANDIDATE.
 
 The frozen four-market baseline is complete and the EURUSD/XAUUSD candle-level sample audits both passed 10/10 sampled trades.
 
@@ -58,12 +59,16 @@ OOS net expectancy:
 
 XAU/USD is the only market positive in both OOS splits and is positive in each observed OOS calendar year 2023–2026. It also remains positive when the existing ledger is repriced at 2x and 3x the baseline spread-cost proxy.
 
+Post-baseline local sensitivity (17 configurations per market) is now complete. XAU/USD remained positive in both OOS splits for 15/17 variants and positive in the final test for 17/17. The only validation-negative XAU neighbors were the tighter 1.50 ATR stop (-0.0393R/trade) and lower 2.0R target (-0.0192R/trade). Final-test expectancy across all XAU local variants stayed between +0.1450R and +0.2544R/trade. OOS trade counts remained substantial and the worst validation drawdown was -31.25R.
+
 Important caveats:
 
-- XAU development is negative;
+- all 17 XAU local variants remained negative in development (best approximately -0.0007R/trade);
 - XAU OOS strength is carried by longs, a post-result diagnostic that cannot be retrofitted into v0.1;
-- the other three markets show substantial temporal instability;
-- historical robustness and genuinely new forward evidence are still required.
+- GBPUSD and USDJPY had zero local variants positive in both OOS splits; EURUSD had 6/17;
+- the executed local neighborhood was frozen after the first baseline and is narrower/different from the broader neighborhood recorded in the v0.1 strategy specification before first result;
+- therefore the exact original specification neighborhood must be run before temporal/walk-forward work;
+- genuinely new forward evidence is still required.
 
 Detailed evidence: `research/experiments/EXP-2026-009-s02-structure-breakout-baseline.md`.
 
@@ -73,4 +78,4 @@ Canonical experiment IDs are now unique. The executed data-quality audit is EXP-
 
 ## Immediate next external input
 
-Run `python scripts\run_s02_robustness.py` after `git pull`, preserve `outputs/s02_robustness_v0_1.json` and `outputs/s02_robustness_v0_1.csv`, and review the full one-at-a-time neighborhood without selecting a best parameter set.
+Run `python scripts\run_s02_spec_robustness.py` after `git pull`. Preserve `outputs/s02_spec_robustness_v0_1.json` and `outputs/s02_spec_robustness_v0_1.csv`. This runner implements the exact one-at-a-time neighborhood that was written in the frozen v0.1 specification before the first S02 result. Do not select a best parameter set.

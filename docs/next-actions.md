@@ -54,3 +54,27 @@ python scripts\verify_forward_ledger.py
 
 Paste the task-info output, newest log, and ledger verification.
 
+
+## First scheduled run — COMPLETE
+
+The first automatic run completed successfully with `LastTaskResult = 0`, no missed runs, no signal actions, and a valid unchanged ledger head.
+
+An operational log-filename bug produced `s02_xau_forward_+.log`. The wrapper has been corrected to append subsequent runs to:
+
+`data\forward-task-logs\s02_xau_forward.log`
+
+Pull the wrapper fix before the next scheduled run; task reinstallation is not required because the registered task already points to the same wrapper path:
+
+```powershell
+git pull
+```
+
+After the next scheduled run, check:
+
+```powershell
+Get-ScheduledTaskInfo -TaskName "TradingTop S02 XAU Forward Scan"
+Get-Content data\forward-task-logs\s02_xau_forward.log -Tail 100
+python scripts\verify_forward_ledger.py
+```
+
+Do not delete the original `s02_xau_forward_+.log`; retain it as the first scheduled-run audit artifact.

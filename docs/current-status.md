@@ -15,7 +15,8 @@
 - H1↔H4 consistency audit tooling: WORKING
 - S02 post-baseline local-sensitivity runner: COMPLETE
 - S02 exact predeclared-neighborhood runner: COMPLETE
-- S02 temporal-stability runner: READY
+- S02 temporal-stability runner: COMPLETE
+- S02 new-market transfer runner: READY
 - Live forward immutable ledger: NOT YET IMPLEMENTED
 - SaaS UI: DELIBERATELY DEFERRED
 
@@ -23,7 +24,7 @@
 
 - G1 research data: **PASS**
 - G2 commercial source rights: **OPEN / EXNESS PRODUCTION USE BLOCKED PENDING WRITTEN CLARIFICATION**
-- G3 strategy evidence: **IN PROGRESS — S02 XAU PASSES EXACT PARAMETER ROBUSTNESS; TEMPORAL STABILITY NEXT; NOT CANDIDATE**
+- G3 strategy evidence: **IN PROGRESS — S02 XAU PASSES HISTORICAL PARAMETER + RECENT TEMPORAL ROBUSTNESS; NEW-MARKET TRANSFER + LIVE FORWARD EVIDENCE NEXT; NOT CANDIDATE**
 - G4 customer value: **NOT STARTED**
 
 ## Data state
@@ -71,14 +72,16 @@ Exact pre-first-result specification sensitivity is now complete (23 configurati
 
 For XAUUSD, validation expectancy ranges from approximately -0.0393R to +0.1346R/trade and final-test expectancy from +0.1450R to +0.2765R/trade. The three validation-negative variants are structure window 30, stop 1.50 ATR, and target 2.0R. ATR 10/20, H4 EMA 30/80, wider breakout/filter settings and cost multiplier 2.0x all remain positive in both OOS splits.
 
+Temporal analysis with the unchanged baseline is now complete. XAU has 10/15 positive complete half-years overall, but the recent sequence is more informative: six consecutive positive half-years from 2023-H2 through 2026-H1. Its rolling 12-month windows are positive for every start from 2022-01 through 2025-07 (15 consecutive windows). The six most recent fixed-rule prior-12m -> next-6m pairs are all positive-to-positive.
+
 Important caveats:
 
-- all 23 XAU exact-spec variants remain negative in development;
+- all 23 XAU exact-spec variants remain negative in development, so the edge is not stationary over the full history;
+- XAU 2023-H1 was negative before the six-half-year positive streak began;
 - XAU OOS strength is carried by longs, a post-result diagnostic that cannot be retrofitted into v0.1;
-- GBPUSD and USDJPY remain temporally unstable under every exact-spec variant;
-- EURUSD remains mixed rather than robust;
-- the next question is temporal persistence/regime change, not parameter selection;
-- genuinely new forward evidence is still required.
+- USDJPY is a cautionary control: it has strong historical temporal persistence but flips clearly negative from 2025 onward;
+- EURUSD remains mixed and GBPUSD unstable;
+- genuinely new cross-market and forward evidence are still required.
 
 Detailed evidence:
 
@@ -91,4 +94,4 @@ Canonical experiment IDs are now unique. The executed data-quality audit is EXP-
 
 ## Immediate next external input
 
-Run `python scripts\run_s02_temporal_stability.py` after `git pull`. Preserve `outputs/s02_temporal_stability_v0_1.json` and `outputs/s02_temporal_stability_v0_1.csv`. This test uses the unchanged baseline only; it does not select or refit parameters.
+Backfill H1/H4 research data for the frozen transfer universe XAGUSD, USTEC, US500, US30 and USOIL, then run `python scripts\run_s02_transfer.py`. Preserve `outputs/s02_transfer_v0_1.json` and `outputs/s02_transfer_v0_1.csv`. No S02 parameter changes are permitted.

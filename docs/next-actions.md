@@ -29,23 +29,28 @@ The code/config/scanner/ledger fingerprints committed at activation must remain 
 
 First scan completed at `2026-09-18T14:09:12.789641Z` with no actions. Ledger verification stayed valid with one ACTIVATION record and the original anchored head hash.
 
-## Immediate action — install hourly Windows scheduler
+## Hourly Windows scheduler — INSTALLED
 
-Pull the scheduling helpers and install the task:
+The task is registered as `TradingTop S02 XAU Forward Scan`, state `Ready`, with the first scheduled run at approximately minute 02. Windows result `267011` / `0x41303` before the first execution means the task has not yet run.
 
-```powershell
-git pull
-powershell -ExecutionPolicy Bypass -File scripts\install_s02_forward_task.ps1
-```
+Keep this Windows user logged in and MT5 available.
 
-The task runs hourly near minute 02 and writes scanner + verifier logs to `data\forward-task-logs\`.
+## Immediate action — confirm first scheduled run
 
-Then check:
+After the first scheduled time has passed, run:
 
 ```powershell
-Get-ScheduledTask -TaskName "TradingTop S02 XAU Forward Scan"
 Get-ScheduledTaskInfo -TaskName "TradingTop S02 XAU Forward Scan"
+
+$latest = Get-ChildItem data\forward-task-logs\s02_xau_forward_*.log |
+  Sort-Object LastWriteTime -Descending |
+  Select-Object -First 1
+
+$latest.FullName
+Get-Content $latest.FullName
+
+python scripts\verify_forward_ledger.py
 ```
 
-Keep this Windows user logged in and MT5 available. After the first scheduled run, inspect the newest log and verify the ledger again.
+Paste the task-info output, newest log, and ledger verification.
 

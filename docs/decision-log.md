@@ -171,3 +171,20 @@ Sources:
 **Limitations:** A local hash chain is tamper-evident within the retained database but is not independently timestamped proof by itself. External ledger-head anchoring is a separate follow-up.
 
 **G2:** Exness remains R&D-only; this forward test does not establish commercial data rights.
+
+
+## 2026-09-18 — D021: Anchor the S02/XAUUSD forward activation before live scanning
+
+**Decision:** Accept the primary XAUUSD S02 v0.1 forward activation after all 7 local tests passed and the fresh ledger verified with exactly one ACTIVATION record.
+
+**Activation UTC:** `2026-09-18T13:58:54.786419+00:00`.
+
+**Activation / initial ledger-head SHA-256:** `c901167c0aa2f8d0aff8feb4411664063488b6e67da894279c63bd4fca284115`.
+
+**Protocol bundle SHA-256:** `484b3de25c6ff6c24de30c5a700f211b98be8534c7b0354fcb2d6219587232cf`.
+
+**Repository HEAD pulled before activation:** `b309cff26974728ef1f359d443d5927ee16010db`.
+
+**Durable anchor:** `research/forward/S02-XAUUSD-v0.1-activation-2026-09-18.md`.
+
+**Implication:** Live scanning may begin with the exact frozen fingerprints. Strategy/scanner/ledger/config changes invalidate this activation for the changed implementation and require a separately versioned protocol. Historical signals may not be retroactively inserted as live signals.

@@ -1,6 +1,6 @@
 # Project Brief
 
-_Last updated: 2026-09-17_
+_Last updated: 2026-09-18_
 
 ## Goal
 
@@ -141,7 +141,7 @@ See:
 ## Initial strategy families
 
 - S01 Trend Pullback — **v0.1 rejected for general FX; XAU lead retained**
-- S02 Structure Breakout — **v0.1 baseline complete; robustness warranted; not candidate**
+- S02 Structure Breakout — **XAU historical robustness passed; partial transfer; forward activation next; not candidate**
 - S03 Momentum Continuation — IDEA
 - S04 Mean Reversion — IDEA
 - S05 Volatility Expansion — IDEA

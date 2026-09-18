@@ -17,8 +17,8 @@
 - S02 exact predeclared-neighborhood runner: COMPLETE
 - S02 temporal-stability runner: COMPLETE
 - S02 new-market transfer runner: COMPLETE
-- Immutable hash-chained forward ledger: IMPLEMENTED / NOT YET ACTIVATED
-- S02 live forward scanner: IMPLEMENTED / WAITING FOR ACTIVATION HASH ANCHOR
+- Immutable hash-chained forward ledger: ACTIVATED / HASH ANCHORED
+- S02 live forward scanner: IMPLEMENTED / READY TO RUN
 - SaaS UI: DELIBERATELY DEFERRED
 
 ## Validation gates
@@ -49,7 +49,7 @@ Evidence:
 
 ## S02 Structure Breakout v0.1
 
-**Status:** RESEARCH — XAU HISTORICAL ROBUSTNESS PASSED; FORWARD ACTIVATION NEXT; NOT CANDIDATE.
+**Status:** RESEARCH — XAU FORWARD TEST ACTIVATED; LIVE EVIDENCE ACCUMULATION NEXT; NOT CANDIDATE.
 
 The frozen four-market baseline is complete and the EURUSD/XAUUSD candle-level sample audits both passed 10/10 sampled trades.
 
@@ -96,4 +96,4 @@ Canonical experiment IDs are now unique. The executed data-quality audit is EXP-
 
 ## Immediate next external input
 
-Pull the forward-ledger implementation, run the ledger tests, then activate the primary S02/XAU v0.1 forward test. Preserve and report the activation record hash before starting hourly signal scans.
+The primary S02/XAU v0.1 forward test is activated and its initial ledger hash is anchored in GitHub. Start the frozen live scanner and accumulate genuinely new forward observations.

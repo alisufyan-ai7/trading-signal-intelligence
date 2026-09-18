@@ -18,7 +18,7 @@
 - S02 temporal-stability runner: COMPLETE
 - S02 new-market transfer runner: COMPLETE
 - Immutable hash-chained forward ledger: ACTIVATED / HASH ANCHORED
-- S02 live forward scanner: IMPLEMENTED / READY TO RUN
+- S02 live forward scanner: IMPLEMENTED / HOURLY WINDOWS TASK INSTALLED; FIRST SCHEDULED RUN PENDING
 - SaaS UI: DELIBERATELY DEFERRED
 
 ## Validation gates
@@ -96,4 +96,4 @@ Canonical experiment IDs are now unique. The executed data-quality audit is EXP-
 
 ## Immediate next external input
 
-The primary S02/XAU v0.1 forward test is activated and its initial ledger hash is anchored in GitHub. Start the frozen live scanner and accumulate genuinely new forward observations.
+The primary S02/XAU v0.1 forward test is activated, anchored, and the hourly Windows Task Scheduler job is installed. Confirm the first scheduled run/log and continue accumulating genuinely new forward observations.

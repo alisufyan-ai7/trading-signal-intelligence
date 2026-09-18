@@ -2,107 +2,113 @@
 
 _Last updated: 2026-09-18_
 
-## Current G3 status
+## G3 status
 
-S01 Trend Pullback v0.1 remains rejected as a general FX hypothesis.
+S02 Structure Breakout v0.1 remains:
 
-S02 Structure Breakout v0.1 is:
+`RESEARCH — XAU HISTORICAL ROBUSTNESS PASSED; IMMUTABLE FORWARD EVIDENCE NEXT; NOT CANDIDATE`
 
-`RESEARCH — XAU HISTORICAL PARAMETER + RECENT TEMPORAL ROBUSTNESS PASSED; NEW-MARKET TRANSFER NEXT; NOT CANDIDATE`
+## EXP-2026-012 transfer result
 
-## Temporal result
+The predeclared transfer universe was tested unchanged.
 
-The unchanged S02 v0.1 baseline was evaluated from 2019 onward with a protocol frozen before the temporal results were viewed.
+| Market | Validation net R/trade | Final net R/trade | Frozen support flag |
+|---|---:|---:|---|
+| XAG/USD | -0.0839 | +0.1432 | NO |
+| USTEC / NASDAQ 100 | +0.1243 | +0.0122 | YES |
+| US500 / S&P 500 | +0.0283 | -0.0331 | NO |
+| US30 / DOW 30 | +0.0936 | +0.0123 | YES |
+| USOIL / WTI | -0.1466 | -0.1493 | NO |
 
-For XAU/USD:
+USTEC and US30 meet the descriptive rule (>0 validation and final expectancy with >=50 trades in each split), but their final-test margins are small. They are not promoted to candidate status.
 
-- complete half-year windows: 10/15 positive overall;
-- six consecutive positive half-years from 2023-H2 through 2026-H1;
-- 2023-H2 +0.3471R/trade;
-- 2024-H1 +0.1218;
-- 2024-H2 +0.0107;
-- 2025-H1 +0.1839;
-- 2025-H2 +0.2101;
-- 2026-H1 +0.3710;
-- rolling 12-month windows are positive for every start from 2022-01 through 2025-07 (15 consecutive windows);
-- the six most recent fixed-rule prior-12m -> next-6m pairs are all positive-to-positive.
+XAGUSD is particularly informative: gross validation expectancy is positive but the MT5 spread-cost proxy is large enough to make net validation negative. The strong recent XAG result therefore does not establish same-metal transfer across the full OOS period.
 
-This is sustained recent historical behavior, not a single isolated year.
+## Next phase — immutable forward evidence
 
-However, USDJPY is a cautionary control: it shows strong historical temporal persistence yet becomes clearly negative from 2025 onward. Historical persistence is therefore not treated as proof of a durable future edge.
+Historical testing has now done what it can for the XAU lead. The next evidence must be created after a frozen activation timestamp.
 
-## EXP-2026-012 — frozen new-market transfer universe
+The forward ledger is event-sourced, append-only and SHA-256 hash-chained. SQLite triggers reject UPDATE and DELETE operations. Every record commits to:
 
-Before viewing any S02 result on these markets, freeze the unchanged v0.1 baseline on:
+- record type and entity ID;
+- recorded/effective UTC timestamps;
+- canonical JSON payload;
+- previous ledger hash;
+- current record hash.
 
-1. XAG/USD — `XAGUSD`
-2. NASDAQ 100 — `USTEC`
-3. S&P 500 — `US500`
-4. DOW 30 — `US30`
-5. WTI — `USOIL`
+The initial activation also commits to:
 
-These markets are not removed after results are seen.
+- frozen S02 v0.1 config hash;
+- S02 strategy-source SHA-256;
+- source/symbol identity;
+- activation timestamp;
+- maximum accepted signal-recording delay.
 
-Binance crypto is excluded from this experiment because Binance volume semantics and execution costs differ from the MT5/bar-spread model. Crypto gets a separate protocol later.
+This local hash chain is the first integrity layer. External anchoring of ledger heads will be added separately; do not claim the local database alone is independently tamper-proof.
 
-A descriptive transfer-support flag requires both validation and final-test net expectancy > 0 with at least 50 trades in each split. This flag is **not** candidate promotion.
-
-## 1. Pull the frozen transfer runner
+## 1. Pull and test
 
 ```powershell
 git pull
+python -m pytest -q
 ```
 
-## 2. Backfill the five new markets
+## 2. Activate the primary forward test
 
-Run H1 and H4 for each:
+Do this **once** after tests pass:
 
 ```powershell
-python scripts\backfill_mt5.py --symbol XAGUSD --canonical "XAG/USD" --timeframe H1 --bars 50000
-python scripts\backfill_mt5.py --symbol XAGUSD --canonical "XAG/USD" --timeframe H4 --bars 50000
-
-python scripts\backfill_mt5.py --symbol USTEC --canonical "NASDAQ 100" --timeframe H1 --bars 50000
-python scripts\backfill_mt5.py --symbol USTEC --canonical "NASDAQ 100" --timeframe H4 --bars 50000
-
-python scripts\backfill_mt5.py --symbol US500 --canonical "S&P 500" --timeframe H1 --bars 50000
-python scripts\backfill_mt5.py --symbol US500 --canonical "S&P 500" --timeframe H4 --bars 50000
-
-python scripts\backfill_mt5.py --symbol US30 --canonical "DOW 30" --timeframe H1 --bars 50000
-python scripts\backfill_mt5.py --symbol US30 --canonical "DOW 30" --timeframe H4 --bars 50000
-
-python scripts\backfill_mt5.py --symbol USOIL --canonical "WTI" --timeframe H1 --bars 50000
-python scripts\backfill_mt5.py --symbol USOIL --canonical "WTI" --timeframe H4 --bars 50000
-
-python scripts\dataset_summary.py
+python scripts\activate_s02_forward.py
 ```
 
-## 3. Run unchanged S02 transfer
+Default primary forward test:
+
+- strategy: S02 Structure Breakout v0.1;
+- source: Exness MT5 demo (R&D only);
+- market: XAU/USD / XAUUSD;
+- forward database: `data/forward.sqlite`;
+- maximum fresh-signal recording lag: 5 minutes.
+
+The script refuses a second activation for the same test identity.
+
+Paste the complete activation JSON, especially:
+
+- `activated_at_utc`;
+- `config_sha256`;
+- `strategy_code_sha256`;
+- `record_hash`;
+- `ledger_head_hash`.
+
+Do **not** start historical backfilling into the forward ledger.
+
+## 3. Verify the chain
 
 ```powershell
-python scripts\run_s02_transfer.py
+python scripts\verify_forward_ledger.py
 ```
 
-Outputs:
+Expected:
 
-- `outputs/s02_transfer_v0_1.json`
-- `outputs/s02_transfer_v0_1.csv`
+- `valid: true`;
+- one ACTIVATION record;
+- zero SIGNAL/EXIT records initially.
 
-Upload both outputs and paste the printed JSON.
+## 4. Hourly scanner comes after activation hash is recorded
 
-## Interpretation discipline
+The scanner implementation is included, but wait until the activation hash has been reported and anchored in the research audit trail before starting hourly scans.
 
-Do not tune v0.1 to any new market. Do not select only the successful markets after seeing results.
+The scan command will be:
 
-The purpose is to learn whether the breakout mechanism transfers beyond XAU and FX:
+```powershell
+python scripts\scan_s02_forward.py
+```
 
-- XAG gives same-asset-class evidence;
-- USTEC/US500/US30 give equity-index evidence;
-- USOIL gives energy evidence.
+It never backfills a stale signal as if it were live. Signals discovered more than the frozen age limit after their signal close are logged as `MISSED_SIGNAL`, not as forward signals.
 
-Regardless of the historical transfer outcome, XAU still requires an immutable live forward record before G3 can be considered passed.
+## Research discipline
 
-## Parallel engineering after transfer
-
-If the transfer run completes cleanly, begin the immutable forward-test ledger for frozen S02 v0.1. Original signal parameters and strategy/config hashes must be immutable after issuance.
-
-G2 commercial source rights remains independently open; Exness remains R&D-only for this project.
+- Primary forward hypothesis is XAUUSD S02 v0.1 unchanged.
+- Do not switch to XAU-long-only.
+- Do not select a robustness variant.
+- USTEC/US30 remain secondary historical observations, not forward candidates from this result.
+- G2 remains open; Exness forward collection is research-only.

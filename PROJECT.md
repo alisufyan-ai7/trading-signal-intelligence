@@ -43,7 +43,7 @@ This is **not** an "AI predicts the market" product. The intended positioning is
 |---|---|---|
 | G1 | Can MT5/Exness and Binance reliably provide the research data we need? | **PASS — RESEARCH DATA** |
 | G2 | Can each intended production source legally support commercial derived signals? | OPEN — Exness production assumption blocked pending clarification |
-| G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | **IN PROGRESS — S02 XAU local sensitivity is robust; exact predeclared neighborhood still pending; not candidate** |
+| G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | **IN PROGRESS — S02 XAU passes exact predeclared parameter robustness; temporal stability next; not candidate** |
 | G4 | Will traders pay for verified and explainable signals? | NOT STARTED |
 
 ## G1 evidence
@@ -124,8 +124,10 @@ XAU/USD is the only market positive in both OOS splits and each observed OOS cal
 - the other markets show strong temporal instability;
 - the 17-configuration post-baseline local sensitivity test kept XAU positive in both OOS splits for 15/17 variants and positive in the final test for 17/17 variants;
 - all 17 XAU local variants remained negative in development, reinforcing the possibility of a later regime change rather than a stationary full-history edge;
-- the executed local neighborhood differs from the broader neighborhood written in the v0.1 specification before first result, so the exact original specification neighborhood must be run next;
-- rolling/walk-forward robustness and forward evidence remain required before candidate status.
+- the exact 23-configuration pre-first-result specification neighborhood is now complete: XAU is positive in both OOS splits for 20/23 variants and positive in the final test for 23/23;
+- the three XAU validation-negative exact-spec variants are structure window 30, stop 1.50 ATR, and target 2.0R;
+- all 23 XAU variants remain negative in development, so the evidence is parameter-robust but temporally non-stationary;
+- rolling/fixed-rule temporal stability and genuinely new forward evidence remain required before candidate status.
 
 See:
 
@@ -155,7 +157,8 @@ Canonical IDs are unique:
 - EXP-2026-007 — collector soak test
 - EXP-2026-008 — S01 cross-FX disposition
 - EXP-2026-009 — S02 frozen baseline
-- EXP-2026-010 — S02 robustness protocol reconciliation
+- EXP-2026-010 — S02 robustness protocol reconciliation + exact-spec result
+- EXP-2026-011 — S02 temporal stability protocol
 
 ## Phase status
 
@@ -166,8 +169,8 @@ Canonical IDs are unique:
 5. S01 frozen backtest + integrity audits + cross-FX disposition — **DONE / GENERAL FX REJECTED**
 6. S02 frozen specification + implementation + first baseline — **DONE**
 7. S02 post-baseline local sensitivity — **DONE / XAU BROADLY ROBUST**
-8. S02 exact predeclared specification neighborhood — **NEXT**
-9. S02 temporal / fixed-rule walk-forward stability — **PENDING**
+8. S02 exact predeclared specification neighborhood — **DONE / XAU 20 OF 23 BOTH-OOS POSITIVE**
+9. S02 temporal / fixed-rule walk-forward stability — **NEXT**
 10. Live immutable forward test — **PENDING**
 11. Customer-value validation / SaaS UI — **PENDING**
 

@@ -1,6 +1,6 @@
 # EXP-2026-010 — S02 Robustness Protocol Reconciliation
 
-**Status:** POST-BASELINE LOCAL SENSITIVITY COMPLETE — EXACT PRE-FIRST-RESULT NEIGHBORHOOD NEXT  
+**Status:** COMPLETE — LOCAL + EXACT PRE-FIRST-RESULT NEIGHBORHOODS RECORDED; XAU ROBUST HISTORICAL LEAD  
 **Created:** 2026-09-18
 
 ## Objective
@@ -90,3 +90,42 @@ Outputs:
 4. Do not select a best parameter set.
 5. Do not redefine v0.1 as XAU-long-only.
 6. Candidate/forward-test status remains blocked pending broader robustness, temporal stability and genuinely new forward evidence.
+
+
+## Exact pre-first-result neighborhood result — 2026-09-18
+
+The exact one-at-a-time neighborhood from the frozen v0.1 specification was executed across all four original markets.
+
+| Instrument | Development-positive | Validation-positive | Final-positive | Positive in both OOS |
+|---|---:|---:|---:|---:|
+| EUR/USD | 15/23 | 17/23 | 7/23 | 6/23 |
+| GBP/USD | 23/23 | 0/23 | 22/23 | 0/23 |
+| USD/JPY | 23/23 | 23/23 | 0/23 | 0/23 |
+| XAU/USD | 0/23 | 20/23 | 23/23 | 20/23 |
+
+### XAU exact-spec distribution
+
+- validation median expectancy: approximately +0.0921R/trade;
+- validation range: approximately -0.0393R to +0.1346R/trade;
+- final-test median expectancy: approximately +0.2245R/trade;
+- final-test range: approximately +0.1450R to +0.2765R/trade;
+- validation worst max drawdown: approximately -31.25R;
+- final-test worst max drawdown: approximately -21.89R.
+
+Validation-negative exact-spec XAU variants:
+
+- structure window 30: approximately -0.0268R/trade;
+- stop 1.50 ATR: approximately -0.0393R/trade;
+- target 2.0R: approximately -0.0192R/trade.
+
+ATR period 10/20, H4 EMA 30/80, breakout margin 0/0.20, TR expansion 1.0/1.5, volume expansion 1.0/1.25, H4 slope 2/5, timeout 48/96 and cost multiplier 1.0/2.0 all remain positive in both XAU OOS splits.
+
+### Critical temporal finding
+
+All 23 XAU exact-spec configurations remain negative in development. Parameter robustness is therefore strong in the later period, but the strategy is not demonstrated to be stationary across the full history.
+
+## Updated disposition
+
+S02 v0.1 XAU/USD is a **parameter-robust historical research lead**, not a candidate.
+
+Next experiment: EXP-2026-011 fixed-rule temporal stability using the unchanged baseline only. No robustness variant is selected.

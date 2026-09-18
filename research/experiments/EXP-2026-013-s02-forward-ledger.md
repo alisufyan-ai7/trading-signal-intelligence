@@ -125,3 +125,19 @@ Live scanning may begin only with the exact frozen fingerprints above.
 Interpretation: no qualifying S02/XAUUSD signal occurred between activation and the first manual scan. The frozen scanner and fingerprint checks ran successfully without mutating the ledger.
 
 Next operational step: install the hourly Windows scheduled task near minute 02 after each H1 close. The task wrapper also runs ledger verification and writes logs under `data/forward-task-logs/`.
+
+
+## Windows hourly scheduler installed — 2026-09-18
+
+Task Scheduler registration completed successfully:
+
+- task name: `TradingTop S02 XAU Forward Scan`;
+- state: `Ready`;
+- next run shown by Windows: `2026-09-18 15:02:02` (machine-local time);
+- missed runs: `0`;
+- runner: `scripts/run_s02_forward_task.cmd`;
+- working directory: repository root;
+- last-run sentinel: `1999-11-30`;
+- last task result: `267011` (`0x41303`), the Windows Task Scheduler status meaning the task has not yet run.
+
+Interpretation: installation is successful; no scheduled execution has occurred yet. Keep the interactive Windows user logged in and MT5 available for the first scheduled run.

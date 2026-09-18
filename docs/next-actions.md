@@ -1,108 +1,98 @@
 # Current Next Actions
 
-_Last updated: 2026-09-17_
+_Last updated: 2026-09-18_
 
 ## G1 status
 
 `PASS — RESEARCH DATA`.
 
-The earlier GBPUSD/USDJPY H1 recency issue is closed for current research use. The persisted datasets are current through 2026-09-17.
-
 ## Current G3 status
 
-### S01
+S01 Trend Pullback v0.1 remains rejected as a general FX hypothesis.
 
-S01 Trend Pullback v0.1 is **REJECTED AS A GENERAL FX HYPOTHESIS** and retained as a regression benchmark. Do not optimize it in place.
+S02 Structure Breakout v0.1 is:
 
-### S02
+`RESEARCH — ROBUSTNESS IN PROGRESS; NOT CANDIDATE`
 
-S02 Structure Breakout v0.1 has completed its frozen four-market baseline and is now:
+The frozen four-market baseline and implementation audits are complete. The 17-configuration post-baseline local sensitivity test is also complete.
 
-`RESEARCH — ROBUSTNESS WARRANTED; NOT CANDIDATE`
+### Local-sensitivity result
 
-Baseline OOS net expectancy:
+| Instrument | Validation-positive variants | Final-positive variants | Positive in both OOS splits |
+|---|---:|---:|---:|
+| EUR/USD | 13/17 | 6/17 | 6/17 |
+| GBP/USD | 0/17 | 16/17 | 0/17 |
+| USD/JPY | 17/17 | 0/17 | 0/17 |
+| XAU/USD | 15/17 | 17/17 | 15/17 |
 
-| Instrument | Validation | Final test |
-|---|---:|---:|
-| EUR/USD | +0.0459R/trade | -0.0127R/trade |
-| GBP/USD | -0.1858R/trade | +0.0444R/trade |
-| USD/JPY | +0.1764R/trade | -0.1631R/trade |
-| XAU/USD | +0.0986R/trade | +0.2323R/trade |
+XAU/USD forms a broad local plateau rather than a single attractive parameter point. Its final-test expectancy across the 17 local variants ranges from approximately +0.145R to +0.254R/trade. The two validation-negative neighbors are the tighter 1.50 ATR stop and lower 2.0R target.
 
-EURUSD and XAUUSD candle-level audits passed 10/10 sampled trades. Independent ledger checks across all four markets also passed timing, overlap, 72-bar hold, stop/target and cost-accounting checks.
+However, all 17 XAU variants remain negative in development. The behavior is therefore not a stationary full-history edge and must be investigated as a possible later regime/market effect.
 
-XAU/USD is the only market positive in both OOS splits. Its OOS annual net expectancy is positive in 2023, 2024, 2025 and 2026-to-date, and it remains positive under substantial spread-cost stress. However, XAU development is negative and the OOS result is carried by longs; that directional fact was discovered after the baseline and cannot be retrofitted into v0.1.
+## Protocol reconciliation
 
-Detailed evidence: `research/experiments/EXP-2026-009-s02-structure-breakout-baseline.md`.
+The completed `scripts/run_s02_robustness.py` neighborhood was frozen after the first S02 baseline and before its own sensitivity results. It is valid supplemental local sensitivity evidence, but it is **not identical** to the broader research neighborhood recorded in `strategies/S02-structure-breakout/v0.1.md` before the first S02 result.
 
-## 1. Pull the frozen robustness runner
+The original specification also predeclared ATR-period and H4-EMA perturbations and used broader values for several other parameters. We will run that exact specification neighborhood before moving to temporal analysis.
+
+## 1. Pull the exact-spec runner
 
 ```powershell
 git pull
 ```
 
-## 2. Run the predeclared S02 neighborhood sensitivity
-
-This is a robustness diagnostic, **not an optimizer**. Do not select a winning parameter set from the output.
+## 2. Run the exact originally predeclared S02 neighborhood
 
 ```powershell
-python scripts\run_s02_robustness.py
+python scripts\run_s02_spec_robustness.py
 ```
 
-The runner evaluates the baseline plus one-at-a-time lower/higher neighbors for:
+This is one-at-a-time sensitivity, not optimization. It evaluates the baseline plus the exact low/high values recorded before first result for:
 
-- structure window: 15 / 20 / 25;
-- breakout margin: 0.05 / 0.10 / 0.15 ATR;
-- true-range expansion: 1.10 / 1.25 / 1.40;
-- tick-volume expansion: 1.00 / 1.10 / 1.20;
-- H4 EMA slope lookback: 2 / 3 / 4;
+- structure window: 15 / 20 / 30;
+- ATR period: 10 / 14 / 20;
+- breakout margin: 0 / 0.10 / 0.20 ATR;
+- true-range expansion: 1.0 / 1.25 / 1.5;
+- tick-volume expansion: 1.0 / 1.10 / 1.25;
+- H4 EMA: 30 / 50 / 80;
+- H4 slope lookback: 2 / 3 / 5;
 - stop: 1.50 / 1.75 / 2.00 ATR;
 - target: 2.0 / 2.5 / 3.0R;
-- timeout: 48 / 72 / 96 H1 bars.
+- timeout: 48 / 72 / 96 H1 bars;
+- cost multiplier: 1.0 / 1.25 / 2.0x spread.
 
-It runs the same frozen neighborhood on all four original markets and writes:
+It runs all four original markets and writes:
 
-- `outputs/s02_robustness_v0_1.json` — compact market summary + baseline cost stress;
-- `outputs/s02_robustness_v0_1.csv` — complete variant table.
+- `outputs/s02_spec_robustness_v0_1.json`
+- `outputs/s02_spec_robustness_v0_1.csv`
 
-Preserve/upload both files and paste the printed JSON summary.
+Upload both files and paste the printed JSON summary.
 
 ## 3. Interpretation rule
 
-Do not promote S02 from a single attractive XAU result.
+Do not select whichever setting looks best. We are testing whether the baseline sits inside a broad stable region.
 
-What we want from the neighborhood test is **stability**, not a better number:
+For XAU/USD, strong evidence would mean most of the exact predeclared neighboring configurations remain positive in both OOS splits with adequate sample size and without a drawdown explosion. Failure of the broader ATR/H4-EMA or wider breakout/filter perturbations would weaken the local-plateau finding.
 
-- nearby XAU settings should remain broadly positive in both validation and final test;
-- no narrow parameter cliff should be required;
-- trade counts should remain adequate;
-- drawdown should not explode under modest perturbations;
-- the other markets should be reported honestly even if they remain inconsistent.
+GBPUSD and USDJPY remain regime-unstable unless the exact predeclared test provides materially different evidence; do not rescue them by selecting variants.
 
-If XAU survives this neighborhood broadly, the next step is a frozen rolling/walk-forward stability analysis and then additional predeclared market evidence. If it collapses under small perturbations, S02 remains only a historical research lead.
+## 4. After the exact-spec neighborhood
 
-## 4. Directional finding is diagnostic only
+Only if the XAU evidence remains broad will we freeze and run temporal stability:
 
-Do not change v0.1 to XAU-long-only. The observed long/short asymmetry was learned after seeing the baseline. Any long-only hypothesis must become a separately versioned strategy and must rely on new evidence rather than the already-viewed 2023–2026 period.
+- non-overlapping 6-month blocks;
+- rolling 12-month windows stepped every 3 months;
+- fixed-rule prior-period versus next-period persistence;
+- no parameter refitting or selection.
 
-## 5. Experiment ID map
+The purpose will be to locate and quantify the apparent regime transition, especially because development is negative while 2023–2026 is positive.
 
-Canonical IDs are unique:
+## 5. Directional finding remains diagnostic only
 
-- EXP-2026-001: MT5 symbol discovery
-- EXP-2026-002: Binance normalization
-- EXP-2026-003: S01 frozen baseline
-- EXP-2026-004: source-rights research
-- EXP-2026-005: customer-value research plan
-- EXP-2026-006: data-quality / G1 audit
-- EXP-2026-007: collector soak test
-- EXP-2026-008: S01 cross-FX disposition
-- EXP-2026-009: S02 frozen baseline
+Do not change v0.1 to XAU-long-only. That asymmetry was learned after the baseline.
 
-## 6. G2 remains independent
+## 6. G2 and G4
 
-GitHub issue #1 tracks commercial data rights. Exness remains an R&D source rather than an assumed production commercial data source.
+G2 commercial source rights remains independent and open. Exness remains an R&D source, not an assumed commercial production source.
 
-## 7. G4 remains deferred
-
-Do not invest heavily in polished SaaS UI until at least one strategy family survives robustness work and an immutable forward-test process is operating.
+G4/customer-facing SaaS work remains deferred until strategy evidence and immutable forward-test infrastructure are stronger.

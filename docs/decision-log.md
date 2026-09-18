@@ -139,3 +139,14 @@ Sources:
 **Critical limitation:** Development expectancy is negative for all 23 XAU configurations. The evidence therefore supports parameter robustness in a later market regime, not a stationary full-history edge.
 
 **Implication:** Freeze a temporal stability protocol using the unchanged v0.1 baseline only. Do not select a better robustness variant, do not retrofit long-only behavior, and do not claim candidate status from historical robustness alone.
+
+
+## 2026-09-18 — D018: S02 XAU shows sustained recent temporal persistence but remains a historical lead
+
+**Decision:** Treat XAU/USD S02 v0.1 as having passed the planned historical parameter-robustness and fixed-rule temporal-stability stages for a recent regime. Do not treat this as proof of a stationary or future edge.
+
+**Evidence:** XAU has six consecutive positive complete half-years from 2023-H2 through 2026-H1. Rolling 12-month windows are positive for all 15 starts from 2022-01 through 2025-07. The six most recent fixed-rule prior-12m -> next-6m pairs are positive-to-positive.
+
+**Counterevidence / caution:** All 23 parameter-neighborhood variants remain negative in development, and 2023-H1 is negative. USDJPY also shows strong historical persistence but fails sharply from 2025 onward, demonstrating that persistence can break.
+
+**Implication:** Freeze new-market transfer testing on XAGUSD, USTEC, US500, US30 and USOIL using unchanged v0.1. In parallel, prepare immutable forward-test infrastructure. Candidate status remains blocked pending genuinely new forward evidence.

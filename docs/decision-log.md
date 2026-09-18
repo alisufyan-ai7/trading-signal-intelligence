@@ -116,3 +116,13 @@ Sources:
 **Reason:** The project should test an independently specified breakout-continuation hypothesis rather than tune S01 after failure. Predeclaring rules and markets preserves the value of negative as well as positive results.
 
 **Implication:** Implementation bugs may be corrected without changing alpha semantics. Any alpha-rule/parameter change after the first S02 result requires a new strategy version.
+
+## 2026-09-18 — D016: Treat the first S02 robustness run as post-baseline local sensitivity and reconcile it with the original frozen neighborhood
+
+**Decision:** Preserve the completed 17-configuration `run_s02_robustness.py` output as valid post-baseline local sensitivity evidence, but do not describe it as the exact pre-first-result neighborhood from the S02 v0.1 specification. Before temporal/walk-forward analysis, run the exact one-at-a-time neighborhood recorded in `strategies/S02-structure-breakout/v0.1.md`.
+
+**Evidence:** In the completed local sensitivity test, XAU/USD remained positive in both validation and final-test periods for 15/17 configurations and positive in the final test for 17/17. GBPUSD and USDJPY had zero configurations positive in both OOS splits; EURUSD had 6/17. All 17 XAU configurations remained negative in development.
+
+**Protocol finding:** The local runner was frozen after the first S02 baseline and before its sensitivity results, but its values differ from the broader neighborhood written in the strategy specification before first result. The original specification includes ATR-period and H4-EMA perturbations and broader values for structure, breakout margin, expansion filters and H4 slope.
+
+**Implication:** The local XAU plateau is encouraging but not sufficient for candidate status. The exact original specification neighborhood is the next required robustness test. No parameter is selected from either sensitivity run.

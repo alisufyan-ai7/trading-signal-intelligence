@@ -16,7 +16,8 @@
 - S02 post-baseline local-sensitivity runner: COMPLETE
 - S02 exact predeclared-neighborhood runner: COMPLETE
 - S02 temporal-stability runner: COMPLETE
-- S02 new-market transfer runner: READY
+- S02 new-market transfer runner: COMPLETE
+- Immutable hash-chained forward ledger: READY FOR LOCAL ACTIVATION
 - Live forward immutable ledger: NOT YET IMPLEMENTED
 - SaaS UI: DELIBERATELY DEFERRED
 
@@ -24,7 +25,7 @@
 
 - G1 research data: **PASS**
 - G2 commercial source rights: **OPEN / EXNESS PRODUCTION USE BLOCKED PENDING WRITTEN CLARIFICATION**
-- G3 strategy evidence: **IN PROGRESS — S02 XAU PASSES HISTORICAL PARAMETER + RECENT TEMPORAL ROBUSTNESS; NEW-MARKET TRANSFER + LIVE FORWARD EVIDENCE NEXT; NOT CANDIDATE**
+- G3 strategy evidence: **IN PROGRESS — S02 XAU HISTORICAL ROBUSTNESS PASSED; TRANSFER PARTIAL; IMMUTABLE FORWARD EVIDENCE NEXT; NOT CANDIDATE**
 - G4 customer value: **NOT STARTED**
 
 ## Data state
@@ -74,14 +75,15 @@ For XAUUSD, validation expectancy ranges from approximately -0.0393R to +0.1346R
 
 Temporal analysis with the unchanged baseline is now complete. XAU has 10/15 positive complete half-years overall, but the recent sequence is more informative: six consecutive positive half-years from 2023-H2 through 2026-H1. Its rolling 12-month windows are positive for every start from 2022-01 through 2025-07 (15 consecutive windows). The six most recent fixed-rule prior-12m -> next-6m pairs are all positive-to-positive.
 
+New-market transfer is complete. USTEC and US30 satisfy the pre-frozen descriptive transfer-support flag, with validation/final net expectancy of approximately +0.124/+0.012R and +0.094/+0.012R per trade respectively. XAGUSD, US500 and USOIL do not satisfy the rule.
+
 Important caveats:
 
-- all 23 XAU exact-spec variants remain negative in development, so the edge is not stationary over the full history;
-- XAU 2023-H1 was negative before the six-half-year positive streak began;
-- XAU OOS strength is carried by longs, a post-result diagnostic that cannot be retrofitted into v0.1;
-- USDJPY is a cautionary control: it has strong historical temporal persistence but flips clearly negative from 2025 onward;
-- EURUSD remains mixed and GBPUSD unstable;
-- genuinely new cross-market and forward evidence are still required.
+- the USTEC/US30 final-test margins are small and should not be promoted from this result;
+- XAGUSD, the closest same-asset-class transfer market to XAU, is validation-negative after costs despite positive 2025–2026 results;
+- US500 turns negative in the final test and USOIL is negative in both OOS splits;
+- all 23 XAU exact-spec variants remain negative in development, so the XAU edge is not stationary over the full history;
+- genuinely new forward evidence is still required.
 
 Detailed evidence:
 
@@ -94,4 +96,4 @@ Canonical experiment IDs are now unique. The executed data-quality audit is EXP-
 
 ## Immediate next external input
 
-Backfill H1/H4 research data for the frozen transfer universe XAGUSD, USTEC, US500, US30 and USOIL, then run `python scripts\run_s02_transfer.py`. Preserve `outputs/s02_transfer_v0_1.json` and `outputs/s02_transfer_v0_1.csv`. No S02 parameter changes are permitted.
+Pull the forward-ledger implementation, run the ledger tests, then activate the primary S02/XAU v0.1 forward test. Preserve and report the activation record hash before starting hourly signal scans.

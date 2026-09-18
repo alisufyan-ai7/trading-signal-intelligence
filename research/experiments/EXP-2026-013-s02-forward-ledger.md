@@ -141,3 +141,19 @@ Task Scheduler registration completed successfully:
 - last task result: `267011` (`0x41303`), the Windows Task Scheduler status meaning the task has not yet run.
 
 Interpretation: installation is successful; no scheduled execution has occurred yet. Keep the interactive Windows user logged in and MT5 available for the first scheduled run.
+
+## First scheduled live scan — 2026-09-18
+
+- Windows task last run: `2026-09-18 15:02:02` machine-local;
+- Windows task result: `0` (success);
+- missed runs: `0`;
+- scanner UTC: `2026-09-18T15:02:12.926407+00:00`;
+- actions: none;
+- ledger verification: valid;
+- records: 1 (ACTIVATION only);
+- ledger head unchanged: `c901167c0aa2f8d0aff8feb4411664063488b6e67da894279c63bd4fca284115`;
+- unresolved signals: none.
+
+The initial task wrapper produced the filename `s02_xau_forward_+.log` because its timestamp-format command was parsed incorrectly by Windows CMD. This was an operational logging-name defect only: the scanner and verifier both exited successfully, and the ledger was unchanged.
+
+The wrapper was corrected after this run to append to `data/forward-task-logs/s02_xau_forward.log`. No frozen strategy, scanner, ledger, config, activation fingerprint or forward record was changed.

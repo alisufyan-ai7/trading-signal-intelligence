@@ -25,66 +25,27 @@ Durable anchor:
 
 The code/config/scanner/ledger fingerprints committed at activation must remain unchanged for this forward test.
 
-## Immediate action — first live scan
+## First manual live scan — COMPLETE
 
-Pull the documentation anchor. The frozen scanner/strategy/ledger source files have not changed since activation.
+First scan completed at `2026-09-18T14:09:12.789641Z` with no actions. Ledger verification stayed valid with one ACTIVATION record and the original anchored head hash.
+
+## Immediate action — install hourly Windows scheduler
+
+Pull the scheduling helpers and install the task:
 
 ```powershell
 git pull
-python scripts\scan_s02_forward.py
-python scripts\verify_forward_ledger.py
+powershell -ExecutionPolicy Bypass -File scripts\install_s02_forward_task.ps1
 ```
 
-Paste both JSON outputs.
+The task runs hourly near minute 02 and writes scanner + verifier logs to `data\forward-task-logs\`.
 
-### Expected behavior
-
-A scan can validly produce any of these:
-
-- no action: no S02 signal closed since activation;
-- `SIGNAL`: a qualifying setup was discovered within the frozen 5-minute freshness window and its next-H1 open was current;
-- `MISSED_SIGNAL`: a qualifying setup existed after activation but was discovered too late to count as live;
-- `SKIPPED_SIGNAL`: a fresh setup occurred while a forward position was already open;
-- `EXIT`: a previously recorded live signal has reached a frozen exit condition.
-
-A `MISSED_SIGNAL` is an operational observation, not a strategy loss, and must never be rewritten into a SIGNAL later.
-
-## Scanner cadence after the first successful run
-
-The scanner needs to run just after each H1 close so a new signal can be captured within the frozen 5-minute limit.
-
-Target Windows schedule:
-
-- every hour;
-- approximately minute 01–02 after the hour;
-- MT5 terminal running and logged into the research demo;
-- network available.
-
-Do not schedule more frequently than necessary. The strategy is H1 closed-candle based.
-
-We will set up the Windows Task Scheduler job only after one manual scanner run is confirmed clean.
-
-## Verification discipline
-
-After operational changes or suspected outages:
+Then check:
 
 ```powershell
-python scripts\verify_forward_ledger.py
+Get-ScheduledTask -TaskName "TradingTop S02 XAU Forward Scan"
+Get-ScheduledTaskInfo -TaskName "TradingTop S02 XAU Forward Scan"
 ```
 
-The chain must remain `valid: true`.
+Keep this Windows user logged in and MT5 available. After the first scheduled run, inspect the newest log and verify the ledger again.
 
-Do not delete `data/forward.sqlite`, recreate the activation, or manually edit forward records.
-
-## Forward evidence policy
-
-- Primary forward market remains XAUUSD only.
-- Rules remain full v0.1 long + short.
-- No long-only retrofit.
-- No robustness variant selection.
-- No historical signal backfill.
-- USTEC and US30 remain secondary historical transfer observations, not active forward hypotheses.
-- Exness remains R&D-only while G2 is unresolved.
-- Historical strength plus a small number of forward trades will not automatically pass G3.
-
-Periodic external ledger-head anchoring remains a follow-up before any public verification claim.

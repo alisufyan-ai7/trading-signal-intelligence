@@ -1,7 +1,7 @@
 # Current Status
 
 **Phase:** 1 — Strategy evidence research  
-**Date:** 2026-09-17
+**Date:** 2026-09-18
 
 ## Infrastructure
 
@@ -17,8 +17,8 @@
 - S02 exact predeclared-neighborhood runner: COMPLETE
 - S02 temporal-stability runner: COMPLETE
 - S02 new-market transfer runner: COMPLETE
-- Immutable hash-chained forward ledger: READY FOR LOCAL ACTIVATION
-- Live forward immutable ledger: NOT YET IMPLEMENTED
+- Immutable hash-chained forward ledger: IMPLEMENTED / NOT YET ACTIVATED
+- S02 live forward scanner: IMPLEMENTED / WAITING FOR ACTIVATION HASH ANCHOR
 - SaaS UI: DELIBERATELY DEFERRED
 
 ## Validation gates
@@ -49,7 +49,7 @@ Evidence:
 
 ## S02 Structure Breakout v0.1
 
-**Status:** RESEARCH — ROBUSTNESS IN PROGRESS; NOT CANDIDATE.
+**Status:** RESEARCH — XAU HISTORICAL ROBUSTNESS PASSED; FORWARD ACTIVATION NEXT; NOT CANDIDATE.
 
 The frozen four-market baseline is complete and the EURUSD/XAUUSD candle-level sample audits both passed 10/10 sampled trades.
 

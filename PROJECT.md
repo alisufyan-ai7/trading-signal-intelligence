@@ -43,7 +43,7 @@ This is **not** an "AI predicts the market" product. The intended positioning is
 |---|---|---|
 | G1 | Can MT5/Exness and Binance reliably provide the research data we need? | **PASS — RESEARCH DATA** |
 | G2 | Can each intended production source legally support commercial derived signals? | OPEN — Exness production assumption blocked pending clarification |
-| G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | **IN PROGRESS — S02 XAU passes exact predeclared parameter robustness; temporal stability next; not candidate** |
+| G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | **IN PROGRESS — S02 XAU passes historical parameter + recent temporal robustness; new-market transfer and live forward evidence next; not candidate** |
 | G4 | Will traders pay for verified and explainable signals? | NOT STARTED |
 
 ## G1 evidence
@@ -127,7 +127,9 @@ XAU/USD is the only market positive in both OOS splits and each observed OOS cal
 - the exact 23-configuration pre-first-result specification neighborhood is now complete: XAU is positive in both OOS splits for 20/23 variants and positive in the final test for 23/23;
 - the three XAU validation-negative exact-spec variants are structure window 30, stop 1.50 ATR, and target 2.0R;
 - all 23 XAU variants remain negative in development, so the evidence is parameter-robust but temporally non-stationary;
-- rolling/fixed-rule temporal stability and genuinely new forward evidence remain required before candidate status.
+- fixed-rule temporal analysis is complete: XAU has six consecutive positive half-years from 2023-H2 through 2026-H1, 15 consecutive positive rolling-12m windows beginning 2022-01 through 2025-07, and six consecutive recent positive-reference -> positive-forward persistence pairs;
+- USDJPY demonstrates the regime-risk caution: historically strong persistence can still fail abruptly, as it did from 2025 onward;
+- new-market transfer evidence and genuinely new forward evidence remain required before candidate status.
 
 See:
 
@@ -158,7 +160,8 @@ Canonical IDs are unique:
 - EXP-2026-008 — S01 cross-FX disposition
 - EXP-2026-009 — S02 frozen baseline
 - EXP-2026-010 — S02 robustness protocol reconciliation + exact-spec result
-- EXP-2026-011 — S02 temporal stability protocol
+- EXP-2026-011 — S02 temporal stability protocol + result
+- EXP-2026-012 — S02 new-market transfer protocol
 
 ## Phase status
 
@@ -170,9 +173,10 @@ Canonical IDs are unique:
 6. S02 frozen specification + implementation + first baseline — **DONE**
 7. S02 post-baseline local sensitivity — **DONE / XAU BROADLY ROBUST**
 8. S02 exact predeclared specification neighborhood — **DONE / XAU 20 OF 23 BOTH-OOS POSITIVE**
-9. S02 temporal / fixed-rule walk-forward stability — **NEXT**
-10. Live immutable forward test — **PENDING**
-11. Customer-value validation / SaaS UI — **PENDING**
+9. S02 temporal / fixed-rule walk-forward stability — **DONE / RECENT XAU REGIME PERSISTENT**
+10. S02 new-market transfer — **NEXT**
+11. Live immutable forward test — **PENDING**
+12. Customer-value validation / SaaS UI — **PENDING**
 
 ## Durable project-state rule
 

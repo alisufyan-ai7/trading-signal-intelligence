@@ -1,6 +1,6 @@
 # EXP-2026-013 — S02 Immutable Forward-Test Ledger
 
-**Status:** INFRASTRUCTURE READY — ACTIVATION HASH NEXT  
+**Status:** ACTIVATED — HASH ANCHORED; LIVE SCANNING NEXT  
 **Created:** 2026-09-18
 
 ## Objective
@@ -91,3 +91,23 @@ Therefore:
 6. only then begin hourly scans.
 
 No historical signal may be added to the forward ledger before activation.
+
+
+## Activation completed — 2026-09-18
+
+The primary XAUUSD forward test was activated after the Windows research host passed all 7 tests.
+
+- activated at UTC: `2026-09-18T13:58:54.786419+00:00`
+- repository HEAD at activation: `b309cff26974728ef1f359d443d5927ee16010db`
+- activation record hash: `c901167c0aa2f8d0aff8feb4411664063488b6e67da894279c63bd4fca284115`
+- initial ledger head hash: `c901167c0aa2f8d0aff8feb4411664063488b6e67da894279c63bd4fca284115`
+- config SHA-256: `6d347330084e34f31a129892b9a43ba96b88c96ac07c93625a601ffc1ad1bd91`
+- strategy SHA-256: `9f5e28817c49e9d206f28961d421d8370ba815b9b5f2d74ae991f68b088e618b`
+- scanner SHA-256: `2f29c7104a0fdd03f7072a677fa2d1656dd549c9f57fbe164696407d75f1da19`
+- ledger SHA-256: `18eb7f052800f37289248c2381fe5af840469140aea68368dbda882bb3d826f8`
+- protocol bundle SHA-256: `484b3de25c6ff6c24de30c5a700f211b98be8534c7b0354fcb2d6219587232cf`
+- immediate verification: valid, 1 record, ACTIVATION only.
+
+Durable anchor: `research/forward/S02-XAUUSD-v0.1-activation-2026-09-18.md`.
+
+Live scanning may begin only with the exact frozen fingerprints above.

@@ -111,3 +111,17 @@ The primary XAUUSD forward test was activated after the Windows research host pa
 Durable anchor: `research/forward/S02-XAUUSD-v0.1-activation-2026-09-18.md`.
 
 Live scanning may begin only with the exact frozen fingerprints above.
+
+## First manual live scan — 2026-09-18
+
+- scanned at UTC: `2026-09-18T14:09:12.789641+00:00`;
+- actions: none;
+- record counts: `ACTIVATION = 1`;
+- verification: `valid = true`;
+- records: `1`;
+- ledger head unchanged: `c901167c0aa2f8d0aff8feb4411664063488b6e67da894279c63bd4fca284115`;
+- unresolved signals: none.
+
+Interpretation: no qualifying S02/XAUUSD signal occurred between activation and the first manual scan. The frozen scanner and fingerprint checks ran successfully without mutating the ledger.
+
+Next operational step: install the hourly Windows scheduled task near minute 02 after each H1 close. The task wrapper also runs ledger verification and writes logs under `data/forward-task-logs/`.

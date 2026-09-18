@@ -150,3 +150,24 @@ Sources:
 **Counterevidence / caution:** All 23 parameter-neighborhood variants remain negative in development, and 2023-H1 is negative. USDJPY also shows strong historical persistence but fails sharply from 2025 onward, demonstrating that persistence can break.
 
 **Implication:** Freeze new-market transfer testing on XAGUSD, USTEC, US500, US30 and USOIL using unchanged v0.1. In parallel, prepare immutable forward-test infrastructure. Candidate status remains blocked pending genuinely new forward evidence.
+
+
+## 2026-09-18 — D019: S02 new-market transfer is partial, not broad
+
+**Decision:** Treat the frozen S02 v0.1 transfer test as partial supporting evidence only. USTEC and US30 meet the predeclared descriptive support rule; XAGUSD, US500 and USOIL do not.
+
+**Evidence:** USTEC validation/final expectancy is approximately +0.1243/+0.0122R per trade and US30 +0.0936/+0.0123R. XAGUSD is -0.0839/+0.1432, US500 +0.0283/-0.0331, and USOIL -0.1466/-0.1493. All splits exceed the predeclared 50-trade minimum.
+
+**Interpretation:** The two supportive markets are correlated U.S. equity indices and their final-test margins are small. XAGUSD does not provide full-OOS same-metal confirmation. This is not broad cross-asset validation.
+
+**Implication:** Stop extending historical parameter searches. The primary next evidence for the robust XAU historical lead must be immutable forward observations generated after a frozen activation timestamp.
+
+## 2026-09-18 — D020: Primary forward test uses unchanged S02 v0.1 on XAUUSD with an append-only hash chain
+
+**Decision:** Begin the forward-evidence phase with XAUUSD as the primary hypothesis, using the unchanged S02 v0.1 baseline and an event-sourced append-only SQLite ledger.
+
+**Integrity rules:** Ledger records are SHA-256 hash-chained and SQLite triggers reject UPDATE/DELETE. Activation commits to the strategy config hash and strategy-source hash. Signals older than the frozen freshness threshold are recorded as missed rather than backfilled as live.
+
+**Limitations:** A local hash chain is tamper-evident within the retained database but is not independently timestamped proof by itself. External ledger-head anchoring is a separate follow-up.
+
+**G2:** Exness remains R&D-only; this forward test does not establish commercial data rights.

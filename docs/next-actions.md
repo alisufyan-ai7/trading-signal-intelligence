@@ -6,109 +6,85 @@ _Last updated: 2026-09-18_
 
 S02 Structure Breakout v0.1 remains:
 
-`RESEARCH — XAU HISTORICAL ROBUSTNESS PASSED; IMMUTABLE FORWARD EVIDENCE NEXT; NOT CANDIDATE`
+`RESEARCH — PRIMARY XAU FORWARD TEST ACTIVATED; LIVE EVIDENCE ACCUMULATION NEXT; NOT CANDIDATE`
 
-## EXP-2026-012 transfer result
+## Activation anchor
 
-The predeclared transfer universe was tested unchanged.
+The primary forward hypothesis is frozen and activated:
 
-| Market | Validation net R/trade | Final net R/trade | Frozen support flag |
-|---|---:|---:|---|
-| XAG/USD | -0.0839 | +0.1432 | NO |
-| USTEC / NASDAQ 100 | +0.1243 | +0.0122 | YES |
-| US500 / S&P 500 | +0.0283 | -0.0331 | NO |
-| US30 / DOW 30 | +0.0936 | +0.0123 | YES |
-| USOIL / WTI | -0.1466 | -0.1493 | NO |
+- test entity: `S02-v0.1:XAUUSD:PRIMARY`
+- activation UTC: `2026-09-18T13:58:54.786419+00:00`
+- activation record hash: `c901167c0aa2f8d0aff8feb4411664063488b6e67da894279c63bd4fca284115`
+- initial ledger head: same hash
+- protocol bundle SHA-256: `484b3de25c6ff6c24de30c5a700f211b98be8534c7b0354fcb2d6219587232cf`
+- verification immediately after activation: valid, one ACTIVATION record
 
-USTEC and US30 meet the descriptive rule (>0 validation and final expectancy with >=50 trades in each split), but their final-test margins are small. They are not promoted to candidate status.
+Durable anchor:
 
-XAGUSD is particularly informative: gross validation expectancy is positive but the MT5 spread-cost proxy is large enough to make net validation negative. The strong recent XAG result therefore does not establish same-metal transfer across the full OOS period.
+`research/forward/S02-XAUUSD-v0.1-activation-2026-09-18.md`
 
-## Next phase — immutable forward evidence
+The code/config/scanner/ledger fingerprints committed at activation must remain unchanged for this forward test.
 
-Historical testing has now done what it can for the XAU lead. The next evidence must be created after a frozen activation timestamp.
+## Immediate action — first live scan
 
-The forward ledger is event-sourced, append-only and SHA-256 hash-chained. SQLite triggers reject UPDATE and DELETE operations. Every record commits to:
-
-- record type and entity ID;
-- recorded/effective UTC timestamps;
-- canonical JSON payload;
-- previous ledger hash;
-- current record hash.
-
-The initial activation also commits to:
-
-- frozen S02 v0.1 config hash;
-- S02 strategy-source SHA-256;
-- source/symbol identity;
-- activation timestamp;
-- maximum accepted signal-recording delay.
-
-This local hash chain is the first integrity layer. External anchoring of ledger heads will be added separately; do not claim the local database alone is independently tamper-proof.
-
-## 1. Pull and test
+Pull the documentation anchor. The frozen scanner/strategy/ledger source files have not changed since activation.
 
 ```powershell
 git pull
-python -m pytest -q
+python scripts\scan_s02_forward.py
+python scripts\verify_forward_ledger.py
 ```
 
-## 2. Activate the primary forward test
+Paste both JSON outputs.
 
-Do this **once** after tests pass:
+### Expected behavior
 
-```powershell
-python scripts\activate_s02_forward.py
-```
+A scan can validly produce any of these:
 
-Default primary forward test:
+- no action: no S02 signal closed since activation;
+- `SIGNAL`: a qualifying setup was discovered within the frozen 5-minute freshness window and its next-H1 open was current;
+- `MISSED_SIGNAL`: a qualifying setup existed after activation but was discovered too late to count as live;
+- `SKIPPED_SIGNAL`: a fresh setup occurred while a forward position was already open;
+- `EXIT`: a previously recorded live signal has reached a frozen exit condition.
 
-- strategy: S02 Structure Breakout v0.1;
-- source: Exness MT5 demo (R&D only);
-- market: XAU/USD / XAUUSD;
-- forward database: `data/forward.sqlite`;
-- maximum fresh-signal recording lag: 5 minutes.
+A `MISSED_SIGNAL` is an operational observation, not a strategy loss, and must never be rewritten into a SIGNAL later.
 
-The script refuses a second activation for the same test identity.
+## Scanner cadence after the first successful run
 
-Paste the complete activation JSON, especially:
+The scanner needs to run just after each H1 close so a new signal can be captured within the frozen 5-minute limit.
 
-- `activated_at_utc`;
-- `config_sha256`;
-- `strategy_code_sha256`;
-- `record_hash`;
-- `ledger_head_hash`.
+Target Windows schedule:
 
-Do **not** start historical backfilling into the forward ledger.
+- every hour;
+- approximately minute 01–02 after the hour;
+- MT5 terminal running and logged into the research demo;
+- network available.
 
-## 3. Verify the chain
+Do not schedule more frequently than necessary. The strategy is H1 closed-candle based.
+
+We will set up the Windows Task Scheduler job only after one manual scanner run is confirmed clean.
+
+## Verification discipline
+
+After operational changes or suspected outages:
 
 ```powershell
 python scripts\verify_forward_ledger.py
 ```
 
-Expected:
+The chain must remain `valid: true`.
 
-- `valid: true`;
-- one ACTIVATION record;
-- zero SIGNAL/EXIT records initially.
+Do not delete `data/forward.sqlite`, recreate the activation, or manually edit forward records.
 
-## 4. Hourly scanner comes after activation hash is recorded
+## Forward evidence policy
 
-The scanner implementation is included, but wait until the activation hash has been reported and anchored in the research audit trail before starting hourly scans.
+- Primary forward market remains XAUUSD only.
+- Rules remain full v0.1 long + short.
+- No long-only retrofit.
+- No robustness variant selection.
+- No historical signal backfill.
+- USTEC and US30 remain secondary historical transfer observations, not active forward hypotheses.
+- Exness remains R&D-only while G2 is unresolved.
+- Historical strength plus a small number of forward trades will not automatically pass G3.
 
-The scan command will be:
-
-```powershell
-python scripts\scan_s02_forward.py
-```
-
-It never backfills a stale signal as if it were live. Signals discovered more than the frozen age limit after their signal close are logged as `MISSED_SIGNAL`, not as forward signals.
-
-## Research discipline
-
-- Primary forward hypothesis is XAUUSD S02 v0.1 unchanged.
-- Do not switch to XAU-long-only.
-- Do not select a robustness variant.
-- USTEC/US30 remain secondary historical observations, not forward candidates from this result.
-- G2 remains open; Exness forward collection is research-only.
+Periodic external ledger-head anchoring remains a follow-up before any public verification claim.

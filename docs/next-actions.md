@@ -12,87 +12,84 @@ S01 Trend Pullback v0.1 remains rejected as a general FX hypothesis.
 
 S02 Structure Breakout v0.1 is:
 
-`RESEARCH — ROBUSTNESS IN PROGRESS; NOT CANDIDATE`
+`RESEARCH — PARAMETER ROBUSTNESS PASSED FOR XAU LEAD; TEMPORAL STABILITY NEXT; NOT CANDIDATE`
 
-The frozen four-market baseline and implementation audits are complete. The 17-configuration post-baseline local sensitivity test is also complete.
+The frozen four-market baseline, implementation audits, post-baseline local sensitivity, and exact pre-first-result specification neighborhood are complete.
 
-### Local-sensitivity result
+### Exact-spec robustness result
 
-| Instrument | Validation-positive variants | Final-positive variants | Positive in both OOS splits |
-|---|---:|---:|---:|
-| EUR/USD | 13/17 | 6/17 | 6/17 |
-| GBP/USD | 0/17 | 16/17 | 0/17 |
-| USD/JPY | 17/17 | 0/17 | 0/17 |
-| XAU/USD | 15/17 | 17/17 | 15/17 |
+| Instrument | Development-positive | Validation-positive | Final-positive | Positive in both OOS |
+|---|---:|---:|---:|---:|
+| EUR/USD | 15/23 | 17/23 | 7/23 | 6/23 |
+| GBP/USD | 23/23 | 0/23 | 22/23 | 0/23 |
+| USD/JPY | 23/23 | 23/23 | 0/23 | 0/23 |
+| XAU/USD | 0/23 | 20/23 | 23/23 | 20/23 |
 
-XAU/USD forms a broad local plateau rather than a single attractive parameter point. Its final-test expectancy across the 17 local variants ranges from approximately +0.145R to +0.254R/trade. The two validation-negative neighbors are the tighter 1.50 ATR stop and lower 2.0R target.
+XAU/USD shows a broad parameter plateau in the later periods. Validation expectancy across the exact neighborhood ranges from about -0.0393R to +0.1346R/trade; final-test expectancy ranges from +0.1450R to +0.2765R/trade.
 
-However, all 17 XAU variants remain negative in development. The behavior is therefore not a stationary full-history edge and must be investigated as a possible later regime/market effect.
+The three XAU validation-negative variants are:
 
-## Protocol reconciliation
+1. structure window 30: approximately -0.0268R/trade;
+2. stop 1.50 ATR: approximately -0.0393R/trade;
+3. target 2.0R: approximately -0.0192R/trade.
 
-The completed `scripts/run_s02_robustness.py` neighborhood was frozen after the first S02 baseline and before its own sensitivity results. It is valid supplemental local sensitivity evidence, but it is **not identical** to the broader research neighborhood recorded in `strategies/S02-structure-breakout/v0.1.md` before the first S02 result.
+ATR-period 10/20 and H4-EMA 30/80 perturbations remain positive in both OOS splits. So do the wider breakout/filter settings and 2.0x cost multiplier.
 
-The original specification also predeclared ATR-period and H4-EMA perturbations and used broader values for several other parameters. We will run that exact specification neighborhood before moving to temporal analysis.
+Critical caveat: **all 23 XAU exact-spec configurations remain negative in development.** This is parameter-robust but temporally non-stationary historical evidence.
 
-## 1. Pull the exact-spec runner
+## 1. Pull the frozen temporal runner
 
 ```powershell
 git pull
 ```
 
-## 2. Run the exact originally predeclared S02 neighborhood
+## 2. Run fixed-rule temporal stability
 
 ```powershell
-python scripts\run_s02_spec_robustness.py
+python scripts\run_s02_temporal_stability.py
 ```
 
-This is one-at-a-time sensitivity, not optimization. It evaluates the baseline plus the exact low/high values recorded before first result for:
+This uses **only the unchanged v0.1 baseline**. No robustness variant is selected.
 
-- structure window: 15 / 20 / 30;
-- ATR period: 10 / 14 / 20;
-- breakout margin: 0 / 0.10 / 0.20 ATR;
-- true-range expansion: 1.0 / 1.25 / 1.5;
-- tick-volume expansion: 1.0 / 1.10 / 1.25;
-- H4 EMA: 30 / 50 / 80;
-- H4 slope lookback: 2 / 3 / 5;
-- stop: 1.50 / 1.75 / 2.00 ATR;
-- target: 2.0 / 2.5 / 3.0R;
-- timeout: 48 / 72 / 96 H1 bars;
-- cost multiplier: 1.0 / 1.25 / 2.0x spread.
+The frozen temporal protocol reports, for all four original markets:
 
-It runs all four original markets and writes:
+- complete non-overlapping 6-month calendar blocks beginning 2019-01-01;
+- complete rolling 12-month windows stepped every 3 months;
+- fixed-rule persistence pairs: prior 12 months versus the immediately following 6 months;
+- net expectancy, profit factor, max drawdown, trade count and long/short counts;
+- every window, including negative and low-sample windows.
 
-- `outputs/s02_spec_robustness_v0_1.json`
-- `outputs/s02_spec_robustness_v0_1.csv`
+A window with fewer than 30 trades is flagged `low_sample = true`; it is not deleted.
+
+Outputs:
+
+- `outputs/s02_temporal_stability_v0_1.json`
+- `outputs/s02_temporal_stability_v0_1.csv`
 
 Upload both files and paste the printed JSON summary.
 
-## 3. Interpretation rule
+## 3. Interpretation rule frozen before temporal results
 
-Do not select whichever setting looks best. We are testing whether the baseline sits inside a broad stable region.
+This is not a parameter search and not a classic refit walk-forward. The v0.1 rules stay fixed.
 
-For XAU/USD, strong evidence would mean most of the exact predeclared neighboring configurations remain positive in both OOS splits with adequate sample size and without a drawdown explosion. Failure of the broader ATR/H4-EMA or wider breakout/filter perturbations would weaken the local-plateau finding.
+The questions are:
 
-GBPUSD and USDJPY remain regime-unstable unless the exact predeclared test provides materially different evidence; do not rescue them by selecting variants.
+- when does XAU behavior change from negative/flat to positive?
+- is the later edge persistent across adjacent half-years and overlapping 12-month windows?
+- are there isolated bursts hidden by annual averages?
+- does a positive prior 12-month fixed-rule period tend to remain positive over the immediately following 6 months?
+- do EUR/GBP/JPY show comparable transitions or continued instability?
 
-## 4. After the exact-spec neighborhood
+No market is promoted solely because a majority of historical windows are positive. Candidate status still requires genuinely new forward evidence.
 
-Only if the XAU evidence remains broad will we freeze and run temporal stability:
+## 4. After temporal stability
 
-- non-overlapping 6-month blocks;
-- rolling 12-month windows stepped every 3 months;
-- fixed-rule prior-period versus next-period persistence;
-- no parameter refitting or selection.
+If XAU shows sustained later-period stability rather than a small number of bursts, the next research step will be predeclared additional-market evidence (metals/index/energy) and construction of the immutable forward-test ledger.
 
-The purpose will be to locate and quantify the apparent regime transition, especially because development is negative while 2023–2026 is positive.
+Do not create a long-only XAU v0.2 yet. The directional asymmetry remains post-result information.
 
-## 5. Directional finding remains diagnostic only
+## 5. G2 and G4
 
-Do not change v0.1 to XAU-long-only. That asymmetry was learned after the baseline.
-
-## 6. G2 and G4
-
-G2 commercial source rights remains independent and open. Exness remains an R&D source, not an assumed commercial production source.
+G2 commercial source rights remains independently open. Exness is still an R&D source, not an assumed commercial production source.
 
 G4/customer-facing SaaS work remains deferred until strategy evidence and immutable forward-test infrastructure are stronger.

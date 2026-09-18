@@ -17,6 +17,7 @@ Canonical index:
 | EXP-2026-009 | S02 Structure Breakout frozen baseline |
 | EXP-2026-010 | S02 robustness protocol reconciliation and exact-spec neighborhood |
 | EXP-2026-011 | S02 fixed-rule temporal stability protocol + result |
-| EXP-2026-012 | S02 new-market transfer protocol |
+| EXP-2026-012 | S02 new-market transfer protocol + result |
+| EXP-2026-013 | S02 immutable forward-test ledger protocol |
 
 See `research/README.md` for the broader research policy.

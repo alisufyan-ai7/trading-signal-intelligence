@@ -14,7 +14,8 @@
 - Candle-level strategy audit tooling: WORKING
 - H1↔H4 consistency audit tooling: WORKING
 - S02 post-baseline local-sensitivity runner: COMPLETE
-- S02 exact predeclared-neighborhood runner: READY
+- S02 exact predeclared-neighborhood runner: COMPLETE
+- S02 temporal-stability runner: READY
 - Live forward immutable ledger: NOT YET IMPLEMENTED
 - SaaS UI: DELIBERATELY DEFERRED
 
@@ -22,7 +23,7 @@
 
 - G1 research data: **PASS**
 - G2 commercial source rights: **OPEN / EXNESS PRODUCTION USE BLOCKED PENDING WRITTEN CLARIFICATION**
-- G3 strategy evidence: **IN PROGRESS — S02 XAU LOCAL SENSITIVITY ROBUST; EXACT SPEC NEIGHBORHOOD PENDING; NOT CANDIDATE**
+- G3 strategy evidence: **IN PROGRESS — S02 XAU PASSES EXACT PARAMETER ROBUSTNESS; TEMPORAL STABILITY NEXT; NOT CANDIDATE**
 - G4 customer value: **NOT STARTED**
 
 ## Data state
@@ -61,16 +62,28 @@ XAU/USD is the only market positive in both OOS splits and is positive in each o
 
 Post-baseline local sensitivity (17 configurations per market) is now complete. XAU/USD remained positive in both OOS splits for 15/17 variants and positive in the final test for 17/17. The only validation-negative XAU neighbors were the tighter 1.50 ATR stop (-0.0393R/trade) and lower 2.0R target (-0.0192R/trade). Final-test expectancy across all XAU local variants stayed between +0.1450R and +0.2544R/trade. OOS trade counts remained substantial and the worst validation drawdown was -31.25R.
 
+Exact pre-first-result specification sensitivity is now complete (23 configurations per market):
+
+- EURUSD: 6/23 positive in both OOS splits;
+- GBPUSD: 0/23;
+- USDJPY: 0/23;
+- XAUUSD: 20/23.
+
+For XAUUSD, validation expectancy ranges from approximately -0.0393R to +0.1346R/trade and final-test expectancy from +0.1450R to +0.2765R/trade. The three validation-negative variants are structure window 30, stop 1.50 ATR, and target 2.0R. ATR 10/20, H4 EMA 30/80, wider breakout/filter settings and cost multiplier 2.0x all remain positive in both OOS splits.
+
 Important caveats:
 
-- all 17 XAU local variants remained negative in development (best approximately -0.0007R/trade);
+- all 23 XAU exact-spec variants remain negative in development;
 - XAU OOS strength is carried by longs, a post-result diagnostic that cannot be retrofitted into v0.1;
-- GBPUSD and USDJPY had zero local variants positive in both OOS splits; EURUSD had 6/17;
-- the executed local neighborhood was frozen after the first baseline and is narrower/different from the broader neighborhood recorded in the v0.1 strategy specification before first result;
-- therefore the exact original specification neighborhood must be run before temporal/walk-forward work;
+- GBPUSD and USDJPY remain temporally unstable under every exact-spec variant;
+- EURUSD remains mixed rather than robust;
+- the next question is temporal persistence/regime change, not parameter selection;
 - genuinely new forward evidence is still required.
 
-Detailed evidence: `research/experiments/EXP-2026-009-s02-structure-breakout-baseline.md`.
+Detailed evidence:
+
+- `research/experiments/EXP-2026-009-s02-structure-breakout-baseline.md`
+- `research/experiments/EXP-2026-010-s02-robustness-reconciliation.md`
 
 ## Experiment ID hygiene
 
@@ -78,4 +91,4 @@ Canonical experiment IDs are now unique. The executed data-quality audit is EXP-
 
 ## Immediate next external input
 
-Run `python scripts\run_s02_spec_robustness.py` after `git pull`. Preserve `outputs/s02_spec_robustness_v0_1.json` and `outputs/s02_spec_robustness_v0_1.csv`. This runner implements the exact one-at-a-time neighborhood that was written in the frozen v0.1 specification before the first S02 result. Do not select a best parameter set.
+Run `python scripts\run_s02_temporal_stability.py` after `git pull`. Preserve `outputs/s02_temporal_stability_v0_1.json` and `outputs/s02_temporal_stability_v0_1.csv`. This test uses the unchanged baseline only; it does not select or refit parameters.

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "launch_target": "Early Access Beta",
+  "target_window": "3-5 days",
+  "production_data_policy": {
+    "primary_source": "exness_mt5_demo",
+    "commercial_derived_signal_permission": "confirmed_by_project_owner_2026-09-21",
+    "paid_replacement_data": "defer_until_revenue"
+  },
+  "live_signal_markets": [
+    {
+      "source_symbol": "XAUUSD",
+      "canonical_symbol": "XAU/USD",
+      "asset_class": "metal",
+      "role": "primary",
+      "strategy": "S02-structure-breakout-v0.1",
+      "evidence_status": "historical_robustness_passed_forward_active",
+      "forward_database": "data/forward.sqlite",
+      "forward_entity": "S02-v0.1:XAUUSD:PRIMARY"
+    },
+    {
+      "source_symbol": "USTEC",
+      "canonical_symbol": "NASDAQ 100",
+      "asset_class": "index",
+      "role": "secondary",
+      "strategy": "S02-structure-breakout-v0.1",
+      "evidence_status": "historical_transfer_support_secondary",
+      "forward_database": "data/forward_ustec.sqlite",
+      "forward_entity": "S02-v0.1:USTEC:SECONDARY"
+    },
+    {
+      "source_symbol": "US30",
+      "canonical_symbol": "DOW 30",
+      "asset_class": "index",
+      "role": "secondary",
+      "strategy": "S02-structure-breakout-v0.1",
+      "evidence_status": "historical_transfer_support_secondary",
+      "forward_database": "data/forward_us30.sqlite",
+      "forward_entity": "S02-v0.1:US30:SECONDARY"
+    }
+  ],
+  "research_monitoring_markets": [
+    {
+      "source_symbol": "EURUSD",
+      "canonical_symbol": "EUR/USD",
+      "asset_class": "forex",
+      "evidence_status": "mixed_historical_not_live_launch_signal"
+    },
+    {
+      "source_symbol": "GBPUSD",
+      "canonical_symbol": "GBP/USD",
+      "asset_class": "forex",
+      "evidence_status": "unstable_historical_not_live_launch_signal"
+    },
+    {
+      "source_symbol": "USDJPY",
+      "canonical_symbol": "USD/JPY",
+      "asset_class": "forex",
+      "evidence_status": "regime_unstable_not_live_launch_signal"
+    },
+    {
+      "source_symbol": "XAGUSD",
+      "canonical_symbol": "XAG/USD",
+      "asset_class": "metal",
+      "evidence_status": "transfer_test_failed_full_oos"
+    },
+    {
+      "source_symbol": "US500",
+      "canonical_symbol": "S&P 500",
+      "asset_class": "index",
+      "evidence_status": "transfer_test_failed_final"
+    },
+    {
+      "source_symbol": "USOIL",
+      "canonical_symbol": "WTI",
+      "asset_class": "energy",
+      "evidence_status": "transfer_test_failed_oos"
+    }
+  ],
+  "deferred_markets": [
+    {
+      "canonical_symbol": "BTC/USDT",
+      "reason": "separate crypto protocol and source-rights review; not needed for first launch"
+    }
+  ]
+}

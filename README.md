@@ -10,10 +10,10 @@ The quantitative engine generates candidate setups. AI is used for explanation, 
 
 ## Current architecture decision
 
-- **Primary R&D feed:** MetaTrader 5 terminal on Windows, accessed through the official `MetaTrader5` Python package, initially connected to an Exness demo account.
+- **Initial multi-asset feed:** MetaTrader 5 terminal on Windows, accessed through the official `MetaTrader5` Python package and connected to Exness.
 - **Crypto feed:** Binance direct REST/WebSocket market-data APIs.
 - **Production principle:** strategies only consume our normalized internal market-data schema and never depend directly on a broker-specific symbol or API.
-- **Data-rights principle:** raw broker/exchange feeds are not redistributed to SaaS users unless explicit rights permit it. The customer product is derived signal intelligence.
+- **Data-rights principle:** Exness commercial derived-signal use is cleared for the intended launch use case via separate permission confirmed by the project owner; raw-feed redistribution remains out of scope unless separately authorized.
 
 ## Four project gates
 
@@ -43,6 +43,6 @@ Never commit broker passwords, MetaTrader credentials, Binance API keys, tokens,
 
 ## Status
 
-**Phase 0: Research infrastructure / data validation.**
+**Phase 1: Early Access product build + continuing forward validation.**
 
-The first objective is not a polished web application. It is a reproducible data pipeline and a research framework capable of rejecting weak strategies honestly.
+Target launch is 3–5 days. Product development now runs in parallel with immutable strategy validation.

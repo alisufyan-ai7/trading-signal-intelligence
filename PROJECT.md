@@ -179,8 +179,17 @@ Canonical IDs are unique:
 9. S02 temporal / fixed-rule walk-forward stability — **DONE / RECENT XAU REGIME PERSISTENT**
 10. S02 new-market transfer — **DONE / PARTIAL TRANSFER (USTEC + US30)**
 11. Live immutable forward-test infrastructure — **NEXT**
-12. Customer-value validation / SaaS UI — **PENDING**
+12. Early Access SaaS MVP — **START NOW / 3–5 DAY TARGET**
 
 ## Durable project-state rule
 
 Major decisions, research conclusions, strategy definitions and implementation changes should be written to this repository. Chat is for discussion; the repository is the project source of truth.
+
+
+## Immediate launch objective — 2026-09-21
+
+The application should not wait for 100 forward trades before users can see and test it.
+
+Target: **Early Access Beta in 3–5 days**, following `docs/launch-plan-5-day-beta.md`.
+
+Forward validation continues unchanged and constrains performance claims. Product development, usability testing and customer discovery now run in parallel.

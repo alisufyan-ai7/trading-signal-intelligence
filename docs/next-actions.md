@@ -2,70 +2,105 @@
 
 _Last updated: 2026-09-21_
 
-## Priority shift
+## Immediate objective
 
-Target an **Early Access Beta in 3–5 days**.
+Launch **TradingTop Early Access in 3–5 days** while the existing forward validation continues automatically.
 
-The active S02/XAUUSD forward test keeps running automatically in parallel. We do not wait for F2/F3 to begin product/customer work.
+## Gate status
 
-## Today — launch foundation
+- G1 research data: PASS
+- G2 commercial source rights: **PASS — separate Exness permission confirmed by project owner**
+- G3 strategy evidence: IN PROGRESS
+- G4 customer value: starts with the Early Access cohort
 
-1. Confirm the production data path:
-   - if separate written Exness commercial permission exists, archive it and mark G2 accordingly;
-   - otherwise use a commercial production data provider and keep Exness R&D-only.
+Paid replacement market-data subscriptions are deferred until application revenue exists.
 
-2. Start the cloud MVP:
-   - landing page;
-   - authentication;
-   - production database;
-   - signal/current-state API;
-   - signal history;
-   - health/ledger status.
+## Launch universe
 
-3. Keep the existing XAU forward task untouched.
+### Live-signal launch markets
 
-## 3–5 day build
+1. XAU/USD — primary historical lead, forward test already active
+2. NASDAQ 100 / USTEC — secondary historical transfer support
+3. DOW 30 / US30 — secondary historical transfer support
 
-Follow:
+### Research/monitoring markets visible in product
 
-`docs/launch-plan-5-day-beta.md`
+- EUR/USD
+- GBP/USD
+- USD/JPY
+- XAG/USD
+- S&P 500
+- WTI
 
-Scope is intentionally narrow:
+The UI must show evidence status per market rather than implying equal validation.
 
-- XAU/USD only;
-- active/no-active setup card;
-- entry/stop/target/R:R;
-- immutable signal history/results;
-- historical vs forward evidence clearly separated;
-- one alert channel;
-- mobile-responsive web;
-- risk disclosure;
-- no execution/copy trading.
+## Step 1 — pull and preview the beta app
 
-## Launch mode
+```powershell
+git pull
+pip install -e ".[app]"
+python scripts\run_beta_app.py
+```
 
-Use **Early Access / Research Beta** language.
+Then open:
 
-Do not claim:
+`http://127.0.0.1:8000`
 
-- proven future profitability;
-- guaranteed win rate;
-- personalized investment advice;
-- completed forward validation.
+Expected:
 
-A free or invite-gated first cohort is preferred so product learning can begin immediately.
+- TradingTop Early Access page;
+- XAU/USD, NASDAQ 100 and DOW 30 in the live-signal section;
+- remaining researched markets in the research section;
+- XAU forward state visible;
+- USTEC/US30 initially show forward collector not activated.
 
-## Forward evidence still runs
+Leave the app running only for preview; this is not the final internet deployment yet.
 
-- F1: 20 completed trades — execution audit;
-- F2: 50 trades + 90 days — interim strategy review;
-- F3: 100 trades + 180 days — first candidate-status decision.
+## Step 2 — verify USTEC and US30 live recency
 
-These gates control strategy claims, not beta-launch timing.
+In a second PowerShell window:
 
-## Operations
+```powershell
+python scripts\mt5_recency_probe.py --symbol USTEC --canonical "NASDAQ 100"
+python scripts\mt5_recency_probe.py --symbol US30 --canonical "DOW 30"
+```
 
-Normal forward health check:
+Both H1 and H4 should report `appears_recent: true`.
+
+## Step 3 — activate separate immutable secondary ledgers
+
+Only if recency is clean:
+
+```powershell
+python scripts\activate_s02_forward.py --database data\forward_ustec.sqlite --symbol USTEC --canonical "NASDAQ 100" --entity "S02-v0.1:USTEC:SECONDARY"
+
+python scripts\activate_s02_forward.py --database data\forward_us30.sqlite --symbol US30 --canonical "DOW 30" --entity "S02-v0.1:US30:SECONDARY"
+
+python scripts\verify_forward_ledger.py --database data\forward_ustec.sqlite
+python scripts\verify_forward_ledger.py --database data\forward_us30.sqlite
+```
+
+Send the two recency outputs plus both activation and verification JSON outputs.
+
+Do **not** install the secondary scheduled task until those two activation hashes are durably anchored in the repo.
+
+## Step 4 — after secondary activation
+
+Once the hashes are anchored:
+
+1. install the USTEC/US30 hourly scheduler;
+2. connect all three ledgers to the web product status API;
+3. add product signal-history/evidence views;
+4. add authentication;
+5. add one alert channel;
+6. deploy the beta publicly;
+7. start collecting user feedback and willingness-to-pay data.
+
+## Existing XAU forward test
+
+Leave it untouched.
+
+Normal health check:
 
 ```powershell
 python scripts\summarize_s02_forward_ops.py
@@ -74,3 +109,11 @@ Get-ScheduledTaskInfo -TaskName "TradingTop S02 XAU Forward Scan"
 ```
 
 Report immediately on SIGNAL / EXIT / MISSED_SIGNAL / SKIPPED_SIGNAL or any task/ledger error.
+
+## Launch claim discipline
+
+Launch language:
+
+**TradingTop Early Access — verified rule-based market setups with transparent historical and forward performance.**
+
+Do not claim guaranteed returns, completed forward validation, personalized advice, or copy trading.

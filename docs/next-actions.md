@@ -1,80 +1,72 @@
 # Current Next Actions
 
-_Last updated: 2026-09-18_
+_Last updated: 2026-09-21_
 
 ## G3 status
 
 S02 Structure Breakout v0.1 remains:
 
-`RESEARCH — PRIMARY XAU FORWARD TEST ACTIVATED; LIVE EVIDENCE ACCUMULATION NEXT; NOT CANDIDATE`
+`FORWARD TEST ACTIVE — XAUUSD PRIMARY; NOT CANDIDATE`
 
-## Activation anchor
+The anchored forward test is operational. Through `2026-09-21T15:02:06Z`, the current task log contains 72 consecutive hourly scans with no scheduling gaps, no verification failures, no signal lifecycle actions, and an unchanged activation-only ledger.
 
-The primary forward hypothesis is frozen and activated:
+## Normal operation
 
-- test entity: `S02-v0.1:XAUUSD:PRIMARY`
-- activation UTC: `2026-09-18T13:58:54.786419+00:00`
-- activation record hash: `c901167c0aa2f8d0aff8feb4411664063488b6e67da894279c63bd4fca284115`
-- initial ledger head: same hash
-- protocol bundle SHA-256: `484b3de25c6ff6c24de30c5a700f211b98be8534c7b0354fcb2d6219587232cf`
-- verification immediately after activation: valid, one ACTIVATION record
+No manual hourly scanner command is required.
 
-Durable anchor:
+Keep:
 
-`research/forward/S02-XAUUSD-v0.1-activation-2026-09-18.md`
+- the Windows user session logged in;
+- MT5 running and connected to the research demo;
+- the hourly Task Scheduler job enabled;
+- `data/forward.sqlite` and both task-log files intact.
 
-The code/config/scanner/ledger fingerprints committed at activation must remain unchanged for this forward test.
+24/7 scheduling is intentional. Weekend/closed-market runs are harmless and avoid embedding unverified broker-session assumptions into the scheduling layer.
 
-## First manual live scan — COMPLETE
+## Concise health check
 
-First scan completed at `2026-09-18T14:09:12.789641Z` with no actions. Ledger verification stayed valid with one ACTIVATION record and the original anchored head hash.
-
-## Hourly Windows scheduler — INSTALLED
-
-The task is registered as `TradingTop S02 XAU Forward Scan`, state `Ready`, with the first scheduled run at approximately minute 02. Windows result `267011` / `0x41303` before the first execution means the task has not yet run.
-
-Keep this Windows user logged in and MT5 available.
-
-## Immediate action — confirm first scheduled run
-
-After the first scheduled time has passed, run:
-
-```powershell
-Get-ScheduledTaskInfo -TaskName "TradingTop S02 XAU Forward Scan"
-
-$latest = Get-ChildItem data\forward-task-logs\s02_xau_forward_*.log |
-  Sort-Object LastWriteTime -Descending |
-  Select-Object -First 1
-
-$latest.FullName
-Get-Content $latest.FullName
-
-python scripts\verify_forward_ledger.py
-```
-
-Paste the task-info output, newest log, and ledger verification.
-
-
-## First scheduled run — COMPLETE
-
-The first automatic run completed successfully with `LastTaskResult = 0`, no missed runs, no signal actions, and a valid unchanged ledger head.
-
-An operational log-filename bug produced `s02_xau_forward_+.log`. The wrapper has been corrected to append subsequent runs to:
-
-`data\forward-task-logs\s02_xau_forward.log`
-
-Pull the wrapper fix before the next scheduled run; task reinstallation is not required because the registered task already points to the same wrapper path:
+Pull the read-only summary helper once:
 
 ```powershell
 git pull
 ```
 
-After the next scheduled run, check:
+Then future checks can use:
 
 ```powershell
-Get-ScheduledTaskInfo -TaskName "TradingTop S02 XAU Forward Scan"
-Get-Content data\forward-task-logs\s02_xau_forward.log -Tail 100
+python scripts\summarize_s02_forward_ops.py
 python scripts\verify_forward_ledger.py
+Get-ScheduledTaskInfo -TaskName "TradingTop S02 XAU Forward Scan"
 ```
 
-Do not delete the original `s02_xau_forward_+.log`; retain it as the first scheduled-run audit artifact.
+The summary script does not modify the forward ledger or frozen protocol.
+
+## When to report immediately
+
+Send the output as soon as any of these occurs:
+
+- `SIGNAL` appears;
+- `EXIT` appears;
+- `MISSED_SIGNAL` appears;
+- `SKIPPED_SIGNAL` appears;
+- Task Scheduler `LastTaskResult` is non-zero;
+- `NumberOfMissedRuns` increases;
+- ledger verification returns `valid: false`;
+- protocol-fingerprint mismatch stops the scanner.
+
+Otherwise, a periodic concise health check is enough; there is no research value in reviewing every empty hourly scan individually.
+
+## Evidence discipline
+
+Do not:
+
+- rerun activation;
+- delete/rebuild `data/forward.sqlite`;
+- edit forward records;
+- change S02 v0.1, the live scanner, ledger implementation, or activated config;
+- switch to long-only;
+- select a robustness variant.
+
+The next substantive G3 evidence begins with the first genuinely new signal lifecycle record. Periodic external anchoring of changed ledger heads remains required before public verification claims.
+
+G2 commercial rights remains independently open; Exness remains R&D-only.

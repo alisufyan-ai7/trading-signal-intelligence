@@ -203,3 +203,16 @@ Sources:
 **Scheduling estimate:** Historical S02/XAUUSD frequency is roughly 10–11 trades/month, implying F2 around Jan–Feb 2027 and F3 around Jun–Jul 2027 if live frequency is similar. Actual dates remain trade-count driven.
 
 **Parallel work:** Continue G2 commercial-source-rights work immediately, add external verification/backup hardening, allow lightweight G4 customer discovery, and permit separately frozen S03/S04/S05 research without changing the active S02 protocol.
+
+
+## 2026-09-21 — D023: Launch Early Access in days while forward validation continues
+
+**Decision:** Product launch and strategy validation are separate tracks. Target a 3–5 day Early Access Beta instead of waiting for the S02 F2/F3 forward-evidence gates.
+
+**Launch scope:** XAU-focused signal dashboard, transparent historical/forward evidence, immutable signal history, alerts, authentication, risk disclosure and a small user cohort. No auto-execution, personalized suitability or unsupported performance claims.
+
+**G3:** Remains in progress. F1/F2/F3 govern how strongly S02 may be described, not whether the application can be launched as a research beta.
+
+**G2:** Do not mark Exness commercial-data rights as passed under the ordinary retail Client Agreement. G2 may pass via separate written source permission or a production market-data provider/subscription that explicitly permits the intended commercial derived-signal use.
+
+**Implication:** Build and launch the product now in parallel with forward validation. Keep Exness as R&D-only unless separate written permission is documented.

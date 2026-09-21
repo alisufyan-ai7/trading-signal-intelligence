@@ -216,3 +216,20 @@ Sources:
 **G2:** Do not mark Exness commercial-data rights as passed under the ordinary retail Client Agreement. G2 may pass via separate written source permission or a production market-data provider/subscription that explicitly permits the intended commercial derived-signal use.
 
 **Implication:** Build and launch the product now in parallel with forward validation. Keep Exness as R&D-only unless separate written permission is documented.
+
+
+## 2026-09-21 — D024: Mark G2 passed and launch with a three-market live-signal universe
+
+**Decision:** G2 is passed for the initial Exness-based launch because the project owner confirms separate Exness permission covering the intended commercial derived-signal use.
+
+**Launch data policy:** Use Exness for the first revenue-generating release. Do not purchase a replacement paid market-data feed before product revenue exists.
+
+**Initial live-signal markets:** XAUUSD, USTEC and US30.
+
+**Evidence labels:** XAUUSD remains the primary historical/forward lead. USTEC and US30 are secondary because they passed the frozen historical transfer-support rule but have much smaller final-test margins.
+
+**Additional product coverage:** EURUSD, GBPUSD, USDJPY, XAGUSD, US500 and USOIL remain visible as research/monitoring markets with explicit evidence labels.
+
+**Integrity rule:** USTEC and US30 get separate append-only forward databases and activation hashes. The existing XAU activation/database remains untouched.
+
+**Product implication:** The 3–5 day Early Access build proceeds now; paid data replacement is a later revenue-funded infrastructure choice rather than a launch prerequisite.

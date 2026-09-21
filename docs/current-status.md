@@ -19,12 +19,12 @@
 - S02 new-market transfer runner: COMPLETE
 - Immutable hash-chained forward ledger: ACTIVATED / HASH ANCHORED
 - S02 live forward scanner: ACTIVE / 72 CONSECUTIVE HOURLY RUNS VERIFIED THROUGH 2026-09-21 15:02 UTC
-- SaaS UI: DELIBERATELY DEFERRED
+- SaaS UI: EARLY ACCESS MVP IN PROGRESS
 
 ## Validation gates
 
 - G1 research data: **PASS**
-- G2 commercial source rights: **OPEN / EXNESS PRODUCTION USE BLOCKED PENDING WRITTEN CLARIFICATION**
+- G2 commercial source rights: **PASS — EXNESS COMMERCIAL DERIVED-SIGNAL PERMISSION CONFIRMED BY PROJECT OWNER**
 - G3 strategy evidence: **IN PROGRESS — S02 XAU HISTORICAL ROBUSTNESS PASSED; TRANSFER PARTIAL; IMMUTABLE FORWARD EVIDENCE NEXT; NOT CANDIDATE**
 - G4 customer value: **NOT STARTED**
 
@@ -97,3 +97,17 @@ Canonical experiment IDs are now unique. The executed data-quality audit is EXP-
 ## Immediate next external input
 
 No intervention is required while the task remains healthy. Continue accumulating forward observations. Use `scripts/summarize_s02_forward_ops.py` plus `scripts/verify_forward_ledger.py` for concise health checks, and report immediately when SIGNAL/MISSED_SIGNAL/SKIPPED_SIGNAL/EXIT counts change or the task/ledger reports an error.
+
+## Early Access launch scope — 2026-09-21
+
+Target: launch within 3–5 days.
+
+Initial live-signal markets:
+
+- XAU/USD — primary;
+- NASDAQ 100 / USTEC — secondary;
+- DOW 30 / US30 — secondary.
+
+Additional researched markets appear in the app with explicit evidence/status labels rather than being silently omitted.
+
+Paid market-data subscriptions are deferred until product revenue exists; the confirmed Exness permission is the launch data path.

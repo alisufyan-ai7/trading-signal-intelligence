@@ -2,7 +2,7 @@
 
 **Created:** 2026-09-21  
 **Target:** Public/invite Early Access Beta within 3–5 days  
-**Constraint:** Product launch is separate from G3 strategy validation. S02/XAUUSD remains an active forward-tested research strategy and must not be marketed as proven.
+**Constraint:** Product launch is separate from G3 strategy validation. XAUUSD remains the primary active forward-tested S02 market; USTEC and US30 launch as secondary S02 signal markets with weaker evidence labels.
 
 ## Launch positioning
 
@@ -20,16 +20,11 @@ Do not launch as:
 
 ## Data-source launch rule
 
-Exness remains an internal R&D / forward-validation source unless separate written commercial permission exists.
+G2 is passed for the initial Exness-based commercial derived-signal launch use case because the project owner confirms separate Exness permission has already been obtained.
 
-For external production data, use either:
+Use Exness for launch. Do **not** buy a replacement market-data subscription before the application is generating revenue.
 
-1. a provider/account with explicit commercial/derived-data rights; or
-2. documented written permission from the source owner.
-
-Fast candidate: Twelve Data business service for XAU/forex/commodities, subject to selecting the subscription/add-on that explicitly covers our client-facing derived-signal use.
-
-Do not expose raw Exness quotes/bars or Exness-derived public signals under the ordinary retail Client Agreement.
+Keep the product centered on derived outputs rather than raw-feed redistribution, and keep the normalized adapter layer so a paid institutional/commercial feed can be substituted later if needed.
 
 ## MVP scope
 
@@ -43,8 +38,9 @@ Do not expose raw Exness quotes/bars or Exness-derived public signals under the 
 
 2. User authentication.
 
-3. XAU/USD signal dashboard
-   - current state: active setup or "no active setup";
+3. Multi-market signal dashboard
+   - XAU/USD, NASDAQ 100 / USTEC, and DOW 30 / US30 live-signal cards;
+   - current state per market: active setup or "no active setup";
    - direction;
    - issued UTC;
    - entry reference;
@@ -100,16 +96,15 @@ Do not expose raw Exness quotes/bars or Exness-derived public signals under the 
 
 Exit condition: cloud app deploys and can render a health page from production database.
 
-### Day 2 — production market-data adapter + signal parity
+### Day 2 — multi-market live signal plumbing
 
-- implement XAU/USD production-data adapter;
-- normalize into existing Candle model;
-- compare recent H1/H4 candles with the Exness research feed;
-- run unchanged S02 v0.1 on the production feed;
-- document any signal/bar divergence;
-- do not silently retune S02 for the new source.
+- keep the existing XAUUSD immutable forward collector untouched;
+- activate separately fingerprinted USTEC and US30 forward collectors;
+- normalize all three through the same internal Candle model;
+- expose per-market evidence labels and active/no-active state;
+- do not silently retune S02 for any market.
 
-Exit condition: source parity is understood and the production scanner can run deterministically.
+Exit condition: XAUUSD, USTEC and US30 can each produce deterministic live signal lifecycle records.
 
 ### Day 3 — user-facing MVP
 
@@ -141,7 +136,7 @@ Launch to an initial small cohort.
 Recommended initial mode:
 
 - free Early Access or waitlist-gated beta;
-- one primary market: XAU/USD;
+- three live-signal launch markets: XAU/USD, NASDAQ 100 / USTEC, DOW 30 / US30;
 - no performance guarantee;
 - transparent historical/forward evidence;
 - feedback collection built into the product.
@@ -177,10 +172,11 @@ Do not optimize on vanity traffic.
 
 Recommended sequence:
 
-1. launch free/invite Early Access;
-2. collect 20–50 real user interviews/usage sessions;
-3. add a simple paid founding tier only after commercial-data and applicable financial-regulatory positioning are confirmed;
-4. keep pricing subscription-based.
+1. launch free/invite Early Access quickly;
+2. collect first real usage and feedback;
+3. introduce a simple paid founding tier as soon as the product demonstrates user value and payment flow is ready;
+4. use revenue to fund any future paid data source rather than buying data before revenue;
+5. keep pricing subscription-based.
 
 ## Decision
 

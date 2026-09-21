@@ -19,5 +19,6 @@ Canonical index:
 | EXP-2026-011 | S02 fixed-rule temporal stability protocol + result |
 | EXP-2026-012 | S02 new-market transfer protocol + result |
 | EXP-2026-013 | S02 immutable forward-test ledger protocol |
+| EXP-2026-014 | S02 forward evaluation gates |
 
 See `research/README.md` for the broader research policy.

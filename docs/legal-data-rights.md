@@ -1,6 +1,6 @@
 # Data Rights / Commercial-Use Research
 
-_Last updated: 2026-09-16_
+_Last updated: 2026-09-21_
 
 This document tracks product/data-rights questions for engineering decisions. It is **not legal advice** and should be reviewed by qualified counsel before commercial launch.
 
@@ -39,15 +39,21 @@ Source:
 
 ### Engineering consequence
 
-Status: **R&D OK as a technical prototype; production commercial use BLOCKED pending clarification/permission.**
+Status: **CLEARED FOR THE INTENDED EXNESS-BASED COMMERCIAL DERIVED-SIGNAL LAUNCH USE CASE, BASED ON SEPARATE PERMISSION CONFIRMED BY THE PROJECT OWNER ON 2026-09-21.**
 
-We should avoid building a production dependency that cannot be replaced.
+This status does **not** mean the ordinary retail Client Agreement itself grants that right. It records that the project owner has confirmed separate permission from Exness covering the intended application use.
 
-### Question to send Exness
+If the permission document contains confidential/account information, keep the source document outside the public repository and retain a secure business/legal copy.
 
-> We are developing a commercial analytics and trading-signal SaaS. We would run an MT5 terminal on our own Windows server, connected to our Exness account, and use the prices/candles internally to calculate proprietary technical indicators and derived trading signals. We would not redistribute the raw Exness price feed, ticks, order book, or live charts. End users would receive only our derived signal outputs (for example direction, entry zone, risk levels, scoring, explanations and historical performance). Is this use permitted? If not under the standard Client Agreement, is there a written commercial-data or partnership authorization available for this use case?
+Engineering should still preserve source abstraction so Exness can be replaced later without strategy rewrites.
 
-We should retain the response in this repository (redacting personal/account details) before production use.
+### Permission record
+
+The project owner states that the required Exness permission has already been obtained.
+
+For audit purposes, retain the permission response/document securely. Do not commit confidential account details, personal identifiers or private correspondence to this repository.
+
+The product should continue to publish **derived signals/performance**, not raw feed redistribution, unless the permission explicitly authorizes broader redistribution.
 
 ## MetaQuotes / MT5
 
@@ -75,9 +81,9 @@ Before paid production launch, review the Binance Terms/API Terms specifically f
 
 Until reviewed, Binance is **technically approved for R&D**, not marked as legally cleared for every production jurisdiction/use case.
 
-## Decision rule for any source
+## Decision rule for any new source
 
-No production source should be marked `CLEARED` until we can record:
+Exness is cleared for the intended launch use case based on the separate permission above. Any additional production source should not be marked `CLEARED` until we can record:
 
 1. exact legal entity / service terms,
 2. whether commercial internal calculation of derived signals is allowed,

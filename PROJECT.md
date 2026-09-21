@@ -42,7 +42,7 @@ This is **not** an "AI predicts the market" product. The intended positioning is
 | Gate | Question | Status |
 |---|---|---|
 | G1 | Can MT5/Exness and Binance reliably provide the research data we need? | **PASS — RESEARCH DATA** |
-| G2 | Can each intended production source legally support commercial derived signals? | OPEN — Exness production assumption blocked pending clarification |
+| G2 | Can each intended production source legally support commercial derived signals? | **PASS — Exness commercial derived-signal permission confirmed by project owner** |
 | G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | **IN PROGRESS — S02 XAU historical robustness passed; transfer is partial; immutable forward evidence next; not candidate** |
 | G4 | Will traders pay for verified and explainable signals? | NOT STARTED |
 
@@ -141,7 +141,7 @@ See:
 ## Initial strategy families
 
 - S01 Trend Pullback — **v0.1 rejected for general FX; XAU lead retained**
-- S02 Structure Breakout — **XAU historical robustness passed; partial transfer; forward activation next; not candidate**
+- S02 Structure Breakout — **XAU forward test active; USTEC + US30 selected as secondary launch signal markets; not candidate**
 - S03 Momentum Continuation — IDEA
 - S04 Mean Reversion — IDEA
 - S05 Volatility Expansion — IDEA
@@ -179,7 +179,7 @@ Canonical IDs are unique:
 9. S02 temporal / fixed-rule walk-forward stability — **DONE / RECENT XAU REGIME PERSISTENT**
 10. S02 new-market transfer — **DONE / PARTIAL TRANSFER (USTEC + US30)**
 11. Live immutable forward-test infrastructure — **NEXT**
-12. Early Access SaaS MVP — **START NOW / 3–5 DAY TARGET**
+12. Early Access SaaS MVP — **IN PROGRESS / 3–5 DAY TARGET**
 
 ## Durable project-state rule
 
@@ -193,3 +193,35 @@ The application should not wait for 100 forward trades before users can see and 
 Target: **Early Access Beta in 3–5 days**, following `docs/launch-plan-5-day-beta.md`.
 
 Forward validation continues unchanged and constrains performance claims. Product development, usability testing and customer discovery now run in parallel.
+
+
+## Launch universe decision — 2026-09-21
+
+The first Early Access release is intentionally broader than XAU/USD.
+
+**Live-signal launch markets:**
+
+- XAU/USD (`XAUUSD`) — primary historical lead and active immutable forward test;
+- NASDAQ 100 (`USTEC`) — secondary market; met the frozen transfer-support rule;
+- DOW 30 (`US30`) — secondary market; met the frozen transfer-support rule.
+
+**Research/monitoring markets shown in-product, but not promoted as equally validated live-signal markets:**
+
+- EUR/USD;
+- GBP/USD;
+- USD/JPY;
+- XAG/USD;
+- S&P 500;
+- WTI.
+
+The product will expose evidence status per market instead of implying equal strategy validation.
+
+## G2 update — 2026-09-21
+
+The project owner confirms that separate Exness permission covering the intended commercial derived-signal use has already been obtained.
+
+**G2 is therefore marked PASS for the intended Exness-based launch use case.**
+
+This pass is based on the separate permission held by the project owner, not on the default retail Client Agreement. The permission artifact itself should be retained securely outside the public repository if confidential.
+
+Paid replacement data providers are deferred until application revenue justifies the expense.

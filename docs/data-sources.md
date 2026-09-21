@@ -1,12 +1,12 @@
 # Data Sources
 
-_Last updated: 2026-09-16_
+_Last updated: 2026-09-21_
 
 ## Source status matrix
 
 | Source | Intended use | Asset coverage | Current status |
 |---|---|---|---|
-| MT5 + Exness demo | R&D / strategy research | FX, metals, indices, energy, stock CFDs, crypto CFDs (subject to account/server offering) | TECHNICALLY SELECTED; commercial use unresolved |
+| MT5 + Exness | R&D + initial commercial derived-signal launch feed | FX, metals, indices, energy, stock CFDs, crypto CFDs (subject to account/server offering) | **CLEARED for intended derived-signal use via separate permission confirmed by project owner** |
 | Binance direct | Primary crypto research feed | Spot crypto and other Binance market-data products | SELECTED for crypto research; production terms still require formal review |
 
 ## MetaTrader 5 via Python
@@ -39,9 +39,11 @@ References:
 
 Exness is useful for R&D because its MT5 environment exposes multiple CFD asset classes through one terminal. We will inspect the actual demo server instrument list dynamically rather than assuming any symbol is present.
 
-### Current restriction
+### Current production status
 
-Exness is **not approved as the production feed** for this project yet. See `docs/legal-data-rights.md`.
+Exness is approved for the project's intended initial commercial derived-signal use based on separate permission confirmed by the project owner on 2026-09-21. See `docs/legal-data-rights.md`.
+
+Paid replacement data feeds are deferred until revenue justifies them; keep the connector abstraction broker-neutral so migration remains possible.
 
 ## Binance
 

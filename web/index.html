@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TradingTop Early Access</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <span class="eyebrow">EARLY ACCESS • RESEARCH BETA</span>
+        <h1>Find the trade. See the risk. Verify the record.</h1>
+        <p class="lede">Rule-based market setups with transparent evidence status and immutable forward tracking.</p>
+      </div>
+      <div class="status-card">
+        <span class="dot"></span>
+        <div>
+          <strong id="health-label">Checking system…</strong>
+          <small id="health-detail">Loading live market status</small>
+        </div>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">LIVE SIGNAL UNIVERSE</span>
+          <h2>Markets we scan</h2>
+        </div>
+        <p>Each market carries its own evidence label. Historical strength is not presented as a guarantee.</p>
+      </div>
+      <div id="live-grid" class="grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">RESEARCH COVERAGE</span>
+          <h2>Markets under observation</h2>
+        </div>
+        <p>Visible for transparency, but not promoted as equally validated live signal markets.</p>
+      </div>
+      <div id="research-grid" class="grid compact"></div>
+    </section>
+
+    <section class="disclosure">
+      <strong>Research beta.</strong>
+      Signals are rule-based research outputs, not guaranteed returns or personalized investment advice.
+      Historical results and live forward results must be evaluated separately.
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>

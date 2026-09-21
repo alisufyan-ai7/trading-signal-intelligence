@@ -188,3 +188,18 @@ Sources:
 **Durable anchor:** `research/forward/S02-XAUUSD-v0.1-activation-2026-09-18.md`.
 
 **Implication:** Live scanning may begin with the exact frozen fingerprints. Strategy/scanner/ledger/config changes invalidate this activation for the changed implementation and require a separately versioned protocol. Historical signals may not be retroactively inserted as live signals.
+
+
+## 2026-09-21 — D022: Predeclare S02 forward-test review gates before the first live trade
+
+**Decision:** Keep the activated S02/XAUUSD v0.1 forward test running continuously and evaluate it at predeclared trade-count/time gates rather than after arbitrary winning or losing streaks.
+
+**F1:** first 20 completed trades — execution/lifecycle audit only; no alpha decision.
+
+**F2:** at least 50 completed trades **and** at least 90 calendar days after activation — interim strategy review; favorable results are insufficient for candidate promotion.
+
+**F3:** at least 100 completed trades **and** at least 180 calendar days after activation — first planned candidate-status decision.
+
+**Scheduling estimate:** Historical S02/XAUUSD frequency is roughly 10–11 trades/month, implying F2 around Jan–Feb 2027 and F3 around Jun–Jul 2027 if live frequency is similar. Actual dates remain trade-count driven.
+
+**Parallel work:** Continue G2 commercial-source-rights work immediately, add external verification/backup hardening, allow lightweight G4 customer discovery, and permit separately frozen S03/S04/S05 research without changing the active S02 protocol.

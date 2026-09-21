@@ -1,7 +1,7 @@
 # Current Status
 
 **Phase:** 1 — Strategy evidence research  
-**Date:** 2026-09-18
+**Date:** 2026-09-21
 
 ## Infrastructure
 
@@ -18,7 +18,7 @@
 - S02 temporal-stability runner: COMPLETE
 - S02 new-market transfer runner: COMPLETE
 - Immutable hash-chained forward ledger: ACTIVATED / HASH ANCHORED
-- S02 live forward scanner: IMPLEMENTED / HOURLY WINDOWS TASK INSTALLED; FIRST SCHEDULED RUN PENDING
+- S02 live forward scanner: ACTIVE / 72 CONSECUTIVE HOURLY RUNS VERIFIED THROUGH 2026-09-21 15:02 UTC
 - SaaS UI: DELIBERATELY DEFERRED
 
 ## Validation gates
@@ -96,4 +96,4 @@ Canonical experiment IDs are now unique. The executed data-quality audit is EXP-
 
 ## Immediate next external input
 
-The primary S02/XAU v0.1 forward test is activated, anchored, and the hourly Windows Task Scheduler job is installed. Confirm the first scheduled run/log and continue accumulating genuinely new forward observations.
+No intervention is required while the task remains healthy. Continue accumulating forward observations. Use `scripts/summarize_s02_forward_ops.py` plus `scripts/verify_forward_ledger.py` for concise health checks, and report immediately when SIGNAL/MISSED_SIGNAL/SKIPPED_SIGNAL/EXIT counts change or the task/ledger reports an error.

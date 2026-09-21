@@ -70,3 +70,22 @@ Do not:
 The next substantive G3 evidence begins with the first genuinely new signal lifecycle record. Periodic external anchoring of changed ledger heads remains required before public verification claims.
 
 G2 commercial rights remains independently open; Exness remains R&D-only.
+
+
+## Frozen forward-review schedule
+
+Forward scanning is continuous; it does not stop after the first signal.
+
+- **F1:** 20 completed trades — lifecycle/execution audit only.
+- **F2:** 50 completed trades + 90 days minimum — interim strategy evidence review.
+- **F3:** 100 completed trades + 180 days minimum — first candidate-status decision.
+
+Using the historical XAU S02 frequency (~10–11 trades/month) only as a planning estimate:
+
+- F1 may take roughly ~2 months;
+- F2 may land around Jan–Feb 2027;
+- F3 may land around Jun–Jul 2027.
+
+Actual timing is determined by completed forward trades, not the calendar estimate.
+
+While this runs, G2 commercial-source rights and lightweight G4 customer discovery can proceed in parallel. Full SaaS build remains premature until G2/G3 are stronger.

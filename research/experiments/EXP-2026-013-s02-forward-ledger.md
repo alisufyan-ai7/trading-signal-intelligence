@@ -157,3 +157,22 @@ Interpretation: installation is successful; no scheduled execution has occurred 
 The initial task wrapper produced the filename `s02_xau_forward_+.log` because its timestamp-format command was parsed incorrectly by Windows CMD. This was an operational logging-name defect only: the scanner and verifier both exited successfully, and the ledger was unchanged.
 
 The wrapper was corrected after this run to append to `data/forward-task-logs/s02_xau_forward.log`. No frozen strategy, scanner, ledger, config, activation fingerprint or forward record was changed.
+
+
+## Multi-day scheduler continuity — through 2026-09-21 15:02 UTC
+
+Uploaded task log review covered 72 consecutive hourly scans from `2026-09-18T16:02:05Z` through `2026-09-21T15:02:06Z`.
+
+Observed:
+
+- 72 scanner runs;
+- no gap greater than approximately one hour;
+- zero SIGNAL, EXIT, MISSED_SIGNAL or SKIPPED_SIGNAL actions;
+- zero ledger-verification failures;
+- ledger record count remained 1 throughout;
+- ledger head remained the anchored activation hash;
+- Windows Task Scheduler latest result remained 0 with zero missed runs.
+
+Weekend scans were retained. Running the task 24/7 is intentionally preferred over encoding broker-session assumptions into the scheduler; closed-market scans are harmless and reduce the risk of missing a reopening bar.
+
+A read-only helper, `scripts/summarize_s02_forward_ops.py`, was added to summarize future task logs without modifying the forward protocol or ledger.

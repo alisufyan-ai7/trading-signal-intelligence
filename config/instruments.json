@@ -3,7 +3,7 @@
   "notes": [
     "This file is the authoritative mapping for the initial research universe.",
     "Do not infer canonical symbols solely from broker currency_base/currency_profit metadata.",
-    "Exness entries are for R&D only until commercial derived-use rights are resolved."
+    "Exness derived-signal commercial use is cleared for the intended launch use case via separate permission confirmed by the project owner on 2026-09-21."
   ],
   "instruments": [
     {

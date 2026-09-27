@@ -248,3 +248,29 @@ Added:
 The public/cloud design intentionally keeps raw MT5 candles and immutable forward SQLite databases on the Windows collector.
 
 The first two completed XAU forward trades and current ledger head have been externally anchored in the repository.
+
+
+## Launch-layer smoke + product-publish scheduler — 2026-09-27 13:39 UTC
+
+The launch layer passed its local integration smoke:
+
+- `launch layer smoke: PASS`;
+- local collectors: `3/3`;
+- cloud snapshot collectors: `3/3`;
+- snapshot forward signals: `2`;
+- exported snapshot explicitly reports `raw_market_data_included = false`.
+
+Alert deduplication was initialized before any Telegram credentials were configured:
+
+- existing lifecycle records marked seen: `4` (2 SIGNAL + 2 EXIT);
+- state: `data/telegram_alert_state.json`.
+
+This prevents already-closed historical-forward events from being replayed when Telegram is enabled later.
+
+The `TradingTop Product Publish` Windows task is installed and Ready:
+
+- next run at installation checkpoint: `2026-09-27 14:05:05` machine-local time;
+- missed runs: `0`;
+- pre-first-run result `267011 / 0x41303` means the task has not executed yet.
+
+Only the first product-publish execution remains to be verified locally before public hosting.

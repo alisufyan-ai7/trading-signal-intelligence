@@ -91,3 +91,18 @@ The hourly product-publish task will then send only new SIGNAL/EXIT records.
 Cloud deployment does not change the activated scanners or forward ledgers.
 
 If the cloud service fails, disable snapshot push or remove the public domain. The local forward evidence system continues independently.
+
+
+## Deployment attempt — 2026-09-27
+
+An automated deployment attempt was made after explicit user approval.
+
+Railway rejected creation of the isolated `tradingtop-early-access` project with:
+
+`Free plan resource provision limit exceeded. Please upgrade to provision more resources!`
+
+The failure occurred before Railway provisioned a project/service, so there is nothing to roll back.
+
+Do not use an unrelated existing Railway project as a workaround. Preserve TradingTop isolation.
+
+Retry this runbook after Railway account capacity is increased or an unused Railway resource is safely removed.

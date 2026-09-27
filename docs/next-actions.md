@@ -4,59 +4,50 @@ _Last updated: 2026-09-27_
 
 ## Launch status
 
-The complete local launch path is operational.
+The local TradingTop Early Access launch path is operational and ready for public hosting.
 
-Verified:
+Public Railway deployment was explicitly approved and attempted, but Railway blocked new resource creation with:
 
-- XAUUSD / USTEC / US30 collectors active
-- primary + secondary scanner schedulers healthy
-- evidence + immutable forward record UI working
-- two completed XAU forward trades externally anchored
-- public derived snapshot excludes raw MT5 market data
-- invite-access implementation complete
-- Telegram alert implementation complete
-- cloud snapshot ingestion implementation complete
-- Docker deployment complete
-- product-publish scheduler operational with LastTaskResult 0
-- alert dedupe initialized
-- Railway deployment runbook complete
+`Free plan resource provision limit exceeded. Please upgrade to provision more resources!`
 
-## Next step — public invite-gated hosting
+No TradingTop Railway resource was created.
 
-Recommended host: Railway, using the existing GitHub repository and Dockerfile.
+Existing unrelated Railway projects were deliberately not reused.
 
-The repository is ready for:
+## Immediate external action
 
-1. create a private Railway project/service from `alisufyan-ai7/trading-signal-intelligence`;
-2. configure Dockerfile deployment;
-3. set healthcheck path `/healthz`;
-4. attach persistent storage at `/data`;
-5. set cloud secrets:
-   - `TRADINGTOP_BETA_USER`
-   - `TRADINGTOP_BETA_PASSWORD`
-   - `TRADINGTOP_INGEST_TOKEN`
-   - `TRADINGTOP_SNAPSHOT_PATH=/data/public_snapshot.json`;
-6. generate the public service domain;
-7. set the same ingest token + public ingest URL in the Windows collector's local `.env`;
-8. push the first snapshot;
-9. verify invite gate and current evidence/signals publicly.
+Create Railway capacity by either:
+
+1. upgrading the Railway account/plan; or
+2. deleting/stopping an unused Railway resource so a new project/service can be provisioned.
+
+Do not delete any existing Railway resource solely for this project unless its owner confirms it is safe to remove.
+
+## Resume point
+
+As soon as Railway capacity is available, resume with:
+
+1. create isolated private project `tradingtop-early-access`;
+2. deploy `alisufyan-ai7/trading-signal-intelligence` from `main`;
+3. use root `Dockerfile`;
+4. healthcheck: `/healthz`;
+5. mount persistent volume at `/data`;
+6. set `TRADINGTOP_SNAPSHOT_PATH=/data/public_snapshot.json`;
+7. configure invite + ingest secrets;
+8. generate the public Railway domain;
+9. configure Windows ingest URL/token;
+10. push and verify the first derived snapshot.
 
 See:
 
 `docs/public-beta-deployment-railway.md`
 
-## Important cost/secret rule
-
-Creating a cloud project/service may incur hosting usage.
-
-Do not create hosting resources or generate a public domain until the user explicitly approves the hosting provider/cost.
-
-Do not paste secret values into chat or GitHub.
-
 ## Local system
 
-No further local scanner changes are needed for deployment.
+No action is needed on the scanners while hosting capacity is resolved.
 
-Forward collection and F1 evidence accumulation continue unchanged.
+XAUUSD, USTEC and US30 collectors continue running.
 
-XAU F1 progress: `2/20`.
+S02 remains NOT CANDIDATE.
+
+XAU F1 progress remains `2/20`.

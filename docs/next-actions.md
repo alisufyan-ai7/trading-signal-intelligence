@@ -1,119 +1,94 @@
 # Current Next Actions
 
-_Last updated: 2026-09-21_
+_Last updated: 2026-09-27_
 
 ## Immediate objective
 
-Launch **TradingTop Early Access in 3–5 days** while the existing forward validation continues automatically.
+Keep the 3–5 day Early Access launch moving while resolving stale USTEC/US30 MT5 bar history.
 
-## Gate status
+## Completed
 
-- G1 research data: PASS
-- G2 commercial source rights: **PASS — separate Exness permission confirmed by project owner**
-- G3 strategy evidence: IN PROGRESS
-- G4 customer value: starts with the Early Access cohort
+- G1 PASS
+- G2 PASS via separate Exness permission confirmed by project owner
+- local Early Access FastAPI/UI preview PASS
+- XAUUSD immutable forward collector ACTIVE
+- multi-market dashboard/API foundation COMPLETE
 
-Paid replacement market-data subscriptions are deferred until application revenue exists.
+## Current blocker — USTEC and US30 recent bars
 
-## Launch universe
+Do **not** activate the two secondary forward ledgers yet.
 
-### Live-signal launch markets
+Observed on 2026-09-27:
 
-1. XAU/USD — primary historical lead, forward test already active
-2. NASDAQ 100 / USTEC — secondary historical transfer support
-3. DOW 30 / US30 — secondary historical transfer support
+- both quotes are current through the latest Friday session (2026-09-25);
+- both H1 histories stop at 2026-09-18 11:00 UTC;
+- both H4 histories stop at 2026-09-18 08:00 UTC;
+- recency probes return `appears_recent: false`.
 
-### Research/monitoring markets visible in product
+This is an MT5 terminal/history-synchronization issue, not a strategy decision.
 
-- EUR/USD
-- GBP/USD
-- USD/JPY
-- XAG/USD
-- S&P 500
-- WTI
-
-The UI must show evidence status per market rather than implying equal validation.
-
-## Step 1 — pull and preview the beta app
+## Step 1 — pull the sync diagnostic + health UI correction
 
 ```powershell
 git pull
-pip install -e ".[app]"
-python scripts\run_beta_app.py
 ```
 
-Then open:
+The app health card now distinguishes configured markets from activated collectors.
 
-`http://127.0.0.1:8000`
+## Step 2 — run targeted MT5 history synchronization probes
 
-Expected:
+```powershell
+python scripts\mt5_history_sync_probe.py --symbol USTEC --canonical "NASDAQ 100"
 
-- TradingTop Early Access page;
-- XAU/USD, NASDAQ 100 and DOW 30 in the live-signal section;
-- remaining researched markets in the research section;
-- XAU forward state visible;
-- USTEC/US30 initially show forward collector not activated.
+python scripts\mt5_history_sync_probe.py --symbol US30 --canonical "DOW 30"
+```
 
-Leave the app running only for preview; this is not the final internet deployment yet.
+Send both complete JSON outputs.
 
-## Step 2 — verify USTEC and US30 live recency
+The probe queries each timeframe through:
 
-In a second PowerShell window:
+- `copy_rates_from_pos`;
+- `copy_rates_from`;
+- `copy_rates_range`;
+
+and repeats requests to give the terminal a chance to synchronize recent history.
+
+## If final H1/H4 become recent
+
+Re-run:
 
 ```powershell
 python scripts\mt5_recency_probe.py --symbol USTEC --canonical "NASDAQ 100"
 python scripts\mt5_recency_probe.py --symbol US30 --canonical "DOW 30"
 ```
 
-Both H1 and H4 should report `appears_recent: true`.
+Only after both markets report `appears_recent: true` for H1 and H4 do we activate their immutable ledgers.
 
-## Step 3 — activate separate immutable secondary ledgers
+## If they remain stuck on September 18
 
-Only if recency is clean:
+In the MT5 terminal:
 
-```powershell
-python scripts\activate_s02_forward.py --database data\forward_ustec.sqlite --symbol USTEC --canonical "NASDAQ 100" --entity "S02-v0.1:USTEC:SECONDARY"
+1. open the USTEC chart;
+2. switch to H1 and use chart Refresh;
+3. switch to H4 and Refresh;
+4. repeat for US30;
+5. leave the charts open for about a minute;
+6. rerun `mt5_history_sync_probe.py`.
 
-python scripts\activate_s02_forward.py --database data\forward_us30.sqlite --symbol US30 --canonical "DOW 30" --entity "S02-v0.1:US30:SECONDARY"
-
-python scripts\verify_forward_ledger.py --database data\forward_ustec.sqlite
-python scripts\verify_forward_ledger.py --database data\forward_us30.sqlite
-```
-
-Send the two recency outputs plus both activation and verification JSON outputs.
-
-Do **not** install the secondary scheduled task until those two activation hashes are durably anchored in the repo.
-
-## Step 4 — after secondary activation
-
-Once the hashes are anchored:
-
-1. install the USTEC/US30 hourly scheduler;
-2. connect all three ledgers to the web product status API;
-3. add product signal-history/evidence views;
-4. add authentication;
-5. add one alert channel;
-6. deploy the beta publicly;
-7. start collecting user feedback and willingness-to-pay data.
+If history still does not advance, the next diagnostic will compare server/date-range availability and broker session history rather than activating stale feeds.
 
 ## Existing XAU forward test
 
 Leave it untouched.
 
-Normal health check:
+## Launch work that continues in parallel
 
-```powershell
-python scripts\summarize_s02_forward_ops.py
-python scripts\verify_forward_ledger.py
-Get-ScheduledTaskInfo -TaskName "TradingTop S02 XAU Forward Scan"
-```
+While the index history is repaired, continue product work:
 
-Report immediately on SIGNAL / EXIT / MISSED_SIGNAL / SKIPPED_SIGNAL or any task/ledger error.
+- signal/evidence history views;
+- authentication;
+- one alert channel;
+- public deployment setup;
+- feedback capture.
 
-## Launch claim discipline
-
-Launch language:
-
-**TradingTop Early Access — verified rule-based market setups with transparent historical and forward performance.**
-
-Do not claim guaranteed returns, completed forward validation, personalized advice, or copy trading.
+USTEC/US30 activation is a market-specific blocker, not a reason to stop the whole product build.

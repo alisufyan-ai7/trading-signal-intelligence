@@ -250,3 +250,27 @@ Sources:
 **Evidence tier:** USTEC and US30 remain secondary launch markets because their frozen historical final-test margins were small. They are not promoted to the XAU evidence tier merely by activation.
 
 **Implication:** Install the separate secondary hourly task and preserve each ledger independently.
+
+
+## 2026-09-27 — D026: Strict context isolation for TradingTop research and Work mode
+
+**Decision:** For this TradingTop Analysis project, do not use account-level memory, saved/personal memory, other chats, other projects, other repositories, or unrelated connected-app context.
+
+**Allowed context only:**
+
+- the current open chat;
+- the private GitHub repository `alisufyan-ai7/trading-signal-intelligence`;
+- authenticated TradingTop pages explicitly opened during this project’s Work-mode research;
+- fresh public web research specifically about TradingTop/Elirox when the user asks for external verification or comparison.
+
+**Not allowed:**
+
+- Personal Context / account memory;
+- prior chats outside this project;
+- any other GitHub repository;
+- unrelated Gmail/Drive/app content;
+- inferences based on user history outside the allowed sources.
+
+**Work-mode implication:** Even if the product setting is changed to Default Memory so Work mode becomes available, this project remains logically isolated by instruction. Work should be told to use only the allowed sources above.
+
+**Reason:** Preserve research provenance and prevent contamination from unrelated projects or account-level context.

@@ -438,3 +438,18 @@ The Windows VPS collector successfully ran `scripts/configure_cloud_ingest.ps1`,
 in the repository-root local `.env`.
 
 The token value remains local/private and is ignored by Git.
+
+
+## Cloud ingest URL incident — 2026-09-27
+
+The first Windows-to-Railway snapshot POST failed with HTTP 404.
+
+Railway HTTP logs showed the local `.env` ingest URL was malformed: the ingestion-token assignment had been concatenated into the request path. Because that malformed request path caused the ingestion token to appear in Railway request logs, the affected token must be treated as compromised and rotated before further pushes.
+
+Mitigations committed:
+
+- `scripts/configure_cloud_ingest.py` now writes URL/token with `python-dotenv set_key` and verifies both values after writing;
+- ingest URLs are validated as HTTPS and rejected if they contain environment-variable text or suspicious `=` path content;
+- `scripts/push_public_snapshot.py` now refuses malformed URLs before sending and reports HTTP failures without a Python traceback.
+
+Next: rotate `TRADINGTOP_INGEST_TOKEN` in Railway and the VPS `.env`, then retry the snapshot push.

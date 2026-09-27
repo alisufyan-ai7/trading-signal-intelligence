@@ -38,9 +38,25 @@ async function boot() {
   const health = await healthRes.json();
   const markets = await marketsRes.json();
 
-  document.querySelector("#health-label").textContent = health.ok ? "Systems operational" : "Attention required";
-  document.querySelector("#health-detail").textContent =
-    `${health.live_signal_markets} live-signal markets configured`;
+  const label = document.querySelector("#health-label");
+  const detail = document.querySelector("#health-detail");
+  const dot = document.querySelector(".dot");
+
+  if (!health.ok) {
+    label.textContent = "Attention required";
+    detail.textContent = `Ledger error: ${health.ledger_errors.join(", ") || "unknown"}`;
+    dot.classList.add("warn");
+  } else if (!health.launch_ready) {
+    label.textContent = "Launch setup incomplete";
+    detail.textContent =
+      `${health.ready_collector_count}/${health.live_signal_markets} live collectors active`;
+    dot.classList.add("warn");
+  } else {
+    label.textContent = "Systems operational";
+    detail.textContent =
+      `${health.ready_collector_count}/${health.live_signal_markets} live collectors active`;
+    dot.classList.remove("warn");
+  }
 
   const live = markets.filter(m => m.product_status === "live_signal_market");
   const research = markets.filter(m => m.product_status === "research_monitoring");

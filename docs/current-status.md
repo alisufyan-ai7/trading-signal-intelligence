@@ -194,3 +194,20 @@ Implemented:
 - fast beta product smoke script.
 
 No frozen S02 strategy/scanner/ledger code was changed.
+
+
+## Day-2 local smoke checkpoint — 2026-09-27 13:18 UTC
+
+Local product smoke passed:
+
+- `beta smoke: PASS`;
+- collectors ready: `3/3`;
+- launch ready: `True`;
+- public snapshot exported successfully;
+- `raw_market_data_included = false`.
+
+The smoke output also reported `forward_signals = 2`. These are the first detected immutable forward SIGNAL records in the three-market launch system and must be inspected/anchored before treating them as ordinary UI data.
+
+A read-only `scripts/inspect_forward_events.py` was added to print the exact SIGNAL/EXIT/MISSED_SIGNAL/SKIPPED_SIGNAL lifecycle records, current ledger heads and verification state across all three launch markets.
+
+The browser screenshots still showed an older cached frontend bundle (old health-card wording and a persistent `Loading forward records...` state). Static asset URLs are now versioned to force the current evidence/signal UI to load.

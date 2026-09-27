@@ -20,7 +20,7 @@ def beta_access_enabled() -> bool:
 
 
 async def basic_access_middleware(request: Request, call_next):
-    if request.url.path.startswith("/api/internal/"):
+    if request.url.path == "/healthz" or request.url.path.startswith("/api/internal/"):
         return await call_next(request)
 
     expected_user = os.getenv("TRADINGTOP_BETA_USER")

@@ -211,3 +211,20 @@ The smoke output also reported `forward_signals = 2`. These are the first detect
 A read-only `scripts/inspect_forward_events.py` was added to print the exact SIGNAL/EXIT/MISSED_SIGNAL/SKIPPED_SIGNAL lifecycle records, current ledger heads and verification state across all three launch markets.
 
 The browser screenshots still showed an older cached frontend bundle (old health-card wording and a persistent `Loading forward records...` state). Static asset URLs are now versioned to force the current evidence/signal UI to load.
+
+
+## First completed XAU forward lifecycles — anchored 2026-09-27
+
+The XAU forward ledger now contains two completed forward trades and one skipped overlapping setup.
+
+- trade 1: short, net `-1.0071426171R`;
+- trade 2: short, net `-1.0075745151R`;
+- cumulative completed forward net R: approximately `-2.0147171322R`;
+- skipped setup: one short signal while trade 2 was already open, correctly logged as `SKIPPED_SIGNAL`;
+- unresolved signals: none;
+- ledger verification: valid;
+- current XAU ledger head: `e7b3e4d69292a81865ae62201e5cebb469e1b77d6826e0a9f434c4a677dcd904`.
+
+F1 execution-audit progress is now `2/20` completed trades. This sample is too small for any strategy-performance decision.
+
+Durable checkpoint: `research/forward/S02-XAUUSD-forward-checkpoint-2026-09-27.md`.

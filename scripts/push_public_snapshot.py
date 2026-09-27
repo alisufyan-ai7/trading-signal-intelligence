@@ -3,13 +3,39 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import urllib.error
 import urllib.request
 from pathlib import Path
+from urllib.parse import urlparse
 
 from dotenv import load_dotenv
 
 
 load_dotenv()
+
+
+def _validated_endpoint(base_url: str) -> str:
+    endpoint = base_url.strip().rstrip("/")
+    if "TRADINGTOP_" in endpoint:
+        raise SystemExit(
+            "TRADINGTOP_INGEST_URL is malformed: it contains an environment "
+            "variable name. Re-run scripts/configure_cloud_ingest.ps1."
+        )
+
+    if not endpoint.endswith("/api/internal/snapshot"):
+        endpoint += "/api/internal/snapshot"
+
+    parsed = urlparse(endpoint)
+    if parsed.scheme != "https" or not parsed.netloc:
+        raise SystemExit(
+            "TRADINGTOP_INGEST_URL must be a valid HTTPS URL."
+        )
+    if "=" in parsed.path:
+        raise SystemExit(
+            "TRADINGTOP_INGEST_URL appears malformed. "
+            "Re-run scripts/configure_cloud_ingest.ps1."
+        )
+    return endpoint
 
 
 def main() -> None:
@@ -43,13 +69,11 @@ def main() -> None:
             "or pass --url."
         )
 
+    endpoint = _validated_endpoint(base_url)
+
     payload = json.loads(Path(args.snapshot).read_text(encoding="utf-8"))
     if payload.get("raw_market_data_included") is not False:
         raise SystemExit("Refusing to upload a snapshot containing raw market data")
-
-    endpoint = base_url.rstrip("/")
-    if not endpoint.endswith("/api/internal/snapshot"):
-        endpoint += "/api/internal/snapshot"
 
     request = urllib.request.Request(
         endpoint,
@@ -60,8 +84,19 @@ def main() -> None:
         },
         method="POST",
     )
-    with urllib.request.urlopen(request, timeout=30) as response:
-        body = json.loads(response.read().decode("utf-8"))
+
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            body = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise SystemExit(
+            f"Cloud snapshot push failed: HTTP {exc.code}. "
+            f"Response: {detail[:500]}"
+        ) from None
+    except urllib.error.URLError as exc:
+        raise SystemExit(f"Cloud snapshot push failed: {exc.reason}") from None
+
     print(json.dumps(body, indent=2))
 
 

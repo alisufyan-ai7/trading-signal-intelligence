@@ -2,9 +2,9 @@
 
 _Last updated: 2026-09-27_
 
-## Public beta status
+## Public beta launch state
 
-The TradingTop public beta data path is now operational end-to-end.
+The TradingTop public beta is live and has passed end-to-end browser + publisher smoke.
 
 Public URL:
 
@@ -12,64 +12,45 @@ Public URL:
 
 Verified:
 
-- Railway deployment SUCCESS
-- `/healthz` 200
-- public app root 200
-- `/api/health` 200
-- `/api/markets` 200
-- `/api/signals` 200
-- Windows snapshot push 200
-- derived snapshot accepted
-- raw market data excluded
+- no username/password prompt
+- Railway deployment healthy
+- 3/3 live collectors active in UI
+- XAU/USD, USTEC and US30 live-signal cards visible
+- XAU historical evidence visible
+- USTEC/US30 transfer-support evidence visible
+- two immutable completed XAU forward records visible
+- six research/monitoring markets visible with explicit labels
+- research-beta disclaimer visible
+- snapshot publish returns 200
+- product-publish wrapper: `export_exit=0 alert_exit=0 push_exit=0`
+- `raw_market_data_included=false`
 
-Snapshot composition:
+Telegram remains optional and disabled.
 
-- 3 live-signal markets
-- 6 research/monitoring markets
-- 9 total market rows
+## Immediate product work
 
-## Immediate operational check
+The infrastructure/deployment track is no longer the launch bottleneck.
 
-Run the local publish wrapper once:
+Next priorities:
 
-```powershell
-scripts\run_product_publish_task.cmd
-Get-Content data\forward-task-logs\product_publish.log -Tail 80
-```
+1. add lightweight user feedback / willingness-to-pay capture;
+2. decide the first external user cohort and onboarding message;
+3. add basic usage/activation measurement if it can be done without slowing launch;
+4. optionally enable Telegram alerts for future SIGNAL/EXIT events;
+5. continue immutable forward validation unchanged.
 
-Expected:
+## Forward validation
 
-`export_exit=0 alert_exit=0 push_exit=0`
+XAU F1 progress remains `2/20` completed trades.
 
-Telegram may remain disabled.
+Do not tune or change S02 based on the first two forward losses.
 
-## Browser smoke
+USTEC and US30 remain secondary forward collectors.
 
-Open:
+## Persistence caveat
 
-`https://tradingtop-early-access-production.up.railway.app`
+There is still no persistent Railway volume.
 
-Confirm:
+A Railway restart/redeploy can temporarily clear the cloud snapshot until the hourly Windows publisher republishes it.
 
-1. no username/password prompt;
-2. 3/3 live collectors active;
-3. XAU evidence and two completed forward trades visible;
-4. USTEC and US30 scanning with no forward signals;
-5. research/monitoring markets visible with explicit evidence labels;
-6. research-beta disclosure visible.
-
-## Next launch work
-
-After browser smoke passes:
-
-1. add user feedback / willingness-to-pay capture;
-2. decide first invite/public-user cohort;
-3. optionally enable Telegram alerts for future SIGNAL/EXIT records;
-4. monitor public snapshot freshness and Railway restarts;
-5. continue XAU F1 forward accumulation unchanged.
-
-## Persistence
-
-No Railway volume is attached yet.
-
-If Railway restarts before the next scheduled Windows push, the snapshot can temporarily disappear. The hourly product-publish task should restore it automatically.
+The tested product-publish task now successfully restores/publishes the snapshot.

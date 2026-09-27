@@ -54,3 +54,16 @@ There is still no persistent Railway volume.
 A Railway restart/redeploy can temporarily clear the cloud snapshot until the hourly Windows publisher republishes it.
 
 The tested product-publish task now successfully restores/publishes the snapshot.
+
+## TradingTop/Elirox audit checkpoint — 2026-09-27 UTC
+
+See `docs/tradingtop-elirox-public-audit-2026-09-27.md` for source links, observed public flows and product implications. Authenticated TradingTop views and prices remain unverified because Google's OAuth destination returned a 502 connection error in this Work browser session.
+
+Before external invitations:
+
+1. Choose a distinct public product name; the current page uses the same name as the comparison service.
+2. Choose a durable, owner-accessible feedback destination and retention policy. The current Railway filesystem is ephemeral; do not acknowledge feedback into it as durable.
+3. Implement a small feedback form and verify persistence across a redeploy. Ask about comprehension, missing signal details, alert preference and willingness to pay; do not collect broker credentials.
+4. Select the first cohort and prepare the onboarding message; send no invitations until the preceding steps are complete.
+
+This audit did not recheck the hosted beta. The prior launch verification above is the repository's recorded checkpoint.

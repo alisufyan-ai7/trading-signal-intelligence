@@ -453,3 +453,32 @@ Mitigations committed:
 - `scripts/push_public_snapshot.py` now refuses malformed URLs before sending and reports HTTP failures without a Python traceback.
 
 Next: rotate `TRADINGTOP_INGEST_TOKEN` in Railway and the VPS `.env`, then retry the snapshot push.
+
+
+## First successful Windows -> Railway snapshot push — 2026-09-27
+
+The Windows VPS successfully exported and pushed the current derived public snapshot to Railway.
+
+Push response:
+
+- `accepted = true`;
+- `generated_at_utc = 2026-09-27T17:10:07.772574+00:00`;
+- snapshot market rows: `9`;
+- launch live-signal markets: `3`;
+- `raw_market_data_included = false`.
+
+The 9 snapshot rows are expected: 3 live-signal markets plus 6 research/monitoring markets.
+
+Railway request logs confirm:
+
+- `POST /api/internal/snapshot -> 200 OK`;
+- public `GET /` -> 200;
+- `GET /api/health` -> 200;
+- `GET /api/markets` -> 200;
+- `GET /api/signals` -> 200.
+
+Railway also automatically deployed the latest hardened code commit and passed `/healthz`.
+
+The public beta data path is now end-to-end operational:
+
+Windows collectors -> immutable ledgers -> derived public snapshot -> bearer-authenticated Railway ingestion -> public UI/API.

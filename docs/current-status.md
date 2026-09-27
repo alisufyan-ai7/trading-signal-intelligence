@@ -274,3 +274,27 @@ The `TradingTop Product Publish` Windows task is installed and Ready:
 - pre-first-run result `267011 / 0x41303` means the task has not executed yet.
 
 Only the first product-publish execution remains to be verified locally before public hosting.
+
+
+## Product-publish automation verified — 2026-09-27
+
+The first scheduled product-publish execution completed successfully:
+
+- Windows Task Scheduler `LastTaskResult = 0`;
+- missed runs: `0`;
+- derived public snapshot exported successfully;
+- `raw_market_data_included = false`;
+- Telegram integration correctly reported disabled because credentials are not yet configured;
+- cloud snapshot push correctly reported disabled because ingest URL/token are not yet configured.
+
+A manual wrapper run also completed the same three stages successfully.
+
+One logging-only defect was observed: the summary line rendered `push_exit=` blank even though the push step completed and the task returned success. The wrapper now uses delayed CMD expansion so future logs report all three exit codes explicitly.
+
+Public-host deployment readiness has been hardened with:
+
+- public `/healthz` endpoint for platform health checks;
+- invite gate still applied to the actual beta surface;
+- Railway deployment runbook at `docs/public-beta-deployment-railway.md`.
+
+The local product layer is now considered READY FOR PUBLIC INVITE-GATED DEPLOYMENT.

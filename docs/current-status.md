@@ -320,3 +320,24 @@ Resolution options:
 2. free an unused Railway resource/project/service from the account.
 
 After Railway capacity exists, resume with a new isolated `tradingtop-early-access` project and follow `docs/public-beta-deployment-railway.md`.
+
+
+## Railway capacity recheck — 2026-09-27
+
+After the user reported Railway capacity ready, a second isolated project-creation attempt was made.
+
+Railway still returned:
+
+`Free plan resource provision limit exceeded. Please upgrade to provision more resources!`
+
+The connected Railway identity is `alisufyan-ai7` in workspace `alisufyan-ai7's Projects`, which currently contains two projects:
+
+- `positioning-engine-cron` — currently zero services;
+- `quantlyra-production` — active, multiple services.
+
+Because the project-count/resource limit still blocks creating a third isolated project, deployment cannot proceed without either:
+
+1. explicit approval to repurpose/remove the empty `positioning-engine-cron` Railway project; or
+2. a Railway plan/capacity change that allows a third project.
+
+No unrelated Railway project has been modified.

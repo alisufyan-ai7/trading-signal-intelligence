@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from trading_signal_intelligence.product.catalog import launch_catalog, market_statuses
+from trading_signal_intelligence.product.access import basic_access_middleware, beta_access_enabled\nfrom trading_signal_intelligence.product.catalog import launch_catalog, market_statuses
 from trading_signal_intelligence.product.evidence import evidence_summary, market_evidence
 from trading_signal_intelligence.product.public_signals import (
     operational_event_counts,
@@ -23,7 +23,7 @@ app = FastAPI(
     description="Verified rule-based market setups with transparent evidence status.",
 )
 
-app.mount("/static", StaticFiles(directory=WEB), name="static")
+app.middleware("http")(basic_access_middleware)\napp.mount("/static", StaticFiles(directory=WEB), name="static")
 
 
 @app.get("/")

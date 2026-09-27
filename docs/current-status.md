@@ -482,3 +482,34 @@ Railway also automatically deployed the latest hardened code commit and passed `
 The public beta data path is now end-to-end operational:
 
 Windows collectors -> immutable ledgers -> derived public snapshot -> bearer-authenticated Railway ingestion -> public UI/API.
+
+
+## Public browser smoke + scheduled publish — PASS 2026-09-27
+
+The project owner completed a browser smoke of the Railway-hosted public beta.
+
+Observed in the live UI:
+
+- no username/password prompt;
+- systems operational;
+- 3/3 live collectors active;
+- XAU/USD, NASDAQ 100 and DOW 30 live-signal cards visible;
+- frozen evidence cards visible for XAUUSD, USTEC and US30;
+- two closed immutable XAU forward signals visible with entry/stop/target/result/hash;
+- six research/monitoring markets visible with explicit evidence-status labels;
+- research-beta disclaimer visible;
+- historical and forward evidence are visibly separated.
+
+The Windows product-publish wrapper was also run manually after cloud ingestion was fixed.
+
+Final wrapper status:
+
+`export_exit=0 alert_exit=0 push_exit=0`
+
+Telegram remained intentionally disabled.
+
+Railway logs independently confirm the wrapper's cloud push:
+
+`POST /api/internal/snapshot -> 200 OK` at approximately 2026-09-27T17:14Z.
+
+Day-4 deployment smoke is therefore complete.

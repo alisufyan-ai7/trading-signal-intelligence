@@ -73,3 +73,23 @@ This audit did not recheck the hosted beta. The prior launch verification above 
 User-authorized email/password sign-in later succeeded. The earlier Google OAuth failure and “authenticated pages unverified” statement above are historical to the first attempt. Signed-in TradingTop screenshots and hashes are archived in `research/competitors/tradingtop/2026-09-27/README.md`. Pricing, signal card, AI log and T1/T2/T3 model pages were observed. T2's displayed three-month gold result is negative; do not use the aggregate AI log headline as a proxy for T2 model performance.
 
 Keep the product priorities above. Add explicit signal issuance/expiry semantics and per-strategy outcome scope to the first-user comprehension check. No trading or broker connection was performed during this research.
+
+
+## Authenticated TradingTop teardown — product-direction checkpoint 2026-09-28
+
+See `docs/tradingtop-authenticated-teardown-and-product-gap-2026-09-28.md`.
+
+The authenticated research changes the priority order if the intended destination remains a TradingTop-like AI intelligence product.
+
+Proposed immediate order, pending owner approval:
+
+1. choose a distinct product name;
+2. freeze an AI-v1 structured signal contract + evaluation protocol;
+3. build AI-v1 as a shadow engine beside S02 on XAUUSD/USTEC/US30;
+4. add deterministic publish guards and immutable AI inference logging;
+5. add an AI Insights signal/reasoning/log UI;
+6. only then prioritize accounts, compute credits, paid plans and user feedback;
+7. referrals after paid conversion evidence;
+8. broker-connected auto trading last.
+
+Do not modify or stop the active S02 forward ledgers. They become the benchmark/control for AI-v1.

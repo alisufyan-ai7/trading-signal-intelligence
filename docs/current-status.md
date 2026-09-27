@@ -416,3 +416,25 @@ The invite middleware is active because both beta-user/password variables are co
 The cloud currently has not yet received its first derived snapshot.
 
 Added `scripts/configure_cloud_ingest.ps1` so the Windows collector can securely store the Railway ingest URL/token in local `.env` without echoing the token.
+
+
+## Public app auth removed / VPS env simplified — 2026-09-27
+
+Per project-owner request, HTTP Basic username/password authentication has been removed from the TradingTop app.
+
+Changes:
+
+- local app no longer mounts the Basic-auth middleware;
+- cloud app no longer mounts the Basic-auth middleware;
+- Railway `TRADINGTOP_BETA_USER` and `TRADINGTOP_BETA_PASSWORD` were blanked;
+- snapshot ingestion remains protected by `TRADINGTOP_INGEST_TOKEN`;
+- `.env.example` now documents only ingest + optional Telegram settings.
+
+The Windows VPS collector successfully ran `scripts/configure_cloud_ingest.ps1`, which stored:
+
+- `TRADINGTOP_INGEST_URL=https://tradingtop-early-access-production.up.railway.app/api/internal/snapshot`;
+- `TRADINGTOP_INGEST_TOKEN=<secret>`
+
+in the repository-root local `.env`.
+
+The token value remains local/private and is ignored by Git.

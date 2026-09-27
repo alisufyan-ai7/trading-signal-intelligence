@@ -45,3 +45,9 @@ The page and service currently use the name “TradingTop Early Access,” which
 - Select the durable feedback destination and retention policy, then implement the form, server validation, rate limiting, submission acknowledgment and a retrieval path for the owner.
 - Test that a redeploy does not erase submitted feedback, and that failures show a clear retry message.
 - Validate the public beta again after a product change; this audit only read the repository.
+
+## Authenticated TradingTop follow-up — 2026-09-27 UTC
+
+A later user-authorized email/password sign-in succeeded in the same Work browser session. The public-only limitations above describe the earlier Google OAuth failure and are now superseded for TradingTop pricing and the observed account views.
+
+The complete screenshot index, hashes, observed plan tiers, XAU signal card, aggregate AI log and three separate model performance pages are in [the private research capture index](../research/competitors/tradingtop/2026-09-27/README.md). In particular, the displayed T2 gold model's last-three-month PnL was **-$441.30 over 53 trades**, while the aggregate AI log showed a separate 74.00% “Inference Accuracy” headline. These have different scopes and were not independently audited; they must not be combined into one performance claim. No broker connection, paid access or automated trading was activated.

@@ -19,7 +19,7 @@
 - S02 new-market transfer runner: COMPLETE
 - Immutable hash-chained forward ledger: ACTIVATED / HASH ANCHORED
 - S02 live forward scanner: ACTIVE / 72 CONSECUTIVE HOURLY RUNS VERIFIED THROUGH 2026-09-21 15:02 UTC
-- SaaS UI: EARLY ACCESS MVP PREVIEW PASS / SECONDARY ACTIVATION NEXT
+- SaaS UI: EARLY ACCESS MVP PREVIEW PASS / 3 FORWARD LEDGERS ACTIVATED; SECONDARY SCHEDULER NEXT
 
 ## Validation gates
 
@@ -151,4 +151,17 @@ For both USTEC and US30:
 
 The pre-activation recency gate is therefore passed for both secondary launch markets.
 
-Next: activate separate immutable USTEC and US30 ledgers, verify them, and anchor both activation hashes before installing the secondary hourly scheduler.
+USTEC and US30 immutable ledgers are now activated, verified and durably anchored. Next: install the secondary hourly scheduler and confirm the first automatic run.
+
+
+## Secondary forward activations — 2026-09-27
+
+USTEC activation/head hash:
+
+`b0bcb4c952c64c3043512905b803697b491841b99b08b256feb9de82f2cd2780`
+
+US30 activation/head hash:
+
+`3bc5a922843fea806b8aa4ab3c53a98a2d371982c7479164548b1a1e8fbea581`
+
+Both ledgers verified with one ACTIVATION record and no unresolved signals. Separate durable anchor files are stored under `research/forward/`.

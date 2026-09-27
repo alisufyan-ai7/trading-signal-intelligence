@@ -19,7 +19,7 @@
 - S02 new-market transfer runner: COMPLETE
 - Immutable hash-chained forward ledger: ACTIVATED / HASH ANCHORED
 - S02 live forward scanner: ACTIVE / 72 CONSECUTIVE HOURLY RUNS VERIFIED THROUGH 2026-09-21 15:02 UTC
-- SaaS UI: EARLY ACCESS MVP PREVIEW PASS / 3 FORWARD LEDGERS ACTIVATED; SECONDARY SCHEDULER NEXT
+- SaaS UI: EARLY ACCESS DAY-2 BUILD / 3 FORWARD COLLECTORS ACTIVE
 
 ## Validation gates
 
@@ -165,3 +165,32 @@ US30 activation/head hash:
 `3bc5a922843fea806b8aa4ab3c53a98a2d371982c7479164548b1a1e8fbea581`
 
 Both ledgers verified with one ACTIVATION record and no unresolved signals. Separate durable anchor files are stored under `research/forward/`.
+
+
+## Secondary scheduler first run — 2026-09-27
+
+The first automatic USTEC/US30 run completed successfully:
+
+- Windows task result: `0`;
+- missed runs: `0`;
+- USTEC scan/verify completed with no actions and a valid activation-only ledger;
+- US30 scan/verify completed with no actions and a valid activation-only ledger;
+- anchored head hashes remained unchanged.
+
+The repository `.venv` also successfully runs the beta app with Uvicorn.
+
+## Early Access Day-2 product layer
+
+Implemented:
+
+- frozen historical-evidence summaries for XAUUSD, USTEC and US30;
+- public evidence API;
+- per-market immutable signal-history API;
+- aggregated live-signal-history API;
+- forward operational-event counts;
+- evidence cards in the beta UI;
+- immutable forward-record UI section;
+- read-only public snapshot exporter containing derived signal/evidence data only;
+- fast beta product smoke script.
+
+No frozen S02 strategy/scanner/ledger code was changed.

@@ -2,82 +2,80 @@
 
 _Last updated: 2026-09-27_
 
-## Public Railway beta status
+## Public beta status
 
-Railway deployment is healthy and the invite/ingestion secret variables are configured.
+The TradingTop app is now intended to be publicly readable without a username/password prompt.
 
-Public service domain:
+Snapshot ingestion remains private and bearer-token protected.
+
+Public URL:
 
 `https://tradingtop-early-access-production.up.railway.app`
 
-Verified through Railway:
+## VPS environment file
 
-- deployment SUCCESS;
-- Uvicorn running on Railway port;
-- `/healthz` returns 200;
-- invite username/password variables exist;
-- ingestion token variable exists.
+On the Windows VPS, the environment file is:
 
-The first derived snapshot has not yet been pushed from Windows.
+`C:\Users\Administrator\Desktop\Signal Projects\trading-signal-intelligence\.env`
 
-## Immediate Windows action — connect the publisher
+Required entries:
 
-Pull the secure ingest helper:
-
-```powershell
-git pull
-
-powershell -ExecutionPolicy Bypass -File scripts\configure_cloud_ingest.ps1
+```text
+TRADINGTOP_INGEST_URL=https://tradingtop-early-access-production.up.railway.app/api/internal/snapshot
+TRADINGTOP_INGEST_TOKEN=<same secret configured in Railway>
 ```
 
-When prompted, enter the **same** `TRADINGTOP_INGEST_TOKEN` that was configured in Railway.
+Optional Telegram entries:
 
-The prompt is secure and does not display the token.
+```text
+TRADINGTOP_TELEGRAM_BOT_TOKEN=
+TRADINGTOP_TELEGRAM_CHAT_ID=
+```
 
-Then push the current derived snapshot:
+Do not add beta username/password variables. The app auth gate has been removed.
+
+## Immediate verification
+
+The secure helper has already written the ingest URL/token on the VPS.
+
+Run:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\export_public_snapshot.py
-
 .\.venv\Scripts\python.exe scripts\push_public_snapshot.py
 ```
 
-Expected push response:
+Expected:
 
-- `accepted: true`;
-- three markets;
-- `raw_market_data_included: false`.
+- `accepted: true`
+- `markets: 3`
+- `raw_market_data_included: false`
 
-Then run the product publish wrapper once:
+Then:
 
 ```powershell
 scripts\run_product_publish_task.cmd
-
 Get-Content data\forward-task-logs\product_publish.log -Tail 80
 ```
 
-Expected final summary:
+Expected summary:
 
 `export_exit=0 alert_exit=0 push_exit=0`
 
-Telegram can remain disabled.
+Telegram may remain disabled.
 
-## Browser verification
+## Railway code refresh
 
-Open:
+The current Railway runtime has the username/password variables blank, so Basic auth is already effectively disabled.
 
-`https://tradingtop-early-access-production.up.railway.app`
+To deploy the code version that removes the auth middleware entirely, use Railway dashboard → `tradingtop-early-access` → **Deploy Latest Commit** after the latest GitHub commits are visible.
 
-Expected:
+After that, confirm the public URL opens directly without a credentials prompt.
 
-1. browser requests the Early Access username/password;
-2. valid credentials load the beta;
-3. health shows 3/3 live collectors active after snapshot push;
-4. XAU evidence and the two completed forward trades appear;
-5. USTEC/US30 remain scanning with no issued forward trades.
+## Security boundary
 
-## Persistence note
+Public read access is intentional.
 
-There is currently no Railway persistent volume.
+The write endpoint `/api/internal/snapshot` remains protected by `TRADINGTOP_INGEST_TOKEN`.
 
-A Railway restart/redeploy can clear the cloud snapshot until the Windows publisher pushes it again. The hourly product-publish task provides automatic recovery once cloud ingestion is configured.
+Never expose or commit the ingestion token.

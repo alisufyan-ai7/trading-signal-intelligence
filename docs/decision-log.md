@@ -233,3 +233,20 @@ Sources:
 **Integrity rule:** USTEC and US30 get separate append-only forward databases and activation hashes. The existing XAU activation/database remains untouched.
 
 **Product implication:** The 3–5 day Early Access build proceeds now; paid data replacement is a later revenue-funded infrastructure choice rather than a launch prerequisite.
+
+
+## 2026-09-27 — D025: Activate and anchor USTEC and US30 as secondary Early Access forward markets
+
+**Decision:** Activate separate immutable S02 v0.1 forward ledgers for USTEC and US30 after both markets passed the live H1/H4 recency gate.
+
+**USTEC activation:** `2026-09-27T12:42:13.014356Z`; activation/head SHA-256 `b0bcb4c952c64c3043512905b803697b491841b99b08b256feb9de82f2cd2780`.
+
+**US30 activation:** `2026-09-27T12:42:13.701885Z`; activation/head SHA-256 `3bc5a922843fea806b8aa4ab3c53a98a2d371982c7479164548b1a1e8fbea581`.
+
+**Repository HEAD at both activations:** `08cf2282776a4f5f7863f6c16d96b1704dc56bca`.
+
+**Protocol:** Both use the unchanged S02 v0.1 config and the same frozen protocol bundle hash `484b3de25c6ff6c24de30c5a700f211b98be8534c7b0354fcb2d6219587232cf`.
+
+**Evidence tier:** USTEC and US30 remain secondary launch markets because their frozen historical final-test margins were small. They are not promoted to the XAU evidence tier merely by activation.
+
+**Implication:** Install the separate secondary hourly task and preserve each ledger independently.

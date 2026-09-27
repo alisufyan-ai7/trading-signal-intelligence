@@ -1,7 +1,7 @@
 # Secondary S02 Forward Activation — USTEC + US30
 
 **Created:** 2026-09-21  
-**Status:** READY FOR ACTIVATION
+**Status:** RECENCY PASSED — ACTIVATION NEXT
 
 ## Purpose
 
@@ -72,3 +72,21 @@ The secondary task runs at approximately minute 03, after the primary XAU task n
 - no claim that USTEC/US30 are as strongly validated as XAU;
 - any missed signal remains explicit;
 - separate activation hashes and ledgers remain independently verifiable.
+
+
+## Recency gate result — 2026-09-27
+
+The targeted synchronization probe passed for both markets.
+
+USTEC and US30 each reported:
+
+- H1 latest bar `2026-09-25T20:00:00Z`;
+- H4 latest bar `2026-09-25T20:00:00Z`;
+- quote timestamp `2026-09-25T20:54:59Z`;
+- approximately 0.916h lag to quote;
+- all three MT5 retrieval methods agreeing;
+- H1/H4 `appears_recent = true`.
+
+The prior Sep 18 stale-history state was a terminal synchronization condition and is resolved.
+
+Activation may proceed. Scheduler installation remains blocked until both activation hashes are durably anchored.

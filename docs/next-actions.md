@@ -4,7 +4,7 @@ _Last updated: 2026-09-27_
 
 ## Immediate objective
 
-Keep the 3–5 day Early Access launch moving while resolving stale USTEC/US30 MT5 bar history.
+Launch TradingTop Early Access while the existing XAU forward validation continues automatically.
 
 ## Completed
 
@@ -13,82 +13,67 @@ Keep the 3–5 day Early Access launch moving while resolving stale USTEC/US30 M
 - local Early Access FastAPI/UI preview PASS
 - XAUUSD immutable forward collector ACTIVE
 - multi-market dashboard/API foundation COMPLETE
+- USTEC live H1/H4 recency PASS
+- US30 live H1/H4 recency PASS
 
-## Current blocker — USTEC and US30 recent bars
+## Immediate step — activate secondary immutable ledgers
 
-Do **not** activate the two secondary forward ledgers yet.
+The MT5 synchronization probe confirmed current H1/H4 history for both USTEC and US30.
 
-Observed on 2026-09-27:
-
-- both quotes are current through the latest Friday session (2026-09-25);
-- both H1 histories stop at 2026-09-18 11:00 UTC;
-- both H4 histories stop at 2026-09-18 08:00 UTC;
-- recency probes return `appears_recent: false`.
-
-This is an MT5 terminal/history-synchronization issue, not a strategy decision.
-
-## Step 1 — pull the sync diagnostic + health UI correction
+Run exactly once per market:
 
 ```powershell
-git pull
+python scripts\activate_s02_forward.py `
+  --database data\forward_ustec.sqlite `
+  --symbol USTEC `
+  --canonical "NASDAQ 100" `
+  --entity "S02-v0.1:USTEC:SECONDARY"
+
+python scripts\activate_s02_forward.py `
+  --database data\forward_us30.sqlite `
+  --symbol US30 `
+  --canonical "DOW 30" `
+  --entity "S02-v0.1:US30:SECONDARY"
+
+python scripts\verify_forward_ledger.py `
+  --database data\forward_ustec.sqlite
+
+python scripts\verify_forward_ledger.py `
+  --database data\forward_us30.sqlite
 ```
 
-The app health card now distinguishes configured markets from activated collectors.
+Send the complete two activation JSON outputs and the two verification outputs.
 
-## Step 2 — run targeted MT5 history synchronization probes
+Do **not** install the secondary scheduled task yet. The two activation hashes must first be recorded in the durable repository audit trail.
 
-```powershell
-python scripts\mt5_history_sync_probe.py --symbol USTEC --canonical "NASDAQ 100"
+## After hashes are anchored
 
-python scripts\mt5_history_sync_probe.py --symbol US30 --canonical "DOW 30"
-```
+Then:
 
-Send both complete JSON outputs.
-
-The probe queries each timeframe through:
-
-- `copy_rates_from_pos`;
-- `copy_rates_from`;
-- `copy_rates_range`;
-
-and repeats requests to give the terminal a chance to synchronize recent history.
-
-## If final H1/H4 become recent
-
-Re-run:
-
-```powershell
-python scripts\mt5_recency_probe.py --symbol USTEC --canonical "NASDAQ 100"
-python scripts\mt5_recency_probe.py --symbol US30 --canonical "DOW 30"
-```
-
-Only after both markets report `appears_recent: true` for H1 and H4 do we activate their immutable ledgers.
-
-## If they remain stuck on September 18
-
-In the MT5 terminal:
-
-1. open the USTEC chart;
-2. switch to H1 and use chart Refresh;
-3. switch to H4 and Refresh;
-4. repeat for US30;
-5. leave the charts open for about a minute;
-6. rerun `mt5_history_sync_probe.py`.
-
-If history still does not advance, the next diagnostic will compare server/date-range availability and broker session history rather than activating stale feeds.
+1. install `TradingTop S02 Secondary Forward Scan`;
+2. verify its first automatic run;
+3. confirm the beta health card reports 3/3 live collectors active;
+4. continue signal-history/evidence UI;
+5. add authentication;
+6. add one alert channel;
+7. prepare public deployment and first-user feedback capture.
 
 ## Existing XAU forward test
 
 Leave it untouched.
 
-## Launch work that continues in parallel
+## Launch work in parallel
 
-While the index history is repaired, continue product work:
+Product work continues even while forward samples accumulate:
 
 - signal/evidence history views;
 - authentication;
-- one alert channel;
-- public deployment setup;
-- feedback capture.
+- alert delivery;
+- public deployment;
+- feedback/willingness-to-pay capture.
 
-USTEC/US30 activation is a market-specific blocker, not a reason to stop the whole product build.
+## Claim discipline
+
+Use Early Access / research beta language.
+
+Do not claim guaranteed returns, completed forward validation, personalized advice, or copy trading.

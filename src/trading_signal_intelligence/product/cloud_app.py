@@ -78,6 +78,11 @@ app.middleware("http")(basic_access_middleware)
 app.mount("/static", StaticFiles(directory=WEB), name="static")
 
 
+@app.get("/healthz")
+def healthz() -> dict:
+    return {"ok": True, "service": "tradingtop-early-access"}
+
+
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse(WEB / "index.html")

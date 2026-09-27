@@ -4,7 +4,7 @@ _Last updated: 2026-09-27_
 
 ## Immediate objective
 
-Launch TradingTop Early Access while the existing XAU forward validation continues automatically.
+Launch TradingTop Early Access while all three launch-market forward collectors run independently and immutably.
 
 ## Completed
 
@@ -12,65 +12,82 @@ Launch TradingTop Early Access while the existing XAU forward validation continu
 - G2 PASS via separate Exness permission confirmed by project owner
 - local Early Access FastAPI/UI preview PASS
 - XAUUSD immutable forward collector ACTIVE
+- USTEC recency PASS
+- US30 recency PASS
+- USTEC immutable forward ledger ACTIVATED + HASH ANCHORED
+- US30 immutable forward ledger ACTIVATED + HASH ANCHORED
 - multi-market dashboard/API foundation COMPLETE
-- USTEC live H1/H4 recency PASS
-- US30 live H1/H4 recency PASS
 
-## Immediate step — activate secondary immutable ledgers
+## Immediate step — install the secondary hourly scheduler
 
-The MT5 synchronization probe confirmed current H1/H4 history for both USTEC and US30.
-
-Run exactly once per market:
+Pull the activation-anchor updates and install the USTEC/US30 task:
 
 ```powershell
-python scripts\activate_s02_forward.py `
-  --database data\forward_ustec.sqlite `
-  --symbol USTEC `
-  --canonical "NASDAQ 100" `
-  --entity "S02-v0.1:USTEC:SECONDARY"
+git pull
 
-python scripts\activate_s02_forward.py `
-  --database data\forward_us30.sqlite `
-  --symbol US30 `
-  --canonical "DOW 30" `
-  --entity "S02-v0.1:US30:SECONDARY"
-
-python scripts\verify_forward_ledger.py `
-  --database data\forward_ustec.sqlite
-
-python scripts\verify_forward_ledger.py `
-  --database data\forward_us30.sqlite
+powershell -ExecutionPolicy Bypass -File scripts\install_s02_secondary_forward_task.ps1
 ```
 
-Send the complete two activation JSON outputs and the two verification outputs.
+Then inspect the task:
 
-Do **not** install the secondary scheduled task yet. The two activation hashes must first be recorded in the durable repository audit trail.
+```powershell
+Get-ScheduledTask -TaskName "TradingTop S02 Secondary Forward Scan"
+Get-ScheduledTaskInfo -TaskName "TradingTop S02 Secondary Forward Scan"
+```
 
-## After hashes are anchored
+The task should be `Ready`, with its next run near minute 03 of the hour.
 
-Then:
+## Verify the three product collectors
 
-1. install `TradingTop S02 Secondary Forward Scan`;
-2. verify its first automatic run;
-3. confirm the beta health card reports 3/3 live collectors active;
-4. continue signal-history/evidence UI;
-5. add authentication;
-6. add one alert channel;
-7. prepare public deployment and first-user feedback capture.
+Restart or refresh the local beta app after `git pull`.
+
+Expected health state:
+
+- XAUUSD: scanning / active;
+- USTEC: scanning / active;
+- US30: scanning / active;
+- health card: **3/3 live collectors active**.
+
+If the app is not already running:
+
+```powershell
+python scripts\run_beta_app.py
+```
+
+Open:
+
+`http://127.0.0.1:8000`
+
+## After the first scheduled secondary run
+
+Run:
+
+```powershell
+Get-ScheduledTaskInfo -TaskName "TradingTop S02 Secondary Forward Scan"
+
+Get-Content data\forward-task-logs\s02_secondary_forward.log -Tail 150
+
+python scripts\verify_forward_ledger.py --database data\forward_ustec.sqlite
+python scripts\verify_forward_ledger.py --database data\forward_us30.sqlite
+```
+
+Send those outputs if any SIGNAL / EXIT / MISSED_SIGNAL / SKIPPED_SIGNAL appears or if the task/ledger reports an error.
+
+## Product build — continue immediately
+
+While forward collectors run:
+
+1. signal-history/evidence API + UI;
+2. current active-signal detail view;
+3. authentication;
+4. one alert channel;
+5. production deployment;
+6. feedback/willingness-to-pay capture;
+7. founding paid tier after initial user validation.
 
 ## Existing XAU forward test
 
 Leave it untouched.
-
-## Launch work in parallel
-
-Product work continues even while forward samples accumulate:
-
-- signal/evidence history views;
-- authentication;
-- alert delivery;
-- public deployment;
-- feedback/willingness-to-pay capture.
 
 ## Claim discipline
 

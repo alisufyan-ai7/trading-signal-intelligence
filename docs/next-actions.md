@@ -2,65 +2,82 @@
 
 _Last updated: 2026-09-27_
 
-## Railway status
+## Public Railway beta status
 
-Railway deployment is successful.
+Railway deployment is healthy and the invite/ingestion secret variables are configured.
 
-Service:
+Public service domain:
 
-`tradingtop-early-access`
+`https://tradingtop-early-access-production.up.railway.app`
 
-Verified:
+Verified through Railway:
 
-- Docker image built successfully;
-- Uvicorn started;
-- `/healthz` returned 200;
-- deployment status is SUCCESS;
-- no public domain exists yet.
+- deployment SUCCESS;
+- Uvicorn running on Railway port;
+- `/healthz` returns 200;
+- invite username/password variables exist;
+- ingestion token variable exists.
 
-## Immediate step — configure secrets before public exposure
+The first derived snapshot has not yet been pushed from Windows.
 
-Generate strong values locally and keep them out of chat/Git.
+## Immediate Windows action — connect the publisher
 
-Required Railway service variables:
+Pull the secure ingest helper:
 
-- `TRADINGTOP_BETA_USER`
-- `TRADINGTOP_BETA_PASSWORD`
-- `TRADINGTOP_INGEST_TOKEN`
+```powershell
+git pull
 
-Already configured:
+powershell -ExecutionPolicy Bypass -File scripts\configure_cloud_ingest.ps1
+```
 
-- `TRADINGTOP_SNAPSHOT_PATH=/data/public_snapshot.json`
+When prompted, enter the **same** `TRADINGTOP_INGEST_TOKEN` that was configured in Railway.
 
-The same `TRADINGTOP_INGEST_TOKEN` must later be stored in the Windows collector's local `.env`.
+The prompt is secure and does not display the token.
 
-Do not generate the Railway public domain until these three variables are set.
+Then push the current derived snapshot:
 
-## After secrets are configured
+```powershell
+.\.venv\Scripts\python.exe scripts\export_public_snapshot.py
 
-Return to ChatGPT and say:
+.\.venv\Scripts\python.exe scripts\push_public_snapshot.py
+```
 
-`Railway secrets configured`
+Expected push response:
 
-Then:
+- `accepted: true`;
+- three markets;
+- `raw_market_data_included: false`.
 
-1. verify Railway variable names;
-2. redeploy if needed;
-3. generate the Railway service domain;
-4. provide the public ingest URL;
-5. configure the Windows collector's local ingest URL/token;
-6. push the first derived snapshot;
-7. verify invite gate + 3/3 health + current evidence/signals;
-8. mark public-beta deployment complete.
+Then run the product publish wrapper once:
 
-## Persistence
+```powershell
+scripts\run_product_publish_task.cmd
 
-No Railway volume is currently attached.
+Get-Content data\forward-task-logs\product_publish.log -Tail 80
+```
 
-This is acceptable for the first beta because the Windows product-publish task republishes the derived snapshot hourly. A Railway restart may temporarily show an empty snapshot until the next push.
+Expected final summary:
 
-## Forward evidence
+`export_exit=0 alert_exit=0 push_exit=0`
 
-Forward collection continues unchanged.
+Telegram can remain disabled.
 
-XAU F1 progress: `2/20`.
+## Browser verification
+
+Open:
+
+`https://tradingtop-early-access-production.up.railway.app`
+
+Expected:
+
+1. browser requests the Early Access username/password;
+2. valid credentials load the beta;
+3. health shows 3/3 live collectors active after snapshot push;
+4. XAU evidence and the two completed forward trades appear;
+5. USTEC/US30 remain scanning with no issued forward trades.
+
+## Persistence note
+
+There is currently no Railway persistent volume.
+
+A Railway restart/redeploy can clear the cloud snapshot until the Windows publisher pushes it again. The hourly product-publish task provides automatic recovery once cloud ingestion is configured.

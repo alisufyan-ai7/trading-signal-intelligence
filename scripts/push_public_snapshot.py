@@ -18,16 +18,25 @@ def main() -> None:
     )
     parser.add_argument("--snapshot", default="data/public_snapshot.json")
     parser.add_argument("--url", default=None)
+    parser.add_argument("--optional", action="store_true")
     args = parser.parse_args()
 
     base_url = args.url or os.getenv("TRADINGTOP_INGEST_URL")
     token = os.getenv("TRADINGTOP_INGEST_TOKEN")
     if not base_url or not token:
         if args.optional:
-            print(json.dumps({
-                "push_enabled": False,
-                "reason": "TRADINGTOP_INGEST_URL / INGEST_TOKEN not configured",
-            }, indent=2))
+            print(
+                json.dumps(
+                    {
+                        "push_enabled": False,
+                        "reason": (
+                            "TRADINGTOP_INGEST_URL / INGEST_TOKEN "
+                            "not configured"
+                        ),
+                    },
+                    indent=2,
+                )
+            )
             return
         raise SystemExit(
             "Set TRADINGTOP_INGEST_URL and TRADINGTOP_INGEST_TOKEN in .env "

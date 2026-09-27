@@ -79,3 +79,16 @@ Public read access is intentional.
 The write endpoint `/api/internal/snapshot` remains protected by `TRADINGTOP_INGEST_TOKEN`.
 
 Never expose or commit the ingestion token.
+
+
+## Immediate security action — rotate ingestion token
+
+The previous token appeared in a malformed Railway request path and must not be reused.
+
+1. generate a new random 32-byte token locally;
+2. replace Railway `TRADINGTOP_INGEST_TOKEN`;
+3. pull the hardened helpers;
+4. rerun `scripts/configure_cloud_ingest.ps1` with the new token;
+5. retry export + push.
+
+The hardened push client will now reject the malformed URL condition locally before any request is sent.

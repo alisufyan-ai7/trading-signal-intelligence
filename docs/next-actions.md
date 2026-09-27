@@ -94,3 +94,41 @@ Leave it untouched.
 Use Early Access / research beta language.
 
 Do not claim guaranteed returns, completed forward validation, personalized advice, or copy trading.
+
+
+## 2026-09-27 secondary scheduler installation checkpoint
+
+The secondary scheduled task is registered correctly:
+
+- state: `Ready`;
+- next run: `2026-09-27 13:03:03` machine-local time;
+- missed runs: `0`;
+- `267011 / 0x41303` before first execution means the task has not yet run;
+- absence of `data/forward-task-logs/s02_secondary_forward.log` before first execution is expected.
+
+Both secondary ledgers still verify with exactly one ACTIVATION record.
+
+### Beta app environment correction
+
+One active PowerShell/venv instance did not have the optional app dependencies installed and raised `ModuleNotFoundError: uvicorn`.
+
+Use the deterministic setup helper:
+
+```powershell
+git pull
+powershell -ExecutionPolicy Bypass -File scripts\setup_beta_app.ps1
+.\.venv\Scripts\python.exe scripts\run_beta_app.py
+```
+
+This installs `.[app]` specifically into the repository's `.venv` and verifies FastAPI/Uvicorn imports.
+
+### After the first secondary scheduled run
+
+Only after the scheduled time has passed, run:
+
+```powershell
+Get-ScheduledTaskInfo -TaskName "TradingTop S02 Secondary Forward Scan"
+Get-Content data\forward-task-logs\s02_secondary_forward.log -Tail 150
+python scripts\verify_forward_ledger.py --database data\forward_ustec.sqlite
+python scripts\verify_forward_ledger.py --database data\forward_us30.sqlite
+```

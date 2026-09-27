@@ -298,3 +298,25 @@ Public-host deployment readiness has been hardened with:
 - Railway deployment runbook at `docs/public-beta-deployment-railway.md`.
 
 The local product layer is now considered READY FOR PUBLIC INVITE-GATED DEPLOYMENT.
+
+
+## Railway deployment attempt — BLOCKED 2026-09-27
+
+The user explicitly approved Railway deployment.
+
+Attempted to create a new private Railway project named `tradingtop-early-access` in the user's personal Railway workspace.
+
+Railway rejected the resource creation before any project/service was provisioned with:
+
+`Free plan resource provision limit exceeded. Please upgrade to provision more resources!`
+
+No Railway TradingTop project, service, domain, secret, or volume was created.
+
+Project isolation remains intact: the application was **not** placed into either pre-existing unrelated Railway project.
+
+Resolution options:
+
+1. upgrade the Railway plan/capacity; or
+2. free an unused Railway resource/project/service from the account.
+
+After Railway capacity exists, resume with a new isolated `tradingtop-early-access` project and follow `docs/public-beta-deployment-railway.md`.

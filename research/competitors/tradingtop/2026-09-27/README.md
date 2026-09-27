@@ -47,3 +47,26 @@ Captured in the user's signed-in TradingTop session for private product research
 ## Reproduction boundaries
 
 The screenshot filenames use the UTC capture date. Site content and price can change; recheck before using these figures in product or pricing decisions. The signed-in observations supersede the earlier public-only audit's statement that pricing and authenticated pages were unverified, while preserving that earlier audit as an accurate record of the first unsuccessful Google OAuth attempt.
+
+## VIP account follow-up — 2026-09-27 UTC
+
+All six sidebar destinations from `/myvip` were traversed. The account `/user` entry redirects to `/myvip`. The [route-by-route findings and business model analysis](vip-account-business-model.md) covers TOP earning and consumption, referral commission tiers, account views and observed limitations. The agreement was read but not accepted. No payment, withdrawal, profile edit, email switch or broker connection was submitted. Automatic browser approval review rejected a click on “Pay Now” because it initiates a purchase flow.
+
+| File | View | SHA-256 |
+|---|---|---|
+| [19-myvip-overview.jpg](tradingtop-20260927-19-myvip-overview.jpg) | VIP status, withdrawal panel and email alert switches | `edefc1725e3867aae6fb7919ab644ada42cce878ef2205d0b79291ba3606a646` |
+| [20-top-compute-records.jpg](tradingtop-20260927-20-top-compute-records.jpg) | TOP usage ledger, empty rows and Total 2 pagination | `bd6e9a9cf0d3845312453543e6069e8f4b1131ffe3b108b1afacaa5a958a0e96` |
+| [21-invitation-agency-agreement.jpg](tradingtop-20260927-21-invitation-agency-agreement.jpg) | Agency agreement overlay top | `441438588e5140812f7bc1efa6ac0310de0b55161163b72ea1ffdc148d046d7d` |
+| [22-agency-rewards-settlement.jpg](tradingtop-20260927-22-agency-rewards-settlement.jpg) | Agency agreement lower clauses | `5d9a576dae0f46618f82d0af0c278a31226a22351fce375818cddd46d656a1a1` |
+| [23-agency-commission-tiers.jpg](tradingtop-20260927-23-agency-commission-tiers.jpg) | Commission tiers and withdrawal terms | `55cc2269dd0cf0fcc05dd41759e5c1af5bb7b9c55d503c419a93319a152af6fc` |
+| [24-invitation-dashboard.jpg](tradingtop-20260927-24-invitation-dashboard.jpg) | Invitation dashboard behind agreement overlay | `4c02ad23f71eb73e0b2ab1a8cf90380cca01451be780d832b47053903aac9707` |
+| [25-promotions.jpg](tradingtop-20260927-25-promotions.jpg) | Promotion wallet and empty transaction history | `b2363d5434ccefd2bf76f8edac6a4d880eb6616e5f32ab0b31a0887d6242b2b2` |
+| [26-account-settings.jpg](tradingtop-20260927-26-account-settings.jpg) | Profile, email and phone bind controls | `9a6b9e53574d04855a385391516d6332bb33cf519a6a7f4dde5f12e9ab005900` |
+| [27-ai-logs-from-account.jpg](tradingtop-20260927-27-ai-logs-from-account.jpg) | AI log reached through account menu | `bbb534171635a1b5156337bb39347371c084e91c8535b1b2644f33e874d830f0` |
+| [28-about-top-acquisition.jpg](tradingtop-20260927-28-about-top-acquisition.jpg) | TOP definition and reward table top | `035e638c8a791399daa1c88b14e57a2492f85dd6fdb4931eba27392be57b351c` |
+| [29-about-top-consumption.jpg](tradingtop-20260927-29-about-top-consumption.jpg) | TOP acquisition lower rows and manual signal costs | `01de5179df2ac9b0aba48f7ba6d335512e89123e458f4ea331624cbff2d2abb6` |
+| [30-about-top-model-cost.jpg](tradingtop-20260927-30-about-top-model-cost.jpg) | TOP costs for T1 and T2 models | `6b6e4f7bb2e346eb908ac7c09fb752f5559f27e7f8303a9d85a68f18a7d0f911` |
+| [31-myvip-full-page.jpg](tradingtop-20260927-31-myvip-full-page.jpg) | Viewport capture despite full-page option; site has inner scroll | `79d7d87b6793adbbc8da254c29a23479c8523be2b5e2236284f05eb53db2d911` |
+| [32-myvip-alerts-stocks-indices.jpg](tradingtop-20260927-32-myvip-alerts-stocks-indices.jpg) | Lower email alert list: stocks and indices | `261ad81ec2d1e3e3162281d13039d656763dee2906e5bcf61a30c425c0b691a4` |
+| [33-myvip-alerts-forex-crypto.jpg](tradingtop-20260927-33-myvip-alerts-forex-crypto.jpg) | Final alert rows: forex and crypto | `18a0dcf3dd407e5dd2291e2b036584d59e4d6f999c0d2f0adfb8e1931d567a4b` |
+| [34-account-landing.jpg](tradingtop-20260927-34-account-landing.jpg) | /user entry redirected to /myvip | `ccaf69408363f8dac4f440b0d9dd5323155465c70fa1f1d4f78989b4ad53c8b6` |

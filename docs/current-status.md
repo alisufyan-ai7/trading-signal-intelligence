@@ -228,3 +228,23 @@ The XAU forward ledger now contains two completed forward trades and one skipped
 F1 execution-audit progress is now `2/20` completed trades. This sample is too small for any strategy-performance decision.
 
 Durable checkpoint: `research/forward/S02-XAUUSD-forward-checkpoint-2026-09-27.md`.
+
+
+## Launch plumbing — 2026-09-27
+
+Launch-critical product infrastructure has advanced without modifying any activated strategy/scanner/ledger implementation.
+
+Added:
+
+- optional HTTP Basic invite gate driven by environment secrets;
+- Telegram SIGNAL/EXIT notifier with persistent deduplication state;
+- cloud-facing FastAPI app that consumes only the derived public snapshot;
+- bearer-authenticated snapshot ingestion;
+- Docker container definition;
+- Windows snapshot push client;
+- hourly product publish task (snapshot -> optional alert -> optional cloud push);
+- launch-layer smoke test.
+
+The public/cloud design intentionally keeps raw MT5 candles and immutable forward SQLite databases on the Windows collector.
+
+The first two completed XAU forward trades and current ledger head have been externally anchored in the repository.

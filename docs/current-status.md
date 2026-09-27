@@ -341,3 +341,30 @@ Because the project-count/resource limit still blocks creating a third isolated 
 2. a Railway plan/capacity change that allows a third project.
 
 No unrelated Railway project has been modified.
+
+
+## Railway repurpose + service configuration — 2026-09-27
+
+The user explicitly approved repurposing the empty Railway project `positioning-engine-cron` for TradingTop.
+
+Railway now contains:
+
+- project: `positioning-engine-cron` (repurposed);
+- environment: `production`;
+- service: `tradingtop-early-access`;
+- source repo: `alisufyan-ai7/trading-signal-intelligence`;
+- branch: `main`;
+- builder: Dockerfile;
+- Dockerfile path: `Dockerfile`;
+- healthcheck: `/healthz`;
+- healthcheck timeout: 120s;
+- restart policy: on failure, max 5 retries;
+- `TRADINGTOP_SNAPSHOT_PATH=/data/public_snapshot.json`.
+
+No public domain has been generated and no invite/ingestion secrets have been exposed.
+
+Railway's connector successfully attached/configured the service but did not create its first deployment record. The connector's `redeploy` operation cannot act until one deployment already exists, and a second service is blocked by the free-plan resource limit.
+
+**Required one-time UI action:** in Railway, open `positioning-engine-cron` → `tradingtop-early-access` and trigger the first deployment / deploy latest commit for `main`.
+
+After that first deployment exists, automation can resume through the Railway connector for status, logs, redeploys and domain configuration.

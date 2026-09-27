@@ -106,3 +106,19 @@ The failure occurred before Railway provisioned a project/service, so there is n
 Do not use an unrelated existing Railway project as a workaround. Preserve TradingTop isolation.
 
 Retry this runbook after Railway account capacity is increased or an unused Railway resource is safely removed.
+
+
+## Railway service attached — 2026-09-27
+
+The formerly empty Railway project `positioning-engine-cron` was explicitly approved for repurposing to TradingTop.
+
+A GitHub-backed Railway service now exists:
+
+- service: `tradingtop-early-access`;
+- source: `alisufyan-ai7/trading-signal-intelligence`;
+- branch: `main`;
+- Dockerfile: `Dockerfile`;
+- healthcheck: `/healthz`;
+- snapshot path variable: `/data/public_snapshot.json`.
+
+Railway did not create an initial deployment record during service creation, and the free plan blocks creating an additional service. This commit intentionally provides a fresh `main` push so Railway's GitHub source can trigger the first build on the existing service.

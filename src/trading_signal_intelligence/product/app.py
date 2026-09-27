@@ -35,11 +35,26 @@ def health() -> dict:
         for row in live
         if row["forward"] and row["forward"]["state"] == "ledger_error"
     ]
+    ready_states = {"scanning", "active_signal"}
+    ready_collectors = [
+        row["source_symbol"]
+        for row in live
+        if row["forward"] and row["forward"]["state"] in ready_states
+    ]
+    pending_collectors = [
+        row["source_symbol"]
+        for row in live
+        if row["source_symbol"] not in ready_collectors
+    ]
     return {
         "ok": not ledger_errors,
+        "launch_ready": not ledger_errors and len(ready_collectors) == len(live),
         "product": "TradingTop Early Access",
         "launch_mode": "research_beta",
         "live_signal_markets": len(live),
+        "ready_collectors": ready_collectors,
+        "ready_collector_count": len(ready_collectors),
+        "pending_collectors": pending_collectors,
         "ledger_errors": ledger_errors,
     }
 

@@ -368,3 +368,28 @@ Railway's connector successfully attached/configured the service but did not cre
 **Required one-time UI action:** in Railway, open `positioning-engine-cron` → `tradingtop-early-access` and trigger the first deployment / deploy latest commit for `main`.
 
 After that first deployment exists, automation can resume through the Railway connector for status, logs, redeploys and domain configuration.
+
+
+## Railway first deployment — SUCCESS 2026-09-27
+
+The first deployment of Railway service `tradingtop-early-access` completed successfully.
+
+Deployment:
+
+- deployment ID: `d8f2f1ee-dc9c-473e-bc37-325cd19b2ef6`;
+- source commit: `d136a31f48997f17940d0e9931bb6f66da1656b1`;
+- Dockerfile build: success;
+- runtime: Uvicorn started successfully;
+- Railway healthcheck: `GET /healthz -> 200 OK`;
+- deployment status: `SUCCESS`;
+- region: `asia-southeast1-eqsg3a`.
+
+Current Railway variables contain only the non-secret snapshot path:
+
+`TRADINGTOP_SNAPSHOT_PATH=/data/public_snapshot.json`
+
+No public Railway domain exists yet.
+
+The invite credentials and ingestion token are intentionally still unset, so the service remains unexposed.
+
+Persistent volume is still absent. This does not block the beta; the Windows publisher can repush the snapshot after a Railway restart/redeploy.

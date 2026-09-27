@@ -19,7 +19,7 @@
 - S02 new-market transfer runner: COMPLETE
 - Immutable hash-chained forward ledger: ACTIVATED / HASH ANCHORED
 - S02 live forward scanner: ACTIVE / 72 CONSECUTIVE HOURLY RUNS VERIFIED THROUGH 2026-09-21 15:02 UTC
-- SaaS UI: EARLY ACCESS MVP PREVIEW PASS / SECONDARY DATA RECENCY BLOCKER
+- SaaS UI: EARLY ACCESS MVP PREVIEW PASS / SECONDARY ACTIVATION NEXT
 
 ## Validation gates
 
@@ -133,3 +133,22 @@ Secondary live-data recency did **not** pass:
 Both secondary markets therefore failed the pre-activation recency gate. Their forward ledgers must not be activated until recent H1/H4 history is synchronized.
 
 A targeted `scripts/mt5_history_sync_probe.py` has been added. It requests recent history through MT5 position-, from-date-, and date-range APIs to diagnose/encourage terminal history synchronization without changing the frozen strategy or XAU forward protocol.
+
+
+## Secondary recency recovery — 2026-09-27
+
+The targeted MT5 history synchronization probe resolved the USTEC/US30 stale-history condition.
+
+For both USTEC and US30:
+
+- quote timestamp: `2026-09-25T20:54:59Z`;
+- H1 latest bar: `2026-09-25T20:00:00Z`;
+- H4 latest bar: `2026-09-25T20:00:00Z`;
+- lag versus quote: approximately 0.916 hours;
+- `copy_rates_from_pos`, `copy_rates_from`, and `copy_rates_range` all agreed;
+- final H1 `appears_recent = true`;
+- final H4 `appears_recent = true`.
+
+The pre-activation recency gate is therefore passed for both secondary launch markets.
+
+Next: activate separate immutable USTEC and US30 ledgers, verify them, and anchor both activation hashes before installing the secondary hourly scheduler.

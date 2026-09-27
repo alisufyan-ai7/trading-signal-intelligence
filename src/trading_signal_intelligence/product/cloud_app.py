@@ -11,11 +11,6 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from trading_signal_intelligence.product.access import (
-    basic_access_middleware,
-    beta_access_enabled,
-)
-
 
 load_dotenv()
 
@@ -74,7 +69,6 @@ app = FastAPI(
     description="Public derived-signal surface fed by the private Windows collector.",
 )
 
-app.middleware("http")(basic_access_middleware)
 app.mount("/static", StaticFiles(directory=WEB), name="static")
 
 
@@ -87,10 +81,6 @@ def healthz() -> dict:
 def index() -> FileResponse:
     return FileResponse(WEB / "index.html")
 
-
-@app.get("/api/access")
-def access() -> dict:
-    return {"invite_gate_enabled": beta_access_enabled()}
 
 
 @app.get("/api/health")

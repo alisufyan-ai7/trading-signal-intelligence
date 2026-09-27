@@ -4,110 +4,93 @@ _Last updated: 2026-09-27_
 
 ## Launch status
 
-TradingTop Early Access has passed the local Day-2 product smoke and the first immutable XAU forward lifecycles are anchored.
+TradingTop Early Access is ready for the final local automation check before public deployment.
 
-Current forward evidence:
+Completed:
 
-- XAU completed trades: 2
-- XAU cumulative net R: approximately -2.0147R
-- XAU skipped overlapping setup: 1
-- USTEC forward events: 0
-- US30 forward events: 0
-- XAU ledger valid: yes
-- USTEC ledger valid: yes
-- US30 ledger valid: yes
+- G1 research data PASS
+- G2 Exness commercial derived-use permission PASS
+- XAUUSD / USTEC / US30 forward collectors active
+- primary + secondary scanner schedulers operational
+- local beta UI/API operational
+- evidence + immutable forward record UI operational
+- 2 completed XAU forward trades externally anchored
+- derived public snapshot path validated
+- raw market data excluded from public snapshot
+- invite-access implementation complete
+- Telegram SIGNAL/EXIT implementation complete
+- cloud snapshot-ingestion implementation complete
+- Docker deployment definition complete
+- launch-layer smoke PASS
+- alert dedupe initialized with 4 existing SIGNAL/EXIT records
+- product-publish scheduler installed
 
-The two XAU losses do not alter strategy status. F1 remains an execution/lifecycle audit at 20 completed trades.
+## Immediate checkpoint — first product-publish execution
 
-## Launch layer implemented
+The product-publish task was installed with its first scheduled execution at approximately minute 05.
 
-The repository now includes:
-
-- optional invite-gated web access using environment credentials;
-- Telegram SIGNAL/EXIT notifier;
-- cloud beta app that accepts derived snapshots only;
-- authenticated snapshot-ingestion endpoint;
-- Docker deployment;
-- Windows-side snapshot push client;
-- hourly product publish wrapper/scheduler;
-- launch-layer smoke test.
-
-The cloud path does not require raw MT5 bars or the immutable SQLite ledgers to leave the Windows collector.
-
-## Immediate local smoke
-
-Pull the launch-layer changes and refresh the app environment:
+After the next scheduled run, execute:
 
 ```powershell
-git pull
+Get-ScheduledTaskInfo -TaskName "TradingTop Product Publish"
 
-powershell -ExecutionPolicy Bypass -File scripts\setup_beta_app.ps1
-
-.\.venv\Scripts\python.exe scripts\export_public_snapshot.py
-
-.\.venv\Scripts\python.exe scripts\smoke_launch_layer.py
+Get-Content data\forward-task-logs\product_publish.log -Tail 120
 ```
 
 Expected:
 
-- `launch layer smoke: PASS`
-- `local_collectors=3/3`
-- `cloud_snapshot_collectors=3/3`
-- `snapshot_forward_signals=2`
+- `LastTaskResult : 0`
+- a real `LastRunTime`
+- snapshot export succeeds
+- Telegram step reports disabled if credentials are not configured
+- cloud push reports disabled if ingestion URL/token are not configured
+- final line:
+  `export_exit=0 alert_exit=0 push_exit=0`
 
-## Initialize alerts without replaying old trades
+No credentials are required for this verification.
 
-Before adding a Telegram token, mark the already-observed SIGNAL/EXIT records as seen:
+### Faster option
 
-```powershell
-.\.venv\Scripts\python.exe scripts\notify_forward_events.py --initialize
-```
-
-Expected: four records marked seen (2 SIGNAL + 2 EXIT). This prevents first-time alert configuration from replaying already-closed trades.
-
-## Product publish scheduler
-
-The publish task runs after the scanners and is safe even before Telegram/cloud credentials are configured:
+The same safe wrapper can be tested immediately instead of waiting for the scheduled minute:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File scripts\install_product_publish_task.ps1
+scripts\run_product_publish_task.cmd
 
-Get-ScheduledTaskInfo -TaskName "TradingTop Product Publish"
+Get-Content data\forward-task-logs\product_publish.log -Tail 120
 ```
 
-It runs hourly near minute 05 and:
+It is safe before cloud/Telegram configuration because those integrations are optional until secrets are present.
 
-1. exports the public derived-data snapshot;
-2. sends new Telegram alerts if configured;
-3. pushes the snapshot to the cloud beta if configured.
+## After product-publish PASS
 
-Without Telegram/cloud credentials those two steps report disabled and still exit successfully.
+The next step is **public invite-gated deployment**.
 
-## Secrets — keep local only
+Deployment requirements:
 
-Use a local `.env` based on `.env.example`.
+1. Dockerized `trading_signal_intelligence.product.cloud_app:app`;
+2. persistent storage for `public_snapshot.json`;
+3. environment secrets:
+   - `TRADINGTOP_BETA_USER`
+   - `TRADINGTOP_BETA_PASSWORD`
+   - `TRADINGTOP_INGEST_TOKEN`
+   - `TRADINGTOP_SNAPSHOT_PATH`
+4. after deployment, set locally:
+   - `TRADINGTOP_INGEST_URL`
+   - matching `TRADINGTOP_INGEST_TOKEN`
+5. push the first snapshot from Windows;
+6. verify the public invite gate, evidence view and two existing forward trades;
+7. then optionally configure Telegram credentials for future SIGNAL/EXIT alerts.
 
-Configure later without posting secrets into chat or GitHub:
+## Secrets
 
-- `TRADINGTOP_BETA_USER`
-- `TRADINGTOP_BETA_PASSWORD`
-- `TRADINGTOP_TELEGRAM_BOT_TOKEN`
-- `TRADINGTOP_TELEGRAM_CHAT_ID`
-- `TRADINGTOP_INGEST_URL`
-- `TRADINGTOP_INGEST_TOKEN`
+Do not paste secrets into chat or commit them to GitHub.
 
-## Next after smoke passes
+Keep them only in local `.env` and the hosting provider's secret/environment-variable manager.
 
-The next launch step is public hosting.
+## Forward research
 
-Recommended sequence:
+All three forward collectors continue unchanged during deployment.
 
-1. deploy the Dockerized cloud app;
-2. attach persistent storage for `public_snapshot.json`;
-3. set invite and ingestion secrets;
-4. configure the Windows collector's ingest URL/token;
-5. push the first derived snapshot;
-6. verify the public beta behind the invite gate;
-7. then enable Telegram for new SIGNAL/EXIT lifecycle alerts.
+S02 remains NOT CANDIDATE.
 
-No scanner/strategy/ledger implementation needs to change for deployment.
+XAU F1 progress remains `2/20` completed forward trades.

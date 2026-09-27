@@ -2,10 +2,19 @@ from __future__ import annotations
 
 import argparse
 
-import uvicorn
-
 
 def main() -> None:
+    try:
+        import uvicorn
+    except ModuleNotFoundError as exc:
+        if exc.name == "uvicorn":
+            raise SystemExit(
+                "uvicorn is not installed in this Python environment. "
+                "From the repository root run: "
+                "powershell -ExecutionPolicy Bypass -File scripts\\setup_beta_app.ps1"
+            ) from exc
+        raise
+
     parser = argparse.ArgumentParser(description="Run the TradingTop Early Access web/API app")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)

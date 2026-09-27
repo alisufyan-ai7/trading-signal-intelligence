@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "strategy": "S02-structure-breakout-v0.1",
+  "markets": {
+    "XAUUSD": {
+      "canonical_symbol": "XAU/USD",
+      "evidence_tier": "primary_historical_lead",
+      "historical": {
+        "baseline_trades": 1033,
+        "development_net_expectancy_r": -0.0337,
+        "validation_net_expectancy_r": 0.0986,
+        "final_test_net_expectancy_r": 0.2323,
+        "validation_profit_factor": 1.1443,
+        "final_test_profit_factor": 1.3595,
+        "validation_max_drawdown_r": -19.54,
+        "final_test_max_drawdown_r": -17.51,
+        "exact_spec_positive_both_oos": "20/23",
+        "recent_positive_half_year_streak": 6
+      },
+      "summary": "Primary historical lead. Parameter-robust in later OOS periods and temporally persistent in the recent regime; forward validation remains incomplete.",
+      "caveat": "Full-history development is negative and the strategy is not yet a validated candidate."
+    },
+    "USTEC": {
+      "canonical_symbol": "NASDAQ 100",
+      "evidence_tier": "secondary_transfer_support",
+      "historical": {
+        "development_net_expectancy_r": 0.0621,
+        "validation_net_expectancy_r": 0.1243,
+        "final_test_net_expectancy_r": 0.0122,
+        "frozen_transfer_support": true
+      },
+      "summary": "Secondary transfer-support market under the unchanged S02 v0.1 rules.",
+      "caveat": "Final-test historical expectancy is only modestly positive; evidence is materially weaker than XAU/USD."
+    },
+    "US30": {
+      "canonical_symbol": "DOW 30",
+      "evidence_tier": "secondary_transfer_support",
+      "historical": {
+        "development_net_expectancy_r": -0.0049,
+        "validation_net_expectancy_r": 0.0936,
+        "final_test_net_expectancy_r": 0.0123,
+        "frozen_transfer_support": true
+      },
+      "summary": "Secondary transfer-support market under the unchanged S02 v0.1 rules.",
+      "caveat": "Final-test historical expectancy is only modestly positive; evidence is materially weaker than XAU/USD."
+    }
+  },
+  "disclosure": "Historical results are research evidence, not guaranteed future returns. Forward performance is tracked separately and should not be merged with backtest results."
+}

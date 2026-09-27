@@ -1,7 +1,7 @@
 # Secondary S02 Forward Activation — USTEC + US30
 
 **Created:** 2026-09-21  
-**Status:** RECENCY PASSED — ACTIVATION NEXT
+**Status:** ACTIVATED / HASHES ANCHORED — SCHEDULER NEXT
 
 ## Purpose
 
@@ -90,3 +90,26 @@ USTEC and US30 each reported:
 The prior Sep 18 stale-history state was a terminal synchronization condition and is resolved.
 
 Activation may proceed. Scheduler installation remains blocked until both activation hashes are durably anchored.
+
+
+## Activations completed and anchored — 2026-09-27
+
+### USTEC / NASDAQ 100
+
+- activated at UTC: `2026-09-27T12:42:13.014356Z`;
+- record ID: `7d6305cdaca54bcfa2611fe4edc5499b`;
+- activation/head SHA-256: `b0bcb4c952c64c3043512905b803697b491841b99b08b256feb9de82f2cd2780`;
+- verification: valid, one ACTIVATION record, no unresolved signals;
+- durable anchor: `research/forward/S02-USTEC-v0.1-activation-2026-09-27.md`.
+
+### US30 / DOW 30
+
+- activated at UTC: `2026-09-27T12:42:13.701885Z`;
+- record ID: `ad5d6ac943344a0fbfef37d962a09bb9`;
+- activation/head SHA-256: `3bc5a922843fea806b8aa4ab3c53a98a2d371982c7479164548b1a1e8fbea581`;
+- verification: valid, one ACTIVATION record, no unresolved signals;
+- durable anchor: `research/forward/S02-US30-v0.1-activation-2026-09-27.md`.
+
+Both activations use repository HEAD `08cf2282776a4f5f7863f6c16d96b1704dc56bca` and the same frozen S02 v0.1 protocol bundle as the primary XAU collector.
+
+The secondary hourly scheduler may now be installed.

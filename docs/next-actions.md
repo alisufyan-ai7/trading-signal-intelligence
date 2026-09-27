@@ -2,64 +2,63 @@
 
 _Last updated: 2026-09-27_
 
-## Launch status
+## Railway deployment state
 
-The local TradingTop Early Access launch path is operational and ready for public hosting.
+The empty Railway project `positioning-engine-cron` has been explicitly repurposed for TradingTop.
 
-Public Railway deployment was explicitly approved and attempted, but Railway blocked new resource creation with:
+Configured service:
 
-`Free plan resource provision limit exceeded. Please upgrade to provision more resources!`
+`tradingtop-early-access`
 
-No TradingTop Railway resource was created.
+Source:
 
-Existing unrelated Railway projects were deliberately not reused.
+`alisufyan-ai7/trading-signal-intelligence` → `main`
 
-## Immediate external action
+Configured:
 
-Create Railway capacity by either:
+- Dockerfile deployment
+- `/healthz` healthcheck
+- restart-on-failure
+- `TRADINGTOP_SNAPSHOT_PATH=/data/public_snapshot.json`
 
-1. upgrading the Railway account/plan; or
-2. deleting/stopping an unused Railway resource so a new project/service can be provisioned.
+No public domain or secrets are exposed yet.
 
-Do not delete any existing Railway resource solely for this project unless its owner confirms it is safe to remove.
+## One-time Railway dashboard action required
 
-## Resume point
+The Railway connector attached and configured the service but did not create the service's first deployment record.
 
-As soon as Railway capacity is available, resume with:
+In the Railway dashboard:
 
-1. create isolated private project `tradingtop-early-access`;
-2. deploy `alisufyan-ai7/trading-signal-intelligence` from `main`;
-3. use root `Dockerfile`;
-4. healthcheck: `/healthz`;
-5. mount persistent volume at `/data`;
-6. set `TRADINGTOP_SNAPSHOT_PATH=/data/public_snapshot.json`;
-7. configure invite + ingest secrets;
-8. generate the public Railway domain;
-9. configure Windows ingest URL/token;
-10. push and verify the first derived snapshot.
+1. open project `positioning-engine-cron`;
+2. open service `tradingtop-early-access`;
+3. trigger **Deploy / Deploy Latest Commit** for branch `main`;
+4. wait until Railway shows a deployment attempt (success or failure).
 
-See:
+Do not create another service.
 
-`docs/public-beta-deployment-railway.md`
+Do not generate a public domain yet.
 
-## Local system
+Do not paste invite or ingestion secrets into chat.
 
-No action is needed on the scanners while hosting capacity is resolved.
+## After the first deployment attempt
 
-XAUUSD, USTEC and US30 collectors continue running.
+Return to ChatGPT and say:
 
-S02 remains NOT CANDIDATE.
+`Railway first deploy triggered`
 
-XAU F1 progress remains `2/20`.
+Then the next automated steps are:
 
+1. inspect build/runtime logs;
+2. fix any deployment failure;
+3. confirm `/healthz`;
+4. configure invite + ingestion secrets via Railway's secret manager;
+5. generate the Railway service domain only after the invite gate is active;
+6. configure the Windows ingest URL/token locally;
+7. push the first derived snapshot;
+8. verify the public invite-gated beta.
 
-## Railway capacity diagnosis — exact blocker
+## Persistence note
 
-A second create-project attempt still fails because the connected free-plan workspace already contains two projects.
+Persistent Railway volume creation is currently unavailable through the connector because the Railway AI sub-agent has reached its usage limit.
 
-One existing Railway project, `positioning-engine-cron`, has zero services and is a possible capacity-release/reuse candidate, but it is outside TradingTop and must not be modified without explicit owner approval.
-
-To continue, obtain one of:
-
-- explicit approval to repurpose/remove `positioning-engine-cron`; or
-- Railway capacity allowing a new third isolated project.
+This does not block beta launch. Without a volume, the snapshot may need to be repushed after a cloud redeploy/restart. The hourly Windows publisher already supports repushing it.

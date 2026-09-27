@@ -51,3 +51,15 @@ XAUUSD, USTEC and US30 collectors continue running.
 S02 remains NOT CANDIDATE.
 
 XAU F1 progress remains `2/20`.
+
+
+## Railway capacity diagnosis — exact blocker
+
+A second create-project attempt still fails because the connected free-plan workspace already contains two projects.
+
+One existing Railway project, `positioning-engine-cron`, has zero services and is a possible capacity-release/reuse candidate, but it is outside TradingTop and must not be modified without explicit owner approval.
+
+To continue, obtain one of:
+
+- explicit approval to repurpose/remove `positioning-engine-cron`; or
+- Railway capacity allowing a new third isolated project.

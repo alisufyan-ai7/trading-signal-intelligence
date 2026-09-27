@@ -2,133 +2,72 @@
 
 _Last updated: 2026-09-27_
 
-## Immediate objective
+## Launch status
 
-Launch TradingTop Early Access while all three launch-market forward collectors run independently and immutably.
+TradingTop Early Access is now in Day 2 build.
 
-## Completed
+Completed:
 
 - G1 PASS
-- G2 PASS via separate Exness permission confirmed by project owner
-- local Early Access FastAPI/UI preview PASS
-- XAUUSD immutable forward collector ACTIVE
-- USTEC recency PASS
-- US30 recency PASS
-- USTEC immutable forward ledger ACTIVATED + HASH ANCHORED
-- US30 immutable forward ledger ACTIVATED + HASH ANCHORED
-- multi-market dashboard/API foundation COMPLETE
+- G2 PASS
+- XAUUSD forward collector active
+- USTEC forward collector active
+- US30 forward collector active
+- primary + secondary scheduled tasks operational
+- local FastAPI beta preview passed
+- evidence API/UI implemented
+- immutable forward signal-history API/UI implemented
+- public derived-data snapshot exporter implemented
 
-## Immediate step — install the secondary hourly scheduler
+## Immediate local verification
 
-Pull the activation-anchor updates and install the USTEC/US30 task:
-
-```powershell
-git pull
-
-powershell -ExecutionPolicy Bypass -File scripts\install_s02_secondary_forward_task.ps1
-```
-
-Then inspect the task:
-
-```powershell
-Get-ScheduledTask -TaskName "TradingTop S02 Secondary Forward Scan"
-Get-ScheduledTaskInfo -TaskName "TradingTop S02 Secondary Forward Scan"
-```
-
-The task should be `Ready`, with its next run near minute 03 of the hour.
-
-## Verify the three product collectors
-
-Restart or refresh the local beta app after `git pull`.
-
-Expected health state:
-
-- XAUUSD: scanning / active;
-- USTEC: scanning / active;
-- US30: scanning / active;
-- health card: **3/3 live collectors active**.
-
-If the app is not already running:
-
-```powershell
-python scripts\run_beta_app.py
-```
-
-Open:
-
-`http://127.0.0.1:8000`
-
-## After the first scheduled secondary run
-
-Run:
-
-```powershell
-Get-ScheduledTaskInfo -TaskName "TradingTop S02 Secondary Forward Scan"
-
-Get-Content data\forward-task-logs\s02_secondary_forward.log -Tail 150
-
-python scripts\verify_forward_ledger.py --database data\forward_ustec.sqlite
-python scripts\verify_forward_ledger.py --database data\forward_us30.sqlite
-```
-
-Send those outputs if any SIGNAL / EXIT / MISSED_SIGNAL / SKIPPED_SIGNAL appears or if the task/ledger reports an error.
-
-## Product build — continue immediately
-
-While forward collectors run:
-
-1. signal-history/evidence API + UI;
-2. current active-signal detail view;
-3. authentication;
-4. one alert channel;
-5. production deployment;
-6. feedback/willingness-to-pay capture;
-7. founding paid tier after initial user validation.
-
-## Existing XAU forward test
-
-Leave it untouched.
-
-## Claim discipline
-
-Use Early Access / research beta language.
-
-Do not claim guaranteed returns, completed forward validation, personalized advice, or copy trading.
-
-
-## 2026-09-27 secondary scheduler installation checkpoint
-
-The secondary scheduled task is registered correctly:
-
-- state: `Ready`;
-- next run: `2026-09-27 13:03:03` machine-local time;
-- missed runs: `0`;
-- `267011 / 0x41303` before first execution means the task has not yet run;
-- absence of `data/forward-task-logs/s02_secondary_forward.log` before first execution is expected.
-
-Both secondary ledgers still verify with exactly one ACTIVATION record.
-
-### Beta app environment correction
-
-One active PowerShell/venv instance did not have the optional app dependencies installed and raised `ModuleNotFoundError: uvicorn`.
-
-Use the deterministic setup helper:
+Pull and run the fast product smoke check:
 
 ```powershell
 git pull
-powershell -ExecutionPolicy Bypass -File scripts\setup_beta_app.ps1
+
+.\.venv\Scripts\python.exe scripts\smoke_beta_product.py
+
+.\.venv\Scripts\python.exe scripts\export_public_snapshot.py
+```
+
+Expected smoke output:
+
+- `beta smoke: PASS`
+- `collectors_ready=3/3`
+- `launch_ready=True`
+
+The snapshot exporter should report `raw_market_data_included: false`.
+
+Then restart the beta app:
+
+```powershell
 .\.venv\Scripts\python.exe scripts\run_beta_app.py
 ```
 
-This installs `.[app]` specifically into the repository's `.venv` and verifies FastAPI/Uvicorn imports.
+Refresh `http://127.0.0.1:8000`.
 
-### After the first secondary scheduled run
+Expected new sections:
 
-Only after the scheduled time has passed, run:
+- 3/3 systems operational;
+- historical evidence cards for XAUUSD, USTEC, US30;
+- immutable forward record;
+- empty-state message until the first live SIGNAL occurs.
 
-```powershell
-Get-ScheduledTaskInfo -TaskName "TradingTop S02 Secondary Forward Scan"
-Get-Content data\forward-task-logs\s02_secondary_forward.log -Tail 150
-python scripts\verify_forward_ledger.py --database data\forward_ustec.sqlite
-python scripts\verify_forward_ledger.py --database data\forward_us30.sqlite
-```
+## Next engineering step
+
+After the smoke check passes:
+
+1. add authentication / invite-only access;
+2. add one alert channel;
+3. add cloud snapshot ingestion so the public app can receive derived data from the Windows collector without raw MT5 candles;
+4. deploy the public beta;
+5. add feedback + willingness-to-pay capture.
+
+## Operations
+
+Forward collectors continue automatically.
+
+Report immediately if any SIGNAL / EXIT / MISSED_SIGNAL / SKIPPED_SIGNAL appears or if a scheduler/ledger reports an error.
+
+Do not modify or recreate any of the three activated forward ledgers.

@@ -4,70 +4,65 @@ _Last updated: 2026-09-27_
 
 ## Launch status
 
-TradingTop Early Access is now in Day 2 build.
+TradingTop Early Access Day-2 smoke passed:
 
-Completed:
+- 3/3 collectors ready;
+- launch_ready=True;
+- public derived-data snapshot exported;
+- no raw MT5 market data included.
 
-- G1 PASS
-- G2 PASS
-- XAUUSD forward collector active
-- USTEC forward collector active
-- US30 forward collector active
-- primary + secondary scheduled tasks operational
-- local FastAPI beta preview passed
-- evidence API/UI implemented
-- immutable forward signal-history API/UI implemented
-- public derived-data snapshot exporter implemented
+The smoke also detected **2 immutable forward SIGNAL records**. Inspecting and externally anchoring their current ledger heads is now the highest-priority evidence task.
 
-## Immediate local verification
+## Immediate step — inspect the first forward signals
 
-Pull and run the fast product smoke check:
+Pull the event inspector and cache-busted frontend:
 
 ```powershell
 git pull
 
-.\.venv\Scripts\python.exe scripts\smoke_beta_product.py
-
-.\.venv\Scripts\python.exe scripts\export_public_snapshot.py
+.\.venv\Scripts\python.exe scripts\inspect_forward_events.py
 ```
 
-Expected smoke output:
+Paste the complete JSON output.
 
-- `beta smoke: PASS`
-- `collectors_ready=3/3`
-- `launch_ready=True`
+The command is read-only. It reports, per market:
 
-The snapshot exporter should report `raw_market_data_included: false`.
+- SIGNAL / EXIT / MISSED_SIGNAL / SKIPPED_SIGNAL counts;
+- exact signal direction, timestamps, entry/stop/target;
+- current unresolved signals;
+- current ledger head hash;
+- ledger verification.
 
-Then restart the beta app:
+Do not recreate, edit or resolve any signal manually.
+
+## Refresh the beta frontend
+
+Restart the local app after the pull:
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\run_beta_app.py
 ```
 
-Refresh `http://127.0.0.1:8000`.
+Then refresh `http://127.0.0.1:8000`.
 
-Expected new sections:
+The HTML now version-tags the CSS/JS assets, so the browser should load the current bundle without relying on the old cached static files.
 
-- 3/3 systems operational;
-- historical evidence cards for XAUUSD, USTEC, US30;
-- immutable forward record;
-- empty-state message until the first live SIGNAL occurs.
+Expected:
 
-## Next engineering step
+- `3/3 live collectors active`;
+- historical evidence cards visible;
+- the Immutable Forward Record section renders the actual two signals rather than `Loading forward records...`.
 
-After the smoke check passes:
+If the browser still shows the old bundle, use `Ctrl+F5` once.
 
-1. add authentication / invite-only access;
+## After event inspection
+
+Once the two signal records and new ledger heads are anchored in GitHub:
+
+1. continue authentication / invite-only access;
 2. add one alert channel;
-3. add cloud snapshot ingestion so the public app can receive derived data from the Windows collector without raw MT5 candles;
+3. add cloud snapshot ingestion;
 4. deploy the public beta;
 5. add feedback + willingness-to-pay capture.
 
-## Operations
-
-Forward collectors continue automatically.
-
-Report immediately if any SIGNAL / EXIT / MISSED_SIGNAL / SKIPPED_SIGNAL appears or if a scheduler/ledger reports an error.
-
-Do not modify or recreate any of the three activated forward ledgers.
+Forward collection continues unchanged throughout.

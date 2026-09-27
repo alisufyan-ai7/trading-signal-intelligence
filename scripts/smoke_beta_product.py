@@ -7,7 +7,7 @@ def main() -> None:
     h = health()
     m = markets()
     e = evidence()
-    s = signals()
+    s = signals(limit_per_market=20)
 
     assert h["live_signal_markets"] == 3
     assert len([row for row in m if row["product_status"] == "live_signal_market"]) == 3

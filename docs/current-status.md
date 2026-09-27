@@ -1,7 +1,7 @@
 # Current Status
 
 **Phase:** 1 — Strategy evidence research  
-**Date:** 2026-09-21
+**Date:** 2026-09-27
 
 ## Infrastructure
 
@@ -19,7 +19,7 @@
 - S02 new-market transfer runner: COMPLETE
 - Immutable hash-chained forward ledger: ACTIVATED / HASH ANCHORED
 - S02 live forward scanner: ACTIVE / 72 CONSECUTIVE HOURLY RUNS VERIFIED THROUGH 2026-09-21 15:02 UTC
-- SaaS UI: EARLY ACCESS MVP IN PROGRESS
+- SaaS UI: EARLY ACCESS MVP PREVIEW PASS / SECONDARY DATA RECENCY BLOCKER
 
 ## Validation gates
 
@@ -111,3 +111,25 @@ Initial live-signal markets:
 Additional researched markets appear in the app with explicit evidence/status labels rather than being silently omitted.
 
 Paid market-data subscriptions are deferred until product revenue exists; the confirmed Exness permission is the launch data path.
+
+
+## Early Access Day-1 checkpoint — 2026-09-27
+
+Local FastAPI/UI preview passed:
+
+- application installed and started successfully;
+- root page, static assets, `/api/health` and `/api/markets` returned successfully;
+- multi-market launch UI rendered XAUUSD, USTEC and US30 plus the research-monitoring universe.
+
+Secondary live-data recency did **not** pass:
+
+- USTEC quote timestamp: 2026-09-25T20:54:59Z;
+- USTEC H1 latest bar: 2026-09-18T11:00:00Z;
+- USTEC H4 latest bar: 2026-09-18T08:00:00Z;
+- US30 quote timestamp: 2026-09-25T20:54:59Z;
+- US30 H1 latest bar: 2026-09-18T11:00:00Z;
+- US30 H4 latest bar: 2026-09-18T08:00:00Z.
+
+Both secondary markets therefore failed the pre-activation recency gate. Their forward ledgers must not be activated until recent H1/H4 history is synchronized.
+
+A targeted `scripts/mt5_history_sync_probe.py` has been added. It requests recent history through MT5 position-, from-date-, and date-range APIs to diagnose/encourage terminal history synchronization without changing the frozen strategy or XAU forward protocol.

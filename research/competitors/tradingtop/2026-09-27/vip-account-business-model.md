@@ -13,7 +13,7 @@ Captured 2026-09-27 UTC in the user-authorized signed-in browser session. Source
 | Account Settings | `/myseting` | Avatar, nickname, gender, email edit and mobile bind; no changes submitted | [26](tradingtop-20260927-26-account-settings.jpg) |
 | View AI Logs | `/ai-history` | Same AI Execution Log reached in the earlier research pass, with aggregate metrics and outcome rows | [27](tradingtop-20260927-27-ai-logs-from-account.jpg) |
 
-The account avatar also links to `/user`; this page was not separately traversed in this pass. The six sidebar destinations above were opened. The invitation dashboard is obscured by its agreement overlay in capture 24; its structure and zero counters were visible in the DOM. The overlay's “confirm” button was **not** pressed.
+The account avatar links to `/user`. Opening it redirected to `/myvip`, so it is an entry route to the same account page; [capture 34](tradingtop-20260927-34-account-landing.jpg) records the destination. The six sidebar destinations above were opened. The invitation dashboard is obscured by its agreement overlay in capture 24; its structure and zero counters were visible in the DOM. The overlay's “confirm” button was **not** pressed.
 
 ## TOP utility and growth loop
 
@@ -70,6 +70,6 @@ The combined UI suggests subscription revenue and referral distribution, with TO
 
 - The “Pay Now” click was rejected by automatic browser approval review because it enters a purchase flow; no checkout or payment screen was opened. The withdrawal control and agency agreement “confirm” were not used. We did not bind a phone, alter profile fields, subscribe to email, invite a person, connect a broker or trade.
 - The agency overlay remained visible after an attempt to use its visually identified close icon; capture 24 is therefore an overlay view, not an unobstructed dashboard screenshot.
-- `/user` is a link in the global header but was not separately opened; no claim of exhaustive site-wide coverage is made. The six menu routes internal to the VIP account were traversed.
+- `/user` was opened and redirected to `/myvip`. The six menu routes internal to the VIP account were traversed. This does not claim exhaustive coverage of unrelated site sections.
 - The initially captured screenshot called “full-page” (31) is still a viewport image because the site uses an inner scroll area. Captures 32–33 record lower instrument rows. All screenshot bytes are retained unchanged.
 - For this repo's product, keep credit economics separate from signal quality; test entitlement and expiry behavior explicitly; disclose any referral incentives; and show net, per-strategy evidence rather than treating marketing accuracy as independently audited performance.

@@ -393,3 +393,26 @@ No public Railway domain exists yet.
 The invite credentials and ingestion token are intentionally still unset, so the service remains unexposed.
 
 Persistent volume is still absent. This does not block the beta; the Windows publisher can repush the snapshot after a Railway restart/redeploy.
+
+
+## Railway invite-gated domain — 2026-09-27
+
+The three required Railway secret variable names are present:
+
+- `TRADINGTOP_BETA_USER`
+- `TRADINGTOP_BETA_PASSWORD`
+- `TRADINGTOP_INGEST_TOKEN`
+
+Their values remain redacted through the connector.
+
+Saving the secret variables triggered a successful Railway deployment. The new deployment passed `GET /healthz -> 200 OK`.
+
+A Railway public service domain has now been created:
+
+`https://tradingtop-early-access-production.up.railway.app`
+
+The invite middleware is active because both beta-user/password variables are configured. Snapshot ingestion remains separately protected by the bearer ingestion token.
+
+The cloud currently has not yet received its first derived snapshot.
+
+Added `scripts/configure_cloud_ingest.ps1` so the Windows collector can securely store the Railway ingest URL/token in local `.env` without echoing the token.

@@ -67,3 +67,9 @@ Before external invitations:
 4. Select the first cohort and prepare the onboarding message; send no invitations until the preceding steps are complete.
 
 This audit did not recheck the hosted beta. The prior launch verification above is the repository's recorded checkpoint.
+
+## Authenticated competitor research — 2026-09-27 UTC
+
+User-authorized email/password sign-in later succeeded. The earlier Google OAuth failure and “authenticated pages unverified” statement above are historical to the first attempt. Signed-in TradingTop screenshots and hashes are archived in `research/competitors/tradingtop/2026-09-27/README.md`. Pricing, signal card, AI log and T1/T2/T3 model pages were observed. T2's displayed three-month gold result is negative; do not use the aggregate AI log headline as a proxy for T2 model performance.
+
+Keep the product priorities above. Add explicit signal issuance/expiry semantics and per-strategy outcome scope to the first-user comprehension check. No trading or broker connection was performed during this research.

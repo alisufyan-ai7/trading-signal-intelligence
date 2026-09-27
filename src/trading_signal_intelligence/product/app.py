@@ -6,7 +6,11 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from trading_signal_intelligence.product.access import basic_access_middleware, beta_access_enabled\nfrom trading_signal_intelligence.product.catalog import launch_catalog, market_statuses
+from trading_signal_intelligence.product.access import (
+    basic_access_middleware,
+    beta_access_enabled,
+)
+from trading_signal_intelligence.product.catalog import launch_catalog, market_statuses
 from trading_signal_intelligence.product.evidence import evidence_summary, market_evidence
 from trading_signal_intelligence.product.public_signals import (
     operational_event_counts,
@@ -19,16 +23,22 @@ WEB = ROOT / "web"
 
 app = FastAPI(
     title="TradingTop Early Access",
-    version="0.2.0",
+    version="0.3.0",
     description="Verified rule-based market setups with transparent evidence status.",
 )
 
-app.middleware("http")(basic_access_middleware)\napp.mount("/static", StaticFiles(directory=WEB), name="static")
+app.middleware("http")(basic_access_middleware)
+app.mount("/static", StaticFiles(directory=WEB), name="static")
 
 
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse(WEB / "index.html")
+
+
+@app.get("/api/access")
+def access() -> dict:
+    return {"invite_gate_enabled": beta_access_enabled()}
 
 
 @app.get("/api/health")
@@ -99,10 +109,10 @@ def market(source_symbol: str) -> dict:
 
 @app.get("/api/markets/{source_symbol}/evidence")
 def market_evidence_endpoint(source_symbol: str) -> dict:
-    evidence = market_evidence(source_symbol)
-    if evidence is None:
+    result = market_evidence(source_symbol)
+    if result is None:
         raise HTTPException(status_code=404, detail="No frozen evidence summary for this market")
-    return evidence
+    return result
 
 
 @app.get("/api/markets/{source_symbol}/signals")
@@ -128,7 +138,8 @@ def market_signals(
 @app.get("/api/signals")
 def signals(limit_per_market: int = Query(default=20, ge=1, le=100)) -> dict:
     live = [
-        row for row in market_statuses()
+        row
+        for row in market_statuses()
         if row["product_status"] == "live_signal_market"
     ]
     return {

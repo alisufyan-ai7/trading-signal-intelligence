@@ -1,6 +1,6 @@
 # AI-v1 Observability and Parallel Product Work Plan
 
-_Status: ACTIVE — forward collection running_  
+_Status: OBSERVABILITY V0.1 VERIFIED — forward collection running; AI Insights UI next_  
 _Date: 2026-09-28_
 
 ## Purpose
@@ -156,7 +156,7 @@ If trade-count thresholds are not met by those dates, the review moves later.
 6. Perform A1 only when the frozen thresholds are naturally reached.
 
 
-## Implementation checkpoint — v0.1 committed / VPS verification pending
+## Implementation checkpoint — v0.1 committed and VPS verified
 
 Implementation is committed on `main` without changing any activation-bound AI-v1 decision/runtime artifact.
 
@@ -177,10 +177,15 @@ The core opens AI-v1 SQLite databases using URI `mode=ro` plus `PRAGMA query_onl
 
 No OpenAI/MT5/broker adapter is imported or invoked by the observability module.
 
-The milestone is not complete until the Windows VPS verifies:
+Windows VPS verification completed successfully:
 
-1. focused observability tests pass;
-2. live report returns healthy;
-3. all three live AI-v1 database SHA-256 hashes are byte-identical before vs after the report;
-4. normal activated runtime verification still passes;
-5. broker execution remains disabled.
+1. focused observability tests: `4 passed in 5.34s`;
+2. live report: `HEALTHY`, `READ_ONLY`, exit code `0`;
+3. all three live AI-v1 database SHA-256 hashes were byte-identical before vs after the report;
+4. normal activated runtime verification remained `valid=true`;
+5. activation anchor upstream check remained valid;
+6. all 25 frozen activation artifact hashes matched;
+7. broker execution remained disabled;
+8. tracked worktree remained clean.
+
+Observability v0.1 is complete. The next engineering milestone is the AI Insights UI, consuming only the read-only observability/export layer.

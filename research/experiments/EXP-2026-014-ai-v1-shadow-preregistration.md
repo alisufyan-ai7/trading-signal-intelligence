@@ -8,7 +8,7 @@ Can a structured AI reasoning model, operating only on causally available engine
 
 ## Pre-registration timing
 
-This document, `docs/ai-v1-architecture.md`, `docs/ai-v1-feature-definitions.md`, `config/ai_v1_feature_schema.json`, `config/ai_v1_policy.txt`, `config/ai_v1_decision_schema.json` and `config/ai_v1_guardrails.json` are committed **before the first AI-v1 performance-bearing shadow inference is activated**.
+This document, `docs/ai-v1-architecture.md`, `docs/ai-v1-feature-definitions.md`, `config/ai_v1_feature_schema.json`, `config/ai_v1_policy.txt`, `config/ai_v1_decision_schema.json`, `config/ai_v1_guardrails.json`, `docs/ai-v1-ledger-spec.md` and `config/ai_v1_activation_schema.json` are committed **before the first AI-v1 performance-bearing shadow inference is activated**.
 
 No AI-v1 result has been observed at the time of this preregistration.
 

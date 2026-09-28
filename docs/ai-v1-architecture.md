@@ -70,6 +70,8 @@ Only information available at the inference timestamp may be used.
 
 AI-v1 receives **derived features**, not a large raw candle dump.
 
+Frozen feature families are defined precisely in `docs/ai-v1-feature-definitions.md` and machine-validated by `config/ai_v1_feature_schema.json`.
+
 Frozen feature families:
 
 ### Price / return state
@@ -127,6 +129,8 @@ A separately versioned AI-v1.1 or AI-v2 may add external context only after its 
 ## AI model role
 
 AI-v1 uses a provider-neutral **reasoning-model adapter**.
+
+The provider-neutral decision policy is frozen at `config/ai_v1_policy.txt`.
 
 The model receives:
 

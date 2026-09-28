@@ -1,6 +1,6 @@
 # Current Status
 
-**Phase:** AI-v1 forward shadow collection active; read-only observability next  
+**Phase:** AI-v1 forward shadow collection active; observability verified; AI Insights UI next  
 **Date:** 2026-09-28
 
 ## Infrastructure
@@ -23,7 +23,8 @@
 - AI-v1 replacement activation: VERIFIED / RUNTIME-BOUND
 - AI-v1 shadow scheduler: ACTIVE / HOURLY / SHADOW-ONLY
 - AI-v1 broker execution: DISABLED
-- AI-v1 next engineering milestone: READ-ONLY OBSERVABILITY V0.1
+- AI-v1 observability v0.1: COMPLETE / VPS VERIFIED / READ-ONLY
+- AI-v1 next engineering milestone: AI INSIGHTS UI
 
 ## AI-v1 active forward-collection plan
 
@@ -32,9 +33,9 @@ AI-v1.0 is now collecting immutable forward evidence under the frozen preregistr
 Immediate work is **not** model tuning. The active sequence is:
 
 1. keep the hourly AI-v1 scheduler running untouched;
-2. build/test a strictly read-only progress and health monitor;
-3. verify that monitor against the live VPS ledgers;
-4. build the AI Insights UI from read-only exported evidence;
+2. **DONE:** build/test a strictly read-only progress and health monitor;
+3. **DONE:** verify that monitor against the live VPS ledgers;
+4. **NEXT:** build the AI Insights UI from read-only exported evidence;
 5. continue product work that does not alter AI-v1 decision behavior;
 6. review A1/A2/A3 only at their frozen eligibility thresholds.
 

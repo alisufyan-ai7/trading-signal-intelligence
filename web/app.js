@@ -274,6 +274,68 @@ function renderAi(ai) {
   }
 }
 
+
+function setupFeedbackForm() {
+  const form = document.querySelector("#feedback-form");
+  if (!form) return;
+
+  const submit = document.querySelector("#feedback-submit");
+  const status = document.querySelector("#feedback-status");
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    status.textContent = "";
+    status.classList.remove("success", "error");
+
+    const data = new FormData(form);
+    const marketInterests = data.getAll("market_interests");
+    if (!marketInterests.length) {
+      status.textContent = "Select at least one market.";
+      status.classList.add("error");
+      return;
+    }
+
+    const payload = {
+      comprehension_rating: Number(data.get("comprehension_rating")),
+      lifecycle_clarity_rating: Number(data.get("lifecycle_clarity_rating")),
+      ai_reasoning_clarity_rating: Number(data.get("ai_reasoning_clarity_rating")),
+      immutable_record_trust: data.get("immutable_record_trust"),
+      missing_details: data.getAll("missing_details"),
+      alert_preference: data.get("alert_preference"),
+      willingness_to_pay: data.get("willingness_to_pay"),
+      price_range: data.get("price_range"),
+      market_interests: marketInterests,
+      feedback_text: data.get("feedback_text") || "",
+    };
+
+    submit.disabled = true;
+    submit.textContent = "Submitting…";
+    status.textContent = "Saving feedback…";
+
+    try {
+      const response = await fetch("/api/feedback", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.detail || `Feedback request failed (HTTP ${response.status})`);
+      }
+
+      form.reset();
+      status.textContent = "Thanks — feedback recorded. No trading action was taken.";
+      status.classList.add("success");
+    } catch (error) {
+      status.textContent = String(error.message || error);
+      status.classList.add("error");
+    } finally {
+      submit.disabled = false;
+      submit.textContent = "Submit feedback";
+    }
+  });
+}
+
 async function boot() {
   const aiRequest = fetch("/api/ai/insights")
     .then(res => res.ok ? res.json() : Promise.reject(new Error(`AI endpoint HTTP ${res.status}`)))
@@ -322,6 +384,8 @@ async function boot() {
   document.querySelector("#research-grid").innerHTML = research.map(m => card(m, false)).join("");
   renderSignals(signals);
 }
+
+setupFeedbackForm();
 
 boot().catch(err => {
   document.querySelector("#health-label").textContent = "Unable to load status";

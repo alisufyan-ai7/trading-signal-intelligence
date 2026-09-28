@@ -4,13 +4,17 @@ _Last updated: 2026-09-18_
 
 ## Goal
 
-Create a low-cost trading-signal SaaS that continuously scans markets, generates quantitatively defined setups, explains them with AI, and keeps an immutable verified performance record.
+Create a low-cost AI market-intelligence SaaS that continuously scans markets, generates structured AI BUY/SELL/NO_TRADE decisions from causally available derived market features, applies deterministic risk/publication guardrails, and keeps an immutable verified performance record.
 
 ## Core positioning
 
-This is **not** an "AI predicts the market" product. The intended positioning is:
+The product direction was formally changed on 2026-09-28 to **AI-first intelligence with deterministic guardrails and verifiable evidence**.
 
-> Broker-neutral verified signal intelligence: discover setups, explain the reasoning, quantify the risk, and prove the track record.
+Working product name: **SignalProof AI**.
+
+> AI finds the setup. Risk rules verify it. Every signal stays on the record.
+
+The existing S02 rule engine remains active as an unchanged benchmark/control. It is not relabeled as AI.
 
 ## Current product boundaries
 
@@ -24,13 +28,16 @@ This is **not** an "AI predicts the market" product. The intended positioning is
 - Walk-forward and out-of-sample validation
 - Signal quality scoring calibrated to historical outcomes
 - Immutable live forward-test ledger
-- AI-generated explanations and contextual risk summaries after a quantitative signal exists
-- Web dashboard, alerts and subscriptions only after the research gates are satisfied
+- AI-v1 shadow inference on XAUUSD, USTEC and US30 using causally available engineered features
+- Structured BUY/SELL/NO_TRADE model outputs with deterministic publication/risk guardrails
+- Separate immutable AI inference / signal lifecycle ledger
+- AI reasoning summaries that do not expose hidden chain-of-thought
+- Web dashboard, alerts and subscriptions developed in parallel with validation
 
 ### Out of scope for v1
 
 - Holding customer funds
-- Fully automated copy trading
+- Fully automated copy trading / broker-connected AI execution before a separately approved execution phase
 - Portfolio management
 - Native mobile apps
 - Rebuilding a full charting terminal
@@ -165,6 +172,7 @@ Canonical IDs are unique:
 - EXP-2026-011 — S02 temporal stability protocol + result
 - EXP-2026-012 — S02 new-market transfer protocol + result
 - EXP-2026-013 — S02 immutable forward-test ledger protocol
+- EXP-2026-014 — AI-v1 shadow inference preregistration
 
 ## Phase status
 
@@ -178,8 +186,11 @@ Canonical IDs are unique:
 8. S02 exact predeclared specification neighborhood — **DONE / XAU 20 OF 23 BOTH-OOS POSITIVE**
 9. S02 temporal / fixed-rule walk-forward stability — **DONE / RECENT XAU REGIME PERSISTENT**
 10. S02 new-market transfer — **DONE / PARTIAL TRANSFER (USTEC + US30)**
-11. Live immutable forward-test infrastructure — **NEXT**
-12. Early Access SaaS MVP — **IN PROGRESS / 3–5 DAY TARGET**
+11. Live immutable forward-test infrastructure — **DONE / XAUUSD + USTEC + US30 ACTIVE**
+12. Early Access SaaS MVP — **LIVE / RAILWAY PUBLIC BETA**
+13. AI-0 product naming — **DONE / WORKING NAME: SIGNALPROOF AI**
+14. AI-1 architecture + preregistration — **DONE / FROZEN PRE-ACTIVATION**
+15. AI-v1 shadow implementation + activation — **NEXT**
 
 ## Durable project-state rule
 
@@ -225,3 +236,22 @@ The project owner confirms that separate Exness permission covering the intended
 This pass is based on the separate permission held by the project owner, not on the default retail Client Agreement. The permission artifact itself should be retained securely outside the public repository if confidential.
 
 Paid replacement data providers are deferred until application revenue justifies the expense.
+
+
+## AI-first product pivot — 2026-09-28
+
+The owner formally approved the new product direction after authenticated TradingTop research.
+
+AI-v1 is intentionally introduced **alongside** S02 rather than replacing it.
+
+Frozen AI-v1 references:
+
+- `docs/ai-0-product-naming.md`
+- `docs/ai-v1-architecture.md`
+- `config/ai_v1_decision_schema.json`
+- `config/ai_v1_guardrails.json`
+- `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
+
+AI-v1 remains PRE-ACTIVATION until the exact provider/model identifier, inference parameters, prompt/policy and implementation fingerprints are committed. No AI-v1 performance result has been observed at the time of the preregistration.
+
+The active S02 forward protocols and their ledgers must remain unchanged.

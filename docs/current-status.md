@@ -1,7 +1,7 @@
 # Current Status
 
-**Phase:** 1 — Strategy evidence research  
-**Date:** 2026-09-27
+**Phase:** AI product pivot — AI-0/AI-1 complete, AI-v1 implementation next  
+**Date:** 2026-09-28
 
 ## Infrastructure
 
@@ -513,3 +513,77 @@ Railway logs independently confirm the wrapper's cloud push:
 `POST /api/internal/snapshot -> 200 OK` at approximately 2026-09-27T17:14Z.
 
 Day-4 deployment smoke is therefore complete.
+
+
+## AI-0 / AI-1 governance checkpoint — 2026-09-28
+
+The project owner formally approved the AI-first product direction.
+
+### AI-0 — naming
+
+Working product name selected:
+
+**SignalProof AI**
+
+Working promise:
+
+> AI finds the setup. Risk rules verify it. Every signal stays on the record.
+
+The customer-facing beta metadata/UI has been renamed away from the competitor brand. Engineering identifiers and the existing Railway hostname may remain temporarily until a separate public-hostname transition is performed.
+
+No broad trademark/domain clearance has been performed under the strict context-isolation rule; the name remains a working product name until that separate check.
+
+### AI-1 — frozen architecture
+
+The AI-v1 protocol is now frozen **before first AI-v1 performance-bearing inference**.
+
+Frozen artifacts:
+
+- `docs/ai-v1-architecture.md`
+- `config/ai_v1_decision_schema.json`
+- `config/ai_v1_guardrails.json`
+- `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
+
+AI-v1 initial universe:
+
+- XAUUSD
+- USTEC
+- US30
+
+AI-v1 initial mode:
+
+- shadow only;
+- completed-H1 feature snapshots;
+- BUY / SELL / NO_TRADE;
+- provider-neutral reasoning-model adapter;
+- deterministic publication/risk guard;
+- separate immutable AI ledger;
+- no broker execution;
+- no S02 inputs;
+- no news/sentiment in v1.0;
+- exact provider/model/prompt still must be frozen before activation.
+
+The existing S02 forward ledgers remain unchanged and continue as the benchmark/control.
+
+### AI-v1 review gates
+
+- A1: >=100 valid inferences and >=20 completed shadow trades — operational audit only.
+- A2: >=500 valid inferences, >=50 completed trades and >=60 days — interim review.
+- A3: >=1,000 valid inferences, >=100 completed trades and >=120 days — first publishability decision.
+
+No AI-v1 result has been observed yet.
+
+### Immediate implementation status
+
+Authorized next work:
+
+1. deterministic feature builder;
+2. provider-neutral inference adapter;
+3. exact model/provider selection and prompt freeze;
+4. schema validator + deterministic guard;
+5. separate append-only AI ledger;
+6. shadow lifecycle evaluator;
+7. activation fingerprints / tests;
+8. shadow scheduler.
+
+Activation remains blocked until all frozen preconditions pass.

@@ -1,6 +1,6 @@
 # Early Access Feedback & Customer Discovery v0.1
 
-_Status: NEXT / DESIGN FROZEN BEFORE IMPLEMENTATION_  
+_Status: IMPLEMENTED — LIVE VERIFICATION PENDING_  
 _Date: 2026-09-29_  
 _GitHub issue: #7_
 
@@ -124,3 +124,21 @@ Before external invitations:
 No change to AI-v1 or S02 decision behavior is permitted in this milestone.
 
 G4 remains evidence collection, not a pass, until actual user feedback demonstrates customer value/willingness to pay.
+
+
+## Implementation checkpoint
+
+The first implementation is committed.
+
+Components:
+
+- append-only SQLite feedback store;
+- strict privacy-minimal validation;
+- public POST-only feedback API;
+- dedicated owner-only summary/export API;
+- separate owner bearer secret;
+- public Early Access Feedback UI;
+- local owner configuration/export helpers;
+- regression tests for validation, persistence semantics and access boundaries.
+
+The implementation is not yet milestone-complete. It must pass VPS tests and live Railway persistence/access verification before first-cohort invitations are prepared.

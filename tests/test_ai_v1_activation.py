@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from trading_signal_intelligence.ai_v1.activation import (
+    ARTIFACT_PATHS,
     ActivationError,
     validate_activation_payload,
 )
@@ -97,3 +98,21 @@ def test_activation_contract_rejects_wrong_model_or_execution() -> None:
     execution["broker_execution_enabled"] = True
     with pytest.raises(ActivationError):
         validate_activation_payload(execution)
+
+
+def test_activation_bundle_binds_shadow_runtime_and_task_files() -> None:
+    assert ARTIFACT_PATHS["shadow_runtime_source"].endswith("shadow_runtime.py")
+    assert ARTIFACT_PATHS["shadow_runner_script"].endswith("run_ai_v1_shadow.py")
+    assert ARTIFACT_PATHS["shadow_task_runner_script"].endswith(
+        "run_ai_v1_shadow_task.cmd"
+    )
+    assert ARTIFACT_PATHS["shadow_task_installer_script"].endswith(
+        "install_ai_v1_shadow_task.ps1"
+    )
+    for relative in (
+        ARTIFACT_PATHS["shadow_runtime_source"],
+        ARTIFACT_PATHS["shadow_runner_script"],
+        ARTIFACT_PATHS["shadow_task_runner_script"],
+        ARTIFACT_PATHS["shadow_task_installer_script"],
+    ):
+        assert (ROOT / relative).is_file()

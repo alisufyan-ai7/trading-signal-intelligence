@@ -219,3 +219,23 @@ Then run the one synthetic provider smoke:
 That call uses an explicitly synthetic flat market-state fixture, does not write a performance ledger, and must not be used to tune the frozen protocol.
 
 Do **not** run `scripts\activate_ai_v1.py` yet. Activation will occur only after review of these outputs, followed by GitHub anchoring before the shadow scheduler is installed.
+
+
+## Provider adapter verification + activation preview — COMPLETE
+
+The VPS expanded offline suite passed:
+
+`20 passed in 4.46s`
+
+The activation preview also passed with no provider call, no AI-ledger creation and broker execution disabled.
+
+Next:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\configure_openai_api_key.py
+.\.venv\Scripts\python.exe scripts\smoke_ai_v1_openai_provider.py
+```
+
+Do not paste the API key into chat or commit it.
+
+Do not run `scripts\activate_ai_v1.py` until the synthetic provider-smoke output has been reviewed.

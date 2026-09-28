@@ -709,3 +709,34 @@ No live provider call has been made yet.
 No AI-v1 activation ledger exists yet.
 No shadow scheduler is installed yet.
 S02 remains unchanged.
+
+
+## AI-v1 provider adapter VPS verification + activation preview — PASS 2026-09-28
+
+The Windows VPS pulled the frozen OpenAI provider implementation and completed the expanded offline verification.
+
+Observed focused test result:
+
+`20 passed in 4.46s`
+
+Activation preview result:
+
+- `mode = PREVIEW_ONLY`;
+- `provider_call_made = false`;
+- `ai_ledgers_created = false`;
+- `broker_execution_enabled = false`;
+- repository commit at preview: `5cf4c47971c1d9e8a5c079f68e89ccf587d1e253`;
+- provider: `openai`;
+- model: `gpt-5.4-2026-03-05`;
+- model-parameter fingerprint: `ed5069535190cb33771ff8efe1c4389e09abaddea933143c0c839c6dc87d3e9b`;
+- cost-policy fingerprint: `b420e2a1f5b1acfdbdd46c3355c520b6a3e2d9697adc0c1ff0e7c5ca48b4671e`.
+
+Preview activation bundle hashes:
+
+- XAUUSD: `31ef91c9bc3e9711f78426f3a88dc2c8856e14f2f43b7aa198dd96337315c578`;
+- USTEC: `d189151b45892b0333b7a5a7a50b97431a3fbe650ab005ad4f018533b6ffece2`;
+- US30: `bfd6e4b61169740a7936a0aa04f19dabe0d6c4736368556f070f782d71f2d7b4`.
+
+These are preview fingerprints only; no ACTIVATION record was created and they must not be treated as final ledger-head anchors.
+
+The next required checkpoint is exactly one synthetic non-performance OpenAI provider smoke after configuring `OPENAI_API_KEY` locally. The real AI-v1 ledgers remain unactivated.

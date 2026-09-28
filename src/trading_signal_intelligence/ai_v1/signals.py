@@ -468,6 +468,21 @@ def evaluate_signal(
                         )
                     )
                     break
+                if absolute_index == max_hold:
+                    actions.append(
+                        _append_exit(
+                            ledger=ledger,
+                            signal=signal,
+                            candle=candle,
+                            exit_price=float(candle.close),
+                            reason="TIMEOUT",
+                            fraction=float(p["tp2_position_fraction"]),
+                            partial=partial,
+                            bars_held=absolute_index,
+                            recorded_at_utc=now,
+                        )
+                    )
+                    break
                 continue
 
             if stop_hit and (tp1_hit or tp2_hit):
@@ -530,6 +545,21 @@ def evaluate_signal(
                     recorded_at_utc=now,
                 )
                 actions.append(partial)
+                if absolute_index == max_hold:
+                    actions.append(
+                        _append_exit(
+                            ledger=ledger,
+                            signal=signal,
+                            candle=candle,
+                            exit_price=float(candle.close),
+                            reason="TIMEOUT",
+                            fraction=float(p["tp2_position_fraction"]),
+                            partial=partial,
+                            bars_held=absolute_index,
+                            recorded_at_utc=now,
+                        )
+                    )
+                    break
                 continue
 
         if absolute_index == max_hold:

@@ -1,6 +1,6 @@
 # AI Insights UI
 
-_Status: IMPLEMENTED — VPS + cloud verification pending_  
+_Status: VPS VERIFIED — cloud publish/UI verification pending_  
 _Date: 2026-09-29_
 
 ## Purpose
@@ -141,3 +141,19 @@ Only after those checks pass may the AI Insights UI milestone be marked complete
 Do not change AI-v1 model, prompt, features, guardrails, universe, lifecycle, cost policy, scheduler decision cadence or existing immutable evidence for this UI milestone.
 
 Any future decision-affecting AI change remains a separately governed version.
+
+
+## VPS verification checkpoint — PASS
+
+Live Windows verification completed successfully:
+
+- focused AI Insights + observability suite: 6 passed;
+- beta product smoke: PASS;
+- public snapshot export: PASS;
+- all three AI ledger database hashes byte-identical before/after product smoke/export;
+- AI public-snapshot sanitizer: PASS;
+- runtime verifier: valid=true;
+- broker execution: disabled;
+- no prohibited raw/internal AI fields exposed.
+
+Remaining closure work is cloud-only: push the AI-aware derived snapshot and verify `/api/ai/insights` plus the rendered public UI.

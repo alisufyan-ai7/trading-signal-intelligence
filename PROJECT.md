@@ -248,15 +248,18 @@ Frozen AI-v1 references:
 
 - `docs/ai-0-product-naming.md`
 - `docs/ai-v1-architecture.md`
+- `docs/ai-v1-provider-selection.md`
 - `docs/ai-v1-feature-definitions.md`
 - `config/ai_v1_feature_schema.json`
 - `config/ai_v1_policy.txt`
+- `config/ai_v1_provider.json`
+- `config/ai_v1_openai_response_schema.json`
 - `config/ai_v1_decision_schema.json`
 - `config/ai_v1_guardrails.json`
 - `docs/ai-v1-ledger-spec.md`
 - `config/ai_v1_activation_schema.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
-AI-v1 remains PRE-ACTIVATION until the exact provider/model identifier, inference parameters, prompt/policy and implementation fingerprints are committed. No AI-v1 performance result has been observed at the time of the preregistration.
+AI-v1 remains PRE-ACTIVATION. The exact provider/model and inference parameters are now frozen to OpenAI `gpt-5.4-2026-03-05`; activation still requires provider-adapter verification, implementation fingerprints, activation ledgers/anchors and the shadow scheduler. No AI-v1 performance result has been observed at the time of the preregistration.
 
 The active S02 forward protocols and their ledgers must remain unchanged.

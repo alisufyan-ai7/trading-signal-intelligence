@@ -154,3 +154,23 @@ Optional read-only live feature probe:
 This probe makes no AI call and no trade/broker mutation.
 
 After these pass, the next blocked step is to select and freeze the exact AI provider/model + provider-specific inference parameters, then implement that concrete adapter and create the activation bundle.
+
+
+## AI-v1 foundation verification — COMPLETE
+
+The Windows VPS foundation smoke passed and the focused AI-v1 test suite reported:
+
+`12 passed in 6.41s`
+
+S02 database hashes remained unchanged and no provider call or broker execution occurred.
+
+The next activation-critical milestone is now:
+
+1. choose the exact AI inference provider/model;
+2. freeze provider-specific inference parameters;
+3. implement the concrete provider adapter;
+4. fingerprint policy/provider/implementation artifacts;
+5. build and validate the activation bundle;
+6. install the shadow scheduler only after activation checks pass.
+
+Under the project's strict context-isolation rule, provider selection should not silently use outside provider documentation unless the owner explicitly authorizes fresh provider research or names the provider/model to use.

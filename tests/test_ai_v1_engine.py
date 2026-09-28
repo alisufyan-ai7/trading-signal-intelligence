@@ -26,7 +26,10 @@ class Adapter:
         feature_snapshot: dict[str, Any],
         decision_schema: dict[str, Any],
     ) -> tuple[dict[str, Any], dict[str, Any]]:
-        return self.response, {"request_id": "test"}
+        return self.response, {
+            "request_id": "test",
+            "usage": {"input_tokens": 10, "output_tokens": 4, "total_tokens": 14},
+        }
 
 
 def guardrails() -> dict[str, Any]:
@@ -133,6 +136,18 @@ def test_no_trade_cycle_appends_inference_and_abstention(tmp_path) -> None:
 
     assert result.status == "NO_TRADE"
     assert ledger.counts_by_type() == {"INFERENCE": 1, "NO_TRADE": 1}
+    assert result.inference_record is not None
+    inference_payload = result.inference_record["payload"]
+    assert len(inference_payload["policy_sha256"]) == 64
+    assert len(inference_payload["guardrails_sha256"]) == 64
+    assert inference_payload["raw_confidence"] == 40
+    assert inference_payload["provider_request_id"] == "test"
+    assert inference_payload["usage"]["total_tokens"] == 14
+    assert result.terminal_record is not None
+    assert (
+        result.terminal_record["payload"]["normalized_decision"]["decision"]
+        == "NO_TRADE"
+    )
     assert ledger.verify()["valid"] is True
 
 
@@ -151,6 +166,8 @@ def test_buy_cycle_can_be_approved_pending_entry(tmp_path) -> None:
 
     assert result.status == "APPROVED_PENDING_ENTRY"
     assert ledger.counts_by_type() == {"INFERENCE": 1}
+    assert result.inference_record is not None
+    assert result.inference_record["payload"]["raw_confidence"] == 65
     assert result.guard_result is not None
     assert result.guard_result.publishable is True
 

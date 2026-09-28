@@ -51,7 +51,7 @@ The existing S02 rule engine remains active as an unchanged benchmark/control. I
 | G1 | Can MT5/Exness and Binance reliably provide the research data we need? | **PASS — RESEARCH DATA** |
 | G2 | Can each intended production source legally support commercial derived signals? | **PASS — Exness commercial derived-signal permission confirmed by project owner** |
 | G3 | Can at least one strategy demonstrate robust positive expectancy after costs? | **IN PROGRESS — S02 XAU historical robustness passed; transfer is partial; immutable forward evidence next; not candidate** |
-| G4 | Will traders pay for verified and explainable signals? | NOT STARTED |
+| G4 | Will traders pay for verified and explainable signals? | **READY TO START — FEEDBACK MECHANISM VERIFIED; NO REAL-USER EVIDENCE YET** |
 
 ## G1 evidence
 
@@ -194,8 +194,9 @@ Canonical IDs are unique:
 16. AI-v1 read-only observability — **DONE / VPS VERIFIED**
 17. AI Insights UI — **DONE / VPS + CLOUD VERIFIED**
 18. Cloud snapshot durability v0.1 — **DONE / CONTROLLED REDEPLOY VERIFIED**
-19. Early Access feedback & customer discovery v0.1 — **IN PROGRESS / IMPLEMENTED / LIVE VERIFICATION PENDING**
-20. Organic acquisition & SEO v0.1 — **DEFERRED / AFTER ISSUE #7**
+19. Early Access feedback & customer discovery v0.1 — **DONE / LIVE + CONTROLLED REDEPLOY VERIFIED**
+20. First cohort G4 customer-value evidence v0.1 — **NEXT / ISSUE #9**
+21. Organic acquisition & SEO v0.1 — **DEFERRED / AFTER INITIAL REAL-USER EVIDENCE**
 
 ## Durable project-state rule
 
@@ -265,6 +266,6 @@ Frozen AI-v1 references:
 - `config/ai_v1_activation_schema.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
-AI-v1.0 is now runtime-bound, activated and collecting immutable forward shadow evidence with the hourly scheduler on XAUUSD, USTEC and US30. The exact provider/model and inference parameters remain frozen to OpenAI `gpt-5.4-2026-03-05`. Broker execution remains disabled. Read-only observability v0.1 is VPS-verified and complete. AI Insights UI is VPS/cloud-verified and live as a downstream-only sanitized read-only layer. Cloud snapshot durability is verified across a controlled Railway redeploy. The next product milestone is Early Access feedback/customer discovery to begin G4 evidence while AI-v1 forward collection continues unchanged.
+AI-v1.0 is now runtime-bound, activated and collecting immutable forward shadow evidence with the hourly scheduler on XAUUSD, USTEC and US30. The exact provider/model and inference parameters remain frozen to OpenAI `gpt-5.4-2026-03-05`. Broker execution remains disabled. Read-only observability v0.1 is VPS-verified and complete. AI Insights UI is VPS/cloud-verified and live as a downstream-only sanitized read-only layer. Cloud snapshot durability is verified across a controlled Railway redeploy. The feedback/customer-discovery infrastructure is verified. The next product milestone is owner-controlled first-cohort G4 customer-value evidence collection while AI-v1 forward collection continues unchanged.
 
 The active S02 forward protocols and their ledgers must remain unchanged.

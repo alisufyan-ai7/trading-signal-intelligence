@@ -18,9 +18,9 @@ ROOT = Path(__file__).resolve().parents[3]
 WEB = ROOT / "web"
 
 app = FastAPI(
-    title="TradingTop Early Access",
+    title="SignalProof AI Research Beta",
     version="0.3.0",
-    description="Verified rule-based market setups with transparent evidence status.",
+    description="SignalProof AI research beta; current public feed remains the frozen S02 benchmark.",
 )
 
 app.mount("/static", StaticFiles(directory=WEB), name="static")
@@ -55,7 +55,7 @@ def health() -> dict:
     return {
         "ok": not ledger_errors,
         "launch_ready": not ledger_errors and len(ready_collectors) == len(live),
-        "product": "TradingTop Early Access",
+        "product": "SignalProof AI Research Beta",
         "launch_mode": "research_beta",
         "live_signal_markets": len(live),
         "ready_collectors": ready_collectors,

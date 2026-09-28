@@ -117,6 +117,7 @@ def process_inference_cycle(
             "inference_completed_utc": inference.completed_at_utc.isoformat(),
             "latency_ms": inference.latency_ms,
             "feature_snapshot_sha256": feature_snapshot.sha256,
+            "feature_snapshot": feature_snapshot.payload,
             "provider": inference.provider,
             "model_id": inference.model_id,
             "model_parameter_fingerprint": inference.model_parameter_fingerprint,

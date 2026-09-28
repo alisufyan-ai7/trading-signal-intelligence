@@ -1,15 +1,15 @@
 # Organic Acquisition & SEO v0.1
 
-_Status: DEFERRED — IMPLEMENT AFTER EARLY ACCESS FEEDBACK & CUSTOMER DISCOVERY v0.1_  
+_Status: DEFERRED — IMPLEMENT AFTER INITIAL REAL-USER G4 EVIDENCE_  
 _Date: 2026-09-29_  
 _GitHub issue: #8_  
-_Dependency: Issue #7_
+_Dependencies: Issue #7 complete; wait for initial real-user evidence from Issue #9_
 
 ## Purpose
 
 Preserve the strongest growth/distribution ideas from recent market-product discovery without changing the current implementation priority.
 
-This milestone is intentionally deferred until the Early Access Feedback & Customer Discovery v0.1 milestone produces real user-language, comprehension, market-interest, alert-preference and willingness-to-pay evidence.
+Issue #7 verified the feedback mechanism but produced only a synthetic test response. This milestone remains deferred until Issue #9 produces real user-language, comprehension, market-interest, alert-preference and willingness-to-pay evidence.
 
 The goal is not traffic for its own sake. The goal is to attract relevant traders through useful evidence-first content and move them naturally into the SignalProof AI product.
 
@@ -18,9 +18,10 @@ The goal is not traffic for its own sake. The goal is to attract relevant trader
 Current priority remains:
 
 1. complete Issue #7 — Early Access Feedback & Customer Discovery v0.1;
-2. review actual user-language and value evidence;
-3. use that evidence to shape Organic Acquisition & SEO v0.1;
-4. only later add stronger conversion/account/pricing mechanics when supported by G4 evidence.
+2. collect initial real-user evidence under Issue #9;
+3. review actual user-language and value evidence;
+4. use that evidence to shape Organic Acquisition & SEO v0.1;
+5. only later add stronger conversion/account/pricing mechanics when supported by G4 evidence.
 
 Creating this document does not authorize SEO implementation yet.
 
@@ -66,7 +67,7 @@ Initial content candidates:
 9. Why publishing losses matters
 10. How immutable signal records improve auditability
 
-Issue #7 should influence the wording and ordering of these topics.
+Issue #9 real-user evidence should influence the wording and ordering of these topics.
 
 ## Acquisition funnel
 
@@ -118,7 +119,7 @@ Future usage-triggered upsells may be considered only after Issue #7 and later G
 
 Do not assume the preferred alert channel.
 
-Use Issue #7 evidence to determine whether later retention work should prioritize:
+Use Issue #9 real-user evidence to determine whether later retention work should prioritize:
 
 - Telegram;
 - email;
@@ -138,11 +139,11 @@ Do not copy:
 - pages that blur research-beta status;
 - pages that imply historical performance guarantees future returns.
 
-## First implementation batch after Issue #7
+## First implementation batch after initial Issue #9 evidence
 
 When the dependency is satisfied:
 
-1. summarize user-language/comprehension findings from Issue #7;
+1. summarize real-user language/comprehension findings from Issue #9;
 2. build a search-intent map;
 3. choose 3 initial market pages;
 4. choose 5-10 initial educational pages;
@@ -180,7 +181,7 @@ This milestone must not:
 - alter immutable evidence;
 - introduce unsupported trading claims;
 - expose raw broker data;
-- begin implementation before Issue #7 evidence is reviewed.
+- begin implementation before initial real-user Issue #9 evidence is reviewed.
 
 ## Source of the ideas
 
@@ -196,6 +197,6 @@ These are treated as product/distribution hypotheses for SignalProof AI, not as 
 
 ## Status rule
 
-Remain **DEFERRED** until Issue #7 is complete and its customer-discovery evidence has been reviewed.
+Remain **DEFERRED** until Issue #7 is complete **and** Issue #9 has produced initial real-user customer-discovery evidence.
 
 At that point, this plan may be revised before implementation so that actual user evidence—not competitor imitation—determines the first SEO/content batch.

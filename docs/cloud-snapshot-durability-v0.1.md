@@ -1,6 +1,6 @@
 # Cloud Snapshot Durability v0.1
 
-_Status: NEXT_  
+_Status: IMPLEMENTATION PREPARED — RAILWAY VOLUME ATTACH PENDING_  
 _Date: 2026-09-29_  
 _GitHub issue: #6_
 

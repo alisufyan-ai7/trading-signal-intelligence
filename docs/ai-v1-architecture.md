@@ -138,9 +138,9 @@ The model receives:
 2. the deterministic feature snapshot;
 3. the JSON decision schema.
 
-The first activated provider/model identifier and inference parameters must be committed **before the first performance-bearing shadow inference**.
+The activated provider/model and inference parameters are frozen in `docs/ai-v1-provider-selection.md` and `config/ai_v1_provider.json` as OpenAI `gpt-5.4-2026-03-05` with the Responses API and medium reasoning.
 
-Until that model identifier is frozen, AI-v1 remains PRE-ACTIVATION.
+AI-v1 remains PRE-ACTIVATION until provider verification, activation fingerprints/records and GitHub ledger-head anchors are complete.
 
 The model is not asked to expose hidden chain-of-thought. It returns only the concise structured rationale fields defined by the contract.
 

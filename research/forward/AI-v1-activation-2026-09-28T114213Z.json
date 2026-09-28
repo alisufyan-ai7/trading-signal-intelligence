@@ -1,0 +1,118 @@
+{
+  "protocol_version": "AI-v1.0",
+  "status": "ACTIVATED_LEDGER_ONLY_SCHEDULER_NOT_INSTALLED",
+  "activated_at_utc": "2026-09-28T11:42:13.314465+00:00",
+  "provider_call_made": false,
+  "broker_execution_enabled": false,
+  "artifact_hashes": {
+    "provider_selection": "5ed27ac9db70b3d71896a61c646a3e0ac206e0bbd8293a732d9f7cc9623f8cfa",
+    "architecture": "fb9969576df1185a56bf92939fe17af3dcc5d9e90aeb0e3b1c0cc6895789a347",
+    "ledger_spec": "c8e58ac8d8a5f953ab3107214de716bcd6765116c1a10c9dd02c8e7aa7b63874",
+    "policy": "c9afbf210afab3d6cfa9b4ed1ea87261e776faec5e6cb945d6f4263c2f4135a8",
+    "feature_definitions": "3cc09d36ee8ef1de75cc679e6aace62a22e07a93f6735255bb8b55e286acf5d0",
+    "feature_schema": "ed3a67cca54128e5b974fc527df7e2424c9fdb25fb7ad096a4dde045bcd799a4",
+    "decision_schema": "27a9e5f4ebe313f8a9903abf9f84fb129833fec14b1016675caaae7586c87afa",
+    "guardrails": "4cea4608909ebce44867f09b2858f2865280fadc16c31630caee87a4b3fc203f",
+    "provider_config": "0d4eee257ca7edc6a4571f3c1eb8e23c787193c68c8c5ff31007611741d3a740",
+    "provider_response_schema": "8dd2b6fb797371b18eddd488e8c15b534d41173c5a3273b072e8b50014a5ace1",
+    "activation_schema": "8e23b9479bd750ae6bfada04e30ddc92271b0646689caed3757f711c1dac5152",
+    "feature_builder_source": "085e91a6fbbb0a426945fe0e10240e62efe6512d56c6b3d9c0f78388d4484d9f",
+    "inference_adapter_source": "8defedf1bc20f25ecef75dc856d52705136010f0761bdc7771476203b82a9a4c",
+    "provider_neutral_inference_source": "59214b42c1cc23fcbdf15c73163d5df78fe41196029dd5fc916f25ed0ded66cb",
+    "contract_source": "d1bf4b900951f7b3936b61e8b96ea55f9b697184aa23aedad3d32e21099cd168",
+    "guard_source": "12196eaa56dcf56a7fa7a70a5c68bd5dd71fe95ef15992feb41d3641a930a5d0",
+    "ai_ledger_source": "3927303e0559608511dc4ad403b40f474c87adc94936a15d8ecb1ae7f9a2297e",
+    "engine_source": "f506347b3e34bc2927ffd7caa3d5a6ad8b862370a06fc3e7b64ff92bb3967f16",
+    "lifecycle_evaluator_source": "b5f5afecfa87b455cfec7f049cb5966ce52e3be7c3a5ca9868a986642f1e542f",
+    "activation_builder_source": "2c759bc24fc5aa30c4efc768a7ddd72d756f15914249adc7ccaa86563a88220c"
+  },
+  "markets": {
+    "XAUUSD": {
+      "record_hash": "2e9e547276a054416d60ef4a6b6d0bc042fee43c7c0fdd3eec86a2548bbe34b1",
+      "verification": {
+        "valid": true,
+        "records": 1,
+        "head_hash": "2e9e547276a054416d60ef4a6b6d0bc042fee43c7c0fdd3eec86a2548bbe34b1"
+      },
+      "payload": {
+        "protocol_version": "AI-v1.0",
+        "market": "XAUUSD",
+        "activated_at_utc": "2026-09-28T11:42:13.314465+00:00",
+        "repository_commit_sha": "2750aa1a45a3cae6de47165e933f1ca7a99b6669",
+        "activation_bundle_sha256": "7779a07b527aced4ad90c8f33fef0efc5d5896c0f57122854397e32b59fc7f0f",
+        "provider": "openai",
+        "model_id": "gpt-5.4-2026-03-05",
+        "model_parameter_fingerprint": "ed5069535190cb33771ff8efe1c4389e09abaddea933143c0c839c6dc87d3e9b",
+        "policy_sha256": "c9afbf210afab3d6cfa9b4ed1ea87261e776faec5e6cb945d6f4263c2f4135a8",
+        "feature_definitions_sha256": "3cc09d36ee8ef1de75cc679e6aace62a22e07a93f6735255bb8b55e286acf5d0",
+        "feature_schema_sha256": "ed3a67cca54128e5b974fc527df7e2424c9fdb25fb7ad096a4dde045bcd799a4",
+        "decision_schema_sha256": "27a9e5f4ebe313f8a9903abf9f84fb129833fec14b1016675caaae7586c87afa",
+        "guardrails_sha256": "4cea4608909ebce44867f09b2858f2865280fadc16c31630caee87a4b3fc203f",
+        "feature_builder_source_sha256": "085e91a6fbbb0a426945fe0e10240e62efe6512d56c6b3d9c0f78388d4484d9f",
+        "inference_adapter_source_sha256": "8defedf1bc20f25ecef75dc856d52705136010f0761bdc7771476203b82a9a4c",
+        "ai_ledger_source_sha256": "3927303e0559608511dc4ad403b40f474c87adc94936a15d8ecb1ae7f9a2297e",
+        "lifecycle_evaluator_source_sha256": "b5f5afecfa87b455cfec7f049cb5966ce52e3be7c3a5ca9868a986642f1e542f",
+        "cost_policy_fingerprint": "b420e2a1f5b1acfdbdd46c3355c520b6a3e2d9697adc0c1ff0e7c5ca48b4671e",
+        "broker_execution_enabled": false
+      }
+    },
+    "USTEC": {
+      "record_hash": "571fad6647ca024b5c53e567b3d6e8643e5dc3e938b39e451f5830d6de0ab268",
+      "verification": {
+        "valid": true,
+        "records": 1,
+        "head_hash": "571fad6647ca024b5c53e567b3d6e8643e5dc3e938b39e451f5830d6de0ab268"
+      },
+      "payload": {
+        "protocol_version": "AI-v1.0",
+        "market": "USTEC",
+        "activated_at_utc": "2026-09-28T11:42:13.314465+00:00",
+        "repository_commit_sha": "2750aa1a45a3cae6de47165e933f1ca7a99b6669",
+        "activation_bundle_sha256": "f8a0367c1289b7feea9fe8e0bc12af40926ca9cdc3584a4c8b3dcf2050713fce",
+        "provider": "openai",
+        "model_id": "gpt-5.4-2026-03-05",
+        "model_parameter_fingerprint": "ed5069535190cb33771ff8efe1c4389e09abaddea933143c0c839c6dc87d3e9b",
+        "policy_sha256": "c9afbf210afab3d6cfa9b4ed1ea87261e776faec5e6cb945d6f4263c2f4135a8",
+        "feature_definitions_sha256": "3cc09d36ee8ef1de75cc679e6aace62a22e07a93f6735255bb8b55e286acf5d0",
+        "feature_schema_sha256": "ed3a67cca54128e5b974fc527df7e2424c9fdb25fb7ad096a4dde045bcd799a4",
+        "decision_schema_sha256": "27a9e5f4ebe313f8a9903abf9f84fb129833fec14b1016675caaae7586c87afa",
+        "guardrails_sha256": "4cea4608909ebce44867f09b2858f2865280fadc16c31630caee87a4b3fc203f",
+        "feature_builder_source_sha256": "085e91a6fbbb0a426945fe0e10240e62efe6512d56c6b3d9c0f78388d4484d9f",
+        "inference_adapter_source_sha256": "8defedf1bc20f25ecef75dc856d52705136010f0761bdc7771476203b82a9a4c",
+        "ai_ledger_source_sha256": "3927303e0559608511dc4ad403b40f474c87adc94936a15d8ecb1ae7f9a2297e",
+        "lifecycle_evaluator_source_sha256": "b5f5afecfa87b455cfec7f049cb5966ce52e3be7c3a5ca9868a986642f1e542f",
+        "cost_policy_fingerprint": "b420e2a1f5b1acfdbdd46c3355c520b6a3e2d9697adc0c1ff0e7c5ca48b4671e",
+        "broker_execution_enabled": false
+      }
+    },
+    "US30": {
+      "record_hash": "f508a6b65c9ad5b6775180498ae80f06ffc6d53cc6220fbe275ffd5fcf5e867a",
+      "verification": {
+        "valid": true,
+        "records": 1,
+        "head_hash": "f508a6b65c9ad5b6775180498ae80f06ffc6d53cc6220fbe275ffd5fcf5e867a"
+      },
+      "payload": {
+        "protocol_version": "AI-v1.0",
+        "market": "US30",
+        "activated_at_utc": "2026-09-28T11:42:13.314465+00:00",
+        "repository_commit_sha": "2750aa1a45a3cae6de47165e933f1ca7a99b6669",
+        "activation_bundle_sha256": "71d306ee1274206519380921e4f9f1a359976e543fc2ef898ff88d76e5319ca6",
+        "provider": "openai",
+        "model_id": "gpt-5.4-2026-03-05",
+        "model_parameter_fingerprint": "ed5069535190cb33771ff8efe1c4389e09abaddea933143c0c839c6dc87d3e9b",
+        "policy_sha256": "c9afbf210afab3d6cfa9b4ed1ea87261e776faec5e6cb945d6f4263c2f4135a8",
+        "feature_definitions_sha256": "3cc09d36ee8ef1de75cc679e6aace62a22e07a93f6735255bb8b55e286acf5d0",
+        "feature_schema_sha256": "ed3a67cca54128e5b974fc527df7e2424c9fdb25fb7ad096a4dde045bcd799a4",
+        "decision_schema_sha256": "27a9e5f4ebe313f8a9903abf9f84fb129833fec14b1016675caaae7586c87afa",
+        "guardrails_sha256": "4cea4608909ebce44867f09b2858f2865280fadc16c31630caee87a4b3fc203f",
+        "feature_builder_source_sha256": "085e91a6fbbb0a426945fe0e10240e62efe6512d56c6b3d9c0f78388d4484d9f",
+        "inference_adapter_source_sha256": "8defedf1bc20f25ecef75dc856d52705136010f0761bdc7771476203b82a9a4c",
+        "ai_ledger_source_sha256": "3927303e0559608511dc4ad403b40f474c87adc94936a15d8ecb1ae7f9a2297e",
+        "lifecycle_evaluator_source_sha256": "b5f5afecfa87b455cfec7f049cb5966ce52e3be7c3a5ca9868a986642f1e542f",
+        "cost_policy_fingerprint": "b420e2a1f5b1acfdbdd46c3355c520b6a3e2d9697adc0c1ff0e7c5ca48b4671e",
+        "broker_execution_enabled": false
+      }
+    }
+  }
+}

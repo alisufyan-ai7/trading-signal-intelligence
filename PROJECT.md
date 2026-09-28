@@ -248,6 +248,9 @@ Frozen AI-v1 references:
 
 - `docs/ai-0-product-naming.md`
 - `docs/ai-v1-architecture.md`
+- `docs/ai-v1-feature-definitions.md`
+- `config/ai_v1_feature_schema.json`
+- `config/ai_v1_policy.txt`
 - `config/ai_v1_decision_schema.json`
 - `config/ai_v1_guardrails.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`

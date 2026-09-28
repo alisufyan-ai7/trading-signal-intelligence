@@ -662,3 +662,50 @@ Observed AI-v1 unit-test result:
 The foundation implementation is therefore verified on the target Windows VPS.
 
 The exact provider/model ID, provider-specific inference parameters, activation bundle and shadow scheduler remain unactivated/open. No external AI inference has been made yet.
+
+
+## AI-v1 provider selection + concrete adapter — committed 2026-09-28
+
+Fresh public provider research is now explicitly allowed under the project isolation rule; private context remains restricted to this chat and this exact repository.
+
+AI-v1 provider/model is now frozen **before first performance-bearing inference**:
+
+- provider: OpenAI;
+- API: Responses;
+- model snapshot: `gpt-5.4-2026-03-05`;
+- reasoning effort: `medium`;
+- service tier: `default`;
+- `store=false`;
+- truncation disabled;
+- max output tokens: `8192`;
+- no tools / no prior-response state;
+- temperature/top_p omitted.
+
+Provider-selection evidence:
+`docs/ai-v1-provider-selection.md`
+
+Frozen provider config:
+`config/ai_v1_provider.json`
+
+OpenAI-compatible strict-output schema:
+`config/ai_v1_openai_response_schema.json`
+
+The provider-compatible schema exists because OpenAI Structured Outputs does not support the conditional composition constructs in the canonical schema. The canonical local decision validator remains authoritative.
+
+Implemented:
+
+- concrete dependency-free OpenAI Responses HTTPS adapter;
+- completed/incomplete/refusal/error parsing;
+- request/usage metadata capture without storing API credentials;
+- immutable AI `ERROR` event on provider failure;
+- provider/activation contract tests;
+- dependency-free local `.env` loader;
+- secure local API-key configuration helper;
+- synthetic non-performance provider smoke script;
+- activation preview/fingerprint builder;
+- guarded three-ledger activation script that performs no provider call and installs no scheduler.
+
+No live provider call has been made yet.
+No AI-v1 activation ledger exists yet.
+No shadow scheduler is installed yet.
+S02 remains unchanged.

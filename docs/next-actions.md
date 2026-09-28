@@ -49,6 +49,15 @@ Current work order:
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
 
+### Deferred growth backlog — Organic acquisition & SEO v0.1
+
+**DEFERRED / AFTER ISSUE #7.** This does not change the current implementation priority.
+
+Canonical plan: `docs/future-organic-acquisition-seo-v0.1.md`  
+GitHub Issue: #8
+
+Preserved future ideas include evidence-first per-market landing pages, educational search content, search -> education -> product funnels, intentional internal linking, privacy-respecting acquisition measurement, and free-value-first conversion. The first implementation batch must be revised using actual customer-language/comprehension findings from Issue #7 before SEO work starts.
+
 Current public S02 signals remain rule-based and must not be relabeled as AI.
 
 ## Forward validation

@@ -40,10 +40,10 @@ The active plan is documented in:
 Current work order:
 
 1. **RUNNING:** leave AI-v1.0 shadow collection untouched;
-2. **NEXT:** implement `scripts/report_ai_v1_progress.py` as a strictly read-only observability/reporting layer;
-3. add tests proving the monitor cannot mutate AI-v1 or S02 databases and makes no provider/broker calls;
-4. verify the monitor against the live VPS ledgers;
-5. build the AI Insights UI from the monitor's read-only JSON output;
+2. **DONE — VPS VERIFICATION PENDING:** implement `scripts/report_ai_v1_progress.py` as a strictly read-only observability/reporting layer;
+3. **DONE — VPS VERIFICATION PENDING:** add tests proving the monitor cannot mutate AI-v1 or S02 databases and makes no provider/broker calls;
+4. **NEXT:** verify the monitor against the live VPS ledgers, including byte-identical database hashes before/after;
+5. after verification, build the AI Insights UI from the monitor's read-only JSON output;
 6. continue non-decision product work while evidence accumulates;
 7. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 

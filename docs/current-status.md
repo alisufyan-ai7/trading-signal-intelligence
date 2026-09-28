@@ -637,3 +637,28 @@ No broker execution has been enabled.
 The exact provider/model ID is still intentionally unselected and remains an activation blocker.
 
 **Required verification before continuing:** run the AI-v1 foundation smoke/tests on the Windows VPS after pulling the latest repository state.
+
+
+## AI-v1 foundation VPS verification — PASS 2026-09-28
+
+The Windows VPS pulled the Windows-SQLite cleanup fix and reran the complete foundation verification successfully.
+
+Observed smoke result:
+
+- `ai_v1_foundation_smoke = PASS`;
+- `inference_adapter_exercised = true`;
+- `provider_call_made = false`;
+- `metadata_filter_passed = true`;
+- `guard_publishable = true`;
+- `estimated_cost_r ≈ 0.04885929772637945`;
+- `ledger_verified = true`;
+- `s02_database_hashes_unchanged = true`;
+- `broker_execution_enabled = false`.
+
+Observed AI-v1 unit-test result:
+
+`12 passed in 6.41s`
+
+The foundation implementation is therefore verified on the target Windows VPS.
+
+The exact provider/model ID, provider-specific inference parameters, activation bundle and shadow scheduler remain unactivated/open. No external AI inference has been made yet.

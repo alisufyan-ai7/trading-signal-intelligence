@@ -27,7 +27,7 @@ Verified:
 
 Telegram remains optional and disabled.
 
-## Immediate product work — AI Insights UI
+## Immediate product work — Cloud snapshot durability v0.1
 
 AI-v1.0 is now activated and the hourly shadow scheduler is collecting immutable forward evidence on XAUUSD, USTEC and US30.
 
@@ -42,8 +42,8 @@ Current work order:
 1. **RUNNING:** leave AI-v1.0 shadow collection untouched;
 2. **DONE / VPS VERIFIED:** read-only `scripts/report_ai_v1_progress.py` observability layer;
 3. **DONE / VPS VERIFIED:** mutation-safety/tamper/gate tests and byte-identical live-ledger proof;
-4. **VPS VERIFIED — CLOUD VERIFICATION PENDING:** AI Insights UI backed by the sanitized read-only AI-v1 export; canonical plan: `docs/ai-insights-ui.md`;
-5. **NEXT:** push the first AI-aware derived snapshot, then verify the Railway endpoint/browser UI;
+4. **DONE / CLOUD VERIFIED:** AI Insights UI backed by the sanitized read-only AI-v1 export; canonical record: `docs/ai-insights-ui.md`;
+5. **NEXT:** Cloud Snapshot Durability v0.1 — preserve the latest sanitized snapshot across Railway redeploy/restart events; canonical plan: `docs/cloud-snapshot-durability-v0.1.md`, GitHub Issue #6;
 6. continue non-decision product work while evidence accumulates;
 7. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
@@ -63,9 +63,9 @@ USTEC and US30 remain secondary forward collectors.
 
 There is still no persistent Railway volume.
 
-A Railway restart/redeploy can temporarily clear the cloud snapshot until the hourly Windows publisher republishes it.
+A Railway restart/redeploy can temporarily clear the cloud snapshot until the Windows publisher republishes it. This behavior was reproduced during AI Insights deployment and recovered by republishing the already-validated snapshot.
 
-The tested product-publish task now successfully restores/publishes the snapshot.
+Fixing this is now the next engineering milestone: `docs/cloud-snapshot-durability-v0.1.md` / Issue #6.
 
 ## TradingTop/Elirox audit checkpoint — 2026-09-27 UTC
 

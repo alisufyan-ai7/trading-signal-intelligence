@@ -28,3 +28,14 @@ def load_local_env(path: str | Path, *, override: bool = False) -> None:
             value = value[1:-1]
         if override or key not in os.environ:
             os.environ[key] = value
+
+
+def load_project_env(path: str | Path) -> None:
+    """Load project-local secrets with precedence over inherited process env.
+
+    The SignalProof AI-v1 runtime intentionally prefers the repository-local
+    .env for project-scoped credentials (for example OPENAI_API_KEY). This
+    prevents unrelated machine/user environment variables from silently
+    selecting credentials for another OpenAI project.
+    """
+    load_local_env(path, override=True)

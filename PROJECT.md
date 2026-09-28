@@ -195,6 +195,7 @@ Canonical IDs are unique:
 17. AI Insights UI — **DONE / VPS + CLOUD VERIFIED**
 18. Cloud snapshot durability v0.1 — **DONE / CONTROLLED REDEPLOY VERIFIED**
 19. Early Access feedback & customer discovery v0.1 — **NEXT**
+20. Organic acquisition & SEO v0.1 — **DEFERRED / AFTER ISSUE #7**
 
 ## Durable project-state rule
 

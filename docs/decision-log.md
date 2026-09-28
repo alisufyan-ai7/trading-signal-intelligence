@@ -368,3 +368,26 @@ The policy requires the model to:
 - never rely on outside market knowledge, news, S02 state or hidden chain-of-thought.
 
 **Remaining activation variable:** The exact provider/model identifier and provider-specific inference parameters remain intentionally unset until implementation. They must be committed before first performance-bearing inference. Selecting that model does not reopen the frozen feature/policy/guard contract unless the protocol version is changed.
+
+
+## 2026-09-28 — D031: Freeze AI-v1 ledger isolation and activation record contract
+
+**Decision:** AI-v1 uses three new market-specific append-only databases and a separately frozen activation-record schema.
+
+**AI-v1 database paths:**
+
+- `data/ai_v1_xauusd.sqlite`
+- `data/ai_v1_ustec.sqlite`
+- `data/ai_v1_us30.sqlite`
+
+These databases are independent of all active S02 forward databases.
+
+**Frozen ledger artifact:** `docs/ai-v1-ledger-spec.md`.
+
+**Frozen activation artifact:** `config/ai_v1_activation_schema.json`.
+
+The AI ledger reuses the project's proven append-only SHA-256 hash-chain integrity pattern but defines AI-specific lifecycle records for activation, inference, abstention, rejected inference, signal, partial exit, exit, missed inference and error.
+
+Before activation, each market's activation record must bind the exact repository commit, provider/model, inference-parameter fingerprint, policy/feature/schema/guard hashes, implementation source hashes and cost-policy fingerprint.
+
+**Reason:** AI-generated outputs must remain attributable to the exact model/input/policy/implementation that created them, and they must not contaminate the already-activated S02 evidence.

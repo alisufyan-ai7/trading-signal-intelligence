@@ -225,7 +225,7 @@ The exact lifecycle implementation and tests must be committed before activation
 
 ## Immutable AI ledger
 
-AI-v1 gets a **separate ledger** from S02.
+AI-v1 gets a **separate ledger** from S02. The exact ledger/database/event contract is frozen in `docs/ai-v1-ledger-spec.md`, and the activation payload is machine-validated by `config/ai_v1_activation_schema.json`.
 
 Required record types:
 

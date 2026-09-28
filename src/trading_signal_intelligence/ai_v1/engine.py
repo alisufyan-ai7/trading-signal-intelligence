@@ -90,12 +90,40 @@ def process_inference_cycle(
             guard_result=None,
         )
 
-    inference = run_inference(
-        adapter=adapter,
-        feature_snapshot=feature_snapshot,
-        policy_text=policy_text,
-        decision_schema=decision_schema,
-    )
+    try:
+        inference = run_inference(
+            adapter=adapter,
+            feature_snapshot=feature_snapshot,
+            policy_text=policy_text,
+            decision_schema=decision_schema,
+        )
+    except Exception as exc:
+        error_record = ledger.append(
+            record_type="ERROR",
+            entity_id=entity_id,
+            effective_at_utc=source_close,
+            recorded_at_utc=now,
+            payload={
+                "protocol_version": "AI-v1.0",
+                "source_symbol": feature_snapshot.payload["source_symbol"],
+                "source_bar_close_utc": feature_snapshot.payload["source_bar_close_utc"],
+                "feature_snapshot_sha256": feature_snapshot.sha256,
+                "stage": "provider_inference",
+                "error_class": type(exc).__name__,
+                "sanitized_message": str(exc)[:500],
+                "provider": getattr(adapter, "provider", None),
+                "model_id": getattr(adapter, "model_id", None),
+                "broker_execution_enabled": False,
+            },
+        )
+        return CycleResult(
+            entity_id=entity_id,
+            status="ERROR",
+            inference_record=None,
+            terminal_record=error_record,
+            guard_result=None,
+        )
+
     guard = evaluate_guard(
         decision_payload=inference.decision,
         feature_snapshot=feature_snapshot.payload,

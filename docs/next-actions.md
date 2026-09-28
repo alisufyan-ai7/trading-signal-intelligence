@@ -44,7 +44,7 @@ Current work order:
 3. **DONE / VPS VERIFIED:** mutation-safety/tamper/gate tests and byte-identical live-ledger proof;
 4. **DONE / CLOUD VERIFIED:** AI Insights UI backed by the sanitized read-only AI-v1 export; canonical record: `docs/ai-insights-ui.md`;
 5. **DONE / REDEPLOY VERIFIED:** Cloud Snapshot Durability v0.1 — persistent `/data` volume proven across controlled redeploy; canonical record: `docs/cloud-snapshot-durability-v0.1.md`, GitHub Issue #6;
-6. **NEXT:** Early Access Feedback & Customer Discovery v0.1 — durable feedback capture, comprehension questions, alert preference, willingness-to-pay evidence, then first-cohort onboarding; GitHub Issue #7;
+6. **IN PROGRESS:** Early Access Feedback & Customer Discovery v0.1 — storage/API/UI + tests committed; **NEXT:** VPS tests, dedicated Railway owner secret, synthetic submission and controlled-redeploy persistence proof; GitHub Issue #7;
 7. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.

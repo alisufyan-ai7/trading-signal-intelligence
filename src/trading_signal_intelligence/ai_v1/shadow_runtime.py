@@ -344,9 +344,12 @@ def run_market_cycle(
         raise ShadowRuntimeError(
             f"{market.source_symbol} expected one activation record"
         )
+    activation_payload = activation_rows[0]["payload"]
     activated_at = datetime.fromisoformat(
-        str(activation_rows[0]["payload"]["activated_at_utc"]).replace("Z", "+00:00")
+        str(activation_payload["activated_at_utc"]).replace("Z", "+00:00")
     )
+    policy_sha256 = str(activation_payload["policy_sha256"])
+    guardrails_sha256 = str(activation_payload["guardrails_sha256"])
 
     actions: list[dict[str, Any]] = []
 
@@ -455,6 +458,8 @@ def run_market_cycle(
             decision_schema=decision_schema,
             guardrails=guardrails,
             active_signal_exists=active_signal_exists,
+            policy_sha256=policy_sha256,
+            guardrails_sha256=guardrails_sha256,
             recorded_at_utc=now_utc,
         )
 

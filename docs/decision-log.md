@@ -484,3 +484,44 @@ No AI-v1 activation/performance evidence exists yet, so a provider substitution 
 - added a regression test proving a project-local `OPENAI_API_KEY` replaces an inherited different-project value.
 
 **Reason:** This repository is intentionally isolated. Credentials for unrelated projects must never silently influence its provider identity.
+
+
+## 2026-09-28 — D037: First AI-v1 activation anchor verified; no performance records existed
+
+**Observed:** The ledger-only activation completed at `2026-09-28T11:42:13.314465+00:00` and was anchored in Git commit `a3c986fb9527d351c0998f072ebfe159b7a8b0ac`.
+
+Verified initial ledger heads:
+
+- XAUUSD: `2e9e547276a054416d60ef4a6b6d0bc042fee43c7c0fdd3eec86a2548bbe34b1`
+- USTEC: `571fad6647ca024b5c53e567b3d6e8643e5dc3e938b39e451f5830d6de0ab268`
+- US30: `f508a6b65c9ad5b6775180498ae80f06ffc6d53cc6220fbe275ffd5fcf5e867a`
+
+The activation used OpenAI `gpt-5.4-2026-03-05` with model-parameter fingerprint `ed5069535190cb33771ff8efe1c4389e09abaddea933143c0c839c6dc87d3e9b` and broker execution disabled.
+
+Git comparison confirmed that the anchor commit is exactly one commit after the activated repository commit `2750aa1a45a3cae6de47165e933f1ca7a99b6669` and adds only the activation-anchor JSON.
+
+No AI-v1 performance-bearing inference existed at this checkpoint.
+
+## 2026-09-28 — D038: Supersede the first ledger-only activation before first performance inference so the live runtime is also bound
+
+**Finding:** The first activation correctly bound the frozen model, policy, feature/guard/lifecycle implementation and ledger code, but the unattended live H1 runtime/scheduler had not yet been implemented and therefore could not be part of that activation repository tree.
+
+**Decision:** Do not start the scheduler against the first activation.
+
+Because there are still zero performance-bearing AI-v1 records, preserve the first activation as a superseded pre-performance artifact, archive its three activation-only databases without deletion, then create a replacement AI-v1.0 activation after the final live runtime is committed and tested.
+
+This is a protocol-completeness correction made **before first performance evidence**, not a response to model performance.
+
+The replacement activation bundle additionally binds:
+
+- `docs/ai-v1-shadow-runtime.md`;
+- `src/trading_signal_intelligence/ai_v1/shadow_runtime.py`;
+- `scripts/run_ai_v1_shadow.py`;
+- `scripts/run_ai_v1_shadow_task.cmd`;
+- `scripts/install_ai_v1_shadow_task.ps1`.
+
+The live runtime freezes the already-preregistered three-market H1 cadence, uses the pre-activation live-probe retrieval windows (500 H1 / 200 H4), records stale backlog cycles as `MISSED_INFERENCE` rather than backfilling, verifies the committed upstream activation anchor before any run, and keeps broker execution disabled.
+
+The inference ledger payload is also completed before replacement activation with explicit policy/guardrail hashes, raw confidence, provider request ID, usage metadata and normalized NO_TRADE decision provenance.
+
+After the replacement activation is committed and anchored, any decision-affecting runtime change requires separate governance/versioning.

@@ -391,3 +391,62 @@ The AI ledger reuses the project's proven append-only SHA-256 hash-chain integri
 Before activation, each market's activation record must bind the exact repository commit, provider/model, inference-parameter fingerprint, policy/feature/schema/guard hashes, implementation source hashes and cost-policy fingerprint.
 
 **Reason:** AI-generated outputs must remain attributable to the exact model/input/policy/implementation that created them, and they must not contaminate the already-activated S02 evidence.
+
+
+## 2026-09-28 — D032: Fresh public research is allowed; private-context isolation remains strict
+
+**Decision:** Clarify D026. Fresh public web/search/open-source research is allowed whenever it materially supports this project, including provider/model/API documentation, libraries, standards and competitor verification.
+
+**Still prohibited as project context:**
+
+- account-level memory / Personal Context;
+- chats outside this project;
+- other private projects;
+- any GitHub repository other than `alisufyan-ai7/trading-signal-intelligence`;
+- unrelated private connected-app data.
+
+**Allowed context remains:**
+
+- this current open chat;
+- this exact private repository;
+- authenticated TradingTop pages explicitly opened for this project;
+- fresh public internet/open-source research.
+
+**Reason:** The isolation requirement is intended to prevent contamination from unrelated private/user history, not to block current public technical research.
+
+## 2026-09-28 — D033: Freeze OpenAI GPT-5.4 dated snapshot as AI-v1 provider/model
+
+**Decision:** Use the OpenAI Responses API with exact model snapshot `gpt-5.4-2026-03-05` for AI-v1.
+
+**Selection basis:** Public provider research was completed before any AI-v1 performance-bearing inference. The dated GPT-5.4 snapshot provides an explicit model-version lock for the multi-month preregistered experiment, supports Structured Outputs and reasoning, and costs materially less than the dated GPT-5.5 snapshot. Newer moving aliases were not selected because a moving model would weaken causal/reproducibility claims across A1/A2/A3.
+
+**Frozen request semantics:**
+
+- endpoint: `POST https://api.openai.com/v1/responses`;
+- reasoning effort: `medium`;
+- service tier: `default`;
+- `store=false`;
+- truncation: disabled;
+- max output tokens: 8192;
+- no tools;
+- no conversation/previous-response state;
+- temperature/top_p omitted;
+- exact frozen policy text;
+- canonical feature JSON as the only market-state input.
+
+**Privacy:** `OPENAI_API_KEY` remains local to the VPS and is never committed or ledgered. OpenAI's public data-control documentation states that Responses API data is not used for training; AI-v1 additionally disables response storage.
+
+**Frozen artifacts:**
+
+- `docs/ai-v1-provider-selection.md`
+- `config/ai_v1_provider.json`
+
+## 2026-09-28 — D034: Freeze a provider-compatible OpenAI schema while retaining canonical local validation
+
+**Decision:** Keep `config/ai_v1_decision_schema.json` as the canonical semantic contract, but send `config/ai_v1_openai_response_schema.json` to OpenAI Structured Outputs.
+
+**Reason:** OpenAI's current Structured Outputs subset does not support composition keywords used by the canonical schema, including `allOf`, `if`, `then` and `else`.
+
+The provider schema removes those unsupported composition constructs only. It does not authorize a broader decision contract. After every provider response, local `validate_decision()` still enforces all frozen semantics, including NO_TRADE null fields, directional numeric bounds and TP2 > TP1.
+
+Both the provider schema and canonical schema are fingerprinted in the activation bundle.

@@ -325,3 +325,44 @@ git push
 ```
 
 Then provide the activation output / commit SHA for review. The scheduler is authorized only after the committed anchor is verified against the three local ledger heads.
+
+
+## Immediate checkpoint — preserve/supersede first activation before runtime-bound replacement
+
+The first activation/anchor is valid as a ledger-only pre-performance artifact, but the final unattended shadow runtime was not part of its activated repository tree.
+
+**Do not install or run the AI shadow scheduler against that first activation.**
+
+Pull the final runtime implementation and run the expanded offline suite:
+
+```powershell
+git pull
+
+.\.venv\Scripts\python.exe -m pytest -q tests\test_ai_v1_features.py tests\test_ai_v1_contract_ledger.py tests\test_ai_v1_inference.py tests\test_ai_v1_engine.py tests\test_ai_v1_signals.py tests\test_ai_v1_openai_responses.py tests\test_ai_v1_activation.py tests\test_ai_v1_local_env.py tests\test_ai_v1_shadow_runtime.py
+```
+
+If the tests pass, supersede/archive the current activation-only ledgers:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\supersede_ai_v1_activation.py --confirm SUPERSEDE-PREPERFORMANCE-ACTIVATION
+```
+
+This command is required to fail closed if any AI ledger contains anything beyond its single ACTIVATION record. It does not call OpenAI and does not delete the old ledgers; it moves them under `data\ai-v1-superseded\...` and writes a GitHub-trackable supersession anchor.
+
+Then commit/push only the supersession anchor:
+
+```powershell
+git status --short
+
+git add research/forward/*SUPERSEDED.json
+git commit -m "Preserve superseded pre-performance AI-v1 activation"
+git push
+```
+
+Stop there and provide:
+
+- pytest result;
+- supersession output;
+- resulting Git commit SHA.
+
+After that checkpoint is verified, create the replacement activation from the final runtime-bound repository commit. Do not install the scheduler until the replacement activation anchor is also committed and verified upstream.

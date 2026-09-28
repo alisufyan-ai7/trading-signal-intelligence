@@ -25,7 +25,7 @@
 - AI-v1 broker execution: DISABLED
 - AI-v1 observability v0.1: COMPLETE / VPS VERIFIED / READ-ONLY
 - AI-v1 AI Insights UI: DONE / VPS + CLOUD VERIFIED
-- Cloud snapshot durability v0.1: IN PROGRESS / VOLUME ATTACH PENDING / ISSUE #6
+- Cloud snapshot durability v0.1: IN PROGRESS / VOLUME ATTACHED / SEED + REDEPLOY VERIFICATION PENDING / ISSUE #6
 
 ## AI-v1 active forward-collection plan
 

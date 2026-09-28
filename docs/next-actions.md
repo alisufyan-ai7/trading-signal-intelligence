@@ -27,23 +27,27 @@ Verified:
 
 Telegram remains optional and disabled.
 
-## Immediate product work — AI-v1 implementation
+## Immediate product work — AI-v1 forward collection + observability
 
-The owner has formally approved the AI-first pivot. Feedback/onboarding work is no longer the primary engineering task.
+AI-v1.0 is now activated and the hourly shadow scheduler is collecting immutable forward evidence on XAUUSD, USTEC and US30.
 
-AI-0 and AI-1 are now complete at the governance/specification level.
+The activated decision system is frozen. Do not tune or change the model, prompt, features, guardrails, market universe, lifecycle, cost policy or decision cadence based on early results.
 
-Next implementation order:
+The active plan is documented in:
 
-1. implement the frozen deterministic AI feature snapshot builder;
-2. implement the provider-neutral reasoning-model adapter;
-3. select and freeze the exact provider/model ID, inference parameters and prompt/policy **before first performance-bearing inference**;
-4. implement JSON-schema validation and the frozen deterministic publication guard;
-5. implement a separate append-only AI-v1 inference/lifecycle ledger;
-6. implement the frozen next-H1-open / TP1 / TP2 / stop / timeout evaluator;
-7. add activation fingerprinting and tests proving S02 databases are untouched;
-8. activate the shadow scheduler only after the activation checklist passes;
-9. build the AI Insights UI against the shadow ledger after the pipeline is operational.
+`docs/ai-v1-observability-plan.md`
+
+Current work order:
+
+1. **RUNNING:** leave AI-v1.0 shadow collection untouched;
+2. **NEXT:** implement `scripts/report_ai_v1_progress.py` as a strictly read-only observability/reporting layer;
+3. add tests proving the monitor cannot mutate AI-v1 or S02 databases and makes no provider/broker calls;
+4. verify the monitor against the live VPS ledgers;
+5. build the AI Insights UI from the monitor's read-only JSON output;
+6. continue non-decision product work while evidence accumulates;
+7. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
+
+A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
 
 Current public S02 signals remain rule-based and must not be relabeled as AI.
 

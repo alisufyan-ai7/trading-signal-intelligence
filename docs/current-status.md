@@ -540,6 +540,9 @@ The AI-v1 protocol is now frozen **before first AI-v1 performance-bearing infere
 Frozen artifacts:
 
 - `docs/ai-v1-architecture.md`
+- `docs/ai-v1-feature-definitions.md`
+- `config/ai_v1_feature_schema.json`
+- `config/ai_v1_policy.txt`
 - `config/ai_v1_decision_schema.json`
 - `config/ai_v1_guardrails.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`

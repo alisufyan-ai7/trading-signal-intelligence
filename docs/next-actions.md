@@ -27,7 +27,7 @@ Verified:
 
 Telegram remains optional and disabled.
 
-## Immediate product work — AI-v1 forward collection + observability
+## Immediate product work — AI Insights UI
 
 AI-v1.0 is now activated and the hourly shadow scheduler is collecting immutable forward evidence on XAUUSD, USTEC and US30.
 
@@ -40,12 +40,11 @@ The active plan is documented in:
 Current work order:
 
 1. **RUNNING:** leave AI-v1.0 shadow collection untouched;
-2. **DONE — VPS VERIFICATION PENDING:** implement `scripts/report_ai_v1_progress.py` as a strictly read-only observability/reporting layer;
-3. **DONE — VPS VERIFICATION PENDING:** add tests proving the monitor cannot mutate AI-v1 or S02 databases and makes no provider/broker calls;
-4. **NEXT:** verify the monitor against the live VPS ledgers, including byte-identical database hashes before/after;
-5. after verification, build the AI Insights UI from the monitor's read-only JSON output;
-6. continue non-decision product work while evidence accumulates;
-7. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
+2. **DONE / VPS VERIFIED:** read-only `scripts/report_ai_v1_progress.py` observability layer;
+3. **DONE / VPS VERIFIED:** mutation-safety/tamper/gate tests and byte-identical live-ledger proof;
+4. **NEXT:** build the AI Insights UI from the monitor's read-only JSON output;
+5. continue non-decision product work while evidence accumulates;
+6. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
 

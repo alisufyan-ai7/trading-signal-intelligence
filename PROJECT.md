@@ -190,7 +190,9 @@ Canonical IDs are unique:
 12. Early Access SaaS MVP — **LIVE / RAILWAY PUBLIC BETA**
 13. AI-0 product naming — **DONE / WORKING NAME: SIGNALPROOF AI**
 14. AI-1 architecture + preregistration — **DONE / FROZEN PRE-ACTIVATION**
-15. AI-v1 shadow implementation + activation — **NEXT**
+15. AI-v1 shadow implementation + activation — **DONE / LIVE FORWARD COLLECTION ACTIVE**
+16. AI-v1 read-only observability — **NEXT**
+17. AI Insights UI — **AFTER OBSERVABILITY V0.1**
 
 ## Durable project-state rule
 
@@ -260,6 +262,6 @@ Frozen AI-v1 references:
 - `config/ai_v1_activation_schema.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
-AI-v1 remains PRE-ACTIVATION. The exact provider/model and inference parameters are now frozen to OpenAI `gpt-5.4-2026-03-05`; activation still requires provider-adapter verification, implementation fingerprints, activation ledgers/anchors and the shadow scheduler. No AI-v1 performance result has been observed at the time of the preregistration.
+AI-v1.0 is now runtime-bound, activated and collecting immutable forward shadow evidence with the hourly scheduler on XAUUSD, USTEC and US30. The exact provider/model and inference parameters remain frozen to OpenAI `gpt-5.4-2026-03-05`. Broker execution remains disabled. The next engineering milestone is strictly read-only observability, followed by the AI Insights UI; see `docs/ai-v1-observability-plan.md`.
 
 The active S02 forward protocols and their ledgers must remain unchanged.

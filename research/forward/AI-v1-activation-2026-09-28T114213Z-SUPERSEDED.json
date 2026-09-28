@@ -1,0 +1,48 @@
+{
+  "protocol_version": "AI-v1.0",
+  "status": "SUPERSEDED_PREPERFORMANCE_ACTIVATION",
+  "superseded_anchor_file": "research\\forward\\AI-v1-activation-2026-09-28T114213Z.json",
+  "superseded_activated_at_utc": "2026-09-28T11:42:13.314465+00:00",
+  "superseded_at_utc": "2026-09-28T15:51:34.458551+00:00",
+  "reason": "The first activation was correctly ledger-only, but the live shadow runtime/scheduler implementation was not yet committed into the activation repository tree. No performance-bearing AI-v1 record existed. The activation is preserved and archived before creating a replacement activation that binds the final runtime implementation.",
+  "performance_bearing_records_observed": false,
+  "provider_call_made_during_supersession": false,
+  "broker_execution_enabled": false,
+  "archived_databases": {
+    "XAUUSD": "data\\ai-v1-superseded\\20260928T114213_314465+0000\\ai_v1_xauusd.sqlite",
+    "USTEC": "data\\ai-v1-superseded\\20260928T114213_314465+0000\\ai_v1_ustec.sqlite",
+    "US30": "data\\ai-v1-superseded\\20260928T114213_314465+0000\\ai_v1_us30.sqlite"
+  },
+  "validated_activation_records": {
+    "XAUUSD": {
+      "source_database": "data\\ai_v1_xauusd.sqlite",
+      "record_hash": "2e9e547276a054416d60ef4a6b6d0bc042fee43c7c0fdd3eec86a2548bbe34b1",
+      "records": 1,
+      "verification": {
+        "valid": true,
+        "records": 1,
+        "head_hash": "2e9e547276a054416d60ef4a6b6d0bc042fee43c7c0fdd3eec86a2548bbe34b1"
+      }
+    },
+    "USTEC": {
+      "source_database": "data\\ai_v1_ustec.sqlite",
+      "record_hash": "571fad6647ca024b5c53e567b3d6e8643e5dc3e938b39e451f5830d6de0ab268",
+      "records": 1,
+      "verification": {
+        "valid": true,
+        "records": 1,
+        "head_hash": "571fad6647ca024b5c53e567b3d6e8643e5dc3e938b39e451f5830d6de0ab268"
+      }
+    },
+    "US30": {
+      "source_database": "data\\ai_v1_us30.sqlite",
+      "record_hash": "f508a6b65c9ad5b6775180498ae80f06ffc6d53cc6220fbe275ffd5fcf5e867a",
+      "records": 1,
+      "verification": {
+        "valid": true,
+        "records": 1,
+        "head_hash": "f508a6b65c9ad5b6775180498ae80f06ffc6d53cc6220fbe275ffd5fcf5e867a"
+      }
+    }
+  }
+}

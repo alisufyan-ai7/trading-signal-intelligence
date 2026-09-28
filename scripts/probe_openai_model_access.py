@@ -8,7 +8,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-from trading_signal_intelligence.ai_v1.local_env import load_local_env
+from trading_signal_intelligence.ai_v1.local_env import load_project_env
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -63,7 +63,7 @@ def _error_message(payload: dict[str, Any] | None, fallback: str) -> str:
 
 
 def main() -> None:
-    load_local_env(ROOT / ".env")
+    load_project_env(ROOT / ".env")
     api_key = os.getenv("OPENAI_API_KEY", "").strip()
     if not api_key:
         raise SystemExit("OPENAI_API_KEY is not configured in local .env/environment.")

@@ -113,7 +113,7 @@ def main() -> None:
     )
     anchor_path = ROOT / "research" / "forward" / anchor_name
     anchor_path.parent.mkdir(parents=True, exist_ok=True)
-    anchor_path.write_text(json.dumps(anchor, indent=2) + "\n", encoding="utf-8")
+    anchor_path.write_bytes((json.dumps(anchor, indent=2) + "\n").encode("utf-8"))
 
     print(
         json.dumps(

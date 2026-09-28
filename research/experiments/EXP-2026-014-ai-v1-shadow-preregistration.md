@@ -50,8 +50,8 @@ Published shadow proposals use:
 - 50% evaluated at TP2;
 - no stop move after TP1;
 - 24-H1-bar maximum hold;
-- existing instrument-specific cost framework;
-- deterministic conservative handling for ambiguous intrabar exit order.
+- existing instrument-specific cost framework with the frozen 1.25× spread-cost multiplier;
+- deterministic conservative `stop_first` handling for ambiguous same-bar exit order.
 
 ## Frozen publication boundary
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -48,11 +49,26 @@ def process_inference_cycle(
     decision_schema: dict[str, Any],
     guardrails: dict[str, Any],
     active_signal_exists: bool,
+    policy_sha256: str | None = None,
+    guardrails_sha256: str | None = None,
     recorded_at_utc: datetime | None = None,
 ) -> CycleResult:
     now = recorded_at_utc or datetime.now(timezone.utc)
     if now.tzinfo is None:
         raise ValueError("recorded_at_utc must be timezone-aware")
+
+    if policy_sha256 is None:
+        policy_sha256 = hashlib.sha256(policy_text.encode("utf-8")).hexdigest()
+    if guardrails_sha256 is None:
+        guardrails_sha256 = hashlib.sha256(
+            __import__("json").dumps(
+                guardrails,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            ).encode("utf-8")
+        ).hexdigest()
 
     entity_id = cycle_entity_id(feature_snapshot)
     if _already_processed(ledger, entity_id):
@@ -146,11 +162,16 @@ def process_inference_cycle(
             "latency_ms": inference.latency_ms,
             "feature_snapshot_sha256": feature_snapshot.sha256,
             "feature_snapshot": feature_snapshot.payload,
+            "policy_sha256": policy_sha256,
+            "guardrails_sha256": guardrails_sha256,
             "provider": inference.provider,
             "model_id": inference.model_id,
             "model_parameter_fingerprint": inference.model_parameter_fingerprint,
             "raw_structured_response": inference.raw_response,
             "normalized_decision": inference.decision,
+            "raw_confidence": inference.decision["raw_confidence"],
+            "provider_request_id": inference.metadata.get("request_id"),
+            "usage": inference.metadata.get("usage"),
             "metadata": inference.metadata,
             "guard_publishable": guard.publishable,
             "guard_reasons": list(guard.reasons),
@@ -168,6 +189,7 @@ def process_inference_cycle(
                 "protocol_version": "AI-v1.0",
                 "source_symbol": feature_snapshot.payload["source_symbol"],
                 "feature_snapshot_sha256": feature_snapshot.sha256,
+                "normalized_decision": inference.decision,
                 "raw_confidence": inference.decision["raw_confidence"],
                 "regime": inference.decision["regime"],
                 "rationale": inference.decision["rationale"],
@@ -196,6 +218,7 @@ def process_inference_cycle(
                 "feature_snapshot_sha256": feature_snapshot.sha256,
                 "normalized_proposal": inference.decision,
                 "rejection_reasons": list(guard.reasons),
+                "guardrails_sha256": guardrails_sha256,
                 "estimated_cost_r": guard.estimated_cost_r,
                 "originating_inference_record_hash": inference_record["record_hash"],
             },

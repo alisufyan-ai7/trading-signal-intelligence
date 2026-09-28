@@ -239,3 +239,29 @@ Next:
 Do not paste the API key into chat or commit it.
 
 Do not run `scripts\activate_ai_v1.py` until the synthetic provider-smoke output has been reviewed.
+
+
+## OpenAI project model-access diagnostic — REQUIRED
+
+The synthetic provider smoke failed before inference because the API project does not have access to the frozen `gpt-5.4-2026-03-05` snapshot.
+
+Pull the diagnostic commit and run:
+
+```powershell
+git pull
+.\.venv\Scripts\python.exe scripts\probe_openai_model_access.py
+```
+
+This command:
+
+- makes only OpenAI model-metadata GET requests;
+- makes no Responses/inference call;
+- writes no AI ledger;
+- does not modify the frozen provider configuration;
+- does not touch broker execution.
+
+Send the JSON output for review.
+
+Do not rerun the provider smoke and do not run `scripts\activate_ai_v1.py` until model access is resolved.
+
+If the frozen GPT-5.4 snapshot is accessible after changing OpenAI project Model Usage/billing permissions, keep the current preregistration unchanged. If it remains unavailable but another dated snapshot is accessible, a new **pre-activation superseding provider decision** must be committed before any inference with that fallback.

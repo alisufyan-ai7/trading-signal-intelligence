@@ -196,7 +196,7 @@ A BUY/SELL proposal becomes a shadow signal only if all of the following pass:
 6. stop ATR multiple within 1.00–3.00;
 7. TP1 within 0.75–2.00R;
 8. TP2 within 1.50–4.00R and TP2 > TP1;
-9. estimated round-trip cost <= 0.15R of the proposed stop risk;
+9. estimated round-trip cost <= 0.15R of the proposed stop risk, using the frozen 1.25× spread-cost multiplier;
 10. entry/stop/target arithmetic finite and directionally consistent;
 11. signal created from the same completed-bar snapshot used by the AI.
 
@@ -219,7 +219,7 @@ For a published AI-v1 shadow signal:
 - no break-even stop move in v1;
 - timeout: 24 completed H1 bars after entry;
 - costs applied using the project's instrument-specific cost framework;
-- ambiguous same-bar stop/target ordering must use a conservative deterministic rule documented in implementation before activation.
+- ambiguous same-bar stop/target ordering uses the frozen conservative `stop_first` rule.
 
 The exact lifecycle implementation and tests must be committed before activation.
 

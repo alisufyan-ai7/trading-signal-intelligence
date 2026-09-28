@@ -87,7 +87,7 @@ Required:
 - inference-adapter source SHA-256;
 - AI-ledger source SHA-256;
 - lifecycle-evaluator source SHA-256;
-- cost-policy fingerprint;
+- cost-policy fingerprint (AI-v1.0 uses the frozen 1.25× spread-cost multiplier);
 - broker_execution_enabled=false.
 
 ### INFERENCE

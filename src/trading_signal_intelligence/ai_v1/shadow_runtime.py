@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import subprocess
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -178,12 +180,40 @@ def discover_active_anchor(repo_root: Path) -> tuple[Path, dict[str, Any]]:
     )
 
 
+def _require_anchor_in_upstream(repo_root: Path, anchor_path: Path) -> str:
+    relative = anchor_path.relative_to(repo_root).as_posix()
+    try:
+        upstream = subprocess.check_output(
+            ["git", "rev-parse", "@{u}"],
+            cwd=repo_root,
+            text=True,
+            stderr=subprocess.STDOUT,
+        ).strip()
+        upstream_bytes = subprocess.check_output(
+            ["git", "show", f"{upstream}:{relative}"],
+            cwd=repo_root,
+            stderr=subprocess.STDOUT,
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ShadowRuntimeError(
+            "activation anchor is not verifiably present in the configured upstream branch"
+        ) from exc
+
+    local_bytes = anchor_path.read_bytes()
+    if hashlib.sha256(local_bytes).digest() != hashlib.sha256(upstream_bytes).digest():
+        raise ShadowRuntimeError(
+            "local activation anchor differs from the copy in the upstream branch"
+        )
+    return upstream
+
+
 def verify_active_runtime(
     repo_root: Path,
     *,
     require_activation_only: bool = False,
 ) -> dict[str, Any]:
     anchor_path, anchor = discover_active_anchor(repo_root)
+    upstream_commit = _require_anchor_in_upstream(repo_root, anchor_path)
 
     frozen_now = artifact_hashes(repo_root)
     anchored_hashes = anchor.get("artifact_hashes", {})
@@ -238,6 +268,7 @@ def verify_active_runtime(
     return {
         "valid": True,
         "anchor_file": str(anchor_path.relative_to(repo_root)),
+        "anchor_upstream_commit": upstream_commit,
         "activated_at_utc": anchor["activated_at_utc"],
         "provider_call_made_at_activation": anchor["provider_call_made"],
         "broker_execution_enabled": anchor["broker_execution_enabled"],

@@ -15,7 +15,7 @@ def main() -> None:
             ) from exc
         raise
 
-    parser = argparse.ArgumentParser(description="Run the TradingTop Early Access web/API app")
+    parser = argparse.ArgumentParser(description="Run the SignalProof AI Research Beta web/API app")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--reload", action="store_true")

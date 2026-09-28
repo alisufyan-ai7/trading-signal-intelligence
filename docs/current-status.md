@@ -545,6 +545,8 @@ Frozen artifacts:
 - `config/ai_v1_policy.txt`
 - `config/ai_v1_decision_schema.json`
 - `config/ai_v1_guardrails.json`
+- `docs/ai-v1-ledger-spec.md`
+- `config/ai_v1_activation_schema.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
 AI-v1 initial universe:

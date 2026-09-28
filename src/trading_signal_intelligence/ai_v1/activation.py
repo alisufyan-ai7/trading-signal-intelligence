@@ -21,6 +21,7 @@ ARTIFACT_PATHS = {
     "provider_selection": "docs/ai-v1-provider-selection.md",
     "architecture": "docs/ai-v1-architecture.md",
     "ledger_spec": "docs/ai-v1-ledger-spec.md",
+    "runtime_spec": "docs/ai-v1-shadow-runtime.md",
     "policy": "config/ai_v1_policy.txt",
     "feature_definitions": "docs/ai-v1-feature-definitions.md",
     "feature_schema": "config/ai_v1_feature_schema.json",

@@ -27,7 +27,7 @@ Verified:
 
 Telegram remains optional and disabled.
 
-## Immediate product work — Early Access feedback & customer discovery v0.1
+## Immediate product work — First cohort G4 customer-value evidence v0.1
 
 AI-v1.0 is now activated and the hourly shadow scheduler is collecting immutable forward evidence on XAUUSD, USTEC and US30.
 
@@ -44,19 +44,20 @@ Current work order:
 3. **DONE / VPS VERIFIED:** mutation-safety/tamper/gate tests and byte-identical live-ledger proof;
 4. **DONE / CLOUD VERIFIED:** AI Insights UI backed by the sanitized read-only AI-v1 export; canonical record: `docs/ai-insights-ui.md`;
 5. **DONE / REDEPLOY VERIFIED:** Cloud Snapshot Durability v0.1 — persistent `/data` volume proven across controlled redeploy; canonical record: `docs/cloud-snapshot-durability-v0.1.md`, GitHub Issue #6;
-6. **IN PROGRESS:** Early Access Feedback & Customer Discovery v0.1 — storage/API/UI + tests committed; **NEXT:** VPS tests, dedicated Railway owner secret, synthetic submission and controlled-redeploy persistence proof; GitHub Issue #7;
-7. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
+6. **DONE / REDEPLOY VERIFIED:** Early Access Feedback & Customer Discovery v0.1 — durable private feedback capture, owner export, access boundaries and controlled-redeploy persistence proven; GitHub Issue #7;
+7. **NEXT:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; GitHub Issue #9;
+8. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
 
 ### Deferred growth backlog — Organic acquisition & SEO v0.1
 
-**DEFERRED / AFTER ISSUE #7.** This does not change the current implementation priority.
+**DEFERRED / AFTER INITIAL REAL-USER EVIDENCE FROM ISSUE #9.** This does not change the current implementation priority.
 
 Canonical plan: `docs/future-organic-acquisition-seo-v0.1.md`  
 GitHub Issue: #8
 
-Preserved future ideas include evidence-first per-market landing pages, educational search content, search -> education -> product funnels, intentional internal linking, privacy-respecting acquisition measurement, and free-value-first conversion. The first implementation batch must be revised using actual customer-language/comprehension findings from Issue #7 before SEO work starts.
+Preserved future ideas include evidence-first per-market landing pages, educational search content, search -> education -> product funnels, intentional internal linking, privacy-respecting acquisition measurement, and free-value-first conversion. The first implementation batch must be revised using actual real-user language/comprehension findings from Issue #9 before SEO work starts.
 
 Current public S02 signals remain rule-based and must not be relabeled as AI.
 

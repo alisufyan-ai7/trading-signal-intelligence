@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SignalProof AI — Research Beta</title>
-  <link rel="stylesheet" href="/static/styles.css?v=20260929-1" />
+  <link rel="stylesheet" href="/static/styles.css?v=20260929-2" />
 </head>
 <body>
   <main class="shell">
@@ -125,12 +125,151 @@
       <div id="research-grid" class="grid compact"></div>
     </section>
 
+
+    <section class="section feedback-section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">EARLY ACCESS FEEDBACK</span>
+          <h2>Help shape SignalProof AI</h2>
+        </div>
+        <p>About 1–2 minutes. This is product feedback—not a trading instruction. Do not submit broker credentials, account IDs, passwords, API keys or sensitive financial information.</p>
+      </div>
+
+      <form id="feedback-form" class="feedback-form">
+        <div class="feedback-grid">
+          <label class="feedback-field">
+            <span>How clear are the signals?</span>
+            <select name="comprehension_rating" required>
+              <option value="">Choose 1–5</option>
+              <option value="1">1 — Very unclear</option>
+              <option value="2">2 — Unclear</option>
+              <option value="3">3 — Neutral</option>
+              <option value="4">4 — Clear</option>
+              <option value="5">5 — Very clear</option>
+            </select>
+          </label>
+
+          <label class="feedback-field">
+            <span>Are issuance, expiry and lifecycle states clear?</span>
+            <select name="lifecycle_clarity_rating" required>
+              <option value="">Choose 1–5</option>
+              <option value="1">1 — Very unclear</option>
+              <option value="2">2 — Unclear</option>
+              <option value="3">3 — Neutral</option>
+              <option value="4">4 — Clear</option>
+              <option value="5">5 — Very clear</option>
+            </select>
+          </label>
+
+          <label class="feedback-field">
+            <span>How understandable are the AI reasoning summaries?</span>
+            <select name="ai_reasoning_clarity_rating" required>
+              <option value="">Choose 1–5</option>
+              <option value="1">1 — Very unclear</option>
+              <option value="2">2 — Unclear</option>
+              <option value="3">3 — Neutral</option>
+              <option value="4">4 — Clear</option>
+              <option value="5">5 — Very clear</option>
+            </select>
+          </label>
+
+          <label class="feedback-field">
+            <span>Does the immutable signal/outcome history increase your trust?</span>
+            <select name="immutable_record_trust" required>
+              <option value="">Choose one</option>
+              <option value="yes">Yes</option>
+              <option value="somewhat">Somewhat</option>
+              <option value="no">No</option>
+              <option value="unsure">Not sure</option>
+            </select>
+          </label>
+
+          <label class="feedback-field">
+            <span>How would you prefer to receive alerts?</span>
+            <select name="alert_preference" required>
+              <option value="">Choose one</option>
+              <option value="telegram">Telegram</option>
+              <option value="email">Email</option>
+              <option value="web">Web only</option>
+              <option value="other">Other</option>
+              <option value="none">No alerts</option>
+            </select>
+          </label>
+
+          <label class="feedback-field">
+            <span>Would you pay for a product like this?</span>
+            <select name="willingness_to_pay" required>
+              <option value="">Choose one</option>
+              <option value="no">No</option>
+              <option value="maybe">Maybe, if evidence remains credible</option>
+              <option value="yes">Yes</option>
+            </select>
+          </label>
+
+          <label class="feedback-field">
+            <span>What monthly price feels reasonable?</span>
+            <select name="price_range" required>
+              <option value="">Choose one</option>
+              <option value="free_only">Free only</option>
+              <option value="under_10">Under $10</option>
+              <option value="10_25">$10–$25</option>
+              <option value="25_50">$25–$50</option>
+              <option value="50_plus">$50+</option>
+              <option value="unsure">Not sure yet</option>
+            </select>
+          </label>
+        </div>
+
+        <fieldset class="feedback-group">
+          <legend>What information is missing? <small>Select any that apply.</small></legend>
+          <div class="choice-grid">
+            <label><input type="checkbox" name="missing_details" value="entry_stop_targets"> Entry / stop / targets</label>
+            <label><input type="checkbox" name="missing_details" value="expiry_validity"> Expiry / validity</label>
+            <label><input type="checkbox" name="missing_details" value="ai_reasoning"> Why AI chose BUY / SELL / NO_TRADE</label>
+            <label><input type="checkbox" name="missing_details" value="historical_performance"> Historical performance</label>
+            <label><input type="checkbox" name="missing_details" value="market_context"> Current market context</label>
+            <label><input type="checkbox" name="missing_details" value="risk_explanation"> Risk explanation</label>
+            <label><input type="checkbox" name="missing_details" value="other"> Other</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="feedback-group">
+          <legend>Which markets matter to you? <small>Select at least one.</small></legend>
+          <div class="choice-grid market-choices">
+            <label><input type="checkbox" name="market_interests" value="XAUUSD"> XAU/USD</label>
+            <label><input type="checkbox" name="market_interests" value="USTEC"> NASDAQ 100</label>
+            <label><input type="checkbox" name="market_interests" value="US30"> DOW 30</label>
+            <label><input type="checkbox" name="market_interests" value="EURUSD"> EUR/USD</label>
+            <label><input type="checkbox" name="market_interests" value="GBPUSD"> GBP/USD</label>
+            <label><input type="checkbox" name="market_interests" value="USDJPY"> USD/JPY</label>
+            <label><input type="checkbox" name="market_interests" value="XAGUSD"> XAG/USD</label>
+            <label><input type="checkbox" name="market_interests" value="US500"> S&P 500</label>
+            <label><input type="checkbox" name="market_interests" value="USOIL"> WTI</label>
+          </div>
+        </fieldset>
+
+        <label class="feedback-field feedback-text">
+          <span>Anything else? <small>Optional • maximum 1,200 characters</small></span>
+          <textarea name="feedback_text" maxlength="1200" rows="5" placeholder="What would make SignalProof AI clearer or more useful to you?"></textarea>
+        </label>
+
+        <div class="feedback-actions">
+          <button type="submit" id="feedback-submit">Submit feedback</button>
+          <span id="feedback-status" class="feedback-status" aria-live="polite"></span>
+        </div>
+
+        <p class="feedback-privacy">
+          Feedback is retained for up to 12 months during the research beta and is used for product/customer-discovery analysis. It is kept separate from trading evidence and is not used for broker execution.
+        </p>
+      </form>
+    </section>
+
     <section class="disclosure">
       <strong>Research beta.</strong>
       The S02 benchmark and AI-v1 shadow records are separate evidence streams. AI-v1 is active in shadow validation only and does not place broker orders. No signal is a guaranteed return or personalized investment advice.
       Historical results and live forward results must be evaluated separately.
     </section>
   </main>
-  <script src="/static/app.js?v=20260929-1"></script>
+  <script src="/static/app.js?v=20260929-2"></script>
 </body>
 </html>

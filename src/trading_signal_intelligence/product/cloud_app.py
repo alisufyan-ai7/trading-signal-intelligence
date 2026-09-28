@@ -45,6 +45,22 @@ def _validate_snapshot(payload: dict[str, Any]) -> None:
     if not isinstance(payload.get("health"), dict):
         raise HTTPException(status_code=400, detail="Snapshot health missing")
 
+    ai_v1 = payload.get("ai_v1")
+    if ai_v1 is not None:
+        if not isinstance(ai_v1, dict):
+            raise HTTPException(status_code=400, detail="AI-v1 snapshot must be an object")
+        for key in (
+            "raw_market_data_included",
+            "raw_feature_snapshots_included",
+            "provider_request_metadata_included",
+            "hidden_reasoning_included",
+        ):
+            if ai_v1.get(key) is not False:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Unsafe AI-v1 snapshot field: {key}",
+                )
+
 
 def _market_rows(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
     evidence = snapshot.get("evidence", {}).get("markets", {})
@@ -115,6 +131,36 @@ def evidence() -> dict:
 def markets() -> list[dict]:
     snapshot = _load_snapshot()
     return _market_rows(snapshot) if snapshot else []
+
+
+@app.get("/api/ai/insights")
+def ai_insights() -> dict:
+    snapshot = _load_snapshot()
+    if snapshot is None:
+        return {
+            "schema_version": 1,
+            "protocol_version": "AI-v1.0",
+            "mode": "SHADOW_ONLY",
+            "status": "snapshot_pending",
+            "customer_notice": "AI-v1 shadow insights are waiting for the next VPS snapshot.",
+            "health": {"healthy": False},
+            "raw_market_data_included": False,
+            "raw_feature_snapshots_included": False,
+            "provider_request_metadata_included": False,
+            "hidden_reasoning_included": False,
+        }
+    return snapshot.get("ai_v1", {
+        "schema_version": 1,
+        "protocol_version": "AI-v1.0",
+        "mode": "SHADOW_ONLY",
+        "status": "snapshot_pending",
+        "customer_notice": "AI-v1 shadow insights are waiting for the next VPS snapshot.",
+        "health": {"healthy": False},
+        "raw_market_data_included": False,
+        "raw_feature_snapshots_included": False,
+        "provider_request_metadata_included": False,
+        "hidden_reasoning_included": False,
+    })
 
 
 @app.get("/api/signals")

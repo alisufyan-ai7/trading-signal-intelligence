@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
@@ -61,7 +62,7 @@ def process_inference_cycle(
         policy_sha256 = hashlib.sha256(policy_text.encode("utf-8")).hexdigest()
     if guardrails_sha256 is None:
         guardrails_sha256 = hashlib.sha256(
-            __import__("json").dumps(
+            json.dumps(
                 guardrails,
                 sort_keys=True,
                 separators=(",", ":"),

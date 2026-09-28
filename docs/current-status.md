@@ -27,6 +27,7 @@
 - AI-v1 AI Insights UI: DONE / VPS + CLOUD VERIFIED
 - Cloud snapshot durability v0.1: DONE / CONTROLLED REDEPLOY VERIFIED / ISSUE #6
 - Early Access feedback & customer discovery v0.1: NEXT / G4 START
+- Organic acquisition & SEO v0.1: DEFERRED / AFTER ISSUE #7
 
 ## AI-v1 active forward-collection plan
 

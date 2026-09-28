@@ -1,6 +1,6 @@
 # Early Access Feedback & Customer Discovery v0.1
 
-_Status: IMPLEMENTED — LIVE VERIFICATION PENDING_  
+_Status: DONE / LIVE + REDEPLOY VERIFIED_  
 _Date: 2026-09-29_  
 _GitHub issue: #7_
 
@@ -141,4 +141,23 @@ Components:
 - local owner configuration/export helpers;
 - regression tests for validation, persistence semantics and access boundaries.
 
-The implementation is not yet milestone-complete. It must pass VPS tests and live Railway persistence/access verification before first-cohort invitations are prepared.
+The implementation passed VPS tests plus live Railway privacy/access and controlled-redeploy persistence verification. The first-cohort onboarding draft is prepared; no invitations were sent automatically.
+
+
+## Final verification — PASS
+
+The exact synthetic verification record survived a controlled Railway redeploy without resubmission:
+
+- submission count: 1;
+- submission ID: `fb_QWaVl9aC_f5i7-R-`;
+- submitted at: `2026-09-28T21:25:47.231330+00:00`.
+
+Owner-only export remained available through the dedicated secret. Public read-all access remained blocked. AI-v1/S02 public verification remained healthy.
+
+The first-cohort onboarding draft is stored in:
+
+`docs/first-cohort-onboarding-v0.1.md`
+
+No invitations were sent automatically.
+
+Issue #7 is complete. Genuine G4 evidence collection moves to Issue #9.

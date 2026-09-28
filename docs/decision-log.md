@@ -450,3 +450,21 @@ Before activation, each market's activation record must bind the exact repositor
 The provider schema removes those unsupported composition constructs only. It does not authorize a broader decision contract. After every provider response, local `validate_decision()` still enforces all frozen semantics, including NO_TRADE null fields, directional numeric bounds and TP2 > TP1.
 
 Both the provider schema and canonical schema are fingerprinted in the activation bundle.
+
+
+## 2026-09-28 — D035: Treat GPT-5.4 403 as a pre-activation access blocker, not a model result
+
+**Observed:** The first synthetic non-performance request to the frozen OpenAI model `gpt-5.4-2026-03-05` returned HTTP 403 / `model_not_found` stating that the API project does not have access to that model.
+
+**Decision:** Do not interpret this as a trading/model-performance result and do not silently switch models.
+
+Before changing D033:
+
+1. inspect the exact API project's model access using metadata-only API requests;
+2. check whether GPT-5.4 access can be enabled through OpenAI project Model Usage / billing tier;
+3. if the exact frozen snapshot becomes accessible, retain D033 unchanged;
+4. if it cannot be made accessible, choose only an accessible **dated snapshot** and record a superseding provider/model decision before the first performance-bearing inference.
+
+The diagnostic candidate list is operational, not a ranking and not authorization to use a fallback.
+
+No AI-v1 activation/performance evidence exists yet, so a provider substitution at this stage remains methodologically admissible if fully recorded before activation.

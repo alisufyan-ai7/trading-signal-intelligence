@@ -1,6 +1,6 @@
 # Cloud Snapshot Durability v0.1
 
-_Status: VOLUME ATTACHED — SEED + CONTROLLED REDEPLOY VERIFICATION PENDING_  
+_Status: DONE / REDEPLOY DURABILITY VERIFIED_  
 _Date: 2026-09-29_  
 _GitHub issue: #6_
 
@@ -50,7 +50,7 @@ Current service:
 - GitHub source: `alisufyan-ai7/trading-signal-intelligence`;
 - branch: `main`;
 - root Dockerfile;
-- no persistent Railway volume currently attached.
+- persistent Railway volume attached at `/data`.
 
 ## Preferred first approach
 
@@ -170,3 +170,25 @@ After the volume is seeded, use:
 `scripts/verify_cloud_snapshot_durability.py`
 
 The script is read-only. It verifies the public cloud contract and prints a compact snapshot identity that can be compared before and after a controlled Railway redeploy.
+
+
+## Final verification — PASS
+
+The final controlled redeploy durability proof passed without a snapshot republish.
+
+Pre-redeploy snapshot identity:
+
+`2026-09-28T20:05:07.626984+00:00`
+
+Post-redeploy snapshot identity:
+
+`2026-09-28T20:05:07.626984+00:00`
+
+The public contract also remained intact:
+
+- 9 markets;
+- AI-v1.0 / SHADOW_ONLY / forward_validation_in_progress;
+- broker execution disabled;
+- all AI publication-safety flags false.
+
+Durability v0.1 is complete.

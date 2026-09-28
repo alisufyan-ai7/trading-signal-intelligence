@@ -5,6 +5,7 @@ from pathlib import Path
 
 from trading_signal_intelligence.ai_v1.features import FeatureSnapshot
 from trading_signal_intelligence.ai_v1.inference import run_inference
+from trading_signal_intelligence.ai_v1.local_env import load_local_env
 from trading_signal_intelligence.ai_v1.openai_responses import OpenAIResponsesAdapter
 
 
@@ -16,6 +17,7 @@ def load_json(path: str) -> dict:
 
 
 def main() -> None:
+    load_local_env(ROOT / ".env")
     config = load_json("config/ai_v1_provider.json")
     provider_schema = load_json("config/ai_v1_openai_response_schema.json")
     decision_schema = load_json("config/ai_v1_decision_schema.json")

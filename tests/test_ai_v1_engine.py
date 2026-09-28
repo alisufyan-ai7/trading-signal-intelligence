@@ -153,3 +153,36 @@ def test_buy_cycle_can_be_approved_pending_entry(tmp_path) -> None:
     assert ledger.counts_by_type() == {"INFERENCE": 1}
     assert result.guard_result is not None
     assert result.guard_result.publishable is True
+
+
+def test_provider_failure_is_immutably_recorded_as_error(tmp_path) -> None:
+    ledger = AILedger(tmp_path / "ai.sqlite")
+
+    class FailingAdapter:
+        provider = "openai"
+        model_id = "gpt-5.4-2026-03-05"
+
+        @property
+        def parameters(self) -> dict[str, Any]:
+            return {"reasoning_effort": "medium"}
+
+        def infer(self, **kwargs):
+            raise RuntimeError("synthetic provider failure")
+
+    result = process_inference_cycle(
+        ledger=ledger,
+        adapter=FailingAdapter(),
+        feature_snapshot=snapshot(),
+        policy_text="policy",
+        decision_schema={"title": "schema"},
+        guardrails=guardrails(),
+        active_signal_exists=False,
+        recorded_at_utc=datetime(2026, 9, 28, 8, 0, 30, tzinfo=timezone.utc),
+    )
+
+    assert result.status == "ERROR"
+    assert ledger.counts_by_type() == {"ERROR": 1}
+    assert result.terminal_record is not None
+    assert result.terminal_record["payload"]["stage"] == "provider_inference"
+    assert result.terminal_record["payload"]["model_id"] == "gpt-5.4-2026-03-05"
+    assert ledger.verify()["valid"] is True

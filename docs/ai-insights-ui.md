@@ -1,6 +1,6 @@
 # AI Insights UI
 
-_Status: VPS VERIFIED — cloud publish/UI verification pending_  
+_Status: DONE / CLOUD VERIFIED_  
 _Date: 2026-09-29_
 
 ## Purpose
@@ -156,4 +156,34 @@ Live Windows verification completed successfully:
 - broker execution: disabled;
 - no prohibited raw/internal AI fields exposed.
 
-Remaining closure work is cloud-only: push the AI-aware derived snapshot and verify `/api/ai/insights` plus the rendered public UI.
+Cloud verification is complete.
+
+
+## Cloud verification checkpoint — PASS
+
+The AI-aware snapshot was republished after the successful Railway code deployment and the full public path passed.
+
+Verified:
+
+- snapshot ingestion: accepted=true / push_exit=0;
+- market count: 9;
+- cloud health: ok=true / launch_ready=true;
+- ready collectors: XAUUSD, USTEC, US30;
+- snapshot_pending=false;
+- AI endpoint: `AI-v1.0` / `SHADOW_ONLY` / `forward_validation_in_progress`;
+- AI health: healthy=true;
+- broker_execution_disabled=true;
+- frozen_artifacts_valid=true;
+- ledgers_valid=true;
+- scheduler_healthy=true;
+- raw_market_data_included=false;
+- raw_feature_snapshots_included=false;
+- provider_request_metadata_included=false;
+- hidden_reasoning_included=false;
+- cloud safety assertions: PASS;
+- public page HTTP 200;
+- AI Shadow Intelligence section present and populated.
+
+The UI milestone is complete.
+
+One separate reliability issue remains: the current Railway service has no persistent volume, so a redeploy clears the latest cloud snapshot until the VPS publisher republishes it. That is tracked separately as GitHub Issue #6 and `docs/cloud-snapshot-durability-v0.1.md`.

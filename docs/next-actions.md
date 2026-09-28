@@ -112,6 +112,8 @@ Do not modify or stop the active S02 forward ledgers. They become the benchmark/
 - `config/ai_v1_policy.txt`
 - `config/ai_v1_decision_schema.json`
 - `config/ai_v1_guardrails.json`
+- `docs/ai-v1-ledger-spec.md`
+- `config/ai_v1_activation_schema.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
 Do not start AI-v1 performance collection until the exact model/provider/prompt fingerprint is committed and an activation record is created.

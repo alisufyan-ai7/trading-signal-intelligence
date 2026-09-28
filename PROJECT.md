@@ -253,6 +253,8 @@ Frozen AI-v1 references:
 - `config/ai_v1_policy.txt`
 - `config/ai_v1_decision_schema.json`
 - `config/ai_v1_guardrails.json`
+- `docs/ai-v1-ledger-spec.md`
+- `config/ai_v1_activation_schema.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
 AI-v1 remains PRE-ACTIVATION until the exact provider/model identifier, inference parameters, prompt/policy and implementation fingerprints are committed. No AI-v1 performance result has been observed at the time of the preregistration.

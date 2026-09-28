@@ -20,7 +20,7 @@ WEB = ROOT / "web"
 
 app = FastAPI(
     title="SignalProof AI Research Beta",
-    version="0.3.0",
+    version="0.4.0",
     description="SignalProof AI research beta; current public feed remains the frozen S02 benchmark.",
 )
 

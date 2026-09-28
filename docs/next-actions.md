@@ -42,9 +42,10 @@ Current work order:
 1. **RUNNING:** leave AI-v1.0 shadow collection untouched;
 2. **DONE / VPS VERIFIED:** read-only `scripts/report_ai_v1_progress.py` observability layer;
 3. **DONE / VPS VERIFIED:** mutation-safety/tamper/gate tests and byte-identical live-ledger proof;
-4. **NEXT:** build the AI Insights UI from the monitor's read-only JSON output;
-5. continue non-decision product work while evidence accumulates;
-6. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
+4. **IMPLEMENTED — VPS + CLOUD VERIFICATION PENDING:** AI Insights UI backed by the sanitized read-only AI-v1 export; canonical plan: `docs/ai-insights-ui.md`;
+5. **NEXT:** verify AI Insights on the VPS, push the first AI-aware derived snapshot, then verify the Railway endpoint/browser UI;
+6. continue non-decision product work while evidence accumulates;
+7. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
 

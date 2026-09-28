@@ -6,6 +6,7 @@ from typing import Any
 from trading_signal_intelligence.ai_v1.observability import (
     DATABASE_PATHS,
     MARKETS,
+    ObservabilityError,
     build_report,
     read_records_read_only,
 )
@@ -149,6 +150,15 @@ def build_public_ai_insights(
         symbol: read_records_read_only(repo_root / DATABASE_PATHS[symbol])
         for symbol in MARKETS
     }
+
+    for symbol in MARKETS:
+        records = market_records[symbol]
+        observed_head = records[-1]["record_hash"] if records else None
+        reported_head = report["markets"][symbol]["current_head_hash"]
+        if observed_head != reported_head:
+            raise ObservabilityError(
+                f"{symbol} ledger changed while AI Insights snapshot was being built"
+            )
 
     decisions: list[dict[str, Any]] = []
     signals: list[dict[str, Any]] = []

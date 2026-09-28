@@ -274,3 +274,69 @@ Sources:
 **Work-mode implication:** Even if the product setting is changed to Default Memory so Work mode becomes available, this project remains logically isolated by instruction. Work should be told to use only the allowed sources above.
 
 **Reason:** Preserve research provenance and prevent contamination from unrelated projects or account-level context.
+
+
+## 2026-09-28 — D027: Pivot product architecture to AI-first intelligence with deterministic guardrails
+
+**Decision:** The project owner formally approves the product-direction pivot from the original "quantitative engine first, AI explanation second" architecture to an **AI-first market-intelligence product with deterministic publication/risk guardrails and immutable evidence**.
+
+This supersedes D006 for the product's forward architecture while preserving D006 as the historical decision that produced the existing S01/S02 research foundation.
+
+**New architecture principle:**
+
+> AI proposes the market decision; deterministic code validates publishability/risk; every inference and signal remains attributable in an immutable record.
+
+**Preserved controls:**
+
+- S02-v0.1 remains unchanged;
+- existing XAUUSD, USTEC and US30 S02 forward ledgers remain active and untouched;
+- S02 becomes the deterministic benchmark/control for AI-v1;
+- no broker execution or auto trading is authorized by this decision;
+- AI-v1 begins in shadow mode.
+
+**Reason:** Authenticated TradingTop research showed that the intended comparison product is AI-first at the user-experience layer: structured inference, confidence, reasoning, AI logs and model-specific trading history. The current beta has strong data/evidence infrastructure but its signal brain remains rule-based.
+
+## 2026-09-28 — D028: Adopt "SignalProof AI" as the working product name
+
+**Decision:** Use **SignalProof AI** as the working customer-facing product name for AI-0.
+
+**Working positioning:** AI market intelligence with a verifiable record.
+
+**Working promise:** "AI finds the setup. Risk rules verify it. Every signal stays on the record."
+
+**Boundary:** This is a working project name, not a claim of trademark/domain clearance. Under the project's strict isolation rule, broad external brand clearance was not performed here. Perform a separate clearance check before a paid public launch.
+
+**Implication:** Stop using the competitor's brand as this application's visible identity. Engineering identifiers such as the repository/package name may remain unchanged.
+
+## 2026-09-28 — D029: Freeze AI-v1 shadow architecture and EXP-2026-014 before first AI result
+
+**Decision:** Freeze the first AI signal protocol before any AI-v1 performance-bearing inference is observed.
+
+**Frozen initial universe:** XAUUSD, USTEC, US30.
+
+**Frozen cadence:** each eligible completed H1 bar.
+
+**Frozen AI role:** provider-neutral reasoning model operating only on causally available engineered market-state features. AI-v1.0 excludes news, social sentiment, S02 outputs, user positions and incomplete/future candles.
+
+**Frozen decisions:** BUY / SELL / NO_TRADE.
+
+**Frozen publication model:** AI direction/risk proposal -> schema validation -> deterministic freshness/cost/concurrency/risk guard -> shadow signal or rejection.
+
+**Frozen entry/lifecycle:** next eligible H1 open; model-proposed stop 1.00–3.00 ATR; TP1 0.75–2.00R; TP2 1.50–4.00R and greater than TP1; 50/50 target evaluation; no stop move after TP1; 24 H1-bar timeout; instrument-specific costs.
+
+**Evidence separation:** AI-v1 receives its own append-only ledger. It must never write into S02 databases.
+
+**Review gates:**
+
+- A1: >=100 valid inferences and >=20 completed AI shadow trades — operational audit only.
+- A2: >=500 valid inferences, >=50 completed trades and >=60 calendar days — interim evidence review.
+- A3: >=1,000 valid inferences, >=100 completed trades and >=120 calendar days — first planned publishability decision.
+
+**Activation blocker:** Before first performance-bearing inference, commit the exact inference provider/model ID, inference parameters, prompt/policy, implementation fingerprints and activation record.
+
+**Frozen artifacts:**
+
+- `docs/ai-v1-architecture.md`
+- `config/ai_v1_decision_schema.json`
+- `config/ai_v1_guardrails.json`
+- `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`

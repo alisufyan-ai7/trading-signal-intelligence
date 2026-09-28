@@ -1,14 +1,25 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Header, HTTPException, Query, Request
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from trading_signal_intelligence.product.ai_insights import build_public_ai_insights
 from trading_signal_intelligence.product.catalog import launch_catalog, market_statuses
 from trading_signal_intelligence.product.evidence import evidence_summary, market_evidence
+from trading_signal_intelligence.product.feedback import (
+    FeedbackValidationError,
+    RETENTION_MONTHS,
+    export_feedback_csv,
+    export_feedback_rows,
+    feedback_db_path,
+    feedback_summary,
+    owner_token_valid,
+    submit_feedback,
+)
 from trading_signal_intelligence.product.public_signals import (
     operational_event_counts,
     public_signal_history,
@@ -20,7 +31,7 @@ WEB = ROOT / "web"
 
 app = FastAPI(
     title="SignalProof AI Research Beta",
-    version="0.4.0",
+    version="0.5.0",
     description="SignalProof AI research beta; current public feed remains the frozen S02 benchmark.",
 )
 
@@ -145,6 +156,74 @@ def signals(limit_per_market: int = Query(default=20, ge=1, le=100)) -> dict:
             for row in live
         ]
     }
+
+
+@app.post("/api/feedback")
+async def create_feedback(request: Request) -> dict:
+    try:
+        payload = await request.json()
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Valid JSON object required") from exc
+
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=400, detail="JSON object required")
+
+    try:
+        result = submit_feedback(feedback_db_path(ROOT), payload)
+    except FeedbackValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return {
+        "accepted": True,
+        "submission_id": result["submission_id"],
+        "submitted_at_utc": result["submitted_at_utc"],
+        "retention_months": RETENTION_MONTHS,
+    }
+
+
+def _require_feedback_owner(authorization: str | None) -> None:
+    expected = os.getenv("SIGNALPROOF_FEEDBACK_OWNER_TOKEN")
+    if not expected:
+        raise HTTPException(
+            status_code=503,
+            detail="Feedback owner access is not configured",
+        )
+    if not owner_token_valid(authorization, expected):
+        raise HTTPException(status_code=401, detail="Invalid feedback owner token")
+
+
+@app.get("/api/internal/feedback/summary")
+def owner_feedback_summary(
+    authorization: str | None = Header(default=None),
+) -> dict:
+    _require_feedback_owner(authorization)
+    return feedback_summary(feedback_db_path(ROOT))
+
+
+@app.get("/api/internal/feedback/export")
+def owner_feedback_export(
+    format: str = Query(default="json"),
+    authorization: str | None = Header(default=None),
+):
+    _require_feedback_owner(authorization)
+    path = feedback_db_path(ROOT)
+    if format == "json":
+        return {
+            "schema_version": 1,
+            "retention_months": RETENTION_MONTHS,
+            "submissions": export_feedback_rows(path),
+        }
+    if format == "csv":
+        return Response(
+            content=export_feedback_csv(path),
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": (
+                    "attachment; filename=signalproof-feedback.csv"
+                )
+            },
+        )
+    raise HTTPException(status_code=400, detail="format must be json or csv")
 
 
 @app.get("/api/ai/insights")

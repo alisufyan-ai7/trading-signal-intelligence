@@ -340,3 +340,31 @@ This supersedes D006 for the product's forward architecture while preserving D00
 - `config/ai_v1_decision_schema.json`
 - `config/ai_v1_guardrails.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
+
+
+## 2026-09-28 — D030: Freeze AI-v1 feature formulas and provider-neutral reasoning policy
+
+**Decision:** Remove remaining implementation ambiguity from AI-v1 before provider/model selection by freezing both the causal feature definitions and the provider-neutral reasoning policy.
+
+**Frozen feature definition artifact:**
+
+- `docs/ai-v1-feature-definitions.md`
+- `config/ai_v1_feature_schema.json`
+
+The feature protocol fixes return horizons, Wilder ATR/RSI semantics, EMA semantics, prior-20 structure, previous-day structure, true-range expansion, tick-volume z-score, realized-volatility buckets, deterministic trend regime, fixed UTC session buckets, spread normalization, data-age calculation and canonical snapshot hashing.
+
+**Frozen reasoning policy artifact:**
+
+- `config/ai_v1_policy.txt`
+
+The policy requires the model to:
+
+- use only the supplied feature snapshot;
+- output BUY / SELL / NO_TRADE in the frozen schema;
+- prefer NO_TRADE when evidence is weak/mixed;
+- keep stop/target proposals within frozen bounds;
+- avoid outputting executable price arithmetic;
+- return concise rationale/factor tags only;
+- never rely on outside market knowledge, news, S02 state or hidden chain-of-thought.
+
+**Remaining activation variable:** The exact provider/model identifier and provider-specific inference parameters remain intentionally unset until implementation. They must be committed before first performance-bearing inference. Selecting that model does not reopen the frozen feature/policy/guard contract unless the protocol version is changed.

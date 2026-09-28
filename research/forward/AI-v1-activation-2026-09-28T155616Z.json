@@ -1,0 +1,123 @@
+{
+  "protocol_version": "AI-v1.0",
+  "status": "ACTIVATED_LEDGER_ONLY_SCHEDULER_NOT_INSTALLED",
+  "activated_at_utc": "2026-09-28T15:56:16.002058+00:00",
+  "provider_call_made": false,
+  "broker_execution_enabled": false,
+  "artifact_hashes": {
+    "provider_selection": "5ed27ac9db70b3d71896a61c646a3e0ac206e0bbd8293a732d9f7cc9623f8cfa",
+    "architecture": "fb9969576df1185a56bf92939fe17af3dcc5d9e90aeb0e3b1c0cc6895789a347",
+    "ledger_spec": "c8e58ac8d8a5f953ab3107214de716bcd6765116c1a10c9dd02c8e7aa7b63874",
+    "runtime_spec": "9956b71cdd9465da17e7fbf3dcd1518c461cb55085f087560bc5e84e7f951779",
+    "policy": "c9afbf210afab3d6cfa9b4ed1ea87261e776faec5e6cb945d6f4263c2f4135a8",
+    "feature_definitions": "3cc09d36ee8ef1de75cc679e6aace62a22e07a93f6735255bb8b55e286acf5d0",
+    "feature_schema": "ed3a67cca54128e5b974fc527df7e2424c9fdb25fb7ad096a4dde045bcd799a4",
+    "decision_schema": "27a9e5f4ebe313f8a9903abf9f84fb129833fec14b1016675caaae7586c87afa",
+    "guardrails": "4cea4608909ebce44867f09b2858f2865280fadc16c31630caee87a4b3fc203f",
+    "provider_config": "0d4eee257ca7edc6a4571f3c1eb8e23c787193c68c8c5ff31007611741d3a740",
+    "provider_response_schema": "8dd2b6fb797371b18eddd488e8c15b534d41173c5a3273b072e8b50014a5ace1",
+    "activation_schema": "8e23b9479bd750ae6bfada04e30ddc92271b0646689caed3757f711c1dac5152",
+    "feature_builder_source": "085e91a6fbbb0a426945fe0e10240e62efe6512d56c6b3d9c0f78388d4484d9f",
+    "inference_adapter_source": "8defedf1bc20f25ecef75dc856d52705136010f0761bdc7771476203b82a9a4c",
+    "provider_neutral_inference_source": "59214b42c1cc23fcbdf15c73163d5df78fe41196029dd5fc916f25ed0ded66cb",
+    "contract_source": "d1bf4b900951f7b3936b61e8b96ea55f9b697184aa23aedad3d32e21099cd168",
+    "guard_source": "12196eaa56dcf56a7fa7a70a5c68bd5dd71fe95ef15992feb41d3641a930a5d0",
+    "ai_ledger_source": "3927303e0559608511dc4ad403b40f474c87adc94936a15d8ecb1ae7f9a2297e",
+    "engine_source": "f79f619c196aef5acc620ff574e0b1c0d3ea36ef6372f163f7acc0c76615d2ef",
+    "lifecycle_evaluator_source": "b5f5afecfa87b455cfec7f049cb5966ce52e3be7c3a5ca9868a986642f1e542f",
+    "activation_builder_source": "9aa13204023cc6e04440f9bca512c457000a73a23e2833bf80368dc4eb586c3c",
+    "shadow_runtime_source": "7a4fa3fb2174573a8dee0b58712fa66cad5144fa35305fd96d9c68767c9d740c",
+    "shadow_runner_script": "d988b2a367b40da00a5cae2ef3a7d9781111bea0b5eadbec8eba53b52e4844c0",
+    "shadow_task_runner_script": "fd53708a3309ecac06c77b89826cf67730da7ffa98188ee5fe45b8da5d7bf07c",
+    "shadow_task_installer_script": "df2204673e825a5055963c95378c712880bf482b43457194f7510c366a1c2e80"
+  },
+  "markets": {
+    "XAUUSD": {
+      "record_hash": "dcae720bc2895fbbc8143d5bd4e2b30f7c090b1936ca026028ed97138e35839b",
+      "verification": {
+        "valid": true,
+        "records": 1,
+        "head_hash": "dcae720bc2895fbbc8143d5bd4e2b30f7c090b1936ca026028ed97138e35839b"
+      },
+      "payload": {
+        "protocol_version": "AI-v1.0",
+        "market": "XAUUSD",
+        "activated_at_utc": "2026-09-28T15:56:16.002058+00:00",
+        "repository_commit_sha": "4dbb1b9407aefc9e2330d16f8dd48d2e02d00455",
+        "activation_bundle_sha256": "5f39fc5678dfbe4d5f45d4112b2976b96a17e17fa59305a1e2ddfef768880801",
+        "provider": "openai",
+        "model_id": "gpt-5.4-2026-03-05",
+        "model_parameter_fingerprint": "ed5069535190cb33771ff8efe1c4389e09abaddea933143c0c839c6dc87d3e9b",
+        "policy_sha256": "c9afbf210afab3d6cfa9b4ed1ea87261e776faec5e6cb945d6f4263c2f4135a8",
+        "feature_definitions_sha256": "3cc09d36ee8ef1de75cc679e6aace62a22e07a93f6735255bb8b55e286acf5d0",
+        "feature_schema_sha256": "ed3a67cca54128e5b974fc527df7e2424c9fdb25fb7ad096a4dde045bcd799a4",
+        "decision_schema_sha256": "27a9e5f4ebe313f8a9903abf9f84fb129833fec14b1016675caaae7586c87afa",
+        "guardrails_sha256": "4cea4608909ebce44867f09b2858f2865280fadc16c31630caee87a4b3fc203f",
+        "feature_builder_source_sha256": "085e91a6fbbb0a426945fe0e10240e62efe6512d56c6b3d9c0f78388d4484d9f",
+        "inference_adapter_source_sha256": "8defedf1bc20f25ecef75dc856d52705136010f0761bdc7771476203b82a9a4c",
+        "ai_ledger_source_sha256": "3927303e0559608511dc4ad403b40f474c87adc94936a15d8ecb1ae7f9a2297e",
+        "lifecycle_evaluator_source_sha256": "b5f5afecfa87b455cfec7f049cb5966ce52e3be7c3a5ca9868a986642f1e542f",
+        "cost_policy_fingerprint": "b420e2a1f5b1acfdbdd46c3355c520b6a3e2d9697adc0c1ff0e7c5ca48b4671e",
+        "broker_execution_enabled": false
+      }
+    },
+    "USTEC": {
+      "record_hash": "40d3af479e894d69018b6fb705a63772635bc8a87ab135f33e16e9cbcf0aba15",
+      "verification": {
+        "valid": true,
+        "records": 1,
+        "head_hash": "40d3af479e894d69018b6fb705a63772635bc8a87ab135f33e16e9cbcf0aba15"
+      },
+      "payload": {
+        "protocol_version": "AI-v1.0",
+        "market": "USTEC",
+        "activated_at_utc": "2026-09-28T15:56:16.002058+00:00",
+        "repository_commit_sha": "4dbb1b9407aefc9e2330d16f8dd48d2e02d00455",
+        "activation_bundle_sha256": "cd669e752fc118e1fda5941090818b201775b9663f9007fa5de434939037e025",
+        "provider": "openai",
+        "model_id": "gpt-5.4-2026-03-05",
+        "model_parameter_fingerprint": "ed5069535190cb33771ff8efe1c4389e09abaddea933143c0c839c6dc87d3e9b",
+        "policy_sha256": "c9afbf210afab3d6cfa9b4ed1ea87261e776faec5e6cb945d6f4263c2f4135a8",
+        "feature_definitions_sha256": "3cc09d36ee8ef1de75cc679e6aace62a22e07a93f6735255bb8b55e286acf5d0",
+        "feature_schema_sha256": "ed3a67cca54128e5b974fc527df7e2424c9fdb25fb7ad096a4dde045bcd799a4",
+        "decision_schema_sha256": "27a9e5f4ebe313f8a9903abf9f84fb129833fec14b1016675caaae7586c87afa",
+        "guardrails_sha256": "4cea4608909ebce44867f09b2858f2865280fadc16c31630caee87a4b3fc203f",
+        "feature_builder_source_sha256": "085e91a6fbbb0a426945fe0e10240e62efe6512d56c6b3d9c0f78388d4484d9f",
+        "inference_adapter_source_sha256": "8defedf1bc20f25ecef75dc856d52705136010f0761bdc7771476203b82a9a4c",
+        "ai_ledger_source_sha256": "3927303e0559608511dc4ad403b40f474c87adc94936a15d8ecb1ae7f9a2297e",
+        "lifecycle_evaluator_source_sha256": "b5f5afecfa87b455cfec7f049cb5966ce52e3be7c3a5ca9868a986642f1e542f",
+        "cost_policy_fingerprint": "b420e2a1f5b1acfdbdd46c3355c520b6a3e2d9697adc0c1ff0e7c5ca48b4671e",
+        "broker_execution_enabled": false
+      }
+    },
+    "US30": {
+      "record_hash": "c98e7667fddc8df4d6b6a4edfc566573923b471c49b4b14dd2af2168234df350",
+      "verification": {
+        "valid": true,
+        "records": 1,
+        "head_hash": "c98e7667fddc8df4d6b6a4edfc566573923b471c49b4b14dd2af2168234df350"
+      },
+      "payload": {
+        "protocol_version": "AI-v1.0",
+        "market": "US30",
+        "activated_at_utc": "2026-09-28T15:56:16.002058+00:00",
+        "repository_commit_sha": "4dbb1b9407aefc9e2330d16f8dd48d2e02d00455",
+        "activation_bundle_sha256": "6bb7458e826acb000f50e33be276adcb1a0b02f204278f56d41d79a6c992a315",
+        "provider": "openai",
+        "model_id": "gpt-5.4-2026-03-05",
+        "model_parameter_fingerprint": "ed5069535190cb33771ff8efe1c4389e09abaddea933143c0c839c6dc87d3e9b",
+        "policy_sha256": "c9afbf210afab3d6cfa9b4ed1ea87261e776faec5e6cb945d6f4263c2f4135a8",
+        "feature_definitions_sha256": "3cc09d36ee8ef1de75cc679e6aace62a22e07a93f6735255bb8b55e286acf5d0",
+        "feature_schema_sha256": "ed3a67cca54128e5b974fc527df7e2424c9fdb25fb7ad096a4dde045bcd799a4",
+        "decision_schema_sha256": "27a9e5f4ebe313f8a9903abf9f84fb129833fec14b1016675caaae7586c87afa",
+        "guardrails_sha256": "4cea4608909ebce44867f09b2858f2865280fadc16c31630caee87a4b3fc203f",
+        "feature_builder_source_sha256": "085e91a6fbbb0a426945fe0e10240e62efe6512d56c6b3d9c0f78388d4484d9f",
+        "inference_adapter_source_sha256": "8defedf1bc20f25ecef75dc856d52705136010f0761bdc7771476203b82a9a4c",
+        "ai_ledger_source_sha256": "3927303e0559608511dc4ad403b40f474c87adc94936a15d8ecb1ae7f9a2297e",
+        "lifecycle_evaluator_source_sha256": "b5f5afecfa87b455cfec7f049cb5966ce52e3be7c3a5ca9868a986642f1e542f",
+        "cost_policy_fingerprint": "b420e2a1f5b1acfdbdd46c3355c520b6a3e2d9697adc0c1ff0e7c5ca48b4671e",
+        "broker_execution_enabled": false
+      }
+    }
+  }
+}

@@ -780,3 +780,44 @@ Fix committed:
 - `.env` remains excluded from Git.
 
 The previous 403 should therefore be treated as a credential-source/configuration error from the wrong OpenAI project, not evidence about this project's GPT-5.4 access.
+
+
+## Correct-project OpenAI verification + synthetic provider smoke — PASS 2026-09-28
+
+After fixing project-local credential precedence, the Windows VPS confirmed the correct SignalProof OpenAI project is being used.
+
+Focused regression tests:
+
+`8 passed in 2.41s`
+
+Metadata-only model probe:
+
+- models list HTTP status: `200`;
+- accessible models returned: `134`;
+- frozen model `gpt-5.4-2026-03-05`: accessible, HTTP `200`, present in model list;
+- dated GPT-5.5, GPT-5.4 Mini and GPT-5.2 diagnostic candidates were also accessible;
+- no inference call and no performance-ledger write occurred during the probe.
+
+The frozen-model synthetic provider smoke then passed:
+
+- `provider_smoke = PASS`;
+- provider: `openai`;
+- served model: `gpt-5.4-2026-03-05`;
+- service tier: `default`;
+- model-parameter fingerprint: `ed5069535190cb33771ff8efe1c4389e09abaddea933143c0c839c6dc87d3e9b`;
+- decision contract valid;
+- synthetic result: `NO_TRADE`, raw confidence 18, regime RANGE;
+- performance-ledger write: false.
+
+Observed synthetic request usage:
+
+- input tokens: 954;
+- output tokens: 264;
+- reasoning tokens within output: 86;
+- total tokens: 1,218.
+
+At the current documented GPT-5.4 standard price ($2.50/M input, $15/M output), this specific smoke call cost approximately **$0.00635** before any account-specific discounts/credits.
+
+D033 remains unchanged. The earlier 403 is fully explained by the wrong inherited VPS project key.
+
+AI-v1 is now ready for the **ledger-only activation step**. No performance-bearing AI-v1 inference has occurred yet.

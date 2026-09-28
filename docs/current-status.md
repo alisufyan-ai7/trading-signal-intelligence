@@ -1,6 +1,6 @@
 # Current Status
 
-**Phase:** AI-v1 forward shadow collection active; AI Insights implemented; VPS/cloud verification pending  
+**Phase:** AI-v1 forward shadow collection active; AI Insights cloud-verified; cloud snapshot durability next  
 **Date:** 2026-09-28
 
 ## Infrastructure
@@ -24,7 +24,8 @@
 - AI-v1 shadow scheduler: ACTIVE / HOURLY / SHADOW-ONLY
 - AI-v1 broker execution: DISABLED
 - AI-v1 observability v0.1: COMPLETE / VPS VERIFIED / READ-ONLY
-- AI-v1 AI Insights UI: IMPLEMENTED / VPS + CLOUD VERIFICATION PENDING
+- AI-v1 AI Insights UI: DONE / VPS + CLOUD VERIFIED
+- Cloud snapshot durability v0.1: NEXT / ISSUE #6
 
 ## AI-v1 active forward-collection plan
 
@@ -35,9 +36,10 @@ Immediate work is **not** model tuning. The active sequence is:
 1. keep the hourly AI-v1 scheduler running untouched;
 2. **DONE:** build/test a strictly read-only progress and health monitor;
 3. **DONE:** verify that monitor against the live VPS ledgers;
-4. **IMPLEMENTED — VERIFICATION PENDING:** AI Insights UI from sanitized read-only exported evidence;
-5. continue product work that does not alter AI-v1 decision behavior;
-6. review A1/A2/A3 only at their frozen eligibility thresholds.
+4. **DONE / CLOUD VERIFIED:** AI Insights UI from sanitized read-only exported evidence;
+5. **NEXT:** make the sanitized cloud snapshot durable across Railway redeploys without changing AI-v1/S02 semantics;
+6. continue product work that does not alter AI-v1 decision behavior;
+7. review A1/A2/A3 only at their frozen eligibility thresholds.
 
 Canonical plan: `docs/ai-v1-observability-plan.md`.
 

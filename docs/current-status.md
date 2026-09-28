@@ -764,3 +764,19 @@ Therefore this is treated as a **project/model access blocker**, not as an AI-v1
 Added `scripts/probe_openai_model_access.py` to query the project's model metadata only (GET /v1/models and GET /v1/models/{model}); it makes no inference request and no ledger write. It probes the configured GPT-5.4 snapshot plus dated GPT-5.5, GPT-5.4 Mini and GPT-5.2 candidates for diagnostic purposes.
 
 Do not activate or change the frozen model until that access diagnostic is reviewed.
+
+
+## Wrong OpenAI project-key precedence identified and fixed — 2026-09-28
+
+Root cause of the earlier GPT-5.4 403 is now identified: the VPS inherited `OPENAI_API_KEY` belonged to another OpenAI project, while the correct SignalProof key was present in this repository's local `.env`.
+
+The previous loader did not override an already-present process/system variable, so the unrelated Windows credential won.
+
+Fix committed:
+
+- project-local `.env` now explicitly overrides inherited environment values for AI-v1 provider operations;
+- `smoke_ai_v1_openai_provider.py`, `probe_openai_model_access.py`, and `activate_ai_v1.py` use project-local precedence;
+- regression test added;
+- `.env` remains excluded from Git.
+
+The previous 403 should therefore be treated as a credential-source/configuration error from the wrong OpenAI project, not evidence about this project's GPT-5.4 access.

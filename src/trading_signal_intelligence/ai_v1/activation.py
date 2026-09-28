@@ -42,6 +42,10 @@ ARTIFACT_PATHS = {
     "engine_source": "src/trading_signal_intelligence/ai_v1/engine.py",
     "lifecycle_evaluator_source": "src/trading_signal_intelligence/ai_v1/signals.py",
     "activation_builder_source": "src/trading_signal_intelligence/ai_v1/activation.py",
+    "shadow_runtime_source": "src/trading_signal_intelligence/ai_v1/shadow_runtime.py",
+    "shadow_runner_script": "scripts/run_ai_v1_shadow.py",
+    "shadow_task_runner_script": "scripts/run_ai_v1_shadow_task.cmd",
+    "shadow_task_installer_script": "scripts/install_ai_v1_shadow_task.ps1",
 }
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")

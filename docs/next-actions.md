@@ -265,3 +265,26 @@ Send the JSON output for review.
 Do not rerun the provider smoke and do not run `scripts\activate_ai_v1.py` until model access is resolved.
 
 If the frozen GPT-5.4 snapshot is accessible after changing OpenAI project Model Usage/billing permissions, keep the current preregistration unchanged. If it remains unavailable but another dated snapshot is accessible, a new **pre-activation superseding provider decision** must be committed before any inference with that fallback.
+
+
+## Retry provider verification after credential-precedence fix
+
+The wrong-project Windows environment key no longer takes precedence over the repository `.env`.
+
+Run:
+
+```powershell
+git pull
+
+.\.venv\Scripts\python.exe -m pytest -q tests\test_ai_v1_local_env.py tests\test_ai_v1_openai_responses.py tests\test_ai_v1_activation.py
+
+.\.venv\Scripts\python.exe scripts\probe_openai_model_access.py
+```
+
+If the probe shows `gpt-5.4-2026-03-05` accessible under the correct project, rerun exactly one synthetic provider smoke:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\smoke_ai_v1_openai_provider.py
+```
+
+Do not run `scripts\activate_ai_v1.py` until the corrected-project provider smoke has been reviewed.

@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
+from trading_signal_intelligence.product.ai_insights import build_public_ai_insights
 from trading_signal_intelligence.product.catalog import launch_catalog, market_statuses
 from trading_signal_intelligence.product.evidence import evidence_summary, market_evidence
 from trading_signal_intelligence.product.public_signals import (
@@ -144,3 +145,8 @@ def signals(limit_per_market: int = Query(default=20, ge=1, le=100)) -> dict:
             for row in live
         ]
     }
+
+
+@app.get("/api/ai/insights")
+def ai_insights() -> dict:
+    return build_public_ai_insights(ROOT)

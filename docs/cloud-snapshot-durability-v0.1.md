@@ -91,3 +91,82 @@ A controlled cloud restart/redeploy must preserve a populated product without ma
 - no change to live AI/S02 ledgers.
 
 The implementation must include a rollback path before any Railway storage mutation.
+
+
+## Approved implementation design
+
+Use one Railway persistent volume attached to the existing `tradingtop-early-access` service and mount it at:
+
+`/data`
+
+Keep the application variable unchanged:
+
+`TRADINGTOP_SNAPSHOT_PATH=/data/public_snapshot.json`
+
+No application-code change is required for the storage path.
+
+### Why this is the preferred design
+
+The current service already writes the sanitized public snapshot to `/data/public_snapshot.json`. A Railway volume mounted at `/data` therefore preserves the current producer, ingest endpoint, cloud reader, JSON schema and public API without introducing another database or storage service.
+
+Railway's current volume reference states:
+
+- Free/Trial default volume size: 0.5 GB;
+- Free: max 1 volume per project;
+- Trial: max 3 volumes per project;
+- one volume per service;
+- replicas cannot be used with a volume;
+- services with a volume incur a small amount of downtime during redeploy because Railway prevents two deployments from mounting the same volume simultaneously;
+- deleted volumes remain restorable for up to 48 hours before permanent deletion.
+
+This service currently runs one replica and has no volume, so those constraints are compatible.
+
+### First-attach behavior
+
+Railway volumes are runtime mounts and are not overlays. When the new volume is mounted at `/data`, the previous container-ephemeral `/data` contents are not copied into the new volume automatically.
+
+Therefore the first deployment after attachment is expected to start with no snapshot and safely show `snapshot_pending`.
+
+Immediately after the service is healthy, republish the already-sanitized snapshot from the VPS using the existing publisher. That first post-attach push seeds the persistent volume.
+
+### Migration procedure
+
+1. Confirm current public app is healthy and current snapshot is populated.
+2. In the existing Railway project `positioning-engine-cron`, select the existing service `tradingtop-early-access`.
+3. Create one volume attached to this service.
+4. Set mount path exactly to `/data`.
+5. Do not change `TRADINGTOP_SNAPSHOT_PATH`.
+6. Allow Railway to redeploy/restart the service.
+7. Confirm `/healthz` returns HTTP 200.
+8. If `/api/health` reports `snapshot_pending=true`, republish the existing sanitized snapshot from the VPS.
+9. Verify the full public safety/health contract.
+10. Trigger one controlled redeploy of the same service without republishing.
+11. Verify the snapshot remains populated after redeploy.
+12. Only then mark durability v0.1 complete.
+
+### Rollback
+
+If the service fails after the volume is attached:
+
+1. do not modify AI-v1 or S02;
+2. detach/remove the volume from the existing cloud service;
+3. restore the previous service configuration with ephemeral storage;
+4. redeploy the service;
+5. republish the sanitized snapshot from the VPS;
+6. confirm the public beta returns to the previously verified behavior.
+
+If the volume is deleted, Railway documents a restoration window of up to 48 hours before permanent deletion.
+
+### Expected operational tradeoff
+
+A mounted Railway volume improves snapshot durability but changes deploy behavior: future redeploys may have brief downtime because Railway cannot mount the same volume to old and new deployments simultaneously.
+
+For this single-replica research beta, that tradeoff is acceptable for v0.1 and is preferable to temporarily losing the entire snapshot on every redeploy.
+
+## Verification command
+
+After the volume is seeded, use:
+
+`scripts/verify_cloud_snapshot_durability.py`
+
+The script is read-only. It verifies the public cloud contract and prints a compact snapshot identity that can be compared before and after a controlled Railway redeploy.

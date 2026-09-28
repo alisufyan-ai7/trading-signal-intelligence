@@ -740,3 +740,27 @@ Preview activation bundle hashes:
 These are preview fingerprints only; no ACTIVATION record was created and they must not be treated as final ledger-head anchors.
 
 The next required checkpoint is exactly one synthetic non-performance OpenAI provider smoke after configuring `OPENAI_API_KEY` locally. The real AI-v1 ledgers remain unactivated.
+
+
+## AI-v1 synthetic provider smoke — ACCESS BLOCKED 2026-09-28
+
+The first synthetic non-performance OpenAI provider smoke reached the live Responses API but failed before any model inference with:
+
+`HTTP 403 / model_not_found: project does not have access to gpt-5.4-2026-03-05`.
+
+Consequences:
+
+- no AI-v1 trading/performance decision was produced;
+- no AI-v1 performance ledger was written;
+- no activation ledger exists;
+- no shadow scheduler is installed;
+- S02 remains unchanged;
+- the API key itself is functioning well enough to authenticate the request, but this OpenAI project cannot currently use the frozen model snapshot.
+
+Official OpenAI documentation still lists `gpt-5.4-2026-03-05` as a valid GPT-5.4 snapshot. OpenAI project documentation also states that project owners can configure **Model Usage** permissions and rate limits per project, and GPT-5.4's documented API rate-limit table starts at Tier 1 rather than Free.
+
+Therefore this is treated as a **project/model access blocker**, not as an AI-v1 performance result and not yet as evidence that the frozen model must be replaced.
+
+Added `scripts/probe_openai_model_access.py` to query the project's model metadata only (GET /v1/models and GET /v1/models/{model}); it makes no inference request and no ledger write. It probes the configured GPT-5.4 snapshot plus dated GPT-5.5, GPT-5.4 Mini and GPT-5.2 candidates for diagnostic purposes.
+
+Do not activate or change the frozen model until that access diagnostic is reviewed.

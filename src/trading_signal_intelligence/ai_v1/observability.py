@@ -481,6 +481,32 @@ def build_report(
     open_signals = sum(m["open_signals"] for m in markets.values())
     missed = sum(m["missed_inferences"] for m in markets.values())
     errors = sum(m["errors"] for m in markets.values())
+    no_trade = sum(
+        m["counts_by_type"].get("NO_TRADE", 0) for m in markets.values()
+    )
+    rejected = sum(
+        m["counts_by_type"].get("REJECTED_INFERENCE", 0)
+        for m in markets.values()
+    )
+    signals = sum(
+        m["counts_by_type"].get("SIGNAL", 0) for m in markets.values()
+    )
+    attempted_cycles = valid_inferences + errors
+    processed_opportunities = attempted_cycles + missed
+    lifecycle_totals = {
+        "tp1_partial_count": sum(
+            m["lifecycle"]["tp1_partial_count"] for m in markets.values()
+        ),
+        "tp2_exit_count": sum(
+            m["lifecycle"]["tp2_exit_count"] for m in markets.values()
+        ),
+        "stop_exit_count": sum(
+            m["lifecycle"]["stop_exit_count"] for m in markets.values()
+        ),
+        "timeout_exit_count": sum(
+            m["lifecycle"]["timeout_exit_count"] for m in markets.values()
+        ),
+    }
     aggregate_exits = sorted(
         [
             row
@@ -512,11 +538,7 @@ def build_report(
         m["ledger_verification"]["valid"] and m["activation_anchor_match"]
         for m in markets.values()
     )
-    scheduler_ok = (
-        scheduler.get("healthy") is True
-        if scheduler.get("available") is True
-        else True
-    )
+    scheduler_ok = scheduler.get("healthy") is True if include_scheduler else True
     upstream_ok = upstream.get("valid") is True if verify_upstream else True
     healthy = (
         ledgers_valid
@@ -552,8 +574,18 @@ def build_report(
             "valid_inferences": valid_inferences,
             "completed_shadow_trades": completed,
             "open_shadow_signals": open_signals,
+            "signals": signals,
+            "no_trade": no_trade,
+            "rejected_inferences": rejected,
             "missed_inferences": missed,
             "errors": errors,
+            "error_rate_of_attempted_cycles": (
+                errors / attempted_cycles if attempted_cycles else 0.0
+            ),
+            "missed_rate_of_processed_opportunities": (
+                missed / processed_opportunities if processed_opportunities else 0.0
+            ),
+            "lifecycle": lifecycle_totals,
             "performance_observational_only": _performance(aggregate_exits),
         },
         "gates": gates,
@@ -585,8 +617,17 @@ def format_text_report(report: dict[str, Any]) -> str:
         f"  Valid inferences: {totals['valid_inferences']}",
         f"  Completed shadow trades: {totals['completed_shadow_trades']}",
         f"  Open shadow signals: {totals['open_shadow_signals']}",
+        f"  Signals issued: {totals['signals']}",
+        f"  NO_TRADE: {totals['no_trade']}",
+        f"  Rejected inferences: {totals['rejected_inferences']}",
         f"  Missed inferences: {totals['missed_inferences']}",
         f"  Errors: {totals['errors']}",
+        f"  Error rate: {totals['error_rate_of_attempted_cycles']:.6f}",
+        f"  Missed rate: {totals['missed_rate_of_processed_opportunities']:.6f}",
+        f"  TP1 partials: {totals['lifecycle']['tp1_partial_count']}",
+        f"  TP2 exits: {totals['lifecycle']['tp2_exit_count']}",
+        f"  Stop exits: {totals['lifecycle']['stop_exit_count']}",
+        f"  Timeout exits: {totals['lifecycle']['timeout_exit_count']}",
         f"  Cumulative net R (observational): {totals['performance_observational_only']['cumulative_net_r']:.6f}",
         f"  Max drawdown R (observational): {totals['performance_observational_only']['max_drawdown_r']:.6f}",
         "",

@@ -821,3 +821,39 @@ At the current documented GPT-5.4 standard price ($2.50/M input, $15/M output), 
 D033 remains unchanged. The earlier 403 is fully explained by the wrong inherited VPS project key.
 
 AI-v1 is now ready for the **ledger-only activation step**. No performance-bearing AI-v1 inference has occurred yet.
+
+
+## AI-v1 first activation verified; replacement runtime-bound activation required — 2026-09-28
+
+The first ledger-only AI-v1 activation succeeded and its anchor is durably committed at:
+
+`a3c986fb9527d351c0998f072ebfe159b7a8b0ac`
+
+Verified activation heads:
+
+- XAUUSD: `2e9e547276a054416d60ef4a6b6d0bc042fee43c7c0fdd3eec86a2548bbe34b1`
+- USTEC: `571fad6647ca024b5c53e567b3d6e8643e5dc3e938b39e451f5830d6de0ab268`
+- US30: `f508a6b65c9ad5b6775180498ae80f06ffc6d53cc6220fbe275ffd5fcf5e867a`
+
+Git comparison confirmed the anchor commit adds only the activation JSON above the activated repository commit.
+
+No performance-bearing AI-v1 inference has occurred.
+
+During the required pre-scheduler review, one governance completeness issue was identified: the unattended live H1 runtime/scheduler did not yet exist in the repository tree bound by the first activation. The scheduler was therefore **not installed or run**.
+
+A final live runtime is now implemented and frozen before first performance evidence:
+
+- `docs/ai-v1-shadow-runtime.md`
+- `src/trading_signal_intelligence/ai_v1/shadow_runtime.py`
+- `scripts/run_ai_v1_shadow.py`
+- `scripts/verify_ai_v1_runtime.py`
+- `scripts/run_ai_v1_shadow_task.cmd`
+- `scripts/install_ai_v1_shadow_task.ps1`
+- `scripts/supersede_ai_v1_activation.py`
+- `tests/test_ai_v1_shadow_runtime.py`
+
+The activation bundle builder now fingerprints the runtime specification/source/task files. Inference-record provenance was also completed before live collection.
+
+The first activation must now be preserved as a **superseded pre-performance activation**, its activation-only databases archived without deletion, and a replacement AI-v1.0 activation created from the final runtime commit.
+
+This correction is not performance-driven: all three current AI ledgers still contain activation only.

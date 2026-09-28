@@ -150,3 +150,67 @@ def test_owner_token_is_separate_bearer_secret() -> None:
     assert owner_token_valid("Bearer ingest-secret", "owner-secret") is False
     assert owner_token_valid(None, "owner-secret") is False
     assert owner_token_valid("Bearer owner-secret", None) is False
+
+
+
+def test_cloud_feedback_routes_keep_owner_reads_private() -> None:
+    from trading_signal_intelligence.product import cloud_app
+
+    methods_by_path = {
+        route.path: set(route.methods or [])
+        for route in cloud_app.app.routes
+        if hasattr(route, "methods")
+    }
+
+    assert "POST" in methods_by_path["/api/feedback"]
+    assert "GET" not in methods_by_path["/api/feedback"]
+    assert "GET" in methods_by_path["/api/internal/feedback/summary"]
+    assert "GET" in methods_by_path["/api/internal/feedback/export"]
+
+
+def test_feedback_owner_access_fails_closed(monkeypatch) -> None:
+    from fastapi import HTTPException
+    from trading_signal_intelligence.product import cloud_app
+
+    monkeypatch.delenv("SIGNALPROOF_FEEDBACK_OWNER_TOKEN", raising=False)
+    with pytest.raises(HTTPException) as missing:
+        cloud_app._require_feedback_owner(None)
+    assert missing.value.status_code == 503
+
+    monkeypatch.setenv("SIGNALPROOF_FEEDBACK_OWNER_TOKEN", "owner-secret")
+    with pytest.raises(HTTPException) as invalid:
+        cloud_app._require_feedback_owner("Bearer wrong-secret")
+    assert invalid.value.status_code == 401
+
+    cloud_app._require_feedback_owner("Bearer owner-secret")
+
+
+def test_cloud_feedback_submission_and_owner_summary(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    import asyncio
+
+    from trading_signal_intelligence.product import cloud_app
+
+    class RequestStub:
+        async def json(self):
+            return dict(GOOD)
+
+    path = tmp_path / "feedback.sqlite"
+    monkeypatch.setenv("SIGNALPROOF_FEEDBACK_DB_PATH", str(path))
+    monkeypatch.setenv("SIGNALPROOF_FEEDBACK_OWNER_TOKEN", "owner-secret")
+
+    result = asyncio.run(cloud_app.create_feedback(RequestStub()))
+    assert result["accepted"] is True
+    assert result["retention_months"] == 12
+
+    summary = cloud_app.owner_feedback_summary("Bearer owner-secret")
+    assert summary["submission_count"] == 1
+
+    exported = cloud_app.owner_feedback_export(
+        format="json",
+        authorization="Bearer owner-secret",
+    )
+    assert len(exported["submissions"]) == 1
+    assert exported["submissions"][0]["submission_id"] == result["submission_id"]

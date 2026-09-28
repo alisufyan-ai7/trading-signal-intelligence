@@ -15,6 +15,7 @@ from trading_signal_intelligence.ai_v1.inference import (
     run_inference,
 )
 from trading_signal_intelligence.ai_v1.ledger import AILedger
+from trading_signal_intelligence.ai_v1.openai_responses import OpenAIResponsesAdapter
 from trading_signal_intelligence.ai_v1.signals import (
     append_signal_from_approved_inference,
     evaluate_signal,
@@ -27,6 +28,7 @@ __all__ = [
     "FeatureSnapshot",
     "FeatureSnapshotError",
     "InferenceResult",
+    "OpenAIResponsesAdapter",
     "ReasoningModelAdapter",
     "append_signal_from_approved_inference",
     "build_feature_snapshot",

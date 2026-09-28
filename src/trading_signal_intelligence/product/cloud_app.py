@@ -64,9 +64,9 @@ def _market_rows(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 app = FastAPI(
-    title="TradingTop Early Access Cloud",
+    title="SignalProof AI Research Beta Cloud",
     version="0.3.0",
-    description="Public derived-signal surface fed by the private Windows collector.",
+    description="SignalProof AI public research-beta surface fed by the private Windows collector.",
 )
 
 app.mount("/static", StaticFiles(directory=WEB), name="static")
@@ -90,7 +90,7 @@ def health() -> dict:
         return {
             "ok": False,
             "launch_ready": False,
-            "product": "TradingTop Early Access",
+            "product": "SignalProof AI Research Beta",
             "launch_mode": "research_beta",
             "live_signal_markets": 3,
             "ready_collector_count": 0,

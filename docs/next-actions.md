@@ -43,7 +43,7 @@ Current work order:
 2. **DONE / VPS VERIFIED:** read-only `scripts/report_ai_v1_progress.py` observability layer;
 3. **DONE / VPS VERIFIED:** mutation-safety/tamper/gate tests and byte-identical live-ledger proof;
 4. **DONE / CLOUD VERIFIED:** AI Insights UI backed by the sanitized read-only AI-v1 export; canonical record: `docs/ai-insights-ui.md`;
-5. **NEXT:** Cloud Snapshot Durability v0.1 — preserve the latest sanitized snapshot across Railway redeploy/restart events; canonical plan: `docs/cloud-snapshot-durability-v0.1.md`, GitHub Issue #6;
+5. **IN PROGRESS:** Cloud Snapshot Durability v0.1 — migration/rollback design + verifier committed; **NEXT:** attach one Railway volume to the existing service at `/data`, seed once, then prove persistence through a controlled redeploy; canonical plan: `docs/cloud-snapshot-durability-v0.1.md`, GitHub Issue #6;
 6. continue non-decision product work while evidence accumulates;
 7. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 

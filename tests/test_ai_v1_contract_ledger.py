@@ -121,7 +121,7 @@ def test_ai_ledger_hash_chain_and_append_only(tmp_path) -> None:
     assert ledger.verify()["valid"] is True
     assert ledger.counts_by_type() == {"ACTIVATION": 1, "INFERENCE": 1}
 
-    with sqlite3.connect(ledger.path) as connection:
+    with closing(sqlite3.connect(ledger.path)) as connection:
         with pytest.raises(sqlite3.DatabaseError):
             connection.execute(
                 "UPDATE ai_records SET entity_id='changed' WHERE sequence=1"

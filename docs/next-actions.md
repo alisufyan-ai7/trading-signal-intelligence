@@ -117,3 +117,40 @@ Do not modify or stop the active S02 forward ledgers. They become the benchmark/
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
 Do not start AI-v1 performance collection until the exact model/provider/prompt fingerprint is committed and an activation record is created.
+
+
+## Immediate verification — AI-v1 foundation
+
+On the Windows VPS, pull the latest repository and run:
+
+```powershell
+git pull
+
+.\.venv\Scripts\python.exe scripts\smoke_ai_v1_foundation.py
+```
+
+Expected key output:
+
+```text
+"ai_v1_foundation_smoke": "PASS"
+"provider_call_made": false
+"ledger_verified": true
+"s02_database_hashes_unchanged": true
+"broker_execution_enabled": false
+```
+
+Then, if pytest is available:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q tests\test_ai_v1_features.py tests\test_ai_v1_contract_ledger.py tests\test_ai_v1_inference.py tests\test_ai_v1_engine.py tests\test_ai_v1_signals.py
+```
+
+Optional read-only live feature probe:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\build_ai_v1_feature_snapshot.py --symbol XAUUSD
+```
+
+This probe makes no AI call and no trade/broker mutation.
+
+After these pass, the next blocked step is to select and freeze the exact AI provider/model + provider-specific inference parameters, then implement that concrete adapter and create the activation bundle.

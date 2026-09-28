@@ -1,0 +1,188 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from typing import Any
+
+from trading_signal_intelligence.ai_v1.features import FeatureSnapshot
+from trading_signal_intelligence.ai_v1.guardrails import GuardResult, evaluate_guard
+from trading_signal_intelligence.ai_v1.inference import ReasoningModelAdapter, run_inference
+from trading_signal_intelligence.ai_v1.ledger import AILedger
+
+
+@dataclass(frozen=True, slots=True)
+class CycleResult:
+    entity_id: str
+    status: str
+    inference_record: dict[str, Any] | None
+    terminal_record: dict[str, Any] | None
+    guard_result: GuardResult | None
+
+
+def cycle_entity_id(snapshot: FeatureSnapshot) -> str:
+    symbol = str(snapshot.payload["source_symbol"])
+    close_utc = str(snapshot.payload["source_bar_close_utc"])
+    return f"AI-v1.0:{symbol}:{close_utc}"
+
+
+def _already_processed(ledger: AILedger, entity_id: str) -> bool:
+    return any(
+        ledger.has(record_type=record_type, entity_id=entity_id)
+        for record_type in (
+            "INFERENCE",
+            "NO_TRADE",
+            "REJECTED_INFERENCE",
+            "SIGNAL",
+            "MISSED_INFERENCE",
+            "ERROR",
+        )
+    )
+
+
+def process_inference_cycle(
+    *,
+    ledger: AILedger,
+    adapter: ReasoningModelAdapter,
+    feature_snapshot: FeatureSnapshot,
+    policy_text: str,
+    decision_schema: dict[str, Any],
+    guardrails: dict[str, Any],
+    active_signal_exists: bool,
+    recorded_at_utc: datetime | None = None,
+) -> CycleResult:
+    now = recorded_at_utc or datetime.now(timezone.utc)
+    if now.tzinfo is None:
+        raise ValueError("recorded_at_utc must be timezone-aware")
+
+    entity_id = cycle_entity_id(feature_snapshot)
+    if _already_processed(ledger, entity_id):
+        raise RuntimeError(f"AI-v1 cycle already processed: {entity_id}")
+
+    source_close = datetime.fromisoformat(
+        str(feature_snapshot.payload["source_bar_close_utc"]).replace("Z", "+00:00")
+    )
+    age_seconds = float(feature_snapshot.payload["data_age_seconds"])
+    max_age = float(guardrails["max_data_age_seconds"])
+
+    if age_seconds < 0 or age_seconds > max_age:
+        missed = ledger.append(
+            record_type="MISSED_INFERENCE",
+            entity_id=entity_id,
+            effective_at_utc=source_close,
+            recorded_at_utc=now,
+            payload={
+                "protocol_version": "AI-v1.0",
+                "source_symbol": feature_snapshot.payload["source_symbol"],
+                "source_bar_close_utc": feature_snapshot.payload["source_bar_close_utc"],
+                "detected_at_utc": now.astimezone(timezone.utc).isoformat(),
+                "data_age_seconds": age_seconds,
+                "max_data_age_seconds": max_age,
+                "reason": "stale_before_provider_call",
+                "feature_snapshot_sha256": feature_snapshot.sha256,
+                "provider_call_made": False,
+            },
+        )
+        return CycleResult(
+            entity_id=entity_id,
+            status="MISSED_INFERENCE",
+            inference_record=None,
+            terminal_record=missed,
+            guard_result=None,
+        )
+
+    inference = run_inference(
+        adapter=adapter,
+        feature_snapshot=feature_snapshot,
+        policy_text=policy_text,
+        decision_schema=decision_schema,
+    )
+    guard = evaluate_guard(
+        decision_payload=inference.decision,
+        feature_snapshot=feature_snapshot.payload,
+        guardrails=guardrails,
+        active_signal_exists=active_signal_exists,
+    )
+
+    inference_record = ledger.append(
+        record_type="INFERENCE",
+        entity_id=entity_id,
+        effective_at_utc=source_close,
+        recorded_at_utc=now,
+        payload={
+            "protocol_version": "AI-v1.0",
+            "source_symbol": feature_snapshot.payload["source_symbol"],
+            "source_bar_open_utc": feature_snapshot.payload["source_bar_open_utc"],
+            "source_bar_close_utc": feature_snapshot.payload["source_bar_close_utc"],
+            "inference_started_utc": inference.started_at_utc.isoformat(),
+            "inference_completed_utc": inference.completed_at_utc.isoformat(),
+            "latency_ms": inference.latency_ms,
+            "feature_snapshot_sha256": feature_snapshot.sha256,
+            "provider": inference.provider,
+            "model_id": inference.model_id,
+            "model_parameter_fingerprint": inference.model_parameter_fingerprint,
+            "raw_structured_response": inference.raw_response,
+            "normalized_decision": inference.decision,
+            "metadata": inference.metadata,
+            "guard_publishable": guard.publishable,
+            "guard_reasons": list(guard.reasons),
+            "estimated_cost_r": guard.estimated_cost_r,
+        },
+    )
+
+    if inference.decision["decision"] == "NO_TRADE":
+        terminal = ledger.append(
+            record_type="NO_TRADE",
+            entity_id=entity_id,
+            effective_at_utc=source_close,
+            recorded_at_utc=now,
+            payload={
+                "protocol_version": "AI-v1.0",
+                "source_symbol": feature_snapshot.payload["source_symbol"],
+                "feature_snapshot_sha256": feature_snapshot.sha256,
+                "raw_confidence": inference.decision["raw_confidence"],
+                "regime": inference.decision["regime"],
+                "rationale": inference.decision["rationale"],
+                "supporting_factors": inference.decision["supporting_factors"],
+                "risk_factors": inference.decision["risk_factors"],
+                "originating_inference_record_hash": inference_record["record_hash"],
+            },
+        )
+        return CycleResult(
+            entity_id=entity_id,
+            status="NO_TRADE",
+            inference_record=inference_record,
+            terminal_record=terminal,
+            guard_result=guard,
+        )
+
+    if not guard.publishable:
+        terminal = ledger.append(
+            record_type="REJECTED_INFERENCE",
+            entity_id=entity_id,
+            effective_at_utc=source_close,
+            recorded_at_utc=now,
+            payload={
+                "protocol_version": "AI-v1.0",
+                "source_symbol": feature_snapshot.payload["source_symbol"],
+                "feature_snapshot_sha256": feature_snapshot.sha256,
+                "normalized_proposal": inference.decision,
+                "rejection_reasons": list(guard.reasons),
+                "estimated_cost_r": guard.estimated_cost_r,
+                "originating_inference_record_hash": inference_record["record_hash"],
+            },
+        )
+        return CycleResult(
+            entity_id=entity_id,
+            status="REJECTED_INFERENCE",
+            inference_record=inference_record,
+            terminal_record=terminal,
+            guard_result=guard,
+        )
+
+    return CycleResult(
+        entity_id=entity_id,
+        status="APPROVED_PENDING_ENTRY",
+        inference_record=inference_record,
+        terminal_record=None,
+        guard_result=guard,
+    )

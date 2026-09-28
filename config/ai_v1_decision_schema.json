@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://signalproof.local/schemas/ai-v1-decision.json",
+  "title": "SignalProof AI-v1 model decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "decision",
+    "raw_confidence",
+    "regime",
+    "stop_atr",
+    "tp1_r",
+    "tp2_r",
+    "rationale",
+    "supporting_factors",
+    "risk_factors"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": "AI-v1.0"
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["BUY", "SELL", "NO_TRADE"]
+    },
+    "raw_confidence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Uncalibrated model confidence score; not a probability."
+    },
+    "regime": {
+      "type": "string",
+      "enum": [
+        "TREND_UP",
+        "TREND_DOWN",
+        "RANGE",
+        "VOLATILE",
+        "MIXED",
+        "UNCLEAR"
+      ]
+    },
+    "stop_atr": {
+      "type": ["number", "null"],
+      "minimum": 1.0,
+      "maximum": 3.0
+    },
+    "tp1_r": {
+      "type": ["number", "null"],
+      "minimum": 0.75,
+      "maximum": 2.0
+    },
+    "tp2_r": {
+      "type": ["number", "null"],
+      "minimum": 1.5,
+      "maximum": 4.0
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 800
+    },
+    "supporting_factors": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      }
+    },
+    "risk_factors": {
+      "type": "array",
+      "maxItems": 8,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 100
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "NO_TRADE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "stop_atr": {
+            "type": "null"
+          },
+          "tp1_r": {
+            "type": "null"
+          },
+          "tp2_r": {
+            "type": "null"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "stop_atr": {
+            "type": "number"
+          },
+          "tp1_r": {
+            "type": "number"
+          },
+          "tp2_r": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -288,3 +288,40 @@ If the probe shows `gpt-5.4-2026-03-05` accessible under the correct project, re
 ```
 
 Do not run `scripts\activate_ai_v1.py` until the corrected-project provider smoke has been reviewed.
+
+
+## Next checkpoint — activate and anchor AI-v1 shadow ledgers
+
+Correct-project model access and the synthetic provider smoke are now verified.
+
+The next allowed action is **ledger-only activation**. This creates exactly three new AI-v1 append-only SQLite ledgers and one local activation-anchor JSON. It makes **no OpenAI inference call**, enables no broker execution, and installs no scheduler.
+
+Run on the VPS:
+
+```powershell
+git pull
+
+.\.venv\Scripts\python.exe scripts\activate_ai_v1.py --confirm ACTIVATE-SHADOW-LEDGERS
+```
+
+Expected summary must include:
+
+- `activation = PASS`;
+- `provider_call_made = false`;
+- `broker_execution_enabled = false`;
+- `scheduler_installed = false`;
+- one generated `research/forward/AI-v1-activation-*.json`;
+- three AI ledger head hashes.
+
+After the script passes, **do not run any AI shadow scheduler yet**.
+
+Commit only the generated activation anchor:
+
+```powershell
+git status --short
+git add research/forward/AI-v1-activation-*.json
+git commit -m "Anchor AI-v1 shadow activation"
+git push
+```
+
+Then provide the activation output / commit SHA for review. The scheduler is authorized only after the committed anchor is verified against the three local ledger heads.

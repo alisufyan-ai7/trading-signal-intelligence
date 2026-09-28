@@ -15,6 +15,10 @@ from trading_signal_intelligence.ai_v1.inference import (
     run_inference,
 )
 from trading_signal_intelligence.ai_v1.ledger import AILedger
+from trading_signal_intelligence.ai_v1.signals import (
+    append_signal_from_approved_inference,
+    evaluate_signal,
+)
 
 __all__ = [
     "AILedger",
@@ -24,7 +28,9 @@ __all__ = [
     "FeatureSnapshotError",
     "InferenceResult",
     "ReasoningModelAdapter",
+    "append_signal_from_approved_inference",
     "build_feature_snapshot",
+    "evaluate_signal",
     "process_inference_cycle",
     "run_inference",
     "snapshot_sha256",

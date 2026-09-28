@@ -200,17 +200,41 @@ def test_public_ai_insights_are_sanitized_and_read_only(tmp_path) -> None:
     assert payload["shadow_signals"][0]["status"] == "active"
     assert payload["shadow_signals"][0]["entry"] == 3775.0
 
-    serialized = json.dumps(payload, sort_keys=True)
-    for forbidden in (
+    public_keys: set[str] = set()
+
+    def collect_keys(value: object) -> None:
+        if isinstance(value, dict):
+            for key, item in value.items():
+                public_keys.add(str(key))
+                collect_keys(item)
+        elif isinstance(value, list):
+            for item in value:
+                collect_keys(item)
+
+    collect_keys(payload)
+
+    forbidden_keys = {
         "feature_snapshot",
+        "feature_snapshot_sha256",
         "raw_structured_response",
         "provider_request_id",
+        "metadata",
+    }
+    assert public_keys.isdisjoint(forbidden_keys), public_keys & forbidden_keys
+
+    # Safety declaration keys are intentionally public and must not trigger the
+    # exact-key leakage checks above.
+    assert "raw_feature_snapshots_included" in public_keys
+    assert "provider_request_metadata_included" in public_keys
+
+    serialized = json.dumps(payload, sort_keys=True)
+    for private_seed_value in (
         "req_private",
         "secret_derived_feature",
         "provider-response",
-        '"metadata"',
+        "feature-secret-hash",
     ):
-        assert forbidden not in serialized
+        assert private_seed_value not in serialized
 
     assert payload["raw_market_data_included"] is False
     assert payload["raw_feature_snapshots_included"] is False

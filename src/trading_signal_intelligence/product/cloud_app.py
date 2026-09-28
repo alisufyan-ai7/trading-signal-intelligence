@@ -81,7 +81,7 @@ def _market_rows(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
 
 app = FastAPI(
     title="SignalProof AI Research Beta Cloud",
-    version="0.3.0",
+    version="0.4.0",
     description="SignalProof AI public research-beta surface fed by the private Windows collector.",
 )
 

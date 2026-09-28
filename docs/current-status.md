@@ -1,6 +1,6 @@
 # Current Status
 
-**Phase:** AI-v1 forward shadow collection active; cloud durability verified; early-access feedback/customer discovery next  
+**Phase:** AI-v1 forward shadow collection active; feedback infrastructure verified; first-cohort G4 evidence next  
 **Date:** 2026-09-28
 
 ## Infrastructure
@@ -26,8 +26,9 @@
 - AI-v1 observability v0.1: COMPLETE / VPS VERIFIED / READ-ONLY
 - AI-v1 AI Insights UI: DONE / VPS + CLOUD VERIFIED
 - Cloud snapshot durability v0.1: DONE / CONTROLLED REDEPLOY VERIFIED / ISSUE #6
-- Early Access feedback & customer discovery v0.1: IN PROGRESS / IMPLEMENTED / LIVE VERIFICATION PENDING / ISSUE #7
-- Organic acquisition & SEO v0.1: DEFERRED / AFTER ISSUE #7
+- Early Access feedback & customer discovery v0.1: DONE / LIVE + CONTROLLED REDEPLOY VERIFIED / ISSUE #7
+- First cohort G4 customer-value evidence v0.1: NEXT / REAL-USER EVIDENCE / ISSUE #9
+- Organic acquisition & SEO v0.1: DEFERRED / AFTER INITIAL REAL-USER EVIDENCE FROM ISSUE #9
 
 ## AI-v1 active forward-collection plan
 

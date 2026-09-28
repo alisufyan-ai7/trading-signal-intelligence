@@ -1,6 +1,6 @@
 # Current Status
 
-**Phase:** AI-v1 forward shadow collection active; AI Insights cloud-verified; cloud snapshot durability next  
+**Phase:** AI-v1 forward shadow collection active; cloud durability verified; early-access feedback/customer discovery next  
 **Date:** 2026-09-28
 
 ## Infrastructure
@@ -25,7 +25,8 @@
 - AI-v1 broker execution: DISABLED
 - AI-v1 observability v0.1: COMPLETE / VPS VERIFIED / READ-ONLY
 - AI-v1 AI Insights UI: DONE / VPS + CLOUD VERIFIED
-- Cloud snapshot durability v0.1: IN PROGRESS / VOLUME ATTACHED / SEED + REDEPLOY VERIFICATION PENDING / ISSUE #6
+- Cloud snapshot durability v0.1: DONE / CONTROLLED REDEPLOY VERIFIED / ISSUE #6
+- Early Access feedback & customer discovery v0.1: NEXT / G4 START
 
 ## AI-v1 active forward-collection plan
 

@@ -15,7 +15,7 @@ from trading_signal_intelligence.ai_v1.activation import (
     require_provider_key,
 )
 from trading_signal_intelligence.ai_v1.ledger import AILedger
-from trading_signal_intelligence.ai_v1.local_env import load_local_env
+from trading_signal_intelligence.ai_v1.local_env import load_project_env
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -27,7 +27,7 @@ DB_PATHS = {
 
 
 def main() -> None:
-    load_local_env(ROOT / ".env")
+    load_project_env(ROOT / ".env")
     parser = argparse.ArgumentParser(
         description=(
             "Create AI-v1 ACTIVATION ledgers only. "

@@ -1,6 +1,6 @@
 # Current Next Actions
 
-_Last updated: 2026-09-27_
+_Last updated: 2026-09-28_
 
 ## Public beta launch state
 
@@ -27,17 +27,25 @@ Verified:
 
 Telegram remains optional and disabled.
 
-## Immediate product work
+## Immediate product work — AI-v1 implementation
 
-The infrastructure/deployment track is no longer the launch bottleneck.
+The owner has formally approved the AI-first pivot. Feedback/onboarding work is no longer the primary engineering task.
 
-Next priorities:
+AI-0 and AI-1 are now complete at the governance/specification level.
 
-1. add lightweight user feedback / willingness-to-pay capture;
-2. decide the first external user cohort and onboarding message;
-3. add basic usage/activation measurement if it can be done without slowing launch;
-4. optionally enable Telegram alerts for future SIGNAL/EXIT events;
-5. continue immutable forward validation unchanged.
+Next implementation order:
+
+1. implement the frozen deterministic AI feature snapshot builder;
+2. implement the provider-neutral reasoning-model adapter;
+3. select and freeze the exact provider/model ID, inference parameters and prompt/policy **before first performance-bearing inference**;
+4. implement JSON-schema validation and the frozen deterministic publication guard;
+5. implement a separate append-only AI-v1 inference/lifecycle ledger;
+6. implement the frozen next-H1-open / TP1 / TP2 / stop / timeout evaluator;
+7. add activation fingerprinting and tests proving S02 databases are untouched;
+8. activate the shadow scheduler only after the activation checklist passes;
+9. build the AI Insights UI against the shadow ledger after the pipeline is operational.
+
+Current public S02 signals remain rule-based and must not be relabeled as AI.
 
 ## Forward validation
 
@@ -81,11 +89,11 @@ See `docs/tradingtop-authenticated-teardown-and-product-gap-2026-09-28.md`.
 
 The authenticated research changes the priority order if the intended destination remains a TradingTop-like AI intelligence product.
 
-Proposed immediate order, pending owner approval:
+Approved immediate order:
 
-1. choose a distinct product name;
-2. freeze an AI-v1 structured signal contract + evaluation protocol;
-3. build AI-v1 as a shadow engine beside S02 on XAUUSD/USTEC/US30;
+1. **DONE:** working product name = SignalProof AI;
+2. **DONE:** AI-v1 structured signal contract + evaluation protocol frozen;
+3. **NEXT:** build AI-v1 as a shadow engine beside S02 on XAUUSD/USTEC/US30;
 4. add deterministic publish guards and immutable AI inference logging;
 5. add an AI Insights signal/reasoning/log UI;
 6. only then prioritize accounts, compute credits, paid plans and user feedback;
@@ -93,3 +101,14 @@ Proposed immediate order, pending owner approval:
 8. broker-connected auto trading last.
 
 Do not modify or stop the active S02 forward ledgers. They become the benchmark/control for AI-v1.
+
+
+## AI-0 / AI-1 frozen references
+
+- `docs/ai-0-product-naming.md`
+- `docs/ai-v1-architecture.md`
+- `config/ai_v1_decision_schema.json`
+- `config/ai_v1_guardrails.json`
+- `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
+
+Do not start AI-v1 performance collection until the exact model/provider/prompt fingerprint is committed and an activation record is created.

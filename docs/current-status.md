@@ -592,3 +592,48 @@ Authorized next work:
 8. shadow scheduler.
 
 Activation remains blocked until all frozen preconditions pass.
+
+
+## AI-v1 foundation implementation — committed 2026-09-28
+
+The next engineering milestone is now implemented in code, but **not activated**.
+
+Implemented:
+
+- deterministic AI-v1 H1/H4 feature snapshot builder;
+- canonical feature JSON + SHA-256;
+- provider-neutral reasoning-model adapter contract;
+- strict BUY/SELL/NO_TRADE decision validation;
+- deterministic publication guard;
+- isolated append-only AI-v1 hash-chained ledger;
+- inference-cycle orchestration for INFERENCE / NO_TRADE / REJECTED_INFERENCE / MISSED_INFERENCE;
+- deterministic next-H1-open signal construction;
+- TP1/TP2/STOP/TIMEOUT shadow lifecycle evaluator;
+- conservative same-bar stop-first handling;
+- 50/50 TP1/TP2 cost/R accounting;
+- read-only live MT5 feature-snapshot probe;
+- synthetic foundation smoke script that also verifies the three S02 database hashes remain unchanged.
+
+New implementation package:
+
+`src/trading_signal_intelligence/ai_v1/`
+
+New scripts:
+
+- `scripts/smoke_ai_v1_foundation.py`
+- `scripts/build_ai_v1_feature_snapshot.py`
+
+New tests:
+
+- `tests/test_ai_v1_features.py`
+- `tests/test_ai_v1_contract_ledger.py`
+- `tests/test_ai_v1_inference.py`
+- `tests/test_ai_v1_engine.py`
+- `tests/test_ai_v1_signals.py`
+
+No external AI provider call has been made.
+No AI-v1 database has been activated.
+No broker execution has been enabled.
+The exact provider/model ID is still intentionally unselected and remains an activation blocker.
+
+**Required verification before continuing:** run the AI-v1 foundation smoke/tests on the Windows VPS after pulling the latest repository state.

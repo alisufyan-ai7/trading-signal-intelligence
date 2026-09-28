@@ -18,6 +18,9 @@ PROTOCOL_VERSION = "AI-v1.0"
 MARKETS = ("XAUUSD", "USTEC", "US30")
 
 ARTIFACT_PATHS = {
+    "provider_selection": "docs/ai-v1-provider-selection.md",
+    "architecture": "docs/ai-v1-architecture.md",
+    "ledger_spec": "docs/ai-v1-ledger-spec.md",
     "policy": "config/ai_v1_policy.txt",
     "feature_definitions": "docs/ai-v1-feature-definitions.md",
     "feature_schema": "config/ai_v1_feature_schema.json",
@@ -25,7 +28,6 @@ ARTIFACT_PATHS = {
     "guardrails": "config/ai_v1_guardrails.json",
     "provider_config": "config/ai_v1_provider.json",
     "provider_response_schema": "config/ai_v1_openai_response_schema.json",
-    "ledger_spec": "docs/ai-v1-ledger-spec.md",
     "activation_schema": "config/ai_v1_activation_schema.json",
     "feature_builder_source": "src/trading_signal_intelligence/ai_v1/features.py",
     "inference_adapter_source": (
@@ -39,6 +41,7 @@ ARTIFACT_PATHS = {
     "ai_ledger_source": "src/trading_signal_intelligence/ai_v1/ledger.py",
     "engine_source": "src/trading_signal_intelligence/ai_v1/engine.py",
     "lifecycle_evaluator_source": "src/trading_signal_intelligence/ai_v1/signals.py",
+    "activation_builder_source": "src/trading_signal_intelligence/ai_v1/activation.py",
 }
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")

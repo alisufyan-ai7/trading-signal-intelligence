@@ -8,7 +8,7 @@ Can a structured AI reasoning model, operating only on causally available engine
 
 ## Pre-registration timing
 
-This document, `docs/ai-v1-architecture.md`, `config/ai_v1_decision_schema.json` and `config/ai_v1_guardrails.json` are committed **before the first AI-v1 performance-bearing shadow inference is activated**.
+This document, `docs/ai-v1-architecture.md`, `docs/ai-v1-feature-definitions.md`, `config/ai_v1_feature_schema.json`, `config/ai_v1_policy.txt`, `config/ai_v1_decision_schema.json` and `config/ai_v1_guardrails.json` are committed **before the first AI-v1 performance-bearing shadow inference is activated**.
 
 No AI-v1 result has been observed at the time of this preregistration.
 
@@ -36,7 +36,7 @@ The AI may output:
 - SELL
 - NO_TRADE
 
-The exact schema is `config/ai_v1_decision_schema.json`.
+The exact model-output schema is `config/ai_v1_decision_schema.json`. The exact input-feature schema is `config/ai_v1_feature_schema.json`; feature formulas are frozen in `docs/ai-v1-feature-definitions.md`; the provider-neutral reasoning policy is `config/ai_v1_policy.txt`.
 
 ## Frozen execution evaluation
 

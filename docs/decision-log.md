@@ -468,3 +468,19 @@ Before changing D033:
 The diagnostic candidate list is operational, not a ranking and not authorization to use a fallback.
 
 No AI-v1 activation/performance evidence exists yet, so a provider substitution at this stage remains methodologically admissible if fully recorded before activation.
+
+
+## 2026-09-28 — D036: Project-local `.env` overrides inherited machine credentials for AI-v1
+
+**Observed:** The Windows VPS already had an `OPENAI_API_KEY` environment variable belonging to another OpenAI project. AI-v1's earlier local-env loader used non-overriding semantics, so the inherited Windows value took precedence over this repository's `.env`, causing the provider request to authenticate against the wrong OpenAI project.
+
+**Decision:** For SignalProof AI-v1 runtime/provider scripts, project-scoped credentials loaded from this repository's ignored local `.env` must override inherited process/user/system environment variables with the same name.
+
+**Implementation:**
+
+- added `load_project_env(...)` with explicit override semantics;
+- provider smoke, model-access probe and guarded activation scripts now use it;
+- `.env` remains ignored by Git;
+- added a regression test proving a project-local `OPENAI_API_KEY` replaces an inherited different-project value.
+
+**Reason:** This repository is intentionally isolated. Credentials for unrelated projects must never silently influence its provider identity.

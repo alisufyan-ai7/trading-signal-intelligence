@@ -4,6 +4,7 @@ import hashlib
 import json
 import sqlite3
 import tempfile
+from contextlib import closing
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
@@ -183,7 +184,7 @@ def main() -> None:
         if not verification["valid"]:
             raise RuntimeError(f"AI ledger verification failed: {verification}")
 
-        with sqlite3.connect(ledger.path) as connection:
+        with closing(sqlite3.connect(ledger.path)) as connection:
             try:
                 connection.execute(
                     "UPDATE ai_records SET entity_id='changed' WHERE sequence=1"

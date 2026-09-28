@@ -115,9 +115,8 @@ def main() -> None:
             + "-SUPERSEDED.json"
         )
     )
-    output_path.write_text(
-        json.dumps(supersession, indent=2) + "\n",
-        encoding="utf-8",
+    output_path.write_bytes(
+        (json.dumps(supersession, indent=2) + "\n").encode("utf-8")
     )
 
     print(

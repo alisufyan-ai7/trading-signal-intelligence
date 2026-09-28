@@ -5,7 +5,8 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from trading_signal_intelligence.product.app import health
+from trading_signal_intelligence.product.ai_insights import build_public_ai_insights
+from trading_signal_intelligence.product.app import ROOT, health
 from trading_signal_intelligence.product.catalog import market_statuses
 from trading_signal_intelligence.product.evidence import evidence_summary
 from trading_signal_intelligence.product.public_signals import (
@@ -41,12 +42,30 @@ def main() -> None:
             row["operational_event_counts"] = operational_event_counts(market)
         live_payload.append(row)
 
+    try:
+        ai_v1 = build_public_ai_insights(ROOT)
+    except Exception as exc:
+        ai_v1 = {
+            "schema_version": 1,
+            "protocol_version": "AI-v1.0",
+            "mode": "SHADOW_ONLY",
+            "status": "temporarily_unavailable",
+            "customer_notice": "AI-v1 shadow insights are temporarily unavailable.",
+            "health": {"healthy": False},
+            "error_class": type(exc).__name__,
+            "raw_market_data_included": False,
+            "raw_feature_snapshots_included": False,
+            "provider_request_metadata_included": False,
+            "hidden_reasoning_included": False,
+        }
+
     payload = {
         "schema_version": 1,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "health": health(),
         "evidence": evidence_summary(),
         "markets": live_payload,
+        "ai_v1": ai_v1,
         "raw_market_data_included": False,
     }
 
@@ -57,6 +76,7 @@ def main() -> None:
         "output": str(output),
         "generated_at_utc": payload["generated_at_utc"],
         "live_signal_markets": payload["health"]["live_signal_markets"],
+        "ai_v1_status": ai_v1.get("status"),
         "raw_market_data_included": False,
     }, indent=2))
 

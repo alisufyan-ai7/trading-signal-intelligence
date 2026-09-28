@@ -27,7 +27,7 @@ Verified:
 
 Telegram remains optional and disabled.
 
-## Immediate product work — Cloud snapshot durability v0.1
+## Immediate product work — Early Access feedback & customer discovery v0.1
 
 AI-v1.0 is now activated and the hourly shadow scheduler is collecting immutable forward evidence on XAUUSD, USTEC and US30.
 
@@ -43,8 +43,8 @@ Current work order:
 2. **DONE / VPS VERIFIED:** read-only `scripts/report_ai_v1_progress.py` observability layer;
 3. **DONE / VPS VERIFIED:** mutation-safety/tamper/gate tests and byte-identical live-ledger proof;
 4. **DONE / CLOUD VERIFIED:** AI Insights UI backed by the sanitized read-only AI-v1 export; canonical record: `docs/ai-insights-ui.md`;
-5. **IN PROGRESS:** Cloud Snapshot Durability v0.1 — Railway volume attached at `/data`; **NEXT:** seed the volume once, verify the public contract, then prove persistence through a controlled redeploy without republishing; canonical plan: `docs/cloud-snapshot-durability-v0.1.md`, GitHub Issue #6;
-6. continue non-decision product work while evidence accumulates;
+5. **DONE / REDEPLOY VERIFIED:** Cloud Snapshot Durability v0.1 — persistent `/data` volume proven across controlled redeploy; canonical record: `docs/cloud-snapshot-durability-v0.1.md`, GitHub Issue #6;
+6. **NEXT:** Early Access Feedback & Customer Discovery v0.1 — durable feedback capture, comprehension questions, alert preference, willingness-to-pay evidence, then first-cohort onboarding; GitHub Issue #7;
 7. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
@@ -61,11 +61,7 @@ USTEC and US30 remain secondary forward collectors.
 
 ## Persistence caveat
 
-There is still no persistent Railway volume.
-
-A Railway restart/redeploy can temporarily clear the cloud snapshot until the Windows publisher republishes it. This behavior was reproduced during AI Insights deployment and recovered by republishing the already-validated snapshot.
-
-Fixing this is now the next engineering milestone: `docs/cloud-snapshot-durability-v0.1.md` / Issue #6.
+Railway now has a persistent 500 MB volume mounted at `/data` on the existing production service. A controlled redeploy completed without republishing, and the exact sanitized snapshot identity remained available afterward. Durability v0.1 is complete.
 
 ## TradingTop/Elirox audit checkpoint — 2026-09-27 UTC
 

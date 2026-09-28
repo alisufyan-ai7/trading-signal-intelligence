@@ -174,3 +174,48 @@ The next activation-critical milestone is now:
 6. install the shadow scheduler only after activation checks pass.
 
 Under the project's strict context-isolation rule, provider selection should not silently use outside provider documentation unless the owner explicitly authorizes fresh provider research or names the provider/model to use.
+
+
+## Immediate next checkpoint — provider adapter verification
+
+The exact provider/model is now frozen to OpenAI `gpt-5.4-2026-03-05`.
+
+On the Windows VPS:
+
+1. pull latest code;
+2. run the expanded offline AI-v1 tests;
+3. run activation preview (no provider call);
+4. configure `OPENAI_API_KEY` locally;
+5. run exactly one **synthetic, non-performance** provider smoke;
+6. do not activate the three AI ledgers until the provider smoke result is reviewed and the activation preview is clean.
+
+Commands:
+
+```powershell
+git pull
+.\.venv\Scripts\python.exe -m pytest -q tests\test_ai_v1_features.py tests\test_ai_v1_contract_ledger.py tests\test_ai_v1_inference.py tests\test_ai_v1_engine.py tests\test_ai_v1_signals.py tests\test_ai_v1_openai_responses.py tests\test_ai_v1_activation.py
+.\.venv\Scripts\python.exe scripts\prepare_ai_v1_activation.py
+```
+
+The preview must report:
+
+- `mode=PREVIEW_ONLY`;
+- `provider_call_made=false`;
+- `ai_ledgers_created=false`;
+- `broker_execution_enabled=false`.
+
+Configure the API key without pasting it into chat:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\configure_openai_api_key.py
+```
+
+Then run the one synthetic provider smoke:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\smoke_ai_v1_openai_provider.py
+```
+
+That call uses an explicitly synthetic flat market-state fixture, does not write a performance ledger, and must not be used to tune the frozen protocol.
+
+Do **not** run `scripts\activate_ai_v1.py` yet. Activation will occur only after review of these outputs, followed by GitHub anchoring before the shadow scheduler is installed.

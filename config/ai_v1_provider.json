@@ -1,0 +1,22 @@
+{
+  "protocol_version": "AI-v1.0",
+  "provider": "openai",
+  "api": "responses",
+  "endpoint": "https://api.openai.com/v1/responses",
+  "model_id": "gpt-5.4-2026-03-05",
+  "reasoning_effort": "medium",
+  "service_tier": "default",
+  "store": false,
+  "truncation": "disabled",
+  "max_output_tokens": 8192,
+  "tools": [],
+  "temperature": null,
+  "top_p": null,
+  "conversation": null,
+  "previous_response_id": null,
+  "structured_output_name": "signalproof_ai_v1_decision",
+  "provider_response_schema": "config/ai_v1_openai_response_schema.json",
+  "policy_path": "config/ai_v1_policy.txt",
+  "canonical_decision_schema": "config/ai_v1_decision_schema.json",
+  "api_key_env": "OPENAI_API_KEY"
+}

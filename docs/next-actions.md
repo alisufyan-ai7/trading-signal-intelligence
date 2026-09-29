@@ -45,8 +45,9 @@ Current work order:
 4. **DONE / CLOUD VERIFIED:** AI Insights UI backed by the sanitized read-only AI-v1 export; canonical record: `docs/ai-insights-ui.md`;
 5. **DONE / REDEPLOY VERIFIED:** Cloud Snapshot Durability v0.1 — persistent `/data` volume proven across controlled redeploy; canonical record: `docs/cloud-snapshot-durability-v0.1.md`, GitHub Issue #6;
 6. **DONE / REDEPLOY VERIFIED:** Early Access Feedback & Customer Discovery v0.1 — durable private feedback capture, owner export, access boundaries and controlled-redeploy persistence proven; GitHub Issue #7;
-7. **NEXT:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; GitHub Issue #9;
-8. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
+7. **IMMEDIATE PARALLEL DIAGNOSTIC:** AI-v1 Index Missed-Inference Diagnostic v0.1 — read-only analysis of USTEC/US30 missed-cycle timing; no runtime/model/scheduler changes; GitHub Issue #10;
+8. **NEXT PRODUCT MILESTONE:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; GitHub Issue #9;
+9. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
 

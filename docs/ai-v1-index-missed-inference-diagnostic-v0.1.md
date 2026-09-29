@@ -1,6 +1,6 @@
 # AI-v1 Index Missed-Inference Diagnostic v0.1
 
-_Status: IN PROGRESS — READ-ONLY LIVE LEDGER RUN PENDING_  
+_Status: DONE — LIVE LEDGER DIAGNOSTIC PASSED_  
 _Date: 2026-09-29_  
 _GitHub issue: #10_
 
@@ -125,3 +125,38 @@ If the result strongly supports late index-bar discovery, the next admissible st
 No repair is authorized by this diagnostic.
 
 If a future correction changes which H1 opportunities reach the model, it is decision-affecting and requires separately governed prospective versioning/activation. Existing AI-v1.0 evidence remains immutable.
+
+
+## Live result
+
+The live VPS diagnostic passed.
+
+- focused tests: 4 passed;
+- all three AI-v1 databases were byte-identical before/after;
+- no OpenAI call;
+- no MT5 call;
+- no broker action.
+
+Observed result:
+
+| Market | Valid | Missed | Missed rate | Dominant timing |
+|---|---:|---:|---:|---|
+| XAUUSD | 24 | 2 | 7.7% | 2 about-one-hour late |
+| USTEC | 6 | 19 | 76% | 18/19 about-one-hour late |
+| US30 | 2 | 23 | 92% | 22/23 about-one-hour late |
+
+All 42 index misses were `scheduler_gap_or_stale_at_discovery`.
+
+Forty of 42 index misses (95.24%) were discovered approximately one hour late.
+
+For 38 of 42 missed index closes (90.48%), XAUUSD had a valid inference on the exact same H1 close.
+
+Classification:
+
+`CONSISTENT_WITH_LATE_INDEX_BAR_DISCOVERY`
+
+Confidence:
+
+`strong_pattern_not_causal_proof`
+
+No correction is authorized by this result. A separate prospective read-only MT5 boundary probe is required for causal confirmation before any versioned runtime correction is designed.

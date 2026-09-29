@@ -60,6 +60,11 @@ def main() -> None:
     output_dir = ROOT / args.output_dir
     output_jsonl = output_dir / f"ai_v1_index_h1_boundary_probe_{stamp}.jsonl"
     summary_path = output_dir / f"ai_v1_index_h1_boundary_probe_{stamp}_summary.json"
+    if output_jsonl.exists() or summary_path.exists():
+        raise SystemExit(
+            "Refusing to mix or overwrite existing boundary-probe evidence for "
+            f"{stamp}"
+        )
 
     print(
         json.dumps(

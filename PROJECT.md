@@ -198,9 +198,10 @@ Canonical IDs are unique:
 20. AI-v1 index missed-inference diagnostic v0.1 — **DONE / ISSUE #10**
 21. AI-v1 index H1 boundary probe v0.1 — **DONE / ISSUE #11**
 22. AI-v1 scheduled-run forensic diagnostic v0.1 — **DONE / ISSUE #12**
-23. AI-v1 historical tick boundary diagnostic v0.1 — **NEXT / READ-ONLY / ISSUE #13**
-24. First cohort G4 customer-value evidence v0.1 — **NEXT PRODUCT MILESTONE / ISSUE #9**
-25. Organic acquisition & SEO v0.1 — **DEFERRED / AFTER INITIAL REAL-USER EVIDENCE**
+23. AI-v1 historical tick boundary diagnostic v0.1 — **DONE / ISSUE #13**
+24. AI-v1 MT5 rates-cache access correlation v0.1 — **NEXT / READ-ONLY / ISSUE #14**
+25. First cohort G4 customer-value evidence v0.1 — **NEXT PRODUCT MILESTONE / ISSUE #9**
+26. Organic acquisition & SEO v0.1 — **DEFERRED / AFTER INITIAL REAL-USER EVIDENCE**
 
 ## Durable project-state rule
 

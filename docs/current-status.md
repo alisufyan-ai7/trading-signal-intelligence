@@ -30,7 +30,8 @@
 - AI-v1 Index missed-inference diagnostic v0.1: DONE / STRONG TIMING PATTERN / ISSUE #10
 - AI-v1 Index H1 boundary probe v0.1: DONE / LATE-ROW HYPOTHESIS NOT SUPPORTED BY LIVE BOUNDARY / ISSUE #11
 - AI-v1 Scheduled-run forensic diagnostic v0.1: DONE / 44 OF 46 SUCCESSFUL-SCAN-NO-CURRENT-CLOSE / ISSUE #12
-- AI-v1 Historical tick boundary diagnostic v0.1: NEXT / READ-ONLY CAUSAL CHECK / ISSUE #13
+- AI-v1 Historical tick boundary diagnostic v0.1: DONE / FIRST-TICK MECHANISM NOT CONFIRMED / ISSUE #13
+- AI-v1 MT5 rates-cache access correlation v0.1: NEXT / READ-ONLY / ISSUE #14
 - First cohort G4 customer-value evidence v0.1: NEXT PRODUCT MILESTONE / REAL-USER EVIDENCE / ISSUE #9
 - Organic acquisition & SEO v0.1: DEFERRED / AFTER INITIAL REAL-USER EVIDENCE FROM ISSUE #9
 

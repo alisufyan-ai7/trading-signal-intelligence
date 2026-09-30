@@ -1,0 +1,166 @@
+{
+  "metadata_version": "AI-v1.0-Retirement-v0.1",
+  "runtime_version": "AI-v1.0",
+  "decision_protocol_version": "AI-v1.0",
+  "retired_at_utc": "2026-09-30T11:31:17.469796+00:00",
+  "reason": "prospective_mt5_rates_synchronization_correction",
+  "activation_anchor": "research\\forward\\AI-v1-activation-2026-09-28T155616Z.json",
+  "activation_utc": "2026-09-28T15:56:16.002058+00:00",
+  "performance_bearing_records_observed": true,
+  "ledgers_preserved": true,
+  "ledger_mutation_performed": false,
+  "backfilled_into_ai_v1_1": false,
+  "provider_call_made": false,
+  "mt5_call_made": false,
+  "broker_execution_enabled": false,
+  "markets": {
+    "XAUUSD": {
+      "ledger_path": "data/ai_v1_xauusd.sqlite",
+      "ledger_sha256": "094f8d24d2ce01edac516e6222205e644968c90e1fe6358ce9fed2f48923cdf5",
+      "head_hash": "5da69abd33e7d72673bdbcce270a74d91ad96375b76f19ab88b253b94e7bf721",
+      "records": 83,
+      "counts_by_type": {
+        "ACTIVATION": 1,
+        "EXIT": 1,
+        "INFERENCE": 39,
+        "MISSED_INFERENCE": 3,
+        "NO_TRADE": 31,
+        "REJECTED_INFERENCE": 7,
+        "SIGNAL": 1
+      },
+      "valid_inferences": 39,
+      "missed_inferences": 3,
+      "errors": 0,
+      "open_signal_entities": [],
+      "open_signals": 0,
+      "completed_shadow_trades": 1,
+      "ledger_valid": true
+    },
+    "USTEC": {
+      "ledger_path": "data/ai_v1_ustec.sqlite",
+      "ledger_sha256": "fdbd334ef096f2c6537ac52e834cafe2e5189c15e50f11b55ce9eacdcb565743",
+      "head_hash": "d9871aa8d106946acbe18f79b8edf93760e6be357b3a682da8bb5f045f62de49",
+      "records": 52,
+      "counts_by_type": {
+        "ACTIVATION": 1,
+        "EXIT": 1,
+        "INFERENCE": 9,
+        "MISSED_INFERENCE": 32,
+        "NO_TRADE": 8,
+        "SIGNAL": 1
+      },
+      "valid_inferences": 9,
+      "missed_inferences": 32,
+      "errors": 0,
+      "open_signal_entities": [],
+      "open_signals": 0,
+      "completed_shadow_trades": 1,
+      "ledger_valid": true
+    },
+    "US30": {
+      "ledger_path": "data/ai_v1_us30.sqlite",
+      "ledger_sha256": "c8aa5adf49af876d6334b91b008f3d49ae915cfff4a8c048b97ecb48526eeb6c",
+      "head_hash": "15c8154fe7ec6fefbe55b6ecebd52caf28649033094ef52cb700a45dc716a640",
+      "records": 47,
+      "counts_by_type": {
+        "ACTIVATION": 1,
+        "EXIT": 2,
+        "INFERENCE": 3,
+        "MISSED_INFERENCE": 38,
+        "NO_TRADE": 1,
+        "SIGNAL": 2
+      },
+      "valid_inferences": 3,
+      "missed_inferences": 38,
+      "errors": 0,
+      "open_signal_entities": [],
+      "open_signals": 0,
+      "completed_shadow_trades": 2,
+      "ledger_valid": true
+    }
+  },
+  "final_totals": {
+    "valid_inferences": 51,
+    "missed_inferences": 73,
+    "errors": 0,
+    "signals": 4,
+    "completed_shadow_trades": 4,
+    "open_shadow_signals": 0,
+    "performance_observational_only": {
+      "completed_trades": 4,
+      "cumulative_net_r": -4.026385476904051,
+      "average_net_r": -1.0065963692260127,
+      "profit_factor": 0.0,
+      "max_drawdown_r": -4.026385476904051,
+      "average_hold_h1_bars": 8.5
+    }
+  },
+  "scheduler_before_disable": {
+    "available": true,
+    "healthy": true,
+    "task_name": "SignalProof AI-v1 Shadow Scan",
+    "state": "Ready",
+    "description": "Activated SignalProof AI-v1.0 shadow inference. H1 cadence near minute 02. Broker execution disabled.",
+    "actions": [
+      {
+        "Execute": "cmd.exe",
+        "Arguments": "/c \"C:\\Users\\Administrator\\Desktop\\Signal Projects\\trading-signal-intelligence\\scripts\\run_ai_v1_shadow_task.cmd\"",
+        "WorkingDirectory": "C:\\Users\\Administrator\\Desktop\\Signal Projects\\trading-signal-intelligence"
+      }
+    ],
+    "triggers": [
+      {
+        "StartBoundary": "2026-09-28T17:02:00+00:00",
+        "RepetitionInterval": "PT1H",
+        "RepetitionDuration": "P3650D"
+      }
+    ],
+    "settings": {
+      "start_when_available": true,
+      "multiple_instances": "IgnoreNew",
+      "execution_time_limit": "PT10M"
+    },
+    "last_run_time": "2026-09-30T11:02:02.0000000+00:00",
+    "last_task_result": 0,
+    "last_successful_run_time": "2026-09-30T11:02:02.0000000+00:00",
+    "next_run_time": "2026-09-30T12:02:02.0000000+00:00"
+  },
+  "cutover_preconditions": {
+    "ledgers_valid": true,
+    "unresolved_signal_count": 0,
+    "unresolved_signals_zero": true,
+    "broker_execution_disabled": true,
+    "ready_for_scheduler_cutover": true
+  },
+  "metadata_write_performed": true,
+  "scheduler_after_disable": {
+    "available": true,
+    "healthy": false,
+    "task_name": "SignalProof AI-v1 Shadow Scan",
+    "state": "Disabled",
+    "description": "Activated SignalProof AI-v1.0 shadow inference. H1 cadence near minute 02. Broker execution disabled.",
+    "actions": [
+      {
+        "Execute": "cmd.exe",
+        "Arguments": "/c \"C:\\Users\\Administrator\\Desktop\\Signal Projects\\trading-signal-intelligence\\scripts\\run_ai_v1_shadow_task.cmd\"",
+        "WorkingDirectory": "C:\\Users\\Administrator\\Desktop\\Signal Projects\\trading-signal-intelligence"
+      }
+    ],
+    "triggers": [
+      {
+        "StartBoundary": "2026-09-28T17:02:00+00:00",
+        "RepetitionInterval": "PT1H",
+        "RepetitionDuration": "P3650D"
+      }
+    ],
+    "settings": {
+      "start_when_available": true,
+      "multiple_instances": "IgnoreNew",
+      "execution_time_limit": "PT10M"
+    },
+    "last_run_time": "2026-09-30T11:02:02.0000000+00:00",
+    "last_task_result": 0,
+    "last_successful_run_time": "2026-09-30T11:02:02.0000000+00:00",
+    "next_run_time": "2026-09-30T12:02:02.0000000+00:00"
+  }
+}

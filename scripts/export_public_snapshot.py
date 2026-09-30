@@ -5,6 +5,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from trading_signal_intelligence.ai_v1.active_observability import v1_1_state
 from trading_signal_intelligence.product.ai_insights import build_public_ai_insights
 from trading_signal_intelligence.product.app import ROOT, health
 from trading_signal_intelligence.product.catalog import market_statuses
@@ -45,6 +46,7 @@ def main() -> None:
     try:
         ai_v1 = build_public_ai_insights(ROOT)
     except Exception as exc:
+        transition_state = v1_1_state(ROOT)
         ai_v1 = {
             "schema_version": 1,
             "runtime_version": "UNAVAILABLE",
@@ -52,6 +54,8 @@ def main() -> None:
             "protocol_version": "AI-v1.0",
             "mode": "SHADOW_ONLY",
             "status": "temporarily_unavailable",
+            "publish_allowed": not transition_state["any_state"],
+            "transition_blocked": transition_state["any_state"],
             "customer_notice": "AI-v1 shadow insights are temporarily unavailable.",
             "health": {"healthy": False},
             "error_class": type(exc).__name__,

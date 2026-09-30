@@ -11,8 +11,10 @@ from trading_signal_intelligence.ai_v1.activation_v1_1 import (
     RUNTIME_VERSION,
     DECISION_PROTOCOL_VERSION,
     V11_ARTIFACT_PATHS,
+    build_activation_anchor_document_v1_1,
     build_activation_anchor_preview_v1_1,
     build_activation_payload_v1_1,
+    validate_activation_anchor_document_v1_1,
     preactivation_report_v1_1,
     validate_activation_payload_v1_1,
 )
@@ -99,6 +101,7 @@ def test_activation_validation_rejects_carry_forward_or_backfill() -> None:
 def test_v1_1_activation_bundle_includes_versioned_runtime_artifacts() -> None:
     required = {
         "activation_schema_v1_1",
+        "activation_anchor_schema_v1_1",
         "rates_sync_source_v1_1",
         "mt5_rates_adapter_source_v1_1",
         "engine_source_v1_1",
@@ -205,3 +208,77 @@ def test_task_installer_requires_disabled_legacy_task() -> None:
     assert "Legacy AI-v1.0 task must be Disabled" in text
     assert "-ConfirmActivatedRuntime" in text or "ConfirmActivatedRuntime" in text
     assert "Register-ScheduledTask" in text
+
+
+
+def test_aggregate_activation_anchor_builder_is_pure_and_valid() -> None:
+    activated = datetime(2026, 9, 30, 12, 0, tzinfo=UTC)
+    payloads = {
+        market: build_activation_payload_v1_1(
+            repo_root=ROOT,
+            market=market,
+            activated_at_utc=activated,
+        )
+        for market in ("XAUUSD", "USTEC", "US30")
+    }
+    records = {
+        market: {
+            "record_type": "ACTIVATION",
+            "record_hash": (str(index) * 64)[:64],
+            "payload": payload,
+        }
+        for index, (market, payload) in enumerate(payloads.items(), start=1)
+    }
+
+    before = {
+        market: (ROOT / relative).exists()
+        for market, relative in DATABASE_PATHS.items()
+    }
+    anchor = build_activation_anchor_document_v1_1(
+        repo_root=ROOT,
+        activated_at_utc=activated,
+        activation_records=records,
+    )
+    after = {
+        market: (ROOT / relative).exists()
+        for market, relative in DATABASE_PATHS.items()
+    }
+
+    assert before == after
+    assert anchor["status"] == "ACTIVE"
+    assert anchor["runtime_version"] == "AI-v1.1"
+    assert anchor["decision_protocol_version"] == "AI-v1.0"
+    assert anchor["gate_counts_carry_forward"] is False
+    assert anchor["backfill_prior_missed"] is False
+    assert anchor["provider_call_made"] is False
+    assert anchor["broker_execution_enabled"] is False
+    assert set(anchor["markets"]) == {"XAUUSD", "USTEC", "US30"}
+    validate_activation_anchor_document_v1_1(anchor)
+
+
+def test_aggregate_anchor_validation_rejects_gate_mixing() -> None:
+    activated = datetime(2026, 9, 30, 12, 0, tzinfo=UTC)
+    payloads = {
+        market: build_activation_payload_v1_1(
+            repo_root=ROOT,
+            market=market,
+            activated_at_utc=activated,
+        )
+        for market in ("XAUUSD", "USTEC", "US30")
+    }
+    records = {
+        market: {
+            "record_type": "ACTIVATION",
+            "record_hash": (str(index) * 64)[:64],
+            "payload": payload,
+        }
+        for index, (market, payload) in enumerate(payloads.items(), start=1)
+    }
+    anchor = build_activation_anchor_document_v1_1(
+        repo_root=ROOT,
+        activated_at_utc=activated,
+        activation_records=records,
+    )
+    anchor["gate_counts_carry_forward"] = True
+    with pytest.raises(ActivationV11Error):
+        validate_activation_anchor_document_v1_1(anchor)

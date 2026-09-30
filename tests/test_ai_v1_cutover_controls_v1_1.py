@@ -65,3 +65,21 @@ def test_v1_1_live_no_current_tick_uses_frozen_allowed_record_type() -> None:
     assert 'record_type="MISSED_INFERENCE"' in text
     assert '"reason": "no_current_h1_tick"' in text
     assert "cycle_processed_v1_1(ledger, entity_id)" in text
+
+
+
+def test_activation_only_v1_1_public_snapshot_is_frozen_until_first_cycle() -> None:
+    text = (
+        ROOT
+        / "src"
+        / "trading_signal_intelligence"
+        / "product"
+        / "ai_insights.py"
+    ).read_text(encoding="utf-8")
+
+    assert "activation_only_pre_first_cycle" in text
+    assert '"publish_allowed": not activation_only_v1_1' in text
+    assert '"transition_blocked": activation_only_v1_1' in text
+    assert 'int(totals["valid_inferences"])' in text
+    assert 'int(totals["missed_inferences"])' in text
+    assert 'int(totals["errors"])' in text

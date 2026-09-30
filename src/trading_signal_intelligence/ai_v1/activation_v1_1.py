@@ -112,6 +112,21 @@ V11_ARTIFACT_PATHS = {
     "retirement_preview_script_v1_0": (
         "scripts/preview_ai_v1_0_retirement.py"
     ),
+    "legacy_observability_source_v1_0": (
+        "src/trading_signal_intelligence/ai_v1/observability.py"
+    ),
+    "legacy_task_disable_script_v1_0": (
+        "scripts/disable_ai_v1_shadow_task_for_v1_1.ps1"
+    ),
+    "retirement_finalizer_script_v1_0": (
+        "scripts/finalize_ai_v1_0_retirement.py"
+    ),
+    "activation_execution_script_v1_1": (
+        "scripts/activate_ai_v1_1.py"
+    ),
+    "hard_cutover_runbook_v1_1": (
+        "docs/ai-v1.1-hard-cutover-runbook-v0.1.md"
+    ),
     "mt5_connector_source": (
         "src/trading_signal_intelligence/connectors/mt5.py"
     ),

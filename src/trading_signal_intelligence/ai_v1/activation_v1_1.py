@@ -76,6 +76,7 @@ V11_ARTIFACT_PATHS = {
     "preactivation_verifier_script_v1_1": (
         "scripts/verify_ai_v1_1_pre_activation.py"
     ),
+    "activation_preview_script_v1_1": "scripts/preview_ai_v1_1_activation.py",
     "live_runner_script_v1_1": "scripts/run_ai_v1_1_live.py",
     "runtime_verifier_source_v1_1": (
         "src/trading_signal_intelligence/ai_v1/runtime_verifier_v1_1.py"

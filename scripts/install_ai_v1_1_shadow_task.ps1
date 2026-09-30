@@ -19,15 +19,21 @@ if (-not (Test-Path $runner)) { throw "Task runner not found: $runner" }
 if (-not (Test-Path $python)) { throw "Python venv executable not found: $python" }
 if (-not (Test-Path $verifier)) { throw "Runtime verifier not found: $verifier" }
 
+$existingV11 = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+if ($null -ne $existingV11) {
+    throw "AI-v1.1 task already exists. Stop for review rather than overwriting it."
+}
+
 $legacy = Get-ScheduledTask -TaskName $LegacyTaskName -ErrorAction SilentlyContinue
-if ($null -ne $legacy) {
-    $legacyInfo = Get-ScheduledTaskInfo -TaskName $LegacyTaskName
-    if ([string]$legacy.State -eq "Running") {
-        throw "Legacy AI-v1.0 task is still Running; refuse parallel v1.1 installation."
-    }
-    if ([string]$legacy.State -ne "Disabled") {
-        throw "Legacy AI-v1.0 task must be Disabled before v1.1 installation. Current state: $($legacy.State)"
-    }
+if ($null -eq $legacy) {
+    throw "Legacy AI-v1.0 task must remain present and Disabled during v1.1 installation."
+}
+$legacyInfo = Get-ScheduledTaskInfo -TaskName $LegacyTaskName
+if ([string]$legacy.State -eq "Running") {
+    throw "Legacy AI-v1.0 task is still Running; refuse parallel v1.1 installation."
+}
+if ([string]$legacy.State -ne "Disabled") {
+    throw "Legacy AI-v1.0 task must be Disabled before v1.1 installation. Current state: $($legacy.State)"
 }
 
 Write-Host "Verifying activation-only AI-v1.1 runtime before task registration..."

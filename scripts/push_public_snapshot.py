@@ -38,6 +38,17 @@ def _validated_endpoint(base_url: str) -> str:
     return endpoint
 
 
+def _validate_snapshot_for_push(payload: dict) -> None:
+    _validate_snapshot_for_push(payload)
+
+    ai = payload.get("ai_v1")
+    if isinstance(ai, dict) and ai.get("publish_allowed") is False:
+        raise SystemExit(
+            "Refusing to overwrite the last good cloud snapshot during an "
+            "incomplete/invalid AI-v1.1 transition."
+        )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Push the derived public snapshot to the cloud beta app"

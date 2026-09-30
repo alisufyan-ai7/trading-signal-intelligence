@@ -222,11 +222,19 @@ not disturb preactivation cleanliness.
 
 ## 8. Exact continuation point
 
+The exact owner-reviewed AI-v1.1 hard-cutover sequence is now implemented and documented in:
+
+`docs/ai-v1.1-hard-cutover-runbook-v0.1.md`
+
 The next stage is:
 
-**prepare the exact owner-reviewed AI-v1.1 hard-cutover sequence.**
+**owner-run Phase A read-only cutover proof / review package.**
 
-Preparation is allowed. Execution is not implicitly authorized.
+Phase A is verification only. It performs no scheduler, ledger, activation,
+retirement, provider, MT5, broker, or cloud mutation.
+
+Actual Phase B+ cutover execution remains unauthorized until the Phase A output
+is reviewed and the owner gives a separate explicit approval.
 
 The sequence must preserve the already-agreed governance ordering:
 
@@ -268,11 +276,35 @@ Do not yet:
 - enable broker execution;
 - use the old `scripts/supersede_ai_v1_activation.py` for this cutover.
 
-The next response may prepare and review the hard-cutover commands, but mutation
-requires explicit owner approval after the exact sequence and boundaries are
-shown.
+The cutover commands and boundaries are now durably prepared in the canonical
+runbook. The next owner action is Phase A only. Mutation still requires a
+separate explicit owner approval after Phase A output is reviewed.
 
-## 10. Broader roadmap after Issue #15
+## 10. Cutover-control implementation checkpoint
+
+Prepared on 2026-09-30 without runtime mutation:
+
+- guarded legacy AI-v1.0 task-disable script;
+- AI-v1.0 retirement finalizer that re-verifies ledger identity across the
+  scheduler-disable boundary;
+- guarded AI-v1.1 activation writer;
+- activation-bundle fingerprint coverage for all cutover-control artifacts;
+- explicit v1.1 no-current-tick fail-closed evidence using allowed
+  `MISSED_INFERENCE` record type without changing the frozen v1.0 ledger;
+- hardened v1.1 task installer requiring the legacy task to remain present and
+  Disabled and refusing an existing v1.1 task;
+- activation-only and unhealthy v1.1 cloud publication freeze;
+- canonical staged hard-cutover runbook;
+- new regression tests for the above controls.
+
+Repository comparison from verified engineering head
+`0971834b5ea0eb19fab076180f5ce055b6c2aff4` shows no frozen AI-v1.0
+decision artifacts changed.
+
+These new controls still require owner-run VPS Phase A verification before
+cutover approval.
+
+## 11. Broader roadmap after Issue #15
 
 After the AI-v1.1 technical transition is safely resolved, the next product
 milestone is GitHub Issue #9:
@@ -281,7 +313,7 @@ milestone is GitHub Issue #9:
 
 SEO/growth work remains deferred until after initial real-user evidence.
 
-## 11. Future-chat startup rule
+## 12. Future-chat startup rule
 
 For a future normal chat, the preferred startup instruction is:
 

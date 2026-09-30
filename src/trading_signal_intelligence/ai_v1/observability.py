@@ -231,14 +231,54 @@ def verify_frozen_artifacts(repo_root: Path, anchor: dict[str, Any]) -> dict[str
 
 
 def verify_anchor_upstream(repo_root: Path, anchor_path: Path) -> dict[str, Any]:
+    """Verify that a clean tracked artifact is durably identical upstream.
+
+    Compare committed Git blobs rather than raw working-tree bytes. This avoids
+    false failures on Windows when Git line-ending normalization makes the
+    checked-out bytes differ from the canonical committed blob.
+    """
     relative = anchor_path.relative_to(repo_root).as_posix()
     try:
+        head = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repo_root,
+            text=True,
+            stderr=subprocess.STDOUT,
+        ).strip()
         upstream = subprocess.check_output(
             ["git", "rev-parse", "@{u}"],
             cwd=repo_root,
             text=True,
             stderr=subprocess.STDOUT,
         ).strip()
+
+        dirty = subprocess.check_output(
+            [
+                "git",
+                "status",
+                "--porcelain",
+                "--untracked-files=no",
+                "--",
+                relative,
+            ],
+            cwd=repo_root,
+            text=True,
+            stderr=subprocess.STDOUT,
+        ).strip()
+        if dirty:
+            return {
+                "valid": False,
+                "head_commit": head,
+                "upstream_commit": upstream,
+                "reason": "local_artifact_not_clean",
+                "detail": dirty[:300],
+            }
+
+        head_bytes = subprocess.check_output(
+            ["git", "show", f"{head}:{relative}"],
+            cwd=repo_root,
+            stderr=subprocess.STDOUT,
+        )
         upstream_bytes = subprocess.check_output(
             ["git", "show", f"{upstream}:{relative}"],
             cwd=repo_root,
@@ -247,16 +287,21 @@ def verify_anchor_upstream(repo_root: Path, anchor_path: Path) -> dict[str, Any]
     except (OSError, subprocess.CalledProcessError) as exc:
         return {
             "valid": False,
+            "head_commit": None,
             "upstream_commit": None,
             "reason": "upstream_anchor_unavailable",
             "detail": str(exc)[:300],
         }
-    local = anchor_path.read_bytes()
+
+    head_sha256 = hashlib.sha256(head_bytes).hexdigest()
+    upstream_sha256 = hashlib.sha256(upstream_bytes).hexdigest()
     return {
-        "valid": hashlib.sha256(local).digest() == hashlib.sha256(upstream_bytes).digest(),
+        "valid": head_sha256 == upstream_sha256,
+        "head_commit": head,
         "upstream_commit": upstream,
-        "local_sha256": hashlib.sha256(local).hexdigest(),
-        "upstream_sha256": hashlib.sha256(upstream_bytes).hexdigest(),
+        "head_sha256": head_sha256,
+        "local_sha256": head_sha256,
+        "upstream_sha256": upstream_sha256,
     }
 
 

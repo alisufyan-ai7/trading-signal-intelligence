@@ -254,6 +254,15 @@ def build_public_ai_insights(
     }
 
     totals = report["totals"]
+    performance_bearing_records = (
+        int(totals["valid_inferences"])
+        + int(totals["missed_inferences"])
+        + int(totals["errors"])
+    )
+    activation_only_v1_1 = (
+        runtime_version == "AI-v1.1"
+        and performance_bearing_records == 0
+    )
     legacy_lineage = (
         build_legacy_v1_0_summary(repo_root)
         if runtime_version == "AI-v1.1"
@@ -266,7 +275,13 @@ def build_public_ai_insights(
         "protocol_version": report["protocol_version"],
         "generated_at_utc": report["generated_at_utc"],
         "mode": "SHADOW_ONLY",
-        "status": "forward_validation_in_progress",
+        "status": (
+            "activation_only_pre_first_cycle"
+            if activation_only_v1_1
+            else "forward_validation_in_progress"
+        ),
+        "publish_allowed": not activation_only_v1_1,
+        "transition_blocked": activation_only_v1_1,
         "customer_notice": (
             f"{runtime_version} is running in shadow mode. Signals are research "
             "outputs, not broker executions or personalized investment advice."

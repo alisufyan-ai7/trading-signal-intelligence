@@ -3,11 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from trading_signal_intelligence.ai_v1.active_observability import (
+    active_database_paths,
+    build_active_report,
+    build_legacy_v1_0_summary,
+)
 from trading_signal_intelligence.ai_v1.observability import (
-    DATABASE_PATHS,
     MARKETS,
     ObservabilityError,
-    build_report,
     read_records_read_only,
 )
 
@@ -140,14 +143,16 @@ def build_public_ai_insights(
     """
 
     repo_root = repo_root.resolve()
-    report = build_report(
+    report = build_active_report(
         repo_root,
         include_scheduler=include_scheduler,
         verify_upstream=verify_upstream,
     )
+    runtime_version = str(report["runtime_version"])
+    database_paths = active_database_paths(repo_root)
 
     market_records: dict[str, list[dict[str, Any]]] = {
-        symbol: read_records_read_only(repo_root / DATABASE_PATHS[symbol])
+        symbol: read_records_read_only(repo_root / database_paths[symbol])
         for symbol in MARKETS
     }
 
@@ -249,16 +254,30 @@ def build_public_ai_insights(
     }
 
     totals = report["totals"]
+    legacy_lineage = (
+        build_legacy_v1_0_summary(repo_root)
+        if runtime_version == "AI-v1.1"
+        else None
+    )
     return {
         "schema_version": 1,
+        "runtime_version": runtime_version,
+        "decision_protocol_version": report["decision_protocol_version"],
         "protocol_version": report["protocol_version"],
         "generated_at_utc": report["generated_at_utc"],
         "mode": "SHADOW_ONLY",
         "status": "forward_validation_in_progress",
         "customer_notice": (
-            "AI-v1 is running in shadow mode. Signals are research outputs, "
-            "not broker executions or personalized investment advice."
+            f"{runtime_version} is running in shadow mode. Signals are research "
+            "outputs, not broker executions or personalized investment advice."
         ),
+        "lineage_notice": (
+            "AI-v1.1 gate progress starts from zero at its own activation. "
+            "AI-v1.0 evidence remains a separate legacy lineage."
+            if runtime_version == "AI-v1.1"
+            else "AI-v1.0 is the active shadow evidence lineage."
+        ),
+        "legacy_lineage": legacy_lineage,
         "confidence_notice": (
             "Raw confidence is an uncalibrated model score, not a probability "
             "of profit or success."
@@ -293,6 +312,9 @@ def build_public_ai_insights(
             "performance_observational_only": totals[
                 "performance_observational_only"
             ],
+            "sync_operational_counts": totals.get(
+                "sync_operational_counts", {}
+            ),
         },
         "gates": gates,
         "markets": market_rows,

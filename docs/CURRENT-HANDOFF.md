@@ -1,9 +1,9 @@
 # Current Handoff / Operating Contract
 
-_Last reconciled: 2026-09-30_
+_Last reconciled: 2026-10-01_
 
 This file is the canonical continuation point for future normal-chat work on the
-TradingTop Analysis / SignalProof AI project.
+TradingTop Analysis / VowSig project (formerly SignalProof AI).
 
 It is a **documentation/control artifact only**. It does not authorize any
 runtime, scheduler, ledger, activation, broker, provider, deployment, or cloud
@@ -142,37 +142,60 @@ plan explicitly authorizes that mutation.
 
 ### Active runtime
 
-`AI-v1.0` remains the active hourly shadow collector.
+`AI-v1.1` is the active hourly shadow collector.
+
+Its frozen decision protocol remains `AI-v1.0`.
+
+AI-v1.0 runtime is retired; its scheduler must remain Disabled and its evidence
+is preserved as a separate legacy lineage. Do not carry AI-v1.0 gate counts into
+AI-v1.1.
 
 Broker execution remains disabled.
 
-AI-v1.1 is a prospective replacement runtime/evidence version only. Its frozen
-decision protocol remains `AI-v1.0`.
+### Public product identity
+
+Public brand: **VowSig**.
+
+Canonical public domain: `https://vowsig.com`.
+
+Historical SignalProof AI names remain in provenance-bearing evidence where they
+were originally recorded. Do not mass-rename historical artifacts.
+
+VowSig public rebrand v0.1 is complete. The governed AI-v1.1 public-surface
+correction is committed and upstream-valid, and the first natural post-cutover
+AI-v1.1 cycle cryptographically extended each pre-cutover ledger head without a
+reset, fork, or backfill.
 
 ### Current milestone
 
-GitHub Issue #15:
+GitHub Issue #9:
 
-`AI-v1.1 MT5 rates synchronization correction v0.1`
+`First cohort G4 customer-value evidence v0.1`
 
-AI-v1.1 changes only MT5 rates-read synchronization/readiness. The model,
-prompt/policy, features, decision schema, universe, cadence, risk guardrails,
-signal lifecycle, cost model, freshness rule, and broker-execution boundary
-remain frozen from AI-v1.0.
+The current product task is real-user customer-value evidence collection while
+AI-v1.1 forward collection continues unchanged. Do not tune the model, prompt,
+features, guardrails, market universe, lifecycle, cost policy, or decision
+cadence based on early user or trading results.
 
-### Last owner-verified engineering/runtime head
+### Last owner-verified production state
 
-Before this documentation-only handoff commit was added, the owner verified:
+VowSig production cutover merge:
 
-`0971834b5ea0eb19fab076180f5ce055b6c2aff4`
+`3dfc548b0cd89de1ac9e19723dec1ad44b39ca50`
 
-Commit title:
+Post-cutover natural continuity verification:
 
-`Remove meaningless empty pytest match warnings`
+- AI-v1.1 natural scheduled run: PASS / exit 0;
+- product publisher natural scheduled run: PASS / exit 0;
+- all three v1.1 ledger chains valid and extended from the exact pre-cutover
+  heads;
+- hosted `https://vowsig.com` snapshot naturally republished;
+- AI-v1.1 scheduler Ready;
+- product publisher Ready;
+- AI-v1.0 scheduler Disabled;
+- broker execution disabled.
 
-Any later commit that only documents this handoff does not by itself alter the
-verified runtime or activate AI-v1.1. Future work must still inspect current
-`main` before acting.
+Future work must still reconcile current `main` before mutation.
 
 ### Completed focused/no-warning checkpoint
 

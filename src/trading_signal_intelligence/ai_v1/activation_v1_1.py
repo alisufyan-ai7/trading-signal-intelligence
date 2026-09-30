@@ -72,9 +72,32 @@ V11_ARTIFACT_PATHS = {
     "activation_builder_source_v1_1": (
         "src/trading_signal_intelligence/ai_v1/activation_v1_1.py"
     ),
-    "shadow_runner_script_v1_1": "scripts/run_ai_v1_1_shadow.py",
+    "preactivation_runner_script_v1_1": "scripts/run_ai_v1_1_shadow.py",
     "preactivation_verifier_script_v1_1": (
         "scripts/verify_ai_v1_1_pre_activation.py"
+    ),
+    "live_runner_script_v1_1": "scripts/run_ai_v1_1_live.py",
+    "runtime_verifier_source_v1_1": (
+        "src/trading_signal_intelligence/ai_v1/runtime_verifier_v1_1.py"
+    ),
+    "runtime_verifier_script_v1_1": "scripts/verify_ai_v1_1_runtime.py",
+    "task_runner_script_v1_1": "scripts/run_ai_v1_1_shadow_task.cmd",
+    "task_installer_script_v1_1": "scripts/install_ai_v1_1_shadow_task.ps1",
+    "observability_source_v1_1": (
+        "src/trading_signal_intelligence/ai_v1/observability_v1_1.py"
+    ),
+    "active_observability_source": (
+        "src/trading_signal_intelligence/ai_v1/active_observability.py"
+    ),
+    "ai_insights_source": (
+        "src/trading_signal_intelligence/product/ai_insights.py"
+    ),
+    "public_snapshot_export_script": "scripts/export_public_snapshot.py",
+    "retirement_builder_source_v1_0": (
+        "src/trading_signal_intelligence/ai_v1/retirement_v1_0.py"
+    ),
+    "retirement_preview_script_v1_0": (
+        "scripts/preview_ai_v1_0_retirement.py"
     ),
     "mt5_connector_source": (
         "src/trading_signal_intelligence/connectors/mt5.py"
@@ -413,5 +436,49 @@ def preactivation_report_v1_1(repo_root: Path) -> dict[str, Any]:
         "mt5_call_made": False,
         "broker_execution_enabled": False,
         "activation_performed": False,
+        "scheduler_changed": False,
+    }
+
+
+
+def build_activation_anchor_preview_v1_1(
+    *,
+    repo_root: Path,
+    activated_at_utc: datetime,
+) -> dict[str, Any]:
+    """Build the exact prospective v1.1 anchor material without writing anything."""
+    require_clean_tracked_worktree(repo_root)
+    payloads = {
+        market: build_activation_payload_v1_1(
+            repo_root=repo_root,
+            market=market,
+            activated_at_utc=activated_at_utc,
+        )
+        for market in MARKETS
+    }
+    activated = activated_at_utc.astimezone(timezone.utc)
+    return {
+        "anchor_preview_only": True,
+        "runtime_version": RUNTIME_VERSION,
+        "decision_protocol_version": DECISION_PROTOCOL_VERSION,
+        "activated_at_utc": activated.isoformat(),
+        "repository_commit_sha": git_commit_sha(repo_root),
+        "supersedes_runtime_version": SUPERSEDES_RUNTIME_VERSION,
+        "upstream_activation_anchor": UPSTREAM_ACTIVATION_ANCHOR,
+        "upstream_activation_anchor_sha256": file_sha256(
+            repo_root / UPSTREAM_ACTIVATION_ANCHOR
+        ),
+        "gate_counts_carry_forward": False,
+        "backfill_prior_missed": False,
+        "provider_call_made": False,
+        "broker_execution_enabled": False,
+        "artifact_hashes": artifact_hashes(repo_root, V11_ARTIFACT_PATHS),
+        "frozen_decision_artifact_hashes": artifact_hashes(
+            repo_root,
+            FROZEN_DECISION_ARTIFACT_PATHS,
+        ),
+        "market_payloads": payloads,
+        "ledger_records_created": 0,
+        "activation_anchor_written": False,
         "scheduler_changed": False,
     }

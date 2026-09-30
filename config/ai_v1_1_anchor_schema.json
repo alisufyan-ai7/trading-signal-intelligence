@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://signalproof.local/schemas/ai-v1.1-activation-anchor.json",
+  "title": "SignalProof AI-v1.1 activation anchor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runtime_version",
+    "decision_protocol_version",
+    "status",
+    "activated_at_utc",
+    "repository_commit_sha",
+    "supersedes_runtime_version",
+    "upstream_activation_anchor",
+    "upstream_activation_anchor_sha256",
+    "gate_counts_carry_forward",
+    "backfill_prior_missed",
+    "provider_call_made",
+    "broker_execution_enabled",
+    "artifact_hashes",
+    "frozen_decision_artifact_hashes",
+    "markets"
+  ],
+  "properties": {
+    "runtime_version": {"const": "AI-v1.1"},
+    "decision_protocol_version": {"const": "AI-v1.0"},
+    "status": {"const": "ACTIVE"},
+    "activated_at_utc": {"type": "string"},
+    "repository_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "supersedes_runtime_version": {"const": "AI-v1.0"},
+    "upstream_activation_anchor": {"type": "string", "minLength": 1},
+    "upstream_activation_anchor_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gate_counts_carry_forward": {"const": false},
+    "backfill_prior_missed": {"const": false},
+    "provider_call_made": {"const": false},
+    "broker_execution_enabled": {"const": false},
+    "artifact_hashes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "frozen_decision_artifact_hashes": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "markets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["XAUUSD", "USTEC", "US30"],
+      "properties": {
+        "XAUUSD": {"$ref": "#/$defs/marketAnchor"},
+        "USTEC": {"$ref": "#/$defs/marketAnchor"},
+        "US30": {"$ref": "#/$defs/marketAnchor"}
+      }
+    }
+  },
+  "$defs": {
+    "marketAnchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_hash", "payload"],
+      "properties": {
+        "record_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "payload": {
+          "type": "object"
+        }
+      }
+    }
+  }
+}

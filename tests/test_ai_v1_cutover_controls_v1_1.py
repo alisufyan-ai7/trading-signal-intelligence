@@ -78,8 +78,10 @@ def test_activation_only_v1_1_public_snapshot_is_frozen_until_first_cycle() -> N
     ).read_text(encoding="utf-8")
 
     assert "activation_only_pre_first_cycle" in text
-    assert '"publish_allowed": not activation_only_v1_1' in text
-    assert '"transition_blocked": activation_only_v1_1' in text
+    assert "unhealthy_v1_1" in text
+    assert "v1_1_publish_blocked" in text
+    assert '"publish_allowed": not v1_1_publish_blocked' in text
+    assert '"transition_blocked": v1_1_publish_blocked' in text
     assert 'int(totals["valid_inferences"])' in text
     assert 'int(totals["missed_inferences"])' in text
     assert 'int(totals["errors"])' in text

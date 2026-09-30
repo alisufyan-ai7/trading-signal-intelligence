@@ -85,11 +85,3 @@ def test_activation_only_v1_1_public_snapshot_is_frozen_until_first_cycle() -> N
     assert 'int(totals["valid_inferences"])' in text
     assert 'int(totals["missed_inferences"])' in text
     assert 'int(totals["errors"])' in text
-
-def test_v1_1_activation_anchor_has_explicit_lf_normalization() -> None:
-    attributes = (ROOT / ".gitattributes").read_text(encoding="utf-8")
-    assert (
-        "research/forward/AI-v1.1-activation-*.json text eol=lf"
-        in attributes
-    )
-

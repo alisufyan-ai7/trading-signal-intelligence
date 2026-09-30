@@ -6,6 +6,7 @@ import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import trading_signal_intelligence.ai_v1.observability as observability
 from trading_signal_intelligence.ai_v1.ledger import AILedger
 from trading_signal_intelligence.ai_v1.observability import (
     DATABASE_PATHS,
@@ -14,6 +15,7 @@ from trading_signal_intelligence.ai_v1.observability import (
     _gate,
     build_report,
     read_records_read_only,
+    verify_anchor_upstream,
     verify_records,
 )
 
@@ -258,3 +260,85 @@ def test_calendar_gates_are_frozen_to_activation_date() -> None:
     assert at_a2["calendar_eligible_at_utc"].startswith("2026-11-27")
     assert at_a3["eligible"] is True
     assert at_a3["calendar_eligible_at_utc"].startswith("2027-01-26")
+
+
+
+def test_verify_anchor_upstream_uses_clean_git_blobs_not_worktree_bytes(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    artifact = tmp_path / "research" / "forward" / "retired.json"
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_bytes(b'{"ok": true}\r\n')
+
+    head = "1" * 40
+    upstream = "2" * 40
+    committed = b'{"ok": true}\n'
+
+    def fake_check_output(command, **kwargs):
+        if command == ["git", "rev-parse", "HEAD"]:
+            return head + "\n"
+        if command == ["git", "rev-parse", "@{u}"]:
+            return upstream + "\n"
+        if command[:4] == [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=no",
+        ]:
+            return ""
+        if command == ["git", "show", f"{head}:research/forward/retired.json"]:
+            return committed
+        if command == [
+            "git",
+            "show",
+            f"{upstream}:research/forward/retired.json",
+        ]:
+            return committed
+        raise AssertionError(command)
+
+    monkeypatch.setattr(observability.subprocess, "check_output", fake_check_output)
+
+    result = verify_anchor_upstream(tmp_path, artifact)
+
+    assert result["valid"] is True
+    assert result["head_commit"] == head
+    assert result["upstream_commit"] == upstream
+    assert result["head_sha256"] == hashlib.sha256(committed).hexdigest()
+    assert result["upstream_sha256"] == hashlib.sha256(committed).hexdigest()
+    assert hashlib.sha256(artifact.read_bytes()).hexdigest() != result["head_sha256"]
+
+
+def test_verify_anchor_upstream_rejects_dirty_local_artifact(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    artifact = tmp_path / "research" / "forward" / "retired.json"
+    artifact.parent.mkdir(parents=True, exist_ok=True)
+    artifact.write_text("{}\n", encoding="utf-8")
+
+    head = "1" * 40
+    upstream = "2" * 40
+
+    def fake_check_output(command, **kwargs):
+        if command == ["git", "rev-parse", "HEAD"]:
+            return head + "\n"
+        if command == ["git", "rev-parse", "@{u}"]:
+            return upstream + "\n"
+        if command[:4] == [
+            "git",
+            "status",
+            "--porcelain",
+            "--untracked-files=no",
+        ]:
+            return " M research/forward/retired.json\n"
+        raise AssertionError(command)
+
+    monkeypatch.setattr(observability.subprocess, "check_output", fake_check_output)
+
+    result = verify_anchor_upstream(tmp_path, artifact)
+
+    assert result["valid"] is False
+    assert result["reason"] == "local_artifact_not_clean"
+    assert result["head_commit"] == head
+    assert result["upstream_commit"] == upstream

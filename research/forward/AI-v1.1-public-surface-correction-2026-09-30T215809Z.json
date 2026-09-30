@@ -1,0 +1,35 @@
+{
+  "artifact_hash_overrides": {
+    "ai_ui_index": "65f58c108a884c21a0ae9641147296519866d48eb5395af1c3623c2dafbc697d",
+    "ai_ui_script": "e73f5651566100e80686b4dab323e1d7f8d555a5d21690f762fd86b8a7283e81",
+    "cloud_app_source": "16144495a3014d9b3183d61529b3c9c994d812526ce281b0f2c49b37c84743fa",
+    "cloud_snapshot_verifier_script": "c8e6aa53fdfc8e60a85a16ebcc697321282e6b0181e34e649584fc2c27b508b0",
+    "observability_source_v1_1": "7fa39e95fa97b2228fe4799feb65547b362bd08d0a4a1a54d60218ae04aea521",
+    "product_publish_task_runner_script": "60e05ac11cc5cd733e1cec620b8ec8393fe90beebee7e415105983b09fd217e0"
+  },
+  "backfill_performed": false,
+  "base_activation_anchor": "research/forward/AI-v1.1-activation-2026-09-30T114412Z.json",
+  "base_activation_anchor_sha256": "02aaba7ead9e22bda42fbee18c72be877c7d40c7d4f2c8990487378ca190df19",
+  "brand": "VowSig",
+  "broker_execution_enabled": false,
+  "canonical_domain": "https://vowsig.com",
+  "corrected_artifact_names": [
+    "ai_ui_index",
+    "ai_ui_script",
+    "cloud_app_source",
+    "cloud_snapshot_verifier_script",
+    "observability_source_v1_1",
+    "product_publish_task_runner_script"
+  ],
+  "correction_kind": "AI-v1.1-public-surface-v0.1",
+  "created_at_utc": "2026-09-30T21:58:09.669931+00:00",
+  "decision_artifacts_changed": false,
+  "decision_protocol_version": "AI-v1.0",
+  "ledger_mutation_performed": false,
+  "mt5_call_made": false,
+  "provider_call_made": false,
+  "repository_commit_sha": "dd019e8f2b858c24186befaf8e8b9bbee7a5be94",
+  "runtime_version": "AI-v1.1",
+  "scheduler_changed": false,
+  "vowsig_ai_redirect_in_scope": false
+}

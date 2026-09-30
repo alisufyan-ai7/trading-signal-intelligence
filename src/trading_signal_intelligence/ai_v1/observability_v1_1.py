@@ -33,6 +33,19 @@ from trading_signal_intelligence.ai_v1.shadow_runtime_v1_1 import (
 REPORT_VERSION = "AI-v1.1-Observability-v0.1"
 TASK_NAME = "SignalProof AI-v1.1 Shadow Scan"
 
+PUBLIC_SURFACE_CORRECTION_KIND = "AI-v1.1-public-surface-v0.1"
+PUBLIC_SURFACE_CORRECTION_GLOB = "AI-v1.1-public-surface-correction-*.json"
+PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS = frozenset(
+    {
+        "observability_source_v1_1",
+        "product_publish_task_runner_script",
+        "cloud_app_source",
+        "cloud_snapshot_verifier_script",
+        "ai_ui_script",
+        "ai_ui_index",
+    }
+)
+
 
 def _activation(records: list[dict[str, Any]], symbol: str) -> dict[str, Any]:
     rows = [row for row in records if row["record_type"] == "ACTIVATION"]
@@ -100,6 +113,165 @@ def discover_active_anchor_v1_1(
     )
 
 
+def _public_surface_correction(
+    repo_root: Path,
+    anchor: dict[str, Any],
+) -> dict[str, Any]:
+    candidates = sorted(
+        (repo_root / "research" / "forward").glob(
+            PUBLIC_SURFACE_CORRECTION_GLOB
+        )
+    )
+    if not candidates:
+        return {
+            "present": False,
+            "valid": True,
+            "artifact_hash_overrides": {},
+        }
+    if len(candidates) != 1:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "expected_exactly_one_public_surface_correction",
+            "count": len(candidates),
+            "artifact_hash_overrides": {},
+        }
+
+    path = candidates[0]
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "public_surface_correction_unreadable",
+            "detail": str(exc)[:300],
+            "artifact_hash_overrides": {},
+        }
+
+    if payload.get("correction_kind") != PUBLIC_SURFACE_CORRECTION_KIND:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "unexpected_public_surface_correction_kind",
+            "artifact_hash_overrides": {},
+        }
+    if payload.get("runtime_version") != RUNTIME_VERSION:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "public_surface_runtime_version_mismatch",
+            "artifact_hash_overrides": {},
+        }
+    if payload.get("decision_protocol_version") != DECISION_PROTOCOL_VERSION:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "public_surface_decision_protocol_mismatch",
+            "artifact_hash_overrides": {},
+        }
+
+    required_false = (
+        "decision_artifacts_changed",
+        "ledger_mutation_performed",
+        "backfill_performed",
+        "provider_call_made",
+        "mt5_call_made",
+        "broker_execution_enabled",
+        "scheduler_changed",
+    )
+    for key in required_false:
+        if payload.get(key) is not False:
+            return {
+                "present": True,
+                "valid": False,
+                "reason": f"public_surface_{key}_must_be_false",
+                "artifact_hash_overrides": {},
+            }
+
+    base_rel = payload.get("base_activation_anchor")
+    base_sha = payload.get("base_activation_anchor_sha256")
+    if not isinstance(base_rel, str) or not isinstance(base_sha, str):
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "public_surface_base_anchor_missing",
+            "artifact_hash_overrides": {},
+        }
+
+    base_path = repo_root / base_rel
+    try:
+        base_payload = json.loads(base_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "public_surface_base_anchor_unreadable",
+            "detail": str(exc)[:300],
+            "artifact_hash_overrides": {},
+        }
+    if base_payload != anchor or _file_sha256(base_path) != base_sha:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "public_surface_base_anchor_mismatch",
+            "artifact_hash_overrides": {},
+        }
+
+    overrides = payload.get("artifact_hash_overrides")
+    if not isinstance(overrides, dict) or not overrides:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "public_surface_overrides_missing",
+            "artifact_hash_overrides": {},
+        }
+
+    names = set(overrides)
+    if not names.issubset(PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS):
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "public_surface_override_outside_allowlist",
+            "unexpected_artifacts": sorted(
+                names - PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS
+            ),
+            "artifact_hash_overrides": {},
+        }
+
+    for name, value in overrides.items():
+        text = str(value)
+        if len(text) != 64 or any(ch not in "0123456789abcdef" for ch in text):
+            return {
+                "present": True,
+                "valid": False,
+                "reason": "public_surface_override_hash_invalid",
+                "artifact": name,
+                "artifact_hash_overrides": {},
+            }
+
+    upstream = verify_anchor_upstream_v1_1(repo_root, path)
+    if upstream.get("valid") is not True:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "public_surface_correction_not_upstream",
+            "upstream": upstream,
+            "artifact_hash_overrides": {},
+        }
+
+    return {
+        "present": True,
+        "valid": True,
+        "path": str(path.relative_to(repo_root)),
+        "correction_kind": PUBLIC_SURFACE_CORRECTION_KIND,
+        "brand": payload.get("brand"),
+        "canonical_domain": payload.get("canonical_domain"),
+        "artifact_hash_overrides": dict(overrides),
+        "upstream": upstream,
+    }
+
+
 def verify_v1_1_artifacts(
     repo_root: Path,
     anchor: dict[str, Any],
@@ -112,9 +284,26 @@ def verify_v1_1_artifacts(
             "mismatches": {"artifact_hashes": {"expected": "object"}},
         }
 
+    correction = _public_surface_correction(repo_root, anchor)
+    if correction.get("valid") is not True:
+        return {
+            "valid": False,
+            "checked": 0,
+            "mismatches": {
+                "public_surface_correction": {
+                    "expected": "valid committed/upstream correction",
+                    "actual": str(correction.get("reason")),
+                }
+            },
+            "public_surface_correction": correction,
+        }
+
+    effective_expected = dict(expected)
+    effective_expected.update(correction["artifact_hash_overrides"])
+
     mismatches: dict[str, dict[str, str | None]] = {}
     for name, relative in V11_ARTIFACT_PATHS.items():
-        expected_hash = expected.get(name)
+        expected_hash = effective_expected.get(name)
         actual = _file_sha256(repo_root / relative)
         if actual != expected_hash:
             mismatches[name] = {
@@ -126,6 +315,7 @@ def verify_v1_1_artifacts(
         "valid": not mismatches,
         "checked": len(V11_ARTIFACT_PATHS),
         "mismatches": mismatches,
+        "public_surface_correction": correction,
     }
 
 

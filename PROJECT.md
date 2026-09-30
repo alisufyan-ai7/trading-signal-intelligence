@@ -1,6 +1,6 @@
 # Project Brief
 
-_Last updated: 2026-09-18_
+_Last updated: 2026-10-01_
 
 ## Goal
 
@@ -10,7 +10,7 @@ Create a low-cost AI market-intelligence SaaS that continuously scans markets, g
 
 The product direction was formally changed on 2026-09-28 to **AI-first intelligence with deterministic guardrails and verifiable evidence**.
 
-Working product name: **SignalProof AI**.
+Public product name: **VowSig**. Historical SignalProof AI references remain in provenance-bearing artifacts.
 
 > AI finds the setup. Risk rules verify it. Every signal stays on the record.
 
@@ -188,7 +188,7 @@ Canonical IDs are unique:
 10. S02 new-market transfer — **DONE / PARTIAL TRANSFER (USTEC + US30)**
 11. Live immutable forward-test infrastructure — **DONE / XAUUSD + USTEC + US30 ACTIVE**
 12. Early Access SaaS MVP — **LIVE / RAILWAY PUBLIC BETA**
-13. AI-0 product naming — **DONE / WORKING NAME: SIGNALPROOF AI**
+13. AI-0 product naming — **SUPERSEDED / HISTORICAL NAME: SIGNALPROOF AI; CURRENT PUBLIC BRAND: VOWSIG**
 14. AI-1 architecture + preregistration — **DONE / FROZEN PRE-ACTIVATION**
 15. AI-v1 shadow implementation + activation — **DONE / LIVE FORWARD COLLECTION ACTIVE**
 16. AI-v1 read-only observability — **DONE / VPS VERIFIED**
@@ -200,9 +200,10 @@ Canonical IDs are unique:
 22. AI-v1 scheduled-run forensic diagnostic v0.1 — **DONE / ISSUE #12**
 23. AI-v1 historical tick boundary diagnostic v0.1 — **DONE / ISSUE #13**
 24. AI-v1 MT5 rates-cache access correlation v0.1 — **DONE / ISSUE #14**
-25. AI-v1.1 MT5 rates synchronization correction v0.1 — **CUTOVER CONTROLS PREPARED / OWNER PHASE A READ-ONLY PROOF NEXT / NO ACTIVATION / ISSUE #15**
-26. First cohort G4 customer-value evidence v0.1 — **NEXT PRODUCT MILESTONE / ISSUE #9**
-27. Organic acquisition & SEO v0.1 — **DEFERRED / AFTER INITIAL REAL-USER EVIDENCE**
+25. AI-v1.1 MT5 rates synchronization correction v0.1 — **DONE / CUTOVER + CLOUD VERIFIED / ISSUE #15 CLOSED**
+26. VowSig public rebrand v0.1 — **DONE / PRODUCTION + NATURAL CONTINUITY VERIFIED / ISSUE #16 CLOSED**
+27. First cohort G4 customer-value evidence v0.1 — **NEXT PRODUCT MILESTONE / ISSUE #9**
+28. Organic acquisition & SEO v0.1 — **DEFERRED / AFTER INITIAL REAL-USER EVIDENCE**
 
 ## Durable project-state rule
 
@@ -272,6 +273,6 @@ Frozen AI-v1 references:
 - `config/ai_v1_activation_schema.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
-AI-v1.0 is now runtime-bound, activated and collecting immutable forward shadow evidence with the hourly scheduler on XAUUSD, USTEC and US30. The exact provider/model and inference parameters remain frozen to OpenAI `gpt-5.4-2026-03-05`. Broker execution remains disabled. Read-only observability v0.1 is VPS-verified and complete. AI Insights UI is VPS/cloud-verified and live as a downstream-only sanitized read-only layer. Cloud snapshot durability is verified across a controlled Railway redeploy. The feedback/customer-discovery infrastructure is verified. The next product milestone is owner-controlled first-cohort G4 customer-value evidence collection while AI-v1 forward collection continues unchanged.
+AI-v1.1 is now the active hourly shadow runtime on XAUUSD, USTEC and US30, with frozen decision protocol AI-v1.0. AI-v1.0 runtime is retired and its scheduler remains Disabled; its evidence is preserved separately. The exact provider/model and inference parameters remain frozen to OpenAI `gpt-5.4-2026-03-05`. Broker execution remains disabled. VowSig is the public product brand at `https://vowsig.com`. The governed public-surface correction is upstream-valid, and the first natural post-cutover cycle cryptographically extended every AI-v1.1 pre-cutover ledger head without reset, fork, or backfill. The next product milestone is owner-controlled first-cohort G4 customer-value evidence collection under GitHub Issue #9 while AI-v1.1 forward collection continues unchanged.
 
 The active S02 forward protocols and their ledgers must remain unchanged.

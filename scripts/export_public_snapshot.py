@@ -47,6 +47,8 @@ def main() -> None:
     except Exception as exc:
         ai_v1 = {
             "schema_version": 1,
+            "runtime_version": "UNAVAILABLE",
+            "decision_protocol_version": "AI-v1.0",
             "protocol_version": "AI-v1.0",
             "mode": "SHADOW_ONLY",
             "status": "temporarily_unavailable",
@@ -76,6 +78,7 @@ def main() -> None:
         "output": str(output),
         "generated_at_utc": payload["generated_at_utc"],
         "live_signal_markets": payload["health"]["live_signal_markets"],
+        "ai_runtime_version": ai_v1.get("runtime_version"),
         "ai_v1_status": ai_v1.get("status"),
         "raw_market_data_included": False,
     }, indent=2))

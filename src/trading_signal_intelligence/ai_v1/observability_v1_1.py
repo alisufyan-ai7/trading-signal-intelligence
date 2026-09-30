@@ -11,6 +11,7 @@ from typing import Any
 
 from trading_signal_intelligence.ai_v1.activation_v1_1 import (
     DECISION_PROTOCOL_VERSION,
+    FROZEN_DECISION_ARTIFACT_PATHS,
     RUNTIME_VERSION,
     V11_ARTIFACT_PATHS,
 )
@@ -127,6 +128,44 @@ def verify_v1_1_artifacts(
         "mismatches": mismatches,
     }
 
+
+
+def verify_frozen_decision_artifacts_v1_1(
+    repo_root: Path,
+    anchor: dict[str, Any],
+) -> dict[str, Any]:
+    expected = anchor.get("frozen_decision_artifact_hashes")
+    if not isinstance(expected, dict):
+        return {
+            "valid": False,
+            "checked": 0,
+            "mismatches": {
+                "frozen_decision_artifact_hashes": {"expected": "object"}
+            },
+        }
+
+    mismatches: dict[str, dict[str, str | None]] = {}
+    for name, relative in FROZEN_DECISION_ARTIFACT_PATHS.items():
+        expected_hash = expected.get(name)
+        actual = _file_sha256(repo_root / relative)
+        if actual != expected_hash:
+            mismatches[name] = {
+                "expected": str(expected_hash) if expected_hash else None,
+                "actual": actual,
+            }
+
+    extra = sorted(set(expected) - set(FROZEN_DECISION_ARTIFACT_PATHS))
+    for name in extra:
+        mismatches[name] = {
+            "expected": str(expected[name]),
+            "actual": None,
+        }
+
+    return {
+        "valid": not mismatches,
+        "checked": len(FROZEN_DECISION_ARTIFACT_PATHS),
+        "mismatches": mismatches,
+    }
 
 def verify_anchor_upstream_v1_1(
     repo_root: Path,
@@ -324,6 +363,10 @@ def build_report_v1_1(
     }
 
     artifacts = verify_v1_1_artifacts(repo_root, anchor)
+    frozen_decision_artifacts = verify_frozen_decision_artifacts_v1_1(
+        repo_root,
+        anchor,
+    )
     upstream = (
         verify_anchor_upstream_v1_1(repo_root, anchor_path)
         if verify_upstream
@@ -427,6 +470,7 @@ def build_report_v1_1(
     healthy = (
         ledgers_valid
         and artifacts["valid"]
+        and frozen_decision_artifacts["valid"]
         and upstream_ok
         and broker_disabled
         and scheduler_ok
@@ -448,7 +492,13 @@ def build_report_v1_1(
         "health": {
             "healthy": healthy,
             "ledgers_valid": ledgers_valid,
-            "frozen_artifacts_valid": artifacts["valid"],
+            "frozen_artifacts_valid": (
+                artifacts["valid"] and frozen_decision_artifacts["valid"]
+            ),
+            "v1_1_artifacts_valid": artifacts["valid"],
+            "frozen_decision_artifacts_valid": (
+                frozen_decision_artifacts["valid"]
+            ),
             "activation_anchor_upstream_valid": upstream.get("valid"),
             "scheduler_healthy": scheduler.get("healthy"),
             "broker_execution_disabled": broker_disabled,
@@ -466,6 +516,9 @@ def build_report_v1_1(
             "backfill_prior_missed": False,
             "upstream": upstream,
             "artifact_verification": artifacts,
+            "frozen_decision_artifact_verification": (
+                frozen_decision_artifacts
+            ),
         },
         "scheduler": scheduler,
         "totals": {

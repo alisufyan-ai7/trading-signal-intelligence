@@ -127,23 +127,30 @@ def _append_sync_outcome(
             "reason": "rates_not_synchronized",
         }
 
-    sync_entity = (
-        f"AI-v1.1:{symbol}:{_iso_z(boundary)}:SYNC:NO_CURRENT_H1_TICK"
-    )
-    if ledger.has(record_type="SYNC_STATUS", entity_id=sync_entity):
+    # A missing current-hour tick is a fail-closed missed opportunity, not a
+    # new ledger record type. Reuse MISSED_INFERENCE so the frozen shared
+    # AI-v1.0 ledger implementation remains unchanged and the cycle can never
+    # be backfilled later if a tick appears afterward.
+    entity_id = cycle_entity_id_v1_1(symbol, boundary)
+    if cycle_processed_v1_1(ledger, entity_id):
         return {
-            "record_type": "SKIPPED_ALREADY_RECORDED",
-            "entity_id": sync_entity,
+            "record_type": "SKIPPED_ALREADY_PROCESSED",
+            "entity_id": entity_id,
             "effective_at_utc": _iso_z(boundary),
             "reason": "no_current_h1_tick",
         }
     record = ledger.append(
-        record_type="SYNC_STATUS",
-        entity_id=sync_entity,
+        record_type="MISSED_INFERENCE",
+        entity_id=entity_id,
         effective_at_utc=boundary,
         recorded_at_utc=observed_at_utc,
         payload={
             **payload,
+            "source_bar_close_utc": _iso_z(boundary),
+            "data_age_seconds": (
+                observed_at_utc.astimezone(timezone.utc) - boundary
+            ).total_seconds(),
+            "max_data_age_seconds": 300.0,
             "reason": "no_current_h1_tick",
         },
     )

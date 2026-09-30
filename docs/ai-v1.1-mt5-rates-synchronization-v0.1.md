@@ -1,6 +1,6 @@
 # AI-v1.1 MT5 Rates Synchronization Correction v0.1
 
-_Status: PRE-ACTIVATION IMPLEMENTATION IN PROGRESS — NOT ACTIVE_  
+_Status: PRE-ACTIVATION IMPLEMENTATION COMPLETE — OWNER VPS VERIFICATION PENDING — NOT ACTIVE_  
 _Date: 2026-09-30_  
 _GitHub issue: #15_
 
@@ -146,3 +146,26 @@ New pre-activation modules:
 The live AI-v1.0 runner does not import these modules.
 
 No v1.1 activation anchor, scheduled task, or live ledger has been authorized yet.
+
+
+## Version-aware cutover package
+
+The complete pre-activation cutover package is now implemented.
+
+It includes:
+
+- version-isolated v1.1 observability;
+- fail-closed active-runtime selection;
+- runtime-aware public AI Insights/export/cloud validation/UI;
+- cloud-publish freeze during partial v1.1 transition;
+- read-only v1.0 retirement metadata preview;
+- activation-gated v1.1 live runner/runtime verifier;
+- v1.1 Windows task wrapper and installer with legacy-task exclusion;
+- aggregate v1.1 activation-anchor schema/builder/validator;
+- no-write activation preview;
+- no-mutation consolidated cutover preview;
+- regression coverage for version/gate/public-evidence isolation.
+
+No activation, live v1.1 ledger creation, retirement metadata write, scheduler mutation, provider call or broker action has occurred.
+
+The next step is owner-run VPS verification of this complete pre-activation package.

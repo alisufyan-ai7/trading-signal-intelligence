@@ -75,6 +75,11 @@ def _validate_snapshot(payload: dict[str, Any]) -> None:
                 status_code=400,
                 detail="Unexpected AI decision protocol",
             )
+        if ai_v1.get("decision_protocol_version") != "AI-v1.0":
+            raise HTTPException(
+                status_code=400,
+                detail="Unexpected AI decision protocol version",
+            )
         if runtime == "AI-v1.1":
             legacy = ai_v1.get("legacy_lineage")
             if not isinstance(legacy, dict):

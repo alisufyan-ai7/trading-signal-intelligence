@@ -72,7 +72,12 @@ $ErrorActionPreference = "Stop"
 git pull --ff-only
 if ($LASTEXITCODE -ne 0) { throw "git pull --ff-only failed" }
 
-git status --short
+$initialStatus = @(git status --short)
+$initialStatus
+if ($initialStatus.Count -ne 0) {
+    throw "Worktree is not clean. Stop before cutover review."
+}
+
 $head = (git rev-parse HEAD).Trim()
 "repository_head=$head"
 
@@ -265,7 +270,6 @@ Do not run this while the legacy task is Running.
 
 ```powershell
 .\scripts\disable_ai_v1_shadow_task_for_v1_1.ps1 -ConfirmCutover
-if ($LASTEXITCODE -ne 0) { throw "AI-v1.0 scheduler disable failed" }
 
 $legacy = Get-ScheduledTask -TaskName "SignalProof AI-v1 Shadow Scan"
 "legacy_state_after_disable=$($legacy.State)"
@@ -303,7 +307,8 @@ if ($retirementFiles.Count -ne 1) {
     throw "Expected exactly one v1.0 retirement metadata file"
 }
 
-git add -- $retirementFiles[0].FullName
+$retirementRel = Resolve-Path -Relative $retirementFiles[0].FullName
+git add -- $retirementRel
 git commit -m "Retire AI-v1.0 collector before AI-v1.1 cutover"
 if ($LASTEXITCODE -ne 0) { throw "Retirement metadata commit failed" }
 
@@ -342,7 +347,8 @@ if ($v11Anchor.Count -ne 1) {
     throw "Expected exactly one AI-v1.1 activation anchor"
 }
 
-git add -- $v11Anchor[0].FullName
+$v11AnchorRel = Resolve-Path -Relative $v11Anchor[0].FullName
+git add -- $v11AnchorRel
 git commit -m "Anchor AI-v1.1 activation"
 if ($LASTEXITCODE -ne 0) { throw "AI-v1.1 activation anchor commit failed" }
 
@@ -428,7 +434,6 @@ Only after Phase E passes.
 
 ```powershell
 .\scripts\install_ai_v1_1_shadow_task.ps1 -ConfirmActivatedRuntime
-if ($LASTEXITCODE -ne 0) { throw "AI-v1.1 task installation failed" }
 
 $legacy = Get-ScheduledTask -TaskName "SignalProof AI-v1 Shadow Scan"
 $v11 = Get-ScheduledTask -TaskName "SignalProof AI-v1.1 Shadow Scan"

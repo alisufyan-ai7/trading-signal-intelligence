@@ -2,7 +2,7 @@
 
 Canonical cross-chat continuation: `docs/CURRENT-HANDOFF.md` — reconcile it against current `main` before significant work or any mutation.
 
-**Phase:** VowSig public rebrand v0.1 staged; AI-v1.1 forward shadow collection active; hard cutover complete  
+**Phase:** VowSig public rebrand v0.1 COMPLETE; AI-v1.1 forward shadow collection active; first-cohort G4 evidence next  
 **Date:** 2026-10-01
 
 ## Current production override — 2026-10-01
@@ -19,9 +19,13 @@ This section supersedes older status statements below where they describe AI-v1.
 - AI-v1.1 scheduler: **ACTIVE / HOURLY / HEALTHY**.
 - Broker execution: **DISABLED**.
 - Hosted cloud snapshot: **AI-v1.1 / forward_validation_in_progress / durability PASS**.
-- VowSig public rebrand v0.1: **STAGED ON ISOLATED BRANCH / ISSUE #16**.
-- Rebrand safety constraint: customer-facing UI/cloud files are fingerprinted by the active AI-v1.1 activation anchor, so they must not be merged into production until a separately governed non-decision artifact correction/version is verified.
-- Canonical rebrand plan: `docs/vowsig-public-rebrand-v0.1.md`.
+- VowSig public rebrand v0.1: **COMPLETE / PRODUCTION VERIFIED / ISSUE #16 CLOSED**.
+- VowSig production main: `3dfc548b0cd89de1ac9e19723dec1ad44b39ca50`.
+- Public-surface correction: **VALID / UPSTREAM-VALID / NON-DECISION ONLY**.
+- Post-cutover natural continuity: **PASS** — each AI-v1.1 ledger extended the exact pre-cutover head with a valid first-new-record link; no reset/fork/backfill.
+- Hosted VowSig snapshot after natural publish: **PASS / AI-v1.1 / AI-v1.0 decision protocol / SHADOW_ONLY / broker execution disabled**.
+- Canonical rebrand record: `docs/vowsig-public-rebrand-v0.1.md`.
+- Next product milestone: **First cohort G4 customer-value evidence v0.1 / GitHub Issue #9**.
 
 
 ## Infrastructure
@@ -67,9 +71,10 @@ Immediate work is **not** model tuning. The active sequence is:
 2. **DONE:** build/test a strictly read-only progress and health monitor;
 3. **DONE:** verify that monitor against the live VPS ledgers;
 4. **DONE / CLOUD VERIFIED:** AI Insights UI from sanitized read-only exported evidence;
-5. **NEXT:** make the sanitized cloud snapshot durable across Railway redeploys without changing AI-v1/S02 semantics;
-6. continue product work that does not alter AI-v1 decision behavior;
-7. review A1/A2/A3 only at their frozen eligibility thresholds.
+5. **DONE / REDEPLOY VERIFIED:** sanitized cloud snapshot durability;
+6. **DONE / PRODUCTION VERIFIED:** VowSig public rebrand v0.1 with governed public-surface correction and natural post-cutover lineage continuity;
+7. **NEXT:** First cohort G4 customer-value evidence v0.1 under GitHub Issue #9;
+8. review A1/A2/A3 only at their frozen eligibility thresholds.
 
 Canonical plan: `docs/ai-v1-observability-plan.md`.
 

@@ -119,3 +119,30 @@ No AI-v1.1 scheduler activation occurs automatically.
 The owner must review the final implementation/activation plan before the v1.1 activation anchor is created and before any scheduler is switched.
 
 Until then AI-v1.0 remains the live shadow collector.
+
+
+## Version-isolated runtime path
+
+The pre-activation implementation now distinguishes:
+
+- **runtime/evidence lineage:** `AI-v1.1`;
+- **model/feature/decision protocol:** `AI-v1.0`.
+
+This is intentional. The data-read correction changes collection readiness only; the model contract, prompt, feature schema, decision schema and guardrails remain frozen.
+
+New v1.1 evidence identity:
+
+- entity prefix: `AI-v1.1:`;
+- XAUUSD ledger: `data/ai_v1_1_xauusd.sqlite`;
+- USTEC ledger: `data/ai_v1_1_ustec.sqlite`;
+- US30 ledger: `data/ai_v1_1_us30.sqlite`.
+
+New pre-activation modules:
+
+- `mt5_rates_adapter_v1_1.py`;
+- `engine_v1_1.py`;
+- `shadow_runtime_v1_1.py`.
+
+The live AI-v1.0 runner does not import these modules.
+
+No v1.1 activation anchor, scheduled task, or live ledger has been authorized yet.

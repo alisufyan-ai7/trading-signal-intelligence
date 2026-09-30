@@ -1,16 +1,22 @@
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+
+import pytest
 
 from trading_signal_intelligence.ai_v1.ledger import AILedger
 from trading_signal_intelligence.ai_v1.observability import (
     DATABASE_PATHS,
     MARKETS,
 )
+import trading_signal_intelligence.ai_v1.retirement_v1_0 as retirement_v1_0
 from trading_signal_intelligence.ai_v1.retirement_v1_0 import (
+    RetirementV10Error,
+    build_v1_0_retirement_document,
     build_v1_0_retirement_preview,
 )
 
@@ -122,3 +128,94 @@ def test_retirement_preview_allows_zero_unresolved_signals(tmp_path: Path) -> No
     assert preview["ledgers_preserved"] is True
     assert preview["provider_call_made"] is False
     assert preview["mt5_call_made"] is False
+
+
+
+def test_retirement_document_requires_disabled_scheduler_and_unchanged_ledgers(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    _seed(tmp_path, open_signal=False)
+
+    preview = build_v1_0_retirement_preview(
+        tmp_path,
+        include_scheduler=False,
+        verify_upstream=False,
+    )
+    preview["performance_bearing_records_observed"] = True
+    preview["scheduler_before_disable"] = {
+        "available": True,
+        "state": "Ready",
+        "task_name": "SignalProof AI-v1 Shadow Scan",
+        "actions": [{"Execute": "cmd.exe"}],
+    }
+
+    current = copy.deepcopy(preview)
+    current["scheduler_before_disable"] = {
+        "available": True,
+        "state": "Disabled",
+        "task_name": "SignalProof AI-v1 Shadow Scan",
+        "actions": [{"Execute": "cmd.exe"}],
+    }
+
+    monkeypatch.setattr(
+        retirement_v1_0,
+        "build_v1_0_retirement_preview",
+        lambda *args, **kwargs: copy.deepcopy(current),
+    )
+
+    document = build_v1_0_retirement_document(
+        tmp_path,
+        preview=preview,
+        retired_at_utc=datetime(2026, 9, 30, 13, 0, tzinfo=timezone.utc),
+        verify_upstream=False,
+    )
+
+    assert document["metadata_write_performed"] is True
+    assert document["scheduler_before_disable"]["state"] == "Ready"
+    assert document["scheduler_after_disable"]["state"] == "Disabled"
+    assert document["ledger_mutation_performed"] is False
+    assert document["backfilled_into_ai_v1_1"] is False
+
+
+def test_retirement_document_rejects_ledger_change_after_disable(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    _seed(tmp_path, open_signal=False)
+
+    preview = build_v1_0_retirement_preview(
+        tmp_path,
+        include_scheduler=False,
+        verify_upstream=False,
+    )
+    preview["performance_bearing_records_observed"] = True
+    preview["scheduler_before_disable"] = {
+        "available": True,
+        "state": "Ready",
+        "task_name": "SignalProof AI-v1 Shadow Scan",
+    }
+
+    current = copy.deepcopy(preview)
+    current["scheduler_before_disable"] = {
+        "available": True,
+        "state": "Disabled",
+        "task_name": "SignalProof AI-v1 Shadow Scan",
+    }
+    current["markets"]["XAUUSD"]["head_hash"] = "f" * 64
+
+    monkeypatch.setattr(
+        retirement_v1_0,
+        "build_v1_0_retirement_preview",
+        lambda *args, **kwargs: copy.deepcopy(current),
+    )
+
+    with pytest.raises(
+        RetirementV10Error,
+        match="ledger changed across scheduler-disable boundary",
+    ):
+        build_v1_0_retirement_document(
+            tmp_path,
+            preview=preview,
+            verify_upstream=False,
+        )

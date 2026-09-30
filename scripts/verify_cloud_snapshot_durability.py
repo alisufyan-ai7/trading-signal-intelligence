@@ -74,6 +74,21 @@ def main() -> None:
         "Cloud snapshot is pending/missing",
     )
     _require(ai.get("protocol_version") == "AI-v1.0", "Wrong AI protocol")
+    runtime_version = ai.get("runtime_version")
+    _require(
+        runtime_version in {"AI-v1.0", "AI-v1.1"},
+        f"Unexpected active AI runtime: {runtime_version!r}",
+    )
+    if runtime_version == "AI-v1.1":
+        legacy = ai.get("legacy_lineage")
+        _require(
+            isinstance(legacy, dict),
+            "AI-v1.1 public contract missing legacy lineage",
+        )
+        _require(
+            legacy.get("gate_counts_carried_into_active_runtime") is False,
+            "AI-v1.1 legacy gate-count isolation failed",
+        )
     _require(ai.get("mode") == "SHADOW_ONLY", "AI is not shadow-only")
     _require(
         ai.get("status") == "forward_validation_in_progress",
@@ -103,6 +118,7 @@ def main() -> None:
         "base_url": base,
         "snapshot_generated_at_utc": health.get("snapshot_generated_at_utc"),
         "market_count": len(markets),
+        "ai_runtime_version": runtime_version,
         "ai_protocol": ai.get("protocol_version"),
         "ai_mode": ai.get("mode"),
         "ai_status": ai.get("status"),

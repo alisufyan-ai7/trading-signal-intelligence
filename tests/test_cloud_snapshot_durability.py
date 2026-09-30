@@ -16,6 +16,8 @@ GOOD_HEALTH = {
 }
 
 GOOD_AI = {
+    "runtime_version": "AI-v1.0",
+    "decision_protocol_version": "AI-v1.0",
     "protocol_version": "AI-v1.0",
     "mode": "SHADOW_ONLY",
     "status": "forward_validation_in_progress",
@@ -123,4 +125,45 @@ def test_durability_verifier_fails_market_count(monkeypatch) -> None:
     monkeypatch.setattr("sys.argv", ["verify_cloud_snapshot_durability.py"])
 
     with pytest.raises(SystemExit, match="Expected 9 markets"):
+        main()
+
+
+
+def test_durability_verifier_passes_v1_1_with_separate_legacy_lineage(
+    monkeypatch,
+    capsys,
+) -> None:
+    ai = json.loads(json.dumps(GOOD_AI))
+    ai["runtime_version"] = "AI-v1.1"
+    ai["legacy_lineage"] = {
+        "runtime_version": "AI-v1.0",
+        "gate_counts_carried_into_active_runtime": False,
+    }
+
+    monkeypatch.setattr(
+        "urllib.request.urlopen",
+        _urlopen_factory(GOOD_HEALTH, ai, [{"id": i} for i in range(9)]),
+    )
+    monkeypatch.setattr("sys.argv", ["verify_cloud_snapshot_durability.py"])
+
+    main()
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["cloud_snapshot_durability_check"] == "PASS"
+    assert payload["ai_runtime_version"] == "AI-v1.1"
+
+
+def test_durability_verifier_rejects_v1_1_without_legacy_isolation(
+    monkeypatch,
+) -> None:
+    ai = json.loads(json.dumps(GOOD_AI))
+    ai["runtime_version"] = "AI-v1.1"
+    ai["legacy_lineage"] = None
+
+    monkeypatch.setattr(
+        "urllib.request.urlopen",
+        _urlopen_factory(GOOD_HEALTH, ai, [{"id": i} for i in range(9)]),
+    )
+    monkeypatch.setattr("sys.argv", ["verify_cloud_snapshot_durability.py"])
+
+    with pytest.raises(SystemExit, match="legacy lineage"):
         main()

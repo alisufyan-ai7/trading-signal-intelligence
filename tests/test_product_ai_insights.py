@@ -188,6 +188,9 @@ def test_public_ai_insights_are_sanitized_and_read_only(tmp_path) -> None:
 
     assert before == after
     assert payload["mode"] == "SHADOW_ONLY"
+    assert payload["runtime_version"] == "AI-v1.0"
+    assert payload["decision_protocol_version"] == "AI-v1.0"
+    assert payload["legacy_lineage"] is None
     assert payload["health"]["healthy"] is True
     assert payload["health"]["broker_execution_disabled"] is True
     assert payload["totals"]["valid_inferences"] == 2

@@ -110,6 +110,7 @@ def test_v1_1_activation_bundle_includes_versioned_runtime_artifacts() -> None:
         "preactivation_runner_script_v1_1",
         "preactivation_verifier_script_v1_1",
         "activation_preview_script_v1_1",
+        "cutover_preview_script_v1_1",
         "live_runner_script_v1_1",
         "runtime_verifier_source_v1_1",
         "runtime_verifier_script_v1_1",

@@ -50,7 +50,7 @@ Current work order:
 9. **DONE:** AI-v1 Scheduled-Run Forensic Diagnostic v0.1 — 44/46 index misses came from successful scans with no current-close action; GitHub Issue #12;
 10. **DONE:** AI-v1 Historical Tick Boundary Diagnostic v0.1 — first-tick mechanism not confirmed; 42/46 misses had a tick before the original scan; GitHub Issue #13;
 11. **DONE:** AI-v1 MT5 Rates-Cache Access Correlation v0.1 — supporting but non-conclusive cache-warming correlation; no runtime correction applied; GitHub Issue #14;
-12. **IN PROGRESS — VERSION-AWARE CUTOVER PREP:** AI-v1.1 MT5 Rates Synchronization Correction v0.1 — owner preflight PASS; activation plan documented; activation BLOCKED until v1.1 observability/public export, retirement metadata and live runner/verifier/task path are implemented and verified; GitHub Issue #15;
+12. **IMPLEMENTED — OWNER VPS VERIFICATION PENDING / NO ACTIVATION:** AI-v1.1 MT5 Rates Synchronization Correction v0.1 — version-aware observability/public export, retirement preview, activation-gated live runner/verifier/task path and no-write cutover previews are committed; NEXT: complete VPS verification + review unresolved v1.0 signals; GitHub Issue #15;
 13. **NEXT PRODUCT MILESTONE:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; GitHub Issue #9;
 14. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 

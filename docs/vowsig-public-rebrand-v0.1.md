@@ -1,5 +1,31 @@
 # VowSig Public Rebrand v0.1
 
+## Completion status — 2026-10-01
+
+**COMPLETE / PRODUCTION VERIFIED / NATURAL LINEAGE CONTINUITY PASS / ISSUE #16 CLOSED**
+
+Production merge:
+
+`3dfc548b0cd89de1ac9e19723dec1ad44b39ca50`
+
+Final post-cutover proof established:
+
+- VowSig is live at `https://vowsig.com`;
+- hosted title/brand/canonical metadata and `/healthz` report VowSig;
+- cloud snapshot durability passes;
+- active runtime remains AI-v1.1;
+- frozen decision protocol remains AI-v1.0;
+- runtime mode remains SHADOW_ONLY;
+- broker execution remains disabled;
+- AI-v1.0 scheduler remains Disabled;
+- AI-v1.1 and product-publisher schedulers are Ready and healthy;
+- the first natural post-cutover AI-v1.1 cycle extended all three exact
+  pre-cutover ledger heads with valid hash-chain links;
+- the first natural post-cutover product-publisher cycle republished the
+  continued AI-v1.1 lineage;
+- no reset, fork, backfill, decision-artifact change, provider mutation, MT5
+  mutation, or broker-execution mutation occurred.
+
 ## Decision
 
 VowSig replaces SignalProof AI as the public product brand.
@@ -50,7 +76,7 @@ The AI-v1.1 activation anchor fingerprints public/product files that this rebran
 
 Therefore these changes must not be merged into the active production branch until a separately governed non-decision correction is prepared and verified. Merging them directly under the existing activation would make frozen-artifact verification fail closed.
 
-The isolated branch now prepares that mechanism:
+The governed correction mechanism used for the completed cutover is:
 
 - `observability_v1_1.py` accepts an optional committed/upstream public-surface correction anchor;
 - correction overrides are limited to exactly six non-decision artifact names:
@@ -65,15 +91,17 @@ The isolated branch now prepares that mechanism:
 - the correction anchor must assert no ledger/provider/MT5/scheduler/backfill/broker mutation;
 - `scripts/create_vowsig_public_surface_correction.py` is confirmation-gated and creates only the correction JSON evidence file.
 
-The correction anchor has not yet been generated and the branch must not be merged until isolated verification passes and a controlled production cutover is separately approved.
+The correction anchor was generated, committed, pushed, and verified byte-identical upstream:
 
-The rebrand implementation is developed on:
+`research/forward/AI-v1.1-public-surface-correction-2026-09-30T215809Z.json`
+
+The implementation branch was:
 
 `product/vowsig-public-rebrand-v0.1`
 
-Production `main` remains unchanged until the correction boundary is approved.
+PR #17 was merged into production only after isolated tests, upstream correction verification, live pre-cutover reconciliation, explicit owner approval, paused-task verification, merged-code verification, hosted VowSig verification, and natural post-cutover lineage continuity proof.
 
-## Public changes prepared on the rebrand branch
+## Public changes deployed
 
 - page/browser title becomes `VowSig — Research Beta`;
 - public eyebrow becomes `VOWSIG • RESEARCH BETA`;
@@ -91,7 +119,7 @@ Existing secret/configuration variable names such as `TRADINGTOP_*` and `SIGNALP
 
 The Windows AI task names also remain unchanged in this milestone because they are operational/historical identifiers tied to the active runtime.
 
-## Required safe-cutover sequence
+## Completed safe-cutover sequence
 
 1. Keep production `main` and AI-v1.1 collection unchanged while the rebrand branch is reviewed.
 2. Prove all customer-facing rebrand tests on the branch.
@@ -125,7 +153,7 @@ The Windows AI task names also remain unchanged in this milestone because they a
 
 ## Completion criteria
 
-The milestone is complete only when:
+The milestone completion criteria were:
 
 - VowSig is the public customer-facing brand;
 - `https://vowsig.com` is the canonical public URL;

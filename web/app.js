@@ -131,7 +131,7 @@ function renderAi(ai) {
   if (aiUnavailable(ai)) {
     statusHost.innerHTML = `
       <div class="empty">
-        <strong>AI-v1 shadow insights are not available in the current cloud snapshot.</strong>
+        <strong>VowSig AI shadow insights are not available in the current cloud snapshot.</strong>
         <span>${esc(ai?.customer_notice || "Waiting for the next VPS-derived snapshot.")}</span>
       </div>
     `;
@@ -253,7 +253,7 @@ function renderAi(ai) {
   if (!shadowSignals.length) {
     signalsHost.innerHTML = `
       <div class="empty">
-        <strong>No AI-v1 shadow signal has been issued yet.</strong>
+        <strong>No VowSig shadow signal has been issued yet.</strong>
         <span>Valid NO_TRADE decisions still count toward inference evidence.</span>
       </div>
     `;

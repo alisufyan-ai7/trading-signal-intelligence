@@ -7,13 +7,13 @@ import urllib.request
 from typing import Any
 
 
-DEFAULT_BASE_URL = "https://tradingtop-early-access-production.up.railway.app"
+DEFAULT_BASE_URL = "https://vowsig.com"
 
 
 def _get_json(url: str, timeout: float = 20.0) -> dict[str, Any]:
     request = urllib.request.Request(
         url,
-        headers={"User-Agent": "SignalProof-Durability-Check/1.0"},
+        headers={"User-Agent": "VowSig-Durability-Check/1.0"},
         method="GET",
     )
     try:
@@ -44,7 +44,7 @@ def _require(condition: bool, message: str) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Read-only verification of the SignalProof cloud snapshot contract. "
+            "Read-only verification of the VowSig cloud snapshot contract. "
             "Run before and after a Railway redeploy to prove durability."
         )
     )

@@ -9,7 +9,7 @@ set "LOG=%LOGDIR%\product_publish.log"
 if not exist "%PY%" exit /b 10
 if not exist "%LOGDIR%" mkdir "%LOGDIR%"
 
-echo ===== TradingTop product publish %DATE% %TIME% =====>> "%LOG%"
+echo ===== VowSig product publish %DATE% %TIME% =====>> "%LOG%"
 
 "%PY%" "scripts\export_public_snapshot.py" >> "%LOG%" 2>&1
 set "EXPORT_EXIT=!ERRORLEVEL!"

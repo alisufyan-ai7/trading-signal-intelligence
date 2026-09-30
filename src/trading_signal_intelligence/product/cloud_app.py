@@ -124,9 +124,9 @@ def _market_rows(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 app = FastAPI(
-    title="SignalProof AI Research Beta Cloud",
+    title="VowSig Research Beta Cloud",
     version="0.5.0",
-    description="SignalProof AI public research-beta surface fed by the private Windows collector.",
+    description="VowSig public research-beta surface fed by the private Windows collector.",
 )
 
 app.mount("/static", StaticFiles(directory=WEB), name="static")
@@ -134,7 +134,7 @@ app.mount("/static", StaticFiles(directory=WEB), name="static")
 
 @app.get("/healthz")
 def healthz() -> dict:
-    return {"ok": True, "service": "tradingtop-early-access"}
+    return {"ok": True, "service": "vowsig"}
 
 
 @app.get("/")
@@ -150,7 +150,7 @@ def health() -> dict:
         return {
             "ok": False,
             "launch_ready": False,
-            "product": "SignalProof AI Research Beta",
+            "product": "VowSig Research Beta",
             "launch_mode": "research_beta",
             "live_signal_markets": 3,
             "ready_collector_count": 0,
@@ -294,7 +294,7 @@ def owner_feedback_export(
             media_type="text/csv",
             headers={
                 "Content-Disposition": (
-                    "attachment; filename=signalproof-feedback.csv"
+                    "attachment; filename=vowsig-feedback.csv"
                 )
             },
         )

@@ -271,11 +271,22 @@ def probe_windows_scheduler() -> dict[str, Any]:
         "$ErrorActionPreference='Stop';"
         f"$t=Get-ScheduledTask -TaskName '{TASK_NAME}';"
         f"$i=Get-ScheduledTaskInfo -TaskName '{TASK_NAME}';"
+        "$actions=@($t.Actions|ForEach-Object{[pscustomobject]@{"
+        "Execute=$_.Execute;Arguments=$_.Arguments;"
+        "WorkingDirectory=$_.WorkingDirectory}});"
+        "$triggers=@($t.Triggers|ForEach-Object{[pscustomobject]@{"
+        "StartBoundary=$_.StartBoundary;"
+        "RepetitionInterval=[string]$_.Repetition.Interval;"
+        "RepetitionDuration=[string]$_.Repetition.Duration}});"
         "$o=[pscustomobject]@{TaskName=$t.TaskName;State=[string]$t.State;"
+        "Description=$t.Description;Actions=$actions;Triggers=$triggers;"
+        "StartWhenAvailable=[bool]$t.Settings.StartWhenAvailable;"
+        "MultipleInstances=[string]$t.Settings.MultipleInstances;"
+        "ExecutionTimeLimit=[string]$t.Settings.ExecutionTimeLimit;"
         "LastRunTime=$i.LastRunTime.ToString('o');"
         "LastTaskResult=[int64]$i.LastTaskResult;"
         "NextRunTime=$i.NextRunTime.ToString('o')};"
-        "$o|ConvertTo-Json -Compress"
+        "$o|ConvertTo-Json -Depth 6 -Compress"
     )
     try:
         payload = json.loads(
@@ -300,6 +311,14 @@ def probe_windows_scheduler() -> dict[str, Any]:
         "healthy": state in {"Ready", "Running"} and last_result == 0,
         "task_name": str(payload["TaskName"]),
         "state": state,
+        "description": payload.get("Description"),
+        "actions": payload.get("Actions", []),
+        "triggers": payload.get("Triggers", []),
+        "settings": {
+            "start_when_available": payload.get("StartWhenAvailable"),
+            "multiple_instances": payload.get("MultipleInstances"),
+            "execution_time_limit": payload.get("ExecutionTimeLimit"),
+        },
         "last_run_time": last_run,
         "last_task_result": last_result,
         "last_successful_run_time": last_run if last_result == 0 else None,

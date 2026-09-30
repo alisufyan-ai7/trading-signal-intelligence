@@ -169,3 +169,23 @@ It includes:
 No activation, live v1.1 ledger creation, retirement metadata write, scheduler mutation, provider call or broker action has occurred.
 
 The next step is owner-run VPS verification of this complete pre-activation package.
+
+
+## Owner VPS cutover verification
+
+_Status: PASS — FINAL OWNER ACTIVATION REVIEW NEXT — NOT ACTIVE_
+
+Owner-run VPS proof at head `1db3a7f0d64bcc02556681bb72ba51fd981f24e7` established:
+
+- 58 cutover/preactivation tests passed;
+- frozen v1.0 diff = 0;
+- v1.1 preactivation = PASS;
+- v1.1 ledgers/anchors = 0 before and after previews;
+- frozen decision lineage matches the upstream v1.0 activation;
+- v1.0 unresolved signal count = 0;
+- v1.0 retirement preview says scheduler cutover ready = true;
+- consolidated v1.1 cutover preview says all current preconditions met = true;
+- public preflight snapshot still reports active runtime AI-v1.0;
+- no mutation/provider/MT5/cloud/broker action occurred.
+
+Four pytest warnings remain from empty-string `match` expressions in negative cloud validation tests. They are non-blocking runtime-wise but will be cleaned before final activation review.

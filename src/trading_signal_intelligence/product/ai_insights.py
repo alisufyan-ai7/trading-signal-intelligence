@@ -263,6 +263,11 @@ def build_public_ai_insights(
         runtime_version == "AI-v1.1"
         and performance_bearing_records == 0
     )
+    unhealthy_v1_1 = (
+        runtime_version == "AI-v1.1"
+        and report["health"]["healthy"] is not True
+    )
+    v1_1_publish_blocked = activation_only_v1_1 or unhealthy_v1_1
     legacy_lineage = (
         build_legacy_v1_0_summary(repo_root)
         if runtime_version == "AI-v1.1"
@@ -278,10 +283,14 @@ def build_public_ai_insights(
         "status": (
             "activation_only_pre_first_cycle"
             if activation_only_v1_1
-            else "forward_validation_in_progress"
+            else (
+                "runtime_attention_required"
+                if unhealthy_v1_1
+                else "forward_validation_in_progress"
+            )
         ),
-        "publish_allowed": not activation_only_v1_1,
-        "transition_blocked": activation_only_v1_1,
+        "publish_allowed": not v1_1_publish_blocked,
+        "transition_blocked": v1_1_publish_blocked,
         "customer_notice": (
             f"{runtime_version} is running in shadow mode. Signals are research "
             "outputs, not broker executions or personalized investment advice."

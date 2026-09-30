@@ -128,6 +128,11 @@ def test_v1_1_activation_bundle_includes_versioned_runtime_artifacts() -> None:
         "ai_ui_index",
         "retirement_builder_source_v1_0",
         "retirement_preview_script_v1_0",
+        "legacy_observability_source_v1_0",
+        "legacy_task_disable_script_v1_0",
+        "retirement_finalizer_script_v1_0",
+        "activation_execution_script_v1_1",
+        "hard_cutover_runbook_v1_1",
         "mt5_connector_source",
     }
     assert set(V11_ARTIFACT_PATHS) == required

@@ -47,7 +47,7 @@ def test_cloud_snapshot_accepts_v1_1_with_separate_legacy_lineage() -> None:
 def test_cloud_snapshot_rejects_ambiguous_active_runtime() -> None:
     payload = _snapshot()
     payload["ai_v1"]["runtime_version"] = "UNKNOWN"
-    with pytest.raises(HTTPException, match=""):
+    with pytest.raises(HTTPException):
         _validate_snapshot(payload)
 
 
@@ -58,14 +58,14 @@ def test_cloud_snapshot_rejects_v1_1_legacy_gate_count_mixing() -> None:
         "runtime_version": "AI-v1.0",
         "gate_counts_carried_into_active_runtime": True,
     }
-    with pytest.raises(HTTPException, match=""):
+    with pytest.raises(HTTPException):
         _validate_snapshot(payload)
 
 
 def test_cloud_snapshot_rejects_wrong_decision_protocol() -> None:
     payload = copy.deepcopy(_snapshot())
     payload["ai_v1"]["protocol_version"] = "AI-v9"
-    with pytest.raises(HTTPException, match=""):
+    with pytest.raises(HTTPException):
         _validate_snapshot(payload)
 
 
@@ -73,5 +73,5 @@ def test_cloud_snapshot_rejects_wrong_decision_protocol() -> None:
 def test_cloud_snapshot_rejects_wrong_decision_protocol_version() -> None:
     payload = _snapshot()
     payload["ai_v1"]["decision_protocol_version"] = "AI-v9"
-    with pytest.raises(HTTPException, match=""):
+    with pytest.raises(HTTPException):
         _validate_snapshot(payload)

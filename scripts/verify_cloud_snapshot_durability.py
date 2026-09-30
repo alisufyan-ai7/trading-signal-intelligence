@@ -74,6 +74,10 @@ def main() -> None:
         "Cloud snapshot is pending/missing",
     )
     _require(ai.get("protocol_version") == "AI-v1.0", "Wrong AI protocol")
+    _require(
+        ai.get("decision_protocol_version") == "AI-v1.0",
+        "Wrong AI decision protocol version",
+    )
     runtime_version = ai.get("runtime_version")
     _require(
         runtime_version in {"AI-v1.0", "AI-v1.1"},
@@ -120,6 +124,7 @@ def main() -> None:
         "market_count": len(markets),
         "ai_runtime_version": runtime_version,
         "ai_protocol": ai.get("protocol_version"),
+        "ai_decision_protocol": ai.get("decision_protocol_version"),
         "ai_mode": ai.get("mode"),
         "ai_status": ai.get("status"),
         "ai_generated_at_utc": ai.get("generated_at_utc"),

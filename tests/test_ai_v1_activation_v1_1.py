@@ -212,6 +212,8 @@ def test_task_installer_requires_disabled_legacy_task() -> None:
     ).read_text(encoding="utf-8")
     assert "Legacy AI-v1.0 task is still Running" in text
     assert "Legacy AI-v1.0 task must be Disabled" in text
+    assert "must remain present and Disabled" in text
+    assert "AI-v1.1 task already exists" in text
     assert "-ConfirmActivatedRuntime" in text or "ConfirmActivatedRuntime" in text
     assert "Register-ScheduledTask" in text
 

@@ -168,3 +168,65 @@ def test_v1_1_adapter_has_no_provider_or_ledger_dependency() -> None:
     names = set(module.__dict__)
     assert "OpenAIResponsesAdapter" not in names
     assert "AILedger" not in names
+
+
+
+def test_v1_1_stale_snapshot_skips_provider_and_v1_0_ledger(
+    tmp_path: Path,
+) -> None:
+    from trading_signal_intelligence.ai_v1.engine_v1_1 import (
+        process_inference_cycle_v1_1,
+    )
+    from trading_signal_intelligence.ai_v1.features import FeatureSnapshot
+    from trading_signal_intelligence.ai_v1.ledger import AILedger
+
+    class NeverCallAdapter:
+        provider = "test"
+        model_id = "test-model"
+        parameters = {}
+
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def infer(self, **kwargs):
+            self.calls += 1
+            raise AssertionError("provider must not be called for stale data")
+
+    feature_payload = {
+        "feature_schema_version": "AI-v1.0",
+        "source_symbol": "USTEC",
+        "canonical_symbol": "NASDAQ 100",
+        "source_bar_open_utc": "2026-09-30T07:00:00Z",
+        "source_bar_close_utc": "2026-09-30T08:00:00Z",
+        "inference_started_utc": "2026-09-30T08:05:01Z",
+        "data_age_seconds": 301.0,
+    }
+    snapshot = FeatureSnapshot(payload=feature_payload, sha256="a" * 64)
+    guardrails = {
+        "max_data_age_seconds": 300,
+    }
+
+    v10 = AILedger(tmp_path / "ai_v1_ustec.sqlite")
+    v11 = AILedger(tmp_path / "ai_v1_1_ustec.sqlite")
+    adapter = NeverCallAdapter()
+
+    result = process_inference_cycle_v1_1(
+        ledger=v11,
+        adapter=adapter,
+        feature_snapshot=snapshot,
+        policy_text="frozen",
+        decision_schema={},
+        guardrails=guardrails,
+        active_signal_exists=False,
+        recorded_at_utc=datetime(2026, 9, 30, 8, 5, 1, tzinfo=UTC),
+    )
+
+    assert result.status == "MISSED_INFERENCE"
+    assert result.entity_id.startswith("AI-v1.1:USTEC:")
+    assert result.terminal_record is not None
+    assert result.terminal_record["payload"]["runtime_version"] == "AI-v1.1"
+    assert result.terminal_record["payload"]["protocol_version"] == "AI-v1.0"
+    assert result.terminal_record["payload"]["provider_call_made"] is False
+    assert adapter.calls == 0
+    assert v10.records() == []
+    assert len(v11.records()) == 1

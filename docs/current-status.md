@@ -2,8 +2,27 @@
 
 Canonical cross-chat continuation: `docs/CURRENT-HANDOFF.md` — reconcile it against current `main` before significant work or any mutation.
 
-**Phase:** AI-v1 forward shadow collection active; feedback infrastructure verified; first-cohort G4 evidence next  
-**Date:** 2026-09-28
+**Phase:** VowSig public rebrand v0.1 staged; AI-v1.1 forward shadow collection active; hard cutover complete  
+**Date:** 2026-10-01
+
+## Current production override — 2026-10-01
+
+This section supersedes older status statements below where they describe AI-v1.0 as the active runtime or the pre-VowSig public identity.
+
+- Public product brand: **VowSig** — replaces SignalProof AI for new customer-facing product copy.
+- Canonical public domain: **https://vowsig.com** — live on the existing Railway production service.
+- `vowsig.ai`: owner-managed and out of scope for repository work.
+- Active AI runtime: **AI-v1.1 / SHADOW_ONLY**.
+- Frozen decision protocol: **AI-v1.0**.
+- AI-v1.0 runtime: **retired / scheduler Disabled / evidence preserved separately**.
+- AI-v1.1 hard cutover: **COMPLETE / CLOUD VERIFIED / ISSUE #15 CLOSED**.
+- AI-v1.1 scheduler: **ACTIVE / HOURLY / HEALTHY**.
+- Broker execution: **DISABLED**.
+- Hosted cloud snapshot: **AI-v1.1 / forward_validation_in_progress / durability PASS**.
+- VowSig public rebrand v0.1: **STAGED ON ISOLATED BRANCH / ISSUE #16**.
+- Rebrand safety constraint: customer-facing UI/cloud files are fingerprinted by the active AI-v1.1 activation anchor, so they must not be merged into production until a separately governed non-decision artifact correction/version is verified.
+- Canonical rebrand plan: `docs/vowsig-public-rebrand-v0.1.md`.
+
 
 ## Infrastructure
 
@@ -34,13 +53,13 @@ Canonical cross-chat continuation: `docs/CURRENT-HANDOFF.md` — reconcile it ag
 - AI-v1 Scheduled-run forensic diagnostic v0.1: DONE / 44 OF 46 SUCCESSFUL-SCAN-NO-CURRENT-CLOSE / ISSUE #12
 - AI-v1 Historical tick boundary diagnostic v0.1: DONE / FIRST-TICK MECHANISM NOT CONFIRMED / ISSUE #13
 - AI-v1 MT5 rates-cache access correlation v0.1: DONE / SUPPORTING NOT CONCLUSIVE / ISSUE #14
-- AI-v1.1 MT5 rates synchronization correction v0.1: CUTOVER CONTROLS PREPARED / OWNER PHASE A READ-ONLY PROOF NEXT / NO ACTIVATION / ISSUE #15
+- AI-v1.1 MT5 rates synchronization correction v0.1: CUTOVER COMPLETE / CLOUD VERIFIED / ISSUE #15 CLOSED
 - First cohort G4 customer-value evidence v0.1: NEXT PRODUCT MILESTONE / REAL-USER EVIDENCE / ISSUE #9
 - Organic acquisition & SEO v0.1: DEFERRED / AFTER INITIAL REAL-USER EVIDENCE FROM ISSUE #9
 
 ## AI-v1 active forward-collection plan
 
-AI-v1.0 is now collecting immutable forward evidence under the frozen preregistration and activated runtime.
+AI-v1.1 is now collecting immutable forward evidence under the frozen decision protocol and corrected rates-synchronization runtime. AI-v1.0 is retired and preserved as a separate legacy lineage.
 
 Immediate work is **not** model tuning. The active sequence is:
 

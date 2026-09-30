@@ -148,7 +148,8 @@ function renderAi(ai) {
     <div class="ai-health ${h.healthy ? "" : "warn"}">
       <div>
         <span class="eyebrow">${h.healthy ? "SHADOW RUNTIME HEALTHY" : "ATTENTION REQUIRED"}</span>
-        <strong>${esc(ai.protocol_version)} • ${esc(ai.mode)}</strong>
+        <strong>${esc(ai.runtime_version || ai.protocol_version)} • ${esc(ai.mode)}</strong>
+        <span class="meta">Decision protocol ${esc(ai.decision_protocol_version || ai.protocol_version)}</span>
       </div>
       <div class="ai-health-flags">
         <span>${h.ledgers_valid ? "Ledger chains verified" : "Ledger verification failed"}</span>
@@ -157,6 +158,7 @@ function renderAi(ai) {
       </div>
     </div>
     <p class="ai-notice">${esc(ai.customer_notice)}</p>
+    ${ai.lineage_notice ? `<p class="ai-notice">${esc(ai.lineage_notice)}</p>` : ""}
   `;
 
   const t = ai.totals || {};

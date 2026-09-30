@@ -1,5 +1,7 @@
 # Current Status
 
+Canonical cross-chat continuation: `docs/CURRENT-HANDOFF.md` — reconcile it against current `main` before significant work or any mutation.
+
 **Phase:** AI-v1 forward shadow collection active; feedback infrastructure verified; first-cohort G4 evidence next  
 **Date:** 2026-09-28
 
@@ -32,7 +34,7 @@
 - AI-v1 Scheduled-run forensic diagnostic v0.1: DONE / 44 OF 46 SUCCESSFUL-SCAN-NO-CURRENT-CLOSE / ISSUE #12
 - AI-v1 Historical tick boundary diagnostic v0.1: DONE / FIRST-TICK MECHANISM NOT CONFIRMED / ISSUE #13
 - AI-v1 MT5 rates-cache access correlation v0.1: DONE / SUPPORTING NOT CONCLUSIVE / ISSUE #14
-- AI-v1.1 MT5 rates synchronization correction v0.1: OWNER VPS VERIFICATION PASS / FINAL ACTIVATION REVIEW NEXT / NO ACTIVATION / ISSUE #15
+- AI-v1.1 MT5 rates synchronization correction v0.1: FOCUSED NO-WARNING PREACTIVATION PASS / OWNER HARD-CUTOVER REVIEW NEXT / NO ACTIVATION / ISSUE #15
 - First cohort G4 customer-value evidence v0.1: NEXT PRODUCT MILESTONE / REAL-USER EVIDENCE / ISSUE #9
 - Organic acquisition & SEO v0.1: DEFERRED / AFTER INITIAL REAL-USER EVIDENCE FROM ISSUE #9
 

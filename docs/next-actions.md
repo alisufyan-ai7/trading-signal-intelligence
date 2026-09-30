@@ -49,9 +49,10 @@ Current work order:
 8. **DONE:** AI-v1 Index H1 Boundary Probe v0.1 — one live boundary showed all three markets exposed the new H1 row immediately and at +120s; simple late-row hypothesis not supported; GitHub Issue #11;
 9. **DONE:** AI-v1 Scheduled-Run Forensic Diagnostic v0.1 — 44/46 index misses came from successful scans with no current-close action; GitHub Issue #12;
 10. **DONE:** AI-v1 Historical Tick Boundary Diagnostic v0.1 — first-tick mechanism not confirmed; 42/46 misses had a tick before the original scan; GitHub Issue #13;
-11. **IMMEDIATE READ-ONLY CORRELATION:** AI-v1 MT5 Rates-Cache Access Correlation v0.1 — compare valid/missed index cycles against known pre-AI rates accesses; GitHub Issue #14;
-12. **NEXT PRODUCT MILESTONE:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; GitHub Issue #9;
-13. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
+11. **DONE:** AI-v1 MT5 Rates-Cache Access Correlation v0.1 — supporting but non-conclusive cache-warming correlation; no runtime correction applied; GitHub Issue #14;
+12. **IMMEDIATE PRE-ACTIVATION ENGINEERING:** AI-v1.1 MT5 Rates Synchronization Correction v0.1 — standalone synchronization helper/tests first, separate version/ledgers/activation required; GitHub Issue #15;
+13. **NEXT PRODUCT MILESTONE:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; GitHub Issue #9;
+14. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
 

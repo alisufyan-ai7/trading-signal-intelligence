@@ -39,7 +39,8 @@ def _validated_endpoint(base_url: str) -> str:
 
 
 def _validate_snapshot_for_push(payload: dict) -> None:
-    _validate_snapshot_for_push(payload)
+    if payload.get("raw_market_data_included") is not False:
+        raise SystemExit("Refusing to upload a snapshot containing raw market data")
 
     ai = payload.get("ai_v1")
     if isinstance(ai, dict) and ai.get("publish_allowed") is False:
@@ -83,8 +84,7 @@ def main() -> None:
     endpoint = _validated_endpoint(base_url)
 
     payload = json.loads(Path(args.snapshot).read_text(encoding="utf-8"))
-    if payload.get("raw_market_data_included") is not False:
-        raise SystemExit("Refusing to upload a snapshot containing raw market data")
+    _validate_snapshot_for_push(payload)
 
     request = urllib.request.Request(
         endpoint,

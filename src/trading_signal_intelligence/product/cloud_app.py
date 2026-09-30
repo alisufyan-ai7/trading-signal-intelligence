@@ -60,6 +60,34 @@ def _validate_snapshot(payload: dict[str, Any]) -> None:
     if ai_v1 is not None:
         if not isinstance(ai_v1, dict):
             raise HTTPException(status_code=400, detail="AI-v1 snapshot must be an object")
+        runtime = ai_v1.get("runtime_version")
+        status = ai_v1.get("status")
+        if status == "forward_validation_in_progress" and runtime not in {
+            "AI-v1.0",
+            "AI-v1.1",
+        }:
+            raise HTTPException(
+                status_code=400,
+                detail="Active AI snapshot runtime_version is ambiguous",
+            )
+        if ai_v1.get("protocol_version") != "AI-v1.0":
+            raise HTTPException(
+                status_code=400,
+                detail="Unexpected AI decision protocol",
+            )
+        if runtime == "AI-v1.1":
+            legacy = ai_v1.get("legacy_lineage")
+            if not isinstance(legacy, dict):
+                raise HTTPException(
+                    status_code=400,
+                    detail="AI-v1.1 snapshot missing separate legacy lineage",
+                )
+            if legacy.get("gate_counts_carried_into_active_runtime") is not False:
+                raise HTTPException(
+                    status_code=400,
+                    detail="AI-v1.1 legacy gate-count isolation failed",
+                )
+
         for key in (
             "raw_market_data_included",
             "raw_feature_snapshots_included",
@@ -150,6 +178,8 @@ def ai_insights() -> dict:
     if snapshot is None:
         return {
             "schema_version": 1,
+            "runtime_version": "UNKNOWN",
+            "decision_protocol_version": "AI-v1.0",
             "protocol_version": "AI-v1.0",
             "mode": "SHADOW_ONLY",
             "status": "snapshot_pending",
@@ -162,6 +192,8 @@ def ai_insights() -> dict:
         }
     return snapshot.get("ai_v1", {
         "schema_version": 1,
+        "runtime_version": "UNKNOWN",
+        "decision_protocol_version": "AI-v1.0",
         "protocol_version": "AI-v1.0",
         "mode": "SHADOW_ONLY",
         "status": "snapshot_pending",

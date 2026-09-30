@@ -67,3 +67,11 @@ def test_cloud_snapshot_rejects_wrong_decision_protocol() -> None:
     payload["ai_v1"]["protocol_version"] = "AI-v9"
     with pytest.raises(HTTPException, match=""):
         _validate_snapshot(payload)
+
+
+
+def test_cloud_snapshot_rejects_wrong_decision_protocol_version() -> None:
+    payload = _snapshot()
+    payload["ai_v1"]["decision_protocol_version"] = "AI-v9"
+    with pytest.raises(HTTPException, match=""):
+        _validate_snapshot(payload)

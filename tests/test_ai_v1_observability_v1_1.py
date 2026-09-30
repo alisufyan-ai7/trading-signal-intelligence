@@ -102,6 +102,14 @@ def test_v1_1_observability_starts_gate_counts_at_zero(
             "mismatches": {},
         },
     )
+    monkeypatch.setattr(
+        "trading_signal_intelligence.ai_v1.observability_v1_1.verify_frozen_decision_artifacts_v1_1",
+        lambda repo_root, anchor: {
+            "valid": True,
+            "checked": 0,
+            "mismatches": {},
+        },
+    )
 
     report = build_report_v1_1(
         tmp_path,

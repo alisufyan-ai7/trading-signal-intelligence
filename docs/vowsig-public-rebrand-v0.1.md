@@ -48,7 +48,24 @@ The AI-v1.1 activation anchor fingerprints public/product files that this rebran
 - `scripts/verify_cloud_snapshot_durability.py`;
 - `scripts/run_product_publish_task.cmd`.
 
-Therefore these changes must not be merged into the active production branch until a separately governed non-decision correction/version has been prepared and verified. Merging them directly under the existing activation would make frozen-artifact verification fail closed.
+Therefore these changes must not be merged into the active production branch until a separately governed non-decision correction is prepared and verified. Merging them directly under the existing activation would make frozen-artifact verification fail closed.
+
+The isolated branch now prepares that mechanism:
+
+- `observability_v1_1.py` accepts an optional committed/upstream public-surface correction anchor;
+- correction overrides are limited to exactly six non-decision artifact names:
+  - `observability_source_v1_1`;
+  - `product_publish_task_runner_script`;
+  - `cloud_app_source`;
+  - `cloud_snapshot_verifier_script`;
+  - `ai_ui_script`;
+  - `ai_ui_index`;
+- every artifact outside that allowlist must still match the original AI-v1.1 activation anchor;
+- all frozen decision artifacts must still match the original activation lineage;
+- the correction anchor must assert no ledger/provider/MT5/scheduler/backfill/broker mutation;
+- `scripts/create_vowsig_public_surface_correction.py` is confirmation-gated and creates only the correction JSON evidence file.
+
+The correction anchor has not yet been generated and the branch must not be merged until isolated verification passes and a controlled production cutover is separately approved.
 
 The rebrand implementation is developed on:
 
@@ -78,11 +95,14 @@ The Windows AI task names also remain unchanged in this milestone because they a
 
 1. Keep production `main` and AI-v1.1 collection unchanged while the rebrand branch is reviewed.
 2. Prove all customer-facing rebrand tests on the branch.
-3. Define the separately governed non-decision artifact correction/version that authorizes the changed public files without mixing or resetting AI-v1.1 evidence.
-4. Reconcile live ledgers, scheduler health, activation anchor and broker-disabled boundary immediately before the correction.
-5. Apply only the approved correction/rebrand changes.
-6. Verify AI-v1.1 runtime remains healthy and evidence counts continue from the existing v1.1 lineage with no reset/backfill.
-7. Verify `https://vowsig.com`:
+3. In an isolated worktree on the rebrand branch, run the focused tests and the confirmation-gated correction builder.
+4. Review, commit and push exactly one generated `AI-v1.1-public-surface-correction-*.json` anchor to the rebrand branch.
+5. Reconcile live ledgers, scheduler health, activation anchor and broker-disabled boundary immediately before production cutover.
+6. Under a separate owner-approved cutover, disable the AI-v1.1 scheduler before merging/pulling the rebrand correction into the live worktree.
+7. Verify the committed correction anchor is upstream and the corrected AI-v1.1 runtime verifies healthy before re-enabling the scheduler.
+8. Re-enable only the AI-v1.1 scheduler; never re-enable AI-v1.0.
+9. Verify the next natural AI-v1.1 cycle continues the existing ledger lineage with no reset/backfill.
+10. Verify `https://vowsig.com`:
    - health endpoint;
    - AI insights endpoint;
    - market endpoint;
@@ -90,7 +110,7 @@ The Windows AI task names also remain unchanged in this milestone because they a
    - browser title/copy;
    - canonical metadata;
    - cloud snapshot durability.
-8. Keep the Railway-generated domain as infrastructure/fallback unless separately retired later.
+11. Keep the Railway-generated domain as infrastructure/fallback unless separately retired later.
 
 ## Non-goals
 

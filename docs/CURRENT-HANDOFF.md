@@ -1,0 +1,300 @@
+# Current Handoff / Operating Contract
+
+_Last reconciled: 2026-09-30_
+
+This file is the canonical continuation point for future normal-chat work on the
+TradingTop Analysis / SignalProof AI project.
+
+It is a **documentation/control artifact only**. It does not authorize any
+runtime, scheduler, ledger, activation, broker, provider, deployment, or cloud
+mutation.
+
+## 1. Strict context isolation
+
+For this project, use only:
+
+1. the current open chat; and
+2. the private GitHub repository `alisufyan-ai7/trading-signal-intelligence`.
+
+Do not use:
+
+- Personal Context;
+- account-level/saved memory;
+- unrelated chats;
+- unrelated projects;
+- any other GitHub repository;
+- unrelated connected-app data.
+
+The GitHub repository is the durable project source of truth.
+
+If a chat handoff conflicts with the current repository, inspect the repository,
+identify the conflict explicitly, and reconcile it before proceeding. Do not
+silently infer missing project state from memory.
+
+## 2. Source-of-truth order
+
+For significant engineering or governance work, reconcile against:
+
+1. current GitHub `main`;
+2. this file, `docs/CURRENT-HANDOFF.md`;
+3. the active GitHub issue for the current milestone;
+4. `PROJECT.md`;
+5. `docs/current-status.md`;
+6. `docs/next-actions.md`;
+7. the canonical technical/specification documents for the active milestone.
+
+Repository evidence takes precedence over stale conversational recollection.
+
+Important completed checkpoints, owner-run verification results, frozen
+decisions, and next actions should be recorded in the repository so a future
+chat can recover without depending on prior-chat memory.
+
+## 3. Normal chat vs Work mode
+
+This normal chat is the primary engineering/control chat.
+
+Use normal chat for:
+
+- GitHub inspection and engineering;
+- issues, commits, documentation, tests, and CI;
+- Python/code changes;
+- AI-v1 / AI-v1.1 architecture and governance;
+- VPS PowerShell commands and output review;
+- Railway/deployment engineering when needed;
+- public product/API/UI engineering;
+- milestone decisions.
+
+Use Work mode only when interactive authenticated browser work is required,
+especially:
+
+- logging into TradingTop;
+- navigating authenticated/private TradingTop pages such as `/myvip`;
+- inspecting live/private TradingTop UI;
+- capturing screenshots;
+- visiting internal pages unavailable to normal public web access;
+- recording browser-derived competitive/product evidence.
+
+Authenticated TradingTop findings that matter long-term must be committed to
+this same repository. Normal chat should consume those durable artifacts rather
+than relying on an old Work-chat transcript.
+
+Do not use Work mode for ordinary GitHub coding, VPS commands, CI, or normal
+project management.
+
+## 4. Checkpoint-preservation rule
+
+If a prior chat or the repository already defines an exact pending checkpoint or
+owner-run command:
+
+- preserve that checkpoint as written unless repository evidence shows it has
+  been superseded;
+- do not silently replace it with a narrower, broader, or "improved" command;
+- if a change is genuinely required, explain the concrete reason before
+  substituting it;
+- do not repeat a checkpoint that has already passed unless a later repository
+  change creates a specific reason to rerun it.
+
+This rule exists to prevent accidental drift between chats.
+
+## 5. State reconciliation before any mutation
+
+Before any action that can create or modify durable/runtime state, first state
+and verify:
+
+- current repository HEAD;
+- current active runtime;
+- current issue/milestone;
+- last completed owner-run checkpoint;
+- pending action;
+- relevant preconditions;
+- exactly what the proposed step will change;
+- exactly what it will not change;
+- forbidden actions that remain outside approval.
+
+This applies especially before:
+
+- creating or modifying ledgers;
+- creating activation anchors;
+- writing retirement metadata;
+- disabling/enabling/installing scheduled tasks;
+- running performance-bearing AI inference under a new runtime;
+- publishing a new active-runtime cloud snapshot;
+- deployment/configuration mutations.
+
+No mutation should be bundled into a "verification" step unless the governing
+plan explicitly authorizes that mutation.
+
+## 6. Security and trading boundaries
+
+- Never expose or request passwords, OpenAI keys, broker credentials, Railway
+  tokens, ingest tokens, feedback-admin secrets, or other private secrets.
+- Keep `.env` private and ignored.
+- Broker execution remains disabled.
+- Do not modify S02 logic or ledgers.
+- Do not rewrite or backfill AI-v1.0 evidence.
+- AI-v1.0 and AI-v1.1 evidence must remain clearly separated.
+- Do not carry AI-v1.0 A1/A2/A3 counts into AI-v1.1.
+- Do not make unsupported profitability, accuracy, or win-rate claims.
+- A partial/invalid AI-v1.1 transition must fail closed rather than silently
+  present AI-v1.0 as the active collector.
+
+## 7. Current durable AI-v1.1 continuation state
+
+### Active runtime
+
+`AI-v1.0` remains the active hourly shadow collector.
+
+Broker execution remains disabled.
+
+AI-v1.1 is a prospective replacement runtime/evidence version only. Its frozen
+decision protocol remains `AI-v1.0`.
+
+### Current milestone
+
+GitHub Issue #15:
+
+`AI-v1.1 MT5 rates synchronization correction v0.1`
+
+AI-v1.1 changes only MT5 rates-read synchronization/readiness. The model,
+prompt/policy, features, decision schema, universe, cadence, risk guardrails,
+signal lifecycle, cost model, freshness rule, and broker-execution boundary
+remain frozen from AI-v1.0.
+
+### Last owner-verified engineering/runtime head
+
+Before this documentation-only handoff commit was added, the owner verified:
+
+`0971834b5ea0eb19fab076180f5ce055b6c2aff4`
+
+Commit title:
+
+`Remove meaningless empty pytest match warnings`
+
+Any later commit that only documents this handoff does not by itself alter the
+verified runtime or activate AI-v1.1. Future work must still inspect current
+`main` before acting.
+
+### Completed focused/no-warning checkpoint
+
+The owner ran the exact previously-defined focused verification after pulling
+`1db3a7f...` -> `0971834b...`.
+
+Observed result:
+
+- warning-cleanup regression: **15 passed in 2.17s**;
+- `focused_test_exit=0`;
+- `preactivation_check=PASS`;
+- repository commit reported by preactivation verifier:
+  `0971834b5ea0eb19fab076180f5ce055b6c2aff4`;
+- frozen AI-v1.0 decision artifacts match upstream: `true`;
+- frozen decision artifact mismatches: `{}`;
+- AI-v1.1 ledger paths for XAUUSD / USTEC / US30: all absent;
+- AI-v1.1 activation anchors: `[]`;
+- sync max wait: `30.0s`;
+- sync poll interval: `1.0s`;
+- provider call: `false`;
+- MT5 call: `false`;
+- broker execution enabled: `false`;
+- activation performed: `false`;
+- scheduler changed: `false`;
+- final AI-v1.1 live ledger count: `0`;
+- final AI-v1.1 activation-anchor count: `0`.
+
+This checkpoint is complete. Do not rerun it merely because a new chat is
+started.
+
+### Prior full cutover/pre-activation checkpoint
+
+The earlier owner-run full verification at
+`1db3a7f0d64bcc02556681bb72ba51fd981f24e7` established:
+
+- 58 tests passed;
+- frozen AI-v1.0 diff = 0;
+- v1.0 unresolved signals = 0;
+- v1.0 ledgers valid = true;
+- broker execution disabled = true;
+- cutover preconditions currently met = true;
+- no AI-v1.1 state existed;
+- local public snapshot still reported active runtime AI-v1.0.
+
+The later focused checkpoint above verifies that the warning-cleanup commit did
+not disturb preactivation cleanliness.
+
+## 8. Exact continuation point
+
+The next stage is:
+
+**prepare the exact owner-reviewed AI-v1.1 hard-cutover sequence.**
+
+Preparation is allowed. Execution is not implicitly authorized.
+
+The sequence must preserve the already-agreed governance ordering:
+
+1. verify/reconcile the exact approved repository commit and clean worktree;
+2. confirm AI-v1.0 unresolved signals are still zero at the mutation boundary;
+3. capture/freeze AI-v1.0 ledger hashes, heads, counts, scheduler state, and
+   retirement evidence without rewriting AI-v1.0 ledgers;
+4. disable the AI-v1.0 scheduler only after the preconditions still hold;
+5. create separate AI-v1.1 activation-only ledgers and aggregate activation
+   anchor;
+6. commit/push activation evidence before any performance-bearing AI-v1.1
+   inference;
+7. verify activation-only AI-v1.1 state and version-aware observability/public
+   snapshot locally;
+8. install the AI-v1.1 hourly task only after activation-only verification
+   passes;
+9. allow the first natural AI-v1.1 scheduled run;
+10. verify all three markets after that run;
+11. only then publish a validated AI-v1.1 public snapshot.
+
+No parallel AI-v1.0 / AI-v1.1 collection.
+
+Once AI-v1.1 has performance-bearing evidence, do not silently roll back into a
+mixed lineage.
+
+## 9. Explicitly forbidden until owner approval
+
+Do not yet:
+
+- disable the AI-v1.0 scheduled task;
+- create AI-v1.1 live ledgers;
+- create the AI-v1.1 activation anchor;
+- write AI-v1.0 retirement metadata;
+- run `scripts/run_ai_v1_1_live.py`;
+- run the AI-v1.1 task installer;
+- push an AI-v1.1 cloud snapshot;
+- backfill any AI-v1.0 missed inference;
+- modify frozen AI-v1.0 model/prompt/features/risk/lifecycle/cost logic;
+- enable broker execution;
+- use the old `scripts/supersede_ai_v1_activation.py` for this cutover.
+
+The next response may prepare and review the hard-cutover commands, but mutation
+requires explicit owner approval after the exact sequence and boundaries are
+shown.
+
+## 10. Broader roadmap after Issue #15
+
+After the AI-v1.1 technical transition is safely resolved, the next product
+milestone is GitHub Issue #9:
+
+`First Cohort G4 Customer-Value Evidence v0.1`
+
+SEO/growth work remains deferred until after initial real-user evidence.
+
+## 11. Future-chat startup rule
+
+For a future normal chat, the preferred startup instruction is:
+
+> Continue the TradingTop Analysis / SignalProof AI project under strict context
+> isolation. Use only this current chat and the private GitHub repository
+> `alisufyan-ai7/trading-signal-intelligence`. Do not use Personal Context,
+> saved/account memory, other chats/projects/repos, or unrelated connected-app
+> data. First inspect current `main`, then read
+> `docs/CURRENT-HANDOFF.md`, the active milestone issue, `PROJECT.md`,
+> `docs/current-status.md`, and `docs/next-actions.md`. Reconcile any
+> differences before acting. Preserve already-defined pending checkpoints and
+> do not perform any mutation without the approval boundary recorded in the
+> handoff.
+
+After every important milestone, update this file so it remains the shortest
+durable path for a new chat to recover the exact continuation state.

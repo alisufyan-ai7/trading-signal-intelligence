@@ -94,6 +94,16 @@ V11_ARTIFACT_PATHS = {
         "src/trading_signal_intelligence/product/ai_insights.py"
     ),
     "public_snapshot_export_script": "scripts/export_public_snapshot.py",
+    "public_snapshot_push_script": "scripts/push_public_snapshot.py",
+    "product_publish_task_runner_script": "scripts/run_product_publish_task.cmd",
+    "cloud_app_source": (
+        "src/trading_signal_intelligence/product/cloud_app.py"
+    ),
+    "cloud_snapshot_verifier_script": (
+        "scripts/verify_cloud_snapshot_durability.py"
+    ),
+    "ai_ui_script": "web/app.js",
+    "ai_ui_index": "web/index.html",
     "retirement_builder_source_v1_0": (
         "src/trading_signal_intelligence/ai_v1/retirement_v1_0.py"
     ),

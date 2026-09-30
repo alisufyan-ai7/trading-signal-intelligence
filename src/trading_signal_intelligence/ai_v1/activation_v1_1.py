@@ -57,6 +57,7 @@ FROZEN_DECISION_ARTIFACT_PATHS = {
 
 V11_ARTIFACT_PATHS = {
     "activation_schema_v1_1": "config/ai_v1_1_activation_schema.json",
+    "activation_anchor_schema_v1_1": "config/ai_v1_1_anchor_schema.json",
     "rates_sync_source_v1_1": (
         "src/trading_signal_intelligence/ai_v1/rates_sync_v1_1.py"
     ),
@@ -493,3 +494,142 @@ def build_activation_anchor_preview_v1_1(
         "activation_anchor_written": False,
         "scheduler_changed": False,
     }
+
+
+
+def build_activation_anchor_document_v1_1(
+    *,
+    repo_root: Path,
+    activated_at_utc: datetime,
+    activation_records: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Build the final aggregate anchor from already-appended ACTIVATION records.
+
+    This function does not write files or ledgers.
+    """
+    require_clean_tracked_worktree(repo_root)
+    expected_payloads = {
+        market: build_activation_payload_v1_1(
+            repo_root=repo_root,
+            market=market,
+            activated_at_utc=activated_at_utc,
+        )
+        for market in MARKETS
+    }
+
+    markets: dict[str, dict[str, Any]] = {}
+    for market in MARKETS:
+        record = activation_records.get(market)
+        if not isinstance(record, dict):
+            raise ActivationV11Error(
+                f"missing activation record for {market}"
+            )
+        if record.get("record_type") != "ACTIVATION":
+            raise ActivationV11Error(
+                f"{market} record is not ACTIVATION"
+            )
+        if record.get("payload") != expected_payloads[market]:
+            raise ActivationV11Error(
+                f"{market} activation payload does not match frozen preview"
+            )
+        record_hash = str(record.get("record_hash") or "")
+        if not _SHA256_RE.fullmatch(record_hash):
+            raise ActivationV11Error(
+                f"{market} activation record hash invalid"
+            )
+        markets[market] = {
+            "record_hash": record_hash,
+            "payload": record["payload"],
+        }
+
+    activated = activated_at_utc.astimezone(timezone.utc)
+    anchor = {
+        "runtime_version": RUNTIME_VERSION,
+        "decision_protocol_version": DECISION_PROTOCOL_VERSION,
+        "status": "ACTIVE",
+        "activated_at_utc": activated.isoformat(),
+        "repository_commit_sha": git_commit_sha(repo_root),
+        "supersedes_runtime_version": SUPERSEDES_RUNTIME_VERSION,
+        "upstream_activation_anchor": UPSTREAM_ACTIVATION_ANCHOR,
+        "upstream_activation_anchor_sha256": file_sha256(
+            repo_root / UPSTREAM_ACTIVATION_ANCHOR
+        ),
+        "gate_counts_carry_forward": False,
+        "backfill_prior_missed": False,
+        "provider_call_made": False,
+        "broker_execution_enabled": False,
+        "artifact_hashes": artifact_hashes(
+            repo_root,
+            V11_ARTIFACT_PATHS,
+        ),
+        "frozen_decision_artifact_hashes": artifact_hashes(
+            repo_root,
+            FROZEN_DECISION_ARTIFACT_PATHS,
+        ),
+        "markets": markets,
+    }
+    validate_activation_anchor_document_v1_1(anchor)
+    return anchor
+
+
+def validate_activation_anchor_document_v1_1(
+    anchor: dict[str, Any],
+) -> None:
+    required = {
+        "runtime_version",
+        "decision_protocol_version",
+        "status",
+        "activated_at_utc",
+        "repository_commit_sha",
+        "supersedes_runtime_version",
+        "upstream_activation_anchor",
+        "upstream_activation_anchor_sha256",
+        "gate_counts_carry_forward",
+        "backfill_prior_missed",
+        "provider_call_made",
+        "broker_execution_enabled",
+        "artifact_hashes",
+        "frozen_decision_artifact_hashes",
+        "markets",
+    }
+    if set(anchor) != required:
+        raise ActivationV11Error("aggregate v1.1 anchor keys mismatch")
+    if anchor["runtime_version"] != RUNTIME_VERSION:
+        raise ActivationV11Error("aggregate anchor runtime mismatch")
+    if anchor["decision_protocol_version"] != DECISION_PROTOCOL_VERSION:
+        raise ActivationV11Error("aggregate anchor decision protocol mismatch")
+    if anchor["status"] != "ACTIVE":
+        raise ActivationV11Error("aggregate anchor status must be ACTIVE")
+    if anchor["supersedes_runtime_version"] != SUPERSEDES_RUNTIME_VERSION:
+        raise ActivationV11Error("aggregate anchor supersession mismatch")
+    if anchor["gate_counts_carry_forward"] is not False:
+        raise ActivationV11Error("aggregate anchor gate carry-forward forbidden")
+    if anchor["backfill_prior_missed"] is not False:
+        raise ActivationV11Error("aggregate anchor backfill forbidden")
+    if anchor["provider_call_made"] is not False:
+        raise ActivationV11Error("provider call at activation forbidden")
+    if anchor["broker_execution_enabled"] is not False:
+        raise ActivationV11Error("broker execution must remain disabled")
+    if not _COMMIT_RE.fullmatch(str(anchor["repository_commit_sha"])):
+        raise ActivationV11Error("aggregate anchor repository SHA invalid")
+    if not _SHA256_RE.fullmatch(
+        str(anchor["upstream_activation_anchor_sha256"])
+    ):
+        raise ActivationV11Error("aggregate anchor upstream SHA invalid")
+    markets = anchor.get("markets")
+    if not isinstance(markets, dict) or set(markets) != set(MARKETS):
+        raise ActivationV11Error("aggregate anchor markets mismatch")
+    for market in MARKETS:
+        item = markets[market]
+        if not isinstance(item, dict):
+            raise ActivationV11Error(f"{market} anchor item invalid")
+        if set(item) != {"record_hash", "payload"}:
+            raise ActivationV11Error(f"{market} anchor item keys mismatch")
+        if not _SHA256_RE.fullmatch(str(item["record_hash"])):
+            raise ActivationV11Error(f"{market} anchor record hash invalid")
+        payload = item["payload"]
+        if not isinstance(payload, dict):
+            raise ActivationV11Error(f"{market} anchor payload invalid")
+        validate_activation_payload_v1_1(payload)
+        if payload["market"] != market:
+            raise ActivationV11Error(f"{market} payload market mismatch")

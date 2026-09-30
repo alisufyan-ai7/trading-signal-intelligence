@@ -2,15 +2,17 @@
 
 Canonical cross-chat continuation: `docs/CURRENT-HANDOFF.md` — reconcile it against current `main` before significant work or any mutation.
 
-_Last updated: 2026-09-28_
+_Last updated: 2026-10-01_
 
 ## Public beta launch state
 
-The TradingTop public beta is live and has passed end-to-end browser + publisher smoke.
+The VowSig research beta is live on the existing Railway production service and has passed end-to-end browser + publisher smoke.
 
 Public URL:
 
-`https://tradingtop-early-access-production.up.railway.app`
+`https://vowsig.com`
+
+Infrastructure fallback remains the Railway-generated domain; do not treat it as the canonical customer-facing URL.
 
 Verified:
 
@@ -31,7 +33,7 @@ Telegram remains optional and disabled.
 
 ## Immediate product work — First cohort G4 customer-value evidence v0.1
 
-AI-v1.0 is now activated and the hourly shadow scheduler is collecting immutable forward evidence on XAUUSD, USTEC and US30.
+AI-v1.1 is now active and the hourly shadow scheduler is collecting immutable forward evidence on XAUUSD, USTEC and US30. AI-v1.0 is retired and preserved separately.
 
 The activated decision system is frozen. Do not tune or change the model, prompt, features, guardrails, market universe, lifecycle, cost policy or decision cadence based on early results.
 
@@ -41,7 +43,7 @@ The active plan is documented in:
 
 Current work order:
 
-1. **RUNNING:** leave AI-v1.0 shadow collection untouched;
+1. **RUNNING:** leave AI-v1.1 shadow collection untouched; keep AI-v1.0 scheduler Disabled;
 2. **DONE / VPS VERIFIED:** read-only `scripts/report_ai_v1_progress.py` observability layer;
 3. **DONE / VPS VERIFIED:** mutation-safety/tamper/gate tests and byte-identical live-ledger proof;
 4. **DONE / CLOUD VERIFIED:** AI Insights UI backed by the sanitized read-only AI-v1 export; canonical record: `docs/ai-insights-ui.md`;
@@ -52,9 +54,10 @@ Current work order:
 9. **DONE:** AI-v1 Scheduled-Run Forensic Diagnostic v0.1 — 44/46 index misses came from successful scans with no current-close action; GitHub Issue #12;
 10. **DONE:** AI-v1 Historical Tick Boundary Diagnostic v0.1 — first-tick mechanism not confirmed; 42/46 misses had a tick before the original scan; GitHub Issue #13;
 11. **DONE:** AI-v1 MT5 Rates-Cache Access Correlation v0.1 — supporting but non-conclusive cache-warming correlation; no runtime correction applied; GitHub Issue #14;
-12. **CUTOVER CONTROLS PREPARED / OWNER PHASE A READ-ONLY PROOF NEXT / NO ACTIVATION:** AI-v1.1 MT5 Rates Synchronization Correction v0.1 — the exact staged cutover runbook and confirmation-gated disable/retirement/activation controls are committed; the no-current-tick ledger-type defect was corrected in the v1.1-only runner without changing frozen v1.0 decision artifacts; activation-only/unhealthy v1.1 cloud publication is blocked; NEXT: owner runs Phase A from `docs/ai-v1.1-hard-cutover-runbook-v0.1.md` and returns the complete output for review; do not run Phase B+ without separate explicit owner approval; GitHub Issue #15;
-13. **NEXT PRODUCT MILESTONE:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; GitHub Issue #9;
-14. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
+12. **DONE / CUTOVER + CLOUD VERIFIED:** AI-v1.1 MT5 Rates Synchronization Correction v0.1 — AI-v1.0 retired and preserved; AI-v1.1 activation anchored; hourly scheduler healthy; hosted cloud snapshot reports AI-v1.1 / decision protocol AI-v1.0; broker execution disabled; GitHub Issue #15 CLOSED;
+13. **IN PROGRESS / ISOLATED BRANCH:** VowSig Public Rebrand v0.1 — VowSig replaces SignalProof AI as the public brand, canonical domain is https://vowsig.com, and the implementation is staged on `product/vowsig-public-rebrand-v0.1`; do not merge activation-bound public files until the separately governed non-decision artifact correction/version is verified; canonical plan: `docs/vowsig-public-rebrand-v0.1.md`; GitHub Issue #16;
+14. **NEXT PRODUCT MILESTONE AFTER SAFE REBRAND CUTOVER:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; GitHub Issue #9;
+15. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
 

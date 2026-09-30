@@ -200,13 +200,13 @@ Canonical IDs are unique:
 22. AI-v1 scheduled-run forensic diagnostic v0.1 — **DONE / ISSUE #12**
 23. AI-v1 historical tick boundary diagnostic v0.1 — **DONE / ISSUE #13**
 24. AI-v1 MT5 rates-cache access correlation v0.1 — **DONE / ISSUE #14**
-25. AI-v1.1 MT5 rates synchronization correction v0.1 — **OWNER VPS VERIFICATION PASS / FINAL ACTIVATION REVIEW NEXT / NO ACTIVATION / ISSUE #15**
+25. AI-v1.1 MT5 rates synchronization correction v0.1 — **FOCUSED NO-WARNING PREACTIVATION PASS / OWNER HARD-CUTOVER REVIEW NEXT / NO ACTIVATION / ISSUE #15**
 26. First cohort G4 customer-value evidence v0.1 — **NEXT PRODUCT MILESTONE / ISSUE #9**
 27. Organic acquisition & SEO v0.1 — **DEFERRED / AFTER INITIAL REAL-USER EVIDENCE**
 
 ## Durable project-state rule
 
-Major decisions, research conclusions, strategy definitions and implementation changes should be written to this repository. Chat is for discussion; the repository is the project source of truth.
+Major decisions, research conclusions, strategy definitions and implementation changes should be written to this repository. Chat is for discussion; the repository is the project source of truth. The canonical cross-chat continuation and operating contract is `docs/CURRENT-HANDOFF.md`; future chats must reconcile it against current `main` before acting.
 
 
 ## Immediate launch objective — 2026-09-21

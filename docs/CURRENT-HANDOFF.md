@@ -168,14 +168,26 @@ reset, fork, or backfill.
 
 ### Current milestone
 
-GitHub Issue #9:
+GitHub Issue #8:
+
+`Organic acquisition & SEO v0.1`
+
+Phase 8A is now the immediate product-growth task: establish the technical SEO
+baseline, search-intent map, information architecture, index/canonical policy,
+initial factual content priorities, and privacy-respecting measurement plan
+before any website mutation.
+
+GitHub Issue #9 remains open in parallel:
 
 `First cohort G4 customer-value evidence v0.1`
 
-The current product task is real-user customer-value evidence collection while
+Issue #9 is no longer a blocker for Phase 8A. Its initial aggregate real-user
+evidence is required before Issue #8 Phase 8B expands customer-language-dependent
+content, CTA/conversion messaging, alert-channel content, or pricing-related SEO.
+
 AI-v1.1 forward collection continues unchanged. Do not tune the model, prompt,
 features, guardrails, market universe, lifecycle, cost policy, or decision
-cadence based on early user or trading results.
+cadence based on early user, SEO, or trading results.
 
 ### Last owner-verified production state
 
@@ -329,18 +341,29 @@ cutover approval.
 
 ## 11. Broader roadmap after Issue #15
 
-After the AI-v1.1 technical transition is safely resolved, the next product
-milestone is GitHub Issue #9:
+The AI-v1.1 technical transition and VowSig rebrand are complete.
 
-`First Cohort G4 Customer-Value Evidence v0.1`
+The product-growth sequence is now:
 
-SEO/growth work remains deferred until after initial real-user evidence.
+1. **Issue #8 Phase 8A — ACTIVE:** technical SEO/discoverability foundation,
+   search-intent mapping, information architecture, indexing/canonical policy,
+   factual first-page priorities, internal-link foundation and measurement plan;
+2. **Issue #9 — PARALLEL/NEXT REAL-USER EVIDENCE:** first controlled cohort,
+   aggregate comprehension/value findings and willingness-to-pay evidence;
+3. **Issue #8 Phase 8B — GATED ON ISSUE #9:** revise/expand content,
+   terminology, CTA/conversion copy and market priorities using real-user
+   evidence;
+4. continue AI-v1.1 and S02 forward evidence collection unchanged and review
+   only at their frozen A/F thresholds.
+
+Phase 8A does not constitute G4 evidence and does not authorize unsupported
+trading, performance or pricing claims.
 
 ## 12. Future-chat startup rule
 
 For a future normal chat, the preferred startup instruction is:
 
-> Continue the TradingTop Analysis / SignalProof AI project under strict context
+> Continue the TradingTop Analysis / VowSig project under strict context
 > isolation. Use only this current chat and the private GitHub repository
 > `alisufyan-ai7/trading-signal-intelligence`. Do not use Personal Context,
 > saved/account memory, other chats/projects/repos, or unrelated connected-app

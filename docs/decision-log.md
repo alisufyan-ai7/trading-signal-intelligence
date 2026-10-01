@@ -525,3 +525,19 @@ The live runtime freezes the already-preregistered three-market H1 cadence, uses
 The inference ledger payload is also completed before replacement activation with explicit policy/guardrail hashes, raw confidence, provider request ID, usage metadata and normalized NO_TRADE decision provenance.
 
 After the replacement activation is committed and anchored, any decision-affecting runtime change requires separate governance/versioning.
+
+
+## 2026-10-02 — D039: Start SEO foundation before first-cohort G4 evidence, while keeping evidence-informed expansion gated
+
+**Decision:** Restructure Organic Acquisition & SEO v0.1 (Issue #8) into two governed phases.
+
+- **Phase 8A — SEO foundation / discoverability:** active immediately and may proceed before Issue #9 real-user evidence.
+- **Phase 8B — evidence-informed content / conversion expansion:** remains gated on the initial aggregate evidence from Issue #9.
+
+**Reason:** The original all-or-nothing SEO deferral protected the project from inventing customer language before user research. That remains appropriate for customer-language-dependent content, CTA/conversion messaging, market prioritization and pricing-related SEO. However, VowSig now has a stable brand/domain, production deployment, public evidence surfaces and measurement boundary, so technical discoverability and information architecture can be developed without pretending to know customer preferences.
+
+**Phase 8A includes:** current production SEO/indexability baseline, search-intent map, URL/information architecture, index/noindex and canonical policy, initial factual market/education priorities, internal-link foundation, technical SEO implementation plan and privacy-respecting measurement.
+
+**Issue #9 remains required for:** real user terminology, comprehension problems, market/alert preferences, trust/value findings, willingness-to-pay evidence, and the Phase 8B content/conversion expansion.
+
+**Safety boundary:** This roadmap change does not modify AI-v1.1, the AI-v1.0 decision protocol, S02, immutable ledgers, validation thresholds, broker execution, or trading behavior. No website mutation is authorized until the Phase 8A baseline and implementation plan are reviewed.

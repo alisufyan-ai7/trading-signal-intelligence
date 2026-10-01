@@ -2,7 +2,7 @@
 
 _Status: DRAFT ONLY — DO NOT SEND AUTOMATICALLY_  
 _Date: 2026-09-29_  
-_Parent milestone: Issue #7 — Early Access feedback & customer discovery v0.1_
+_Parent milestone: Issue #9 — First cohort G4 customer-value evidence v0.1_
 
 ## Purpose
 
@@ -88,7 +88,7 @@ Review:
 - willingness-to-pay and price-range responses;
 - recurring free-text language and confusion points.
 
-Use real user-language from this cohort to revise future onboarding, product copy and the deferred Organic Acquisition & SEO v0.1 plan.
+Use real user-language from this cohort to revise future onboarding, product copy and Issue #8 Phase 8B evidence-informed Organic Acquisition & SEO expansion. Phase 8A technical SEO/discoverability may proceed before this cohort.
 
 Do not tune AI-v1 or S02 based on product feedback. Product feedback may inform UI/explanation/packaging only unless a separately governed model/strategy version is created.
 

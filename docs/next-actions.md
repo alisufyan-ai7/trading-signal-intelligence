@@ -31,7 +31,7 @@ Verified:
 
 Telegram remains optional and disabled.
 
-## Immediate product work — First cohort G4 customer-value evidence v0.1
+## Immediate product work — Organic Acquisition & SEO v0.1 Phase 8A
 
 AI-v1.1 is now active and the hourly shadow scheduler is collecting immutable forward evidence on XAUUSD, USTEC and US30. AI-v1.0 is retired and preserved separately.
 
@@ -56,19 +56,26 @@ Current work order:
 11. **DONE:** AI-v1 MT5 Rates-Cache Access Correlation v0.1 — supporting but non-conclusive cache-warming correlation; no runtime correction applied; GitHub Issue #14;
 12. **DONE / CUTOVER + CLOUD VERIFIED:** AI-v1.1 MT5 Rates Synchronization Correction v0.1 — AI-v1.0 retired and preserved; AI-v1.1 activation anchored; hourly scheduler healthy; hosted cloud snapshot reports AI-v1.1 / decision protocol AI-v1.0; broker execution disabled; GitHub Issue #15 CLOSED;
 13. **DONE / PRODUCTION + NATURAL CONTINUITY VERIFIED:** VowSig Public Rebrand v0.1 — VowSig is the public brand, canonical domain is https://vowsig.com, governed public-surface correction is valid/upstream-valid, merged production main is `3dfc548b0cd89de1ac9e19723dec1ad44b39ca50`, and the first natural post-cutover AI-v1.1 + publisher cycles extended the pre-cutover ledger heads without reset/fork/backfill; GitHub Issue #16 CLOSED;
-14. **NEXT PRODUCT MILESTONE:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; GitHub Issue #9;
-15. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
+14. **ACTIVE / NEXT:** Organic Acquisition & SEO v0.1 Phase 8A — technical SEO baseline, search-intent map, information architecture, index/canonical policy, initial factual market/education surface plan and privacy-respecting measurement; no website mutation until the baseline/plan is reviewed; GitHub Issue #8;
+15. **PARALLEL / NEXT REAL-USER EVIDENCE:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; this evidence gates Issue #8 Phase 8B, not Phase 8A; GitHub Issue #9;
+16. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
 
-### Deferred growth backlog — Organic acquisition & SEO v0.1
+### Active growth roadmap — Organic Acquisition & SEO v0.1
 
-**DEFERRED / AFTER INITIAL REAL-USER EVIDENCE FROM ISSUE #9.** This does not change the current implementation priority.
+**PHASE 8A ACTIVE NOW. PHASE 8B REMAINS GATED ON INITIAL ISSUE #9 REAL-USER EVIDENCE.**
 
 Canonical plan: `docs/future-organic-acquisition-seo-v0.1.md`  
 GitHub Issue: #8
 
-Preserved future ideas include evidence-first per-market landing pages, educational search content, search -> education -> product funnels, intentional internal linking, privacy-respecting acquisition measurement, and free-value-first conversion. The first implementation batch must be revised using actual real-user language/comprehension findings from Issue #9 before SEO work starts.
+Phase 8A may establish technical discoverability, search-intent mapping, URL/information architecture, robots/sitemap/canonical/metadata planning, factual first-page priorities, internal-link foundations and privacy-respecting measurement without pretending to know customer language.
+
+Issue #9 then supplies real user-language, comprehension, market-interest, alert-preference and willingness-to-pay evidence. That evidence is required before Phase 8B expands customer-language-dependent content, CTA/conversion copy or pricing-related SEO.
+
+Working sequence:
+
+`Issue #8 Phase 8A -> Issue #9 in parallel -> Issue #8 Phase 8B -> measured iteration`.
 
 Current public S02 signals remain rule-based and must not be relabeled as AI.
 

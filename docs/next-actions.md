@@ -56,7 +56,7 @@ Current work order:
 11. **DONE:** AI-v1 MT5 Rates-Cache Access Correlation v0.1 — supporting but non-conclusive cache-warming correlation; no runtime correction applied; GitHub Issue #14;
 12. **DONE / CUTOVER + CLOUD VERIFIED:** AI-v1.1 MT5 Rates Synchronization Correction v0.1 — AI-v1.0 retired and preserved; AI-v1.1 activation anchored; hourly scheduler healthy; hosted cloud snapshot reports AI-v1.1 / decision protocol AI-v1.0; broker execution disabled; GitHub Issue #15 CLOSED;
 13. **DONE / PRODUCTION + NATURAL CONTINUITY VERIFIED:** VowSig Public Rebrand v0.1 — VowSig is the public brand, canonical domain is https://vowsig.com, governed public-surface correction is valid/upstream-valid, merged production main is `3dfc548b0cd89de1ac9e19723dec1ad44b39ca50`, and the first natural post-cutover AI-v1.1 + publisher cycles extended the pre-cutover ledger heads without reset/fork/backfill; GitHub Issue #16 CLOSED;
-14. **ACTIVE / NEXT:** Organic Acquisition & SEO v0.1 Phase 8A — technical SEO baseline, search-intent map, information architecture, index/canonical policy, initial factual market/education surface plan and privacy-respecting measurement; no website mutation until the baseline/plan is reviewed; GitHub Issue #8;
+14. **ACTIVE / NEXT:** Organic Acquisition & SEO v0.1 Phase 8A — repository baseline/search-intent/IA/index-policy/content-priority/measurement plan now committed in `docs/seo-phase8a-baseline-and-plan-v0.1.md`; **NEXT CHECKPOINT:** read-only live HTTP confirmation of root/robots/sitemap/docs/API/fallback-host behavior, then owner review; no website mutation yet; GitHub Issue #8;
 15. **PARALLEL / NEXT REAL-USER EVIDENCE:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; this evidence gates Issue #8 Phase 8B, not Phase 8A; GitHub Issue #9;
 16. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
@@ -69,7 +69,7 @@ A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 cal
 Canonical plan: `docs/future-organic-acquisition-seo-v0.1.md`  
 GitHub Issue: #8
 
-Phase 8A may establish technical discoverability, search-intent mapping, URL/information architecture, robots/sitemap/canonical/metadata planning, factual first-page priorities, internal-link foundations and privacy-respecting measurement without pretending to know customer language.
+Phase 8A repository planning is now substantially documented. The audit found no robots.txt, sitemap, structured data, dedicated market/education routes or internal HTML link graph in the current app, and identified a critical governance blocker: `web/index.html`, `web/app.js` and `cloud_app.py` are activation-bound AI-v1.1 public artifacts. The next checkpoint is read-only live HTTP confirmation; production SEO edits require a separately governed public-surface correction v0.2/supersession first.
 
 Issue #9 then supplies real user-language, comprehension, market-interest, alert-preference and willingness-to-pay evidence. That evidence is required before Phase 8B expands customer-language-dependent content, CTA/conversion copy or pricing-related SEO.
 

@@ -2,8 +2,8 @@
 
 Canonical cross-chat continuation: `docs/CURRENT-HANDOFF.md` — reconcile it against current `main` before significant work or any mutation.
 
-**Phase:** VowSig public rebrand v0.1 COMPLETE; AI-v1.1 forward shadow collection active; first-cohort G4 evidence next  
-**Date:** 2026-10-01
+**Phase:** VowSig public rebrand complete; AI-v1.1 forward shadow collection active; Organic Acquisition & SEO Phase 8A active; first-cohort G4 evidence parallel  
+**Date:** 2026-10-02
 
 ## Current production override — 2026-10-01
 
@@ -25,7 +25,9 @@ This section supersedes older status statements below where they describe AI-v1.
 - Post-cutover natural continuity: **PASS** — each AI-v1.1 ledger extended the exact pre-cutover head with a valid first-new-record link; no reset/fork/backfill.
 - Hosted VowSig snapshot after natural publish: **PASS / AI-v1.1 / AI-v1.0 decision protocol / SHADOW_ONLY / broker execution disabled**.
 - Canonical rebrand record: `docs/vowsig-public-rebrand-v0.1.md`.
-- Next product milestone: **First cohort G4 customer-value evidence v0.1 / GitHub Issue #9**.
+- Immediate product-growth milestone: **Organic Acquisition & SEO v0.1 Phase 8A / GitHub Issue #8**.
+- Parallel real-user evidence milestone: **First cohort G4 customer-value evidence v0.1 / GitHub Issue #9**.
+- Issue #9 gates **Phase 8B evidence-informed SEO/content expansion**, but no longer blocks Phase 8A technical discoverability work.
 
 
 ## Infrastructure
@@ -58,8 +60,8 @@ This section supersedes older status statements below where they describe AI-v1.
 - AI-v1 Historical tick boundary diagnostic v0.1: DONE / FIRST-TICK MECHANISM NOT CONFIRMED / ISSUE #13
 - AI-v1 MT5 rates-cache access correlation v0.1: DONE / SUPPORTING NOT CONCLUSIVE / ISSUE #14
 - AI-v1.1 MT5 rates synchronization correction v0.1: CUTOVER COMPLETE / CLOUD VERIFIED / ISSUE #15 CLOSED
-- First cohort G4 customer-value evidence v0.1: NEXT PRODUCT MILESTONE / REAL-USER EVIDENCE / ISSUE #9
-- Organic acquisition & SEO v0.1: DEFERRED / AFTER INITIAL REAL-USER EVIDENCE FROM ISSUE #9
+- Organic acquisition & SEO v0.1: PHASE 8A ACTIVE NOW / PHASE 8B GATED ON INITIAL ISSUE #9 EVIDENCE / ISSUE #8
+- First cohort G4 customer-value evidence v0.1: PARALLEL NEXT REAL-USER EVIDENCE / ISSUE #9
 
 ## AI-v1 active forward-collection plan
 
@@ -73,8 +75,9 @@ Immediate work is **not** model tuning. The active sequence is:
 4. **DONE / CLOUD VERIFIED:** AI Insights UI from sanitized read-only exported evidence;
 5. **DONE / REDEPLOY VERIFIED:** sanitized cloud snapshot durability;
 6. **DONE / PRODUCTION VERIFIED:** VowSig public rebrand v0.1 with governed public-surface correction and natural post-cutover lineage continuity;
-7. **NEXT:** First cohort G4 customer-value evidence v0.1 under GitHub Issue #9;
-8. review A1/A2/A3 only at their frozen eligibility thresholds.
+7. **ACTIVE / NEXT:** Organic Acquisition & SEO v0.1 Phase 8A under GitHub Issue #8 — baseline audit and planning first; no website mutation until reviewed;
+8. **PARALLEL / NEXT REAL-USER EVIDENCE:** First cohort G4 customer-value evidence v0.1 under GitHub Issue #9; its initial aggregate findings gate Issue #8 Phase 8B;
+9. review A1/A2/A3 only at their frozen eligibility thresholds.
 
 Canonical plan: `docs/ai-v1-observability-plan.md`.
 

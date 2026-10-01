@@ -57,6 +57,14 @@ The revised sequence is:
 
 ## Phase 8A — SEO foundation / discoverability
 
+Repository baseline + implementation plan:
+
+`docs/seo-phase8a-baseline-and-plan-v0.1.md`
+
+Current checkpoint: **repository baseline complete; live read-only endpoint/status confirmation pending; no website mutation authorized.**
+
+Critical finding: the current SEO-relevant public files are activation-bound by AI-v1.1 artifact verification. A governed public-surface correction v0.2/supersession path must be designed and verified before production HTML/JS/cloud-route changes.
+
 ### A. Baseline technical SEO audit
 
 Before any website mutation, document:
@@ -270,16 +278,16 @@ Do not:
 
 - [x] Issue #7 feedback infrastructure complete;
 - [x] Issue #16 VowSig rebrand complete;
-- [ ] current production SEO/indexability baseline documented;
-- [ ] initial search-intent map documented;
-- [ ] canonical URL/information architecture documented;
-- [ ] index/noindex policy documented;
-- [ ] first market-page set selected;
-- [ ] first factual educational set selected;
-- [ ] technical SEO implementation plan reviewed before website mutation;
-- [ ] metadata/canonical/sitemap/robots plan defined;
-- [ ] internal-link model defined;
-- [ ] privacy-respecting measurement plan defined;
+- [ ] current production SEO/indexability baseline documented — repository baseline complete; live HTTP confirmation pending;
+- [x] initial search-intent map documented;
+- [x] canonical URL/information architecture documented;
+- [x] index/noindex policy documented;
+- [x] first market-page set selected;
+- [x] first factual educational set selected;
+- [ ] technical SEO implementation plan reviewed before website mutation — draft committed; owner review pending;
+- [x] metadata/canonical/sitemap/robots plan defined;
+- [x] internal-link model defined;
+- [x] privacy-respecting measurement plan defined;
 - [ ] historical vs forward evidence remains clearly separated;
 - [ ] no unsupported trading claim introduced.
 

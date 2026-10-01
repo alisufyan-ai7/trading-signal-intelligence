@@ -1,85 +1,205 @@
 # Organic Acquisition & SEO v0.1
 
-_Status: DEFERRED — IMPLEMENT AFTER INITIAL REAL-USER G4 EVIDENCE_  
-_Date: 2026-09-29_  
+_Status: ACTIVE — PHASE 8A SEO FOUNDATION FIRST; PHASE 8B EVIDENCE-INFORMED EXPANSION AFTER INITIAL ISSUE #9 EVIDENCE_  
+_Date revised: 2026-10-02_  
 _GitHub issue: #8_  
-_Dependencies: Issue #7 complete; wait for initial real-user evidence from Issue #9_
+_Related G4 milestone: Issue #9_
 
 ## Purpose
 
-Preserve the strongest growth/distribution ideas from recent market-product discovery without changing the current implementation priority.
+Build an evidence-first organic acquisition system for **VowSig** without waiting unnecessarily to establish technical discoverability.
 
-Issue #7 verified the feedback mechanism but produced only a synthetic test response. This milestone remains deferred until Issue #9 produces real user-language, comprehension, market-interest, alert-preference and willingness-to-pay evidence.
+The roadmap is deliberately split into two stages:
 
-The goal is not traffic for its own sake. The goal is to attract relevant traders through useful evidence-first content and move them naturally into the SignalProof AI product.
+1. **Phase 8A — SEO foundation / discoverability:** may begin now from objective product facts and current production capabilities.
+2. **Phase 8B — evidence-informed content / conversion expansion:** begins only after initial real-user Issue #9 evidence is reviewed.
+
+This replaces the earlier all-or-nothing rule that deferred every SEO implementation step until Issue #9.
+
+The goal remains quality and relevance, not traffic for its own sake.
+
+Canonical public domain:
+
+`https://vowsig.com`
+
+## Why the roadmap changed
+
+The original deferral had a sound purpose: real users should influence language, content priorities, calls-to-action and market-page ordering.
+
+That remains true for Phase 8B.
+
+However, VowSig now has stable objective foundations that did not exist when the original SEO deferral was written:
+
+- public brand: VowSig;
+- canonical production domain: `https://vowsig.com`;
+- production rebrand complete;
+- active AI runtime: AI-v1.1;
+- frozen decision protocol: AI-v1.0;
+- SHADOW_ONLY mode;
+- XAUUSD, USTEC and US30 public evidence surfaces;
+- immutable signal/evidence records;
+- durable Railway deployment and snapshot publishing;
+- broker execution disabled.
+
+Technical discoverability, information architecture, indexing policy and measurement can therefore be prepared before customer interviews without inventing customer language.
 
 ## Strategic sequence
 
-Current priority remains:
+The revised sequence is:
 
-1. complete Issue #7 — Early Access Feedback & Customer Discovery v0.1;
-2. collect initial real-user evidence under Issue #9;
-3. review actual user-language and value evidence;
-4. use that evidence to shape Organic Acquisition & SEO v0.1;
-5. only later add stronger conversion/account/pricing mechanics when supported by G4 evidence.
+1. **NOW — Issue #8 Phase 8A:** audit current discoverability and define the technical/search foundation;
+2. implement only the reviewed Phase 8A website changes;
+3. run **Issue #9** first-cohort G4 evidence in parallel/next;
+4. summarize actual user language, confusion, market interest, alert preference and willingness-to-pay evidence;
+5. use those findings to revise **Issue #8 Phase 8B**;
+6. expand content and conversion surfaces only where user/search evidence supports expansion;
+7. add stronger account/pricing/paid conversion mechanics only when G4 evidence supports them.
 
-Creating this document does not authorize SEO implementation yet.
+## Phase 8A — SEO foundation / discoverability
 
-## Strongest ideas to preserve
+### A. Baseline technical SEO audit
 
-### Per-market landing pages
+Before any website mutation, document:
 
-Create useful market-specific pages for markets that already have genuine product/evidence value.
+- crawl/indexability status;
+- HTTP response behavior;
+- canonical tags;
+- robots directives;
+- sitemap presence/absence;
+- title/meta/OG/Twitter metadata;
+- duplicate/thin URL risks;
+- structured-data opportunities;
+- internal-link coverage;
+- public product/evidence/API paths that should or should not be indexable;
+- performance/Core Web Vitals baseline where practical;
+- material mobile/accessibility issues affecting discoverability.
 
-Initial candidates after Issue #7:
+The audit must describe current production accurately before proposing changes.
+
+### B. Search-intent map
+
+Build a first search-intent map from:
+
+- objective VowSig capabilities;
+- supported public markets/evidence;
+- public search behavior/research;
+- educational questions that can be answered factually.
+
+Do not claim the map represents customer language until Issue #9 supplies real-user evidence.
+
+### C. Information architecture
+
+Define:
+
+- canonical URL structure;
+- market-page hierarchy;
+- education/evidence clusters;
+- internal-link graph;
+- index/noindex policy;
+- canonical policy;
+- handling of API/static/product URLs;
+- future expansion rules.
+
+### D. Initial market pages
+
+Initial candidates:
 
 - XAU/USD;
 - NASDAQ 100 / USTEC;
 - DOW 30 / US30.
 
-Potential page structure:
+A market page must be genuinely useful, not a thin template. It may include:
 
-- market name and current evidence state;
+- current VowSig shadow status;
 - latest customer-safe AI decision summary;
-- BUY / SELL / NO_TRADE explanation;
-- current shadow/live lifecycle state;
-- validation-gate context;
-- immutable signal/outcome history;
-- clear historical-vs-forward separation;
+- evidence/validation state;
+- BUY / SELL / NO_TRADE semantics;
+- signal lifecycle/expiry context;
+- immutable record/history links;
 - educational context;
-- research-beta / non-guarantee disclosure;
-- CTA into the live SignalProof AI product.
+- clear research-beta/non-guarantee disclosure.
 
-These pages must contain unique useful information. Do not create thin pages solely to multiply indexed URLs.
+### E. Initial factual educational content
 
-## Educational SEO topics
+The first small batch may use facts already supported by the repository/product:
 
-Initial content candidates:
-
-1. How to read a SignalProof AI signal
-2. Why NO_TRADE can be the correct decision
-3. What an AI confidence score means — and what it does not mean
-4. How SignalProof verifies every AI signal
-5. Historical backtests vs forward evidence
-6. What A1 / A2 / A3 validation gates mean
-7. AI signals vs the rule-based S02 benchmark
+1. What is VowSig?
+2. How VowSig records AI signals
+3. BUY vs SELL vs NO_TRADE
+4. Historical backtests vs forward evidence
+5. Why losses and unresolved outcomes stay visible
+6. What AI-v1.1 and AI-v1.0 mean
+7. What SHADOW_ONLY / forward validation means
 8. How entry, stop, TP1, TP2 and expiry work
-9. Why publishing losses matters
-10. How immutable signal records improve auditability
+9. What A1 / A2 / A3 validation gates mean
+10. AI signals vs the unchanged rule-based S02 benchmark
 
-Issue #9 real-user evidence should influence the wording and ordering of these topics.
+Issue #9 should later influence wording, ordering and expansion.
 
-## Acquisition funnel
+### F. Technical SEO foundation
 
-Preferred future funnel:
+Prepare and review implementation for:
 
-search query  
--> useful educational or market page  
--> live SignalProof evidence/product  
--> feedback/account/alert preference  
--> eventual paid conversion only after G4 evidence
+- `robots.txt`;
+- XML sitemap;
+- canonical URL consistency;
+- title/meta framework;
+- Open Graph/Twitter consistency;
+- truthful structured data where useful;
+- internal-link foundation;
+- privacy-respecting traffic/search measurement;
+- Search Console/Bing-style verification plan where owner action is required.
 
-Content must satisfy the search intent first. It must not function as disguised promotional copy.
+### G. Measurement
+
+Measure a relevance funnel rather than raw page count:
+
+search impression  
+-> organic click  
+-> useful content/evidence  
+-> live VowSig product  
+-> feedback/onboarding action  
+-> later paid conversion only when pricing exists
+
+Track:
+
+- indexed pages;
+- impressions;
+- organic clicks;
+- click-through rate;
+- landing-page engagement;
+- live-product visits from content;
+- feedback/onboarding starts attributable to organic traffic;
+- later alert/signup conversion where applicable;
+- eventual paid conversion only after pricing exists.
+
+Traffic without relevant downstream engagement is not a success condition.
+
+## Phase 8B — evidence-informed content and conversion expansion
+
+Phase 8B is gated on the first aggregate Issue #9 review.
+
+Use real-user evidence to determine:
+
+- exact terminology;
+- recurring comprehension problems;
+- FAQ topics;
+- market priority;
+- alert-channel content;
+- trust/evidence explanations;
+- onboarding and CTA language;
+- conversion messaging;
+- later pricing/paid-plan landing-page priorities.
+
+Expected first expansion after Issue #9:
+
+1. summarize real-user language/comprehension findings;
+2. revise the search-intent map;
+3. revise market-page priority/content;
+4. choose 5–10 educational pages from real user questions;
+5. strengthen internal topic clusters;
+6. measure movement into product usage/feedback;
+7. expand only where relevance is demonstrated.
 
 ## Internal-linking model
 
@@ -88,7 +208,7 @@ Build topic clusters rather than isolated pages.
 Examples:
 
 - XAU/USD market page <-> gold education <-> AI evidence;
-- AI confidence article <-> live AI Insights;
+- AI confidence/explanation article <-> live AI Insights;
 - NO_TRADE article <-> recent NO_TRADE records;
 - validation article <-> A1/A2/A3 progress;
 - immutable-record article <-> signal history.
@@ -99,11 +219,12 @@ Prefer:
 
 - explicit protocol/version state;
 - losses and unresolved outcomes included;
-- NO_TRADE treated as a legitimate decision;
+- NO_TRADE treated as legitimate;
 - historical and forward evidence visibly separated;
 - immutable record/history visibility;
-- explanation of what raw confidence is and is not;
-- clear product/founder transparency where appropriate.
+- clear explanation of confidence/evidence limitations;
+- research-beta status;
+- product/founder transparency where appropriate.
 
 Avoid reducing trust to a single headline success-rate number.
 
@@ -111,15 +232,15 @@ Avoid reducing trust to a single headline success-rate number.
 
 Useful market/evidence/education surfaces should remain accessible before monetization.
 
-Do not introduce artificial usage friction purely to imitate another product.
+Do not introduce artificial usage friction merely to imitate another product.
 
-Future usage-triggered upsells may be considered only after Issue #7 and later G4 evidence show which features users value enough to pay for.
+Future usage-triggered upsells, accounts or paid plans should follow G4 evidence about what users actually value.
 
 ## Retention after acquisition
 
 Do not assume the preferred alert channel.
 
-Use Issue #9 real-user evidence to determine whether later retention work should prioritize:
+Use Issue #9 evidence to determine whether later retention work should prioritize:
 
 - Telegram;
 - email;
@@ -128,60 +249,61 @@ Use Issue #9 real-user evidence to determine whether later retention work should
 
 ## What not to implement
 
-Do not copy:
+Do not:
 
-- unsupported or ambiguously defined win-rate claims;
-- inconsistent pricing;
-- thin programmatic SEO at large scale;
-- fake urgency;
-- promotional/giveaway mechanics unrelated to product value;
-- unsupported profitability promises;
-- pages that blur research-beta status;
-- pages that imply historical performance guarantees future returns.
-
-## First implementation batch after initial Issue #9 evidence
-
-When the dependency is satisfied:
-
-1. summarize real-user language/comprehension findings from Issue #9;
-2. build a search-intent map;
-3. choose 3 initial market pages;
-4. choose 5-10 initial educational pages;
-5. define canonical URL rules and metadata;
-6. add sitemap support;
-7. add intentional internal links;
-8. add privacy-respecting traffic/conversion measurement;
-9. measure impressions, clicks, engagement and movement into the live product;
-10. expand only when measured relevance supports expansion.
-
-## Measurement
-
-Do not evaluate success by raw page count.
-
-Future measurements should include:
-
-- indexed pages;
-- search impressions;
-- organic clicks;
-- click-through rate;
-- landing-page engagement;
-- live-product visits from content;
-- feedback/account starts attributable to organic traffic;
-- alert/signup conversion where applicable;
-- eventual paid conversion after pricing exists.
-
-Traffic without relevant downstream engagement is not a success condition.
-
-## Hard boundaries
-
-This milestone must not:
-
-- modify AI-v1 decision behavior;
+- modify AI-v1.1 decision behavior;
+- modify the AI-v1.0 decision protocol;
 - modify S02 decision behavior;
 - alter immutable evidence;
-- introduce unsupported trading claims;
+- enable broker execution;
 - expose raw broker data;
-- begin implementation before initial real-user Issue #9 evidence is reviewed.
+- introduce unsupported profitability/accuracy/win-rate claims;
+- imply historical performance guarantees future returns;
+- imply A1/A2/A3 or S02 forward gates are passed before they are;
+- create large-scale thin programmatic pages;
+- use fake urgency;
+- use traffic gimmicks unrelated to product value;
+- hide research-beta status;
+- introduce pricing/conversion claims unsupported by G4 evidence.
+
+## Acceptance criteria — Phase 8A
+
+- [x] Issue #7 feedback infrastructure complete;
+- [x] Issue #16 VowSig rebrand complete;
+- [ ] current production SEO/indexability baseline documented;
+- [ ] initial search-intent map documented;
+- [ ] canonical URL/information architecture documented;
+- [ ] index/noindex policy documented;
+- [ ] first market-page set selected;
+- [ ] first factual educational set selected;
+- [ ] technical SEO implementation plan reviewed before website mutation;
+- [ ] metadata/canonical/sitemap/robots plan defined;
+- [ ] internal-link model defined;
+- [ ] privacy-respecting measurement plan defined;
+- [ ] historical vs forward evidence remains clearly separated;
+- [ ] no unsupported trading claim introduced.
+
+## Acceptance criteria — Phase 8B
+
+- [ ] initial real-user Issue #9 evidence reviewed;
+- [ ] recurring user language/comprehension findings summarized;
+- [ ] search-intent map revised using Issue #9 evidence;
+- [ ] 5–10 evidence-informed educational topics selected;
+- [ ] market-page ordering/content revised where warranted;
+- [ ] CTA/onboarding language informed by real-user evidence;
+- [ ] content expansion based on measured relevance, not page count;
+- [ ] pricing/paid-conversion SEO remains deferred until G4 evidence supports it.
+
+## Dependency model
+
+- Issue #7: complete prerequisite.
+- Issue #16: complete prerequisite.
+- Issue #9: **not a blocker for Phase 8A**.
+- Issue #9: **required for Phase 8B customer-language/content/conversion expansion**.
+
+The working loop is:
+
+**8A SEO foundation -> Issue #9 real-user evidence in parallel -> 8B evidence-informed expansion -> measured iteration.**
 
 ## Source of the ideas
 
@@ -193,10 +315,12 @@ This milestone preserves useful public-product discovery patterns observed durin
 - clear signal explanation;
 - trust/education-led conversion.
 
-These are treated as product/distribution hypotheses for SignalProof AI, not as instructions to clone another service.
+These remain VowSig product/distribution hypotheses, not instructions to clone another service.
 
 ## Status rule
 
-Remain **DEFERRED** until Issue #7 is complete **and** Issue #9 has produced initial real-user customer-discovery evidence.
+Phase 8A is **ACTIVE**.
 
-At that point, this plan may be revised before implementation so that actual user evidence—not competitor imitation—determines the first SEO/content batch.
+Phase 8B remains **BLOCKED ON INITIAL ISSUE #9 EVIDENCE**.
+
+Starting Phase 8A does not constitute G4 evidence, does not change AI/S02 validation status, and does not authorize unsupported product or trading claims.

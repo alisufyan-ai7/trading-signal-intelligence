@@ -25,7 +25,7 @@ This section supersedes older status statements below where they describe AI-v1.
 - Post-cutover natural continuity: **PASS** — each AI-v1.1 ledger extended the exact pre-cutover head with a valid first-new-record link; no reset/fork/backfill.
 - Hosted VowSig snapshot after natural publish: **PASS / AI-v1.1 / AI-v1.0 decision protocol / SHADOW_ONLY / broker execution disabled**.
 - Canonical rebrand record: `docs/vowsig-public-rebrand-v0.1.md`.
-- Immediate product-growth milestone: **Organic Acquisition & SEO v0.1 Phase 8A / GitHub Issue #8**.
+- Immediate product-growth milestone: **Organic Acquisition & SEO v0.1 Phase 8A / GitHub Issue #8** — repository baseline/IA/index-policy/content-priority/measurement plan committed; live read-only HTTP confirmation next.
 - Parallel real-user evidence milestone: **First cohort G4 customer-value evidence v0.1 / GitHub Issue #9**.
 - Issue #9 gates **Phase 8B evidence-informed SEO/content expansion**, but no longer blocks Phase 8A technical discoverability work.
 
@@ -75,7 +75,7 @@ Immediate work is **not** model tuning. The active sequence is:
 4. **DONE / CLOUD VERIFIED:** AI Insights UI from sanitized read-only exported evidence;
 5. **DONE / REDEPLOY VERIFIED:** sanitized cloud snapshot durability;
 6. **DONE / PRODUCTION VERIFIED:** VowSig public rebrand v0.1 with governed public-surface correction and natural post-cutover lineage continuity;
-7. **ACTIVE / NEXT:** Organic Acquisition & SEO v0.1 Phase 8A under GitHub Issue #8 — baseline audit and planning first; no website mutation until reviewed;
+7. **ACTIVE / NEXT:** Organic Acquisition & SEO v0.1 Phase 8A under GitHub Issue #8 — repository baseline plan committed; next run read-only live root/robots/sitemap/docs/API checks; then review the public-surface correction v0.2/supersession requirement before any website mutation;
 8. **PARALLEL / NEXT REAL-USER EVIDENCE:** First cohort G4 customer-value evidence v0.1 under GitHub Issue #9; its initial aggregate findings gate Issue #8 Phase 8B;
 9. review A1/A2/A3 only at their frozen eligibility thresholds.
 

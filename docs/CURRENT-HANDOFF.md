@@ -190,7 +190,11 @@ cadence based on early user, SEO, or trading results.
 
 ### Last owner-verified production state
 
-Latest production SEO Phase 8A cutover merge:
+Latest production SEO Phase 8A polish cutover merge:
+
+`f365f42c349468abd9a84ab4e2d28f4c0636c262`
+
+Earlier technical SEO cutover:
 
 `5e6b7ae412f79ce11a60ba5f64739d8f2fa951ec`
 

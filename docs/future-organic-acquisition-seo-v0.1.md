@@ -183,20 +183,37 @@ Track:
 
 Traffic without relevant downstream engagement is not a success condition.
 
-### Phase 8A remaining production polish
+### Phase 8A production polish complete
 
-The technical/indexing foundation is live. Remaining Phase 8A polish that is
-not yet implemented:
+The favicon/search-result branding and practical performance/mobile/accessibility
+follow-up is now live and naturally verified in production.
 
-- add a VowSig favicon/search-result icon and Apple touch icon;
-- add the corresponding icon references to canonical HTML pages;
-- route any favicon/public-file change through a new governed public-surface
-  correction successor before production deployment;
-- complete the initial Google/Bing indexing observation window and capture
-  Day-7, Day-14 and Day-28 aggregate results.
+Completed:
 
-Performance/Core Web Vitals and mobile/basic accessibility should also be
-reviewed where practical before Phase 8A is declared fully closed.
+- VowSig SVG + 96x96 PNG favicon;
+- 180x180 Apple touch icon;
+- icon/theme metadata on all 12 canonical pages;
+- deferred dashboard JavaScript and small/local frontend payloads;
+- keyboard skip navigation and focus-visible treatment;
+- semantic breadcrumb navigation;
+- practical 44px touch-target sizing;
+- narrow-screen navigation/layout improvements;
+- mobile form sizing and reduced-motion handling;
+- governed sequence-3 public-surface correction;
+- hosted 17-file surface verification;
+- natural post-cutover AI-v1.1 + publisher continuity without reset/fork/backfill.
+
+Production merge:
+
+`f365f42c349468abd9a84ab4e2d28f4c0636c262`
+
+Remaining Phase 8A work is now external observation only:
+
+- Google/Bing indexing propagation;
+- Day-7 aggregate indexing/search review;
+- Day-14 aggregate indexing/search review;
+- Day-28 organic-discovery review;
+- field Core Web Vitals observation if/when sufficient search/browser data exists.
 
 ## Phase 8B — evidence-informed content and conversion expansion
 

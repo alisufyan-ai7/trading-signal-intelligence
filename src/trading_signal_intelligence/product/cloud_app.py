@@ -155,7 +155,11 @@ INDEXABLE_PATHS = (
 async def add_search_engine_headers(request: Request, call_next):
     response = await call_next(request)
     path = request.url.path
-    if path == "/healthz" or path.startswith("/api/"):
+    if (
+        path == "/healthz"
+        or path.startswith("/api/")
+        or path.startswith("/static/")
+    ):
         response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
     return response
 

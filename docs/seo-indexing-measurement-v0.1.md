@@ -307,16 +307,16 @@ Do not store:
 
 ## 14. Initial owner-action checklist
 
-- [ ] Google search property for `vowsig.com` verified;
-- [ ] Google sitemap submitted;
-- [ ] Google sitemap accepted/processed status captured;
-- [ ] Bing site for `https://vowsig.com` verified/imported;
-- [ ] Bing sitemap submitted;
-- [ ] Bing sitemap accepted/processed status captured;
-- [ ] Day-0 aggregate baseline captured;
-- [ ] Day-7 review scheduled;
-- [ ] Day-14 review scheduled;
-- [ ] Day-28 review scheduled.
+- [x] Google search property for `vowsig.com` verified;
+- [x] Google sitemap submitted;
+- [x] Google sitemap processing status captured — initial state `Sitemap could not be read`; crawler-parity diagnostic PASS; recheck pending;
+- [x] Bing site for `https://vowsig.com` verified/imported;
+- [x] Bing sitemap submitted;
+- [x] Bing sitemap processing status captured — initial state `Processing`, 0 errors, 0 warnings;
+- [x] Day-0 aggregate baseline captured in `docs/seo-indexing-day0-2026-10-02.md`;
+- [x] Day-7 review date defined: 2026-10-09;
+- [x] Day-14 review date defined: 2026-10-16;
+- [x] Day-28 review date defined: 2026-10-30.
 
 ## 15. Repository-side work complete at this checkpoint
 

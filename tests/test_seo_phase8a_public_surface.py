@@ -127,6 +127,20 @@ def test_api_and_health_routes_return_noindex_headers() -> None:
         )
 
 
+def test_static_mount_is_noindex_to_avoid_duplicate_html_urls() -> None:
+    client = TestClient(app)
+    for path in (
+        "/static/index.html",
+        "/static/markets/xau-usd.html",
+        "/static/learn/shadow-validation.html",
+    ):
+        response = client.get(path)
+        assert response.status_code == 200
+        assert response.headers["X-Robots-Tag"] == (
+            "noindex, nofollow, noarchive"
+        )
+
+
 def test_indexable_pages_do_not_receive_x_robots_noindex() -> None:
     client = TestClient(app)
     for path in EXPECTED_INDEXABLE_PATHS:

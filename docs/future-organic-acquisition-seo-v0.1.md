@@ -61,9 +61,9 @@ Repository baseline + implementation plan:
 
 `docs/seo-phase8a-baseline-and-plan-v0.1.md`
 
-Current checkpoint: **repository baseline complete; live read-only endpoint/status confirmation pending; no website mutation authorized.**
+Current checkpoint: **Phase 8A technical implementation is live and natural continuity is verified. Search indexing/measurement setup and initial organic-discovery monitoring are next.**
 
-Critical finding: the current SEO-relevant public files are activation-bound by AI-v1.1 artifact verification. A governed public-surface correction v0.2/supersession path must be designed and verified before production HTML/JS/cloud-route changes.
+The activation-bound public files are now governed by the upstream-valid public-surface correction v0.2 chain. Production SEO changes were deployed under that mechanism without changing AI-v1.1 decision behavior, frozen artifacts, ledgers, scheduler semantics, or broker execution.
 
 ### A. Baseline technical SEO audit
 
@@ -278,13 +278,13 @@ Do not:
 
 - [x] Issue #7 feedback infrastructure complete;
 - [x] Issue #16 VowSig rebrand complete;
-- [ ] current production SEO/indexability baseline documented — repository baseline complete; live HTTP confirmation pending;
+- [x] current production SEO/indexability baseline documented and production behavior verified;
 - [x] initial search-intent map documented;
 - [x] canonical URL/information architecture documented;
 - [x] index/noindex policy documented;
 - [x] first market-page set selected;
 - [x] first factual educational set selected;
-- [ ] technical SEO implementation plan reviewed before website mutation — draft committed; owner review pending;
+- [x] technical SEO implementation reviewed, deployed, and verified;
 - [x] metadata/canonical/sitemap/robots plan defined;
 - [x] internal-link model defined;
 - [x] privacy-respecting measurement plan defined;
@@ -327,7 +327,7 @@ These remain VowSig product/distribution hypotheses, not instructions to clone a
 
 ## Status rule
 
-Phase 8A is **ACTIVE**.
+Phase 8A is **ACTIVE — TECHNICAL FOUNDATION LIVE; INDEXING/MEASUREMENT MONITORING NEXT**.
 
 Phase 8B remains **BLOCKED ON INITIAL ISSUE #9 EVIDENCE**.
 

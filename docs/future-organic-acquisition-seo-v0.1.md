@@ -183,6 +183,21 @@ Track:
 
 Traffic without relevant downstream engagement is not a success condition.
 
+### Phase 8A remaining production polish
+
+The technical/indexing foundation is live. Remaining Phase 8A polish that is
+not yet implemented:
+
+- add a VowSig favicon/search-result icon and Apple touch icon;
+- add the corresponding icon references to canonical HTML pages;
+- route any favicon/public-file change through a new governed public-surface
+  correction successor before production deployment;
+- complete the initial Google/Bing indexing observation window and capture
+  Day-7, Day-14 and Day-28 aggregate results.
+
+Performance/Core Web Vitals and mobile/basic accessibility should also be
+reviewed where practical before Phase 8A is declared fully closed.
+
 ## Phase 8B — evidence-informed content and conversion expansion
 
 Phase 8B is gated on the first aggregate Issue #9 review.
@@ -288,8 +303,8 @@ Do not:
 - [x] metadata/canonical/sitemap/robots plan defined;
 - [x] internal-link model defined;
 - [x] privacy-respecting measurement plan defined;
-- [ ] historical vs forward evidence remains clearly separated;
-- [ ] no unsupported trading claim introduced.
+- [x] historical vs forward evidence remains clearly separated;
+- [x] no unsupported trading claim introduced.
 
 ## Acceptance criteria — Phase 8B
 

@@ -1,6 +1,6 @@
 # VowSig SEO Phase 8A — Baseline Audit and Implementation Plan v0.1
 
-_Status: REPOSITORY BASELINE COMPLETE / LIVE ENDPOINT PROBE PENDING / NO WEBSITE MUTATION_  
+_Status: REPOSITORY + LIVE BASELINE COMPLETE / PUBLIC-SURFACE CORRECTION V0.2 DESIGN NEXT / NO WEBSITE MUTATION_  
 _Date: 2026-10-02_  
 _Parent milestone: GitHub Issue #8 — Organic acquisition & SEO v0.1_  
 _Canonical domain: https://vowsig.com_
@@ -21,6 +21,8 @@ future source/workflow.
 
 Before any website mutation, perform one read-only live HTTP probe to confirm
 the repository-derived assumptions for root/robots/sitemap/docs/API status.
+
+**Live probe completed 2026-10-02 and matched the repository-derived baseline.**
 
 ## 2. Current public architecture
 
@@ -603,6 +605,46 @@ Keep live/dynamic evidence supplemental to useful initial HTML.
 Verify discoverability/measurement, then run the controlled Issue #9 cohort in
 parallel. Use those findings to revise Phase 8B.
 
+## 18. Live production confirmation — 2026-10-02
+
+Owner-run read-only GET probe against `https://vowsig.com` completed with no mutation.
+
+Observed:
+
+- `/`: HTTP 200 / `text/html; charset=utf-8`;
+- title: `VowSig — Research Beta`;
+- canonical: `https://vowsig.com/`;
+- meta description present;
+- robots meta absent;
+- JSON-LD absent;
+- `/robots.txt`: HTTP 404;
+- `/sitemap.xml`: HTTP 404;
+- `/docs`: HTTP 200;
+- `/redoc`: HTTP 200;
+- `/openapi.json`: HTTP 200;
+- `/healthz`: HTTP 200;
+- `/api/health`: HTTP 200;
+- `/api/evidence`: HTTP 200;
+- `/api/markets`: HTTP 200;
+- `/api/ai/insights`: HTTP 200;
+- `/api/signals`: HTTP 200;
+- no tested route returned an `X-Robots-Tag` header.
+
+Interpretation:
+
+1. the root page is publicly indexable and already self-canonicalized;
+2. crawler policy is not project-controlled yet because `robots.txt` is absent;
+3. there is no sitemap yet;
+4. FastAPI documentation/OpenAPI surfaces are publicly reachable and currently
+   have no explicit noindex header;
+5. public JSON endpoints likewise have no explicit noindex header;
+6. the live deployment therefore confirms the repository-side technical SEO
+   gaps rather than revealing a different production configuration.
+
+The next checkpoint is not a website edit. It is the governed public-surface
+correction v0.2 / supersession design required before activation-bound public
+files can change.
+
 ## 18. Phase 8A status after this checkpoint
 
 Repository-baseline findings:
@@ -620,8 +662,8 @@ Repository-baseline findings:
 - [x] internal-link model documented;
 - [x] privacy-respecting measurement plan documented;
 - [x] activation-bound website mutation risk identified;
-- [ ] live read-only endpoint/status probe completed;
-- [ ] public-surface correction v0.2/supersession mechanism designed/verified;
+- [x] live read-only endpoint/status probe completed;
+- [ ] public-surface correction v0.2/supersession mechanism designed/verified — **NEXT**;
 - [ ] technical implementation approved;
 - [ ] website changes made;
 - [ ] search/indexing measurement connected.

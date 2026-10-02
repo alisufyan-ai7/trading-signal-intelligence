@@ -57,10 +57,28 @@ Current work order:
 12. **DONE / CUTOVER + CLOUD VERIFIED:** AI-v1.1 MT5 Rates Synchronization Correction v0.1 — AI-v1.0 retired and preserved; AI-v1.1 activation anchored; hourly scheduler healthy; hosted cloud snapshot reports AI-v1.1 / decision protocol AI-v1.0; broker execution disabled; GitHub Issue #15 CLOSED;
 13. **DONE / PRODUCTION + NATURAL CONTINUITY VERIFIED:** VowSig Public Rebrand v0.1 — VowSig is the public brand, canonical domain is https://vowsig.com, governed public-surface correction is valid/upstream-valid, merged production main is `3dfc548b0cd89de1ac9e19723dec1ad44b39ca50`, and the first natural post-cutover AI-v1.1 + publisher cycles extended the pre-cutover ledger heads without reset/fork/backfill; GitHub Issue #16 CLOSED;
 14. **ACTIVE / OBSERVATION ONLY:** Organic Acquisition & SEO v0.1 Phase 8A — technical SEO, favicon/search branding, practical performance/mobile/accessibility polish, governed production cutover, and natural continuity are complete at `f365f42c349468abd9a84ab4e2d28f4c0636c262`. Google and Bing webmaster properties are active and the canonical sitemap has been submitted to both. Day-0 baseline is recorded in `docs/seo-indexing-day0-2026-10-02.md`. **NEXT:** recheck Google/Bing propagation and perform the Day-7/14/28 aggregate indexing/search reviews; GitHub Issue #8;
-15. **PARALLEL / NEXT REAL-USER EVIDENCE:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; this evidence gates Issue #8 Phase 8B, not Phase 8A; GitHub Issue #9;
+15. **ACTIVE EXECUTION WHILE PHASE 8A OBSERVES:** First Cohort G4 Customer-Value Evidence v0.1 — owner-selected 10–20 user cohort, explicit onboarding approval, real-user feedback collection and first aggregate evidence summary; this is the immediate owner-action workstream while Google/Bing indexing propagates and it gates Issue #8 Phase 8B; GitHub Issue #9;
 16. perform A1 only when the frozen >=100 valid-inference AND >=20 completed-trade thresholds are naturally reached.
 
 A2 remains subject to >=500 valid inferences, >=50 completed trades and >=60 calendar days. A3 remains subject to >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
+
+### Competitive benchmark roles
+
+Owner direction for product/marketing research:
+
+- **TradingTop:** primary product/business-model benchmark — signal UX, AI insight
+  packaging, model/evidence presentation, pricing/credits, membership, referral
+  and future execution workflow are comparison inputs, not copy targets.
+- **Tradebise:** primary SEO/discoverability benchmark — use its observed SEO
+  structure/tactics as the comparison input for organic acquisition work, while
+  preserving VowSig's own evidence-first positioning and avoiding thin/copied
+  content.
+
+The authenticated TradingTop teardown is durable in this repository. A
+Tradebise-specific artifact was not located on the current default branch
+during the 2026-10-02 roadmap reconciliation, so no specific Tradebise tactic
+should be asserted or implemented until that exact repository evidence is
+located/reconciled.
 
 ### Active growth roadmap — Organic Acquisition & SEO v0.1
 
@@ -71,7 +89,7 @@ GitHub Issue: #8
 
 Phase 8A technical implementation is now live under the governed public-surface correction v0.2 chain. The production surface includes robots.txt, sitemap.xml, structured site/page metadata, canonical market/education/evidence routes, internal linking, explicit noindex controls for plumbing, and disabled public framework docs. The first natural AI-v1.1 + publisher cycles after cutover extended all three exact pre-cutover ledger heads without reset/fork/backfill. The next checkpoint is search indexing/measurement setup and initial organic-discovery monitoring.
 
-Issue #9 then supplies real user-language, comprehension, market-interest, alert-preference and willingness-to-pay evidence. That evidence is required before Phase 8B expands customer-language-dependent content, CTA/conversion copy or pricing-related SEO.
+Issue #9 now becomes the immediate execution track while Phase 8A indexing propagates. It supplies real user-language, comprehension, market-interest, alert-preference and willingness-to-pay evidence. That evidence is required before Phase 8B expands customer-language-dependent content, CTA/conversion copy or pricing-related SEO.
 
 Working sequence:
 

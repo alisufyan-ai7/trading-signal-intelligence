@@ -3,9 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#09111f" />
   <title>VowSig — Research Beta</title>
   <meta name="description" content="VowSig surfaces AI-assisted trading intelligence with explicit risk context, forward-validation evidence, and immutable shadow records." />
   <link rel="canonical" href="https://vowsig.com/" />
+  <link rel="icon" href="/static/vowsig-favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/static/vowsig-favicon-96.png" sizes="96x96" type="image/png" />
+  <link rel="apple-touch-icon" href="/static/vowsig-apple-touch-icon.png" sizes="180x180" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="VowSig" />
   <meta property="og:title" content="VowSig — Research Beta" />
@@ -18,25 +22,26 @@
   <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"WebSite","name":"VowSig","url":"https://vowsig.com/","description":"AI-assisted trading intelligence with explicit risk context, forward-validation evidence, and immutable shadow records."}
   </script>
-  <link rel="stylesheet" href="/static/styles.css?v=20261002-1" />
+  <link rel="stylesheet" href="/static/styles.css?v=20261002-2" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <nav class="site-nav" aria-label="Primary">
-    <a class="brand-link" href="/">VowSig</a>
+    <a class="brand-link" href="/" aria-current="page">VowSig</a>
     <div class="nav-links">
       <a href="/markets/">Markets</a>
       <a href="/learn/">Learn</a>
       <a href="/evidence/">Evidence</a>
     </div>
   </nav>
-  <main class="shell">
+  <main id="main-content" class="shell">
     <header class="hero">
       <div>
         <span class="eyebrow">VOWSIG • RESEARCH BETA</span>
         <h1>Find the trade. See the risk. Verify the record.</h1>
         <p class="lede">Two evidence streams are shown separately: the frozen S02 benchmark and VowSig AI shadow intelligence. The active AI runtime is live in forward validation, with no broker execution.</p>
       </div>
-      <div class="status-card">
+      <div class="status-card" role="status" aria-live="polite">
         <span class="dot"></span>
         <div>
           <strong id="health-label">Checking system…</strong>
@@ -55,7 +60,7 @@
         <p>Live, immutable shadow evidence from XAU/USD, NASDAQ 100 and DOW 30. Raw confidence is an uncalibrated model score—not a probability of profit.</p>
       </div>
 
-      <div id="ai-status" class="ai-status">
+      <div id="ai-status" class="ai-status" aria-live="polite">
         <div class="empty">Loading VowSig shadow evidence…</div>
       </div>
 
@@ -304,6 +309,6 @@
       </div>
     </footer>
   </main>
-  <script src="/static/app.js?v=20260930-1"></script>
+  <script defer src="/static/app.js?v=20260930-1"></script>
 </body>
 </html>

@@ -202,7 +202,7 @@ Canonical IDs are unique:
 24. AI-v1 MT5 rates-cache access correlation v0.1 — **DONE / ISSUE #14**
 25. AI-v1.1 MT5 rates synchronization correction v0.1 — **DONE / CUTOVER + CLOUD VERIFIED / ISSUE #15 CLOSED**
 26. VowSig public rebrand v0.1 — **DONE / PRODUCTION + NATURAL CONTINUITY VERIFIED / ISSUE #16 CLOSED**
-27. Organic acquisition & SEO v0.1 — **PHASE 8A ACTIVE / PHASE 8B GATED ON INITIAL ISSUE #9 EVIDENCE / ISSUE #8**
+27. Organic acquisition & SEO v0.1 — **PHASE 8A TECHNICAL FOUNDATION LIVE + NATURAL CONTINUITY VERIFIED; INDEXING/MEASUREMENT NEXT / PHASE 8B GATED ON INITIAL ISSUE #9 EVIDENCE / ISSUE #8**
 28. First cohort G4 customer-value evidence v0.1 — **PARALLEL NEXT REAL-USER EVIDENCE / ISSUE #9**
 
 ## Durable project-state rule
@@ -273,6 +273,6 @@ Frozen AI-v1 references:
 - `config/ai_v1_activation_schema.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
-AI-v1.1 is now the active hourly shadow runtime on XAUUSD, USTEC and US30, with frozen decision protocol AI-v1.0. AI-v1.0 runtime is retired and its scheduler remains Disabled; its evidence is preserved separately. The exact provider/model and inference parameters remain frozen to OpenAI `gpt-5.4-2026-03-05`. Broker execution remains disabled. VowSig is the public product brand at `https://vowsig.com`. The governed public-surface correction is upstream-valid, and the first natural post-cutover cycle cryptographically extended every AI-v1.1 pre-cutover ledger head without reset, fork, or backfill. The immediate product-growth milestone is Issue #8 Phase 8A technical SEO/discoverability foundation. Issue #9 first-cohort G4 evidence runs in parallel/next and is required before Issue #8 Phase 8B customer-language/content/conversion expansion. AI-v1.1 forward collection continues unchanged.
+AI-v1.1 is now the active hourly shadow runtime on XAUUSD, USTEC and US30, with frozen decision protocol AI-v1.0. AI-v1.0 runtime is retired and its scheduler remains Disabled; its evidence is preserved separately. The exact provider/model and inference parameters remain frozen to OpenAI `gpt-5.4-2026-03-05`. Broker execution remains disabled. VowSig is the public product brand at `https://vowsig.com`. The governed public-surface correction is upstream-valid, and the first natural post-cutover cycle cryptographically extended every AI-v1.1 pre-cutover ledger head without reset, fork, or backfill. The immediate product-growth milestone remains Issue #8 Phase 8A. Its technical SEO/discoverability foundation is now live at production merge `5e6b7ae412f79ce11a60ba5f64739d8f2fa951ec` with natural AI-v1.1/publisher continuity verified; the next Phase 8A work is search indexing/measurement setup and initial organic-discovery monitoring. Issue #9 first-cohort G4 evidence runs in parallel/next and is required before Issue #8 Phase 8B customer-language/content/conversion expansion. AI-v1.1 forward collection continues unchanged.
 
 The active S02 forward protocols and their ledgers must remain unchanged.

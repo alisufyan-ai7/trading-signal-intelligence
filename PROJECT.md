@@ -251,6 +251,22 @@ This pass is based on the separate permission held by the project owner, not on 
 Paid replacement data providers are deferred until application revenue justifies the expense.
 
 
+## Competitive benchmark roles
+
+Owner direction as of 2026-10-02:
+
+- **TradingTop** is the primary product/business-model benchmark.
+- **Tradebise** is the primary SEO/discoverability benchmark.
+
+These are comparison inputs, not templates to copy. VowSig keeps its own
+evidence-first positioning, immutable forward record, explicit research-beta
+status and no unsupported performance claims.
+
+The authenticated TradingTop teardown and screenshots are durable in this
+repository. During the 2026-10-02 default-branch reconciliation, no
+Tradebise-named artifact was located; specific Tradebise SEO tactics therefore
+remain evidence-dependent until the exact repository artifact is located.
+
 ## AI-first product pivot — 2026-09-28
 
 The owner formally approved the new product direction after authenticated TradingTop research.
@@ -273,6 +289,6 @@ Frozen AI-v1 references:
 - `config/ai_v1_activation_schema.json`
 - `research/experiments/EXP-2026-014-ai-v1-shadow-preregistration.md`
 
-AI-v1.1 is now the active hourly shadow runtime on XAUUSD, USTEC and US30, with frozen decision protocol AI-v1.0. AI-v1.0 runtime is retired and its scheduler remains Disabled; its evidence is preserved separately. The exact provider/model and inference parameters remain frozen to OpenAI `gpt-5.4-2026-03-05`. Broker execution remains disabled. VowSig is the public product brand at `https://vowsig.com`. The governed public-surface correction chain is upstream-valid through sequence 3, and the first natural post-polish-cutover cycle cryptographically extended every AI-v1.1 pre-resume ledger head without reset, fork, or backfill. The immediate product-growth milestone remains Issue #8 Phase 8A. Its technical SEO/discoverability foundation plus favicon/search branding and practical performance/mobile/accessibility polish are live at production merge `f365f42c349468abd9a84ab4e2d28f4c0636c262` with natural AI-v1.1/publisher continuity verified. The only remaining Phase 8A work is external Google/Bing indexing propagation and Day-7/Day-14/Day-28 measurement. Issue #9 first-cohort G4 evidence runs in parallel/next and is required before Issue #8 Phase 8B customer-language/content/conversion expansion. AI-v1.1 forward collection continues unchanged.
+AI-v1.1 is now the active hourly shadow runtime on XAUUSD, USTEC and US30, with frozen decision protocol AI-v1.0. AI-v1.0 runtime is retired and its scheduler remains Disabled; its evidence is preserved separately. The exact provider/model and inference parameters remain frozen to OpenAI `gpt-5.4-2026-03-05`. Broker execution remains disabled. VowSig is the public product brand at `https://vowsig.com`. The governed public-surface correction chain is upstream-valid through sequence 3, and the first natural post-polish-cutover cycle cryptographically extended every AI-v1.1 pre-resume ledger head without reset, fork, or backfill. The immediate product-growth milestone remains Issue #8 Phase 8A. Its technical SEO/discoverability foundation plus favicon/search branding and practical performance/mobile/accessibility polish are live at production merge `f365f42c349468abd9a84ab4e2d28f4c0636c262` with natural AI-v1.1/publisher continuity verified. The only remaining Phase 8A work is external Google/Bing indexing propagation and Day-7/Day-14/Day-28 measurement. While that observation window runs, Issue #9 first-cohort G4 evidence is the immediate active execution track and is required before Issue #8 Phase 8B customer-language/content/conversion expansion. AI-v1.1 forward collection continues unchanged.
 
 The active S02 forward protocols and their ledgers must remain unchanged.

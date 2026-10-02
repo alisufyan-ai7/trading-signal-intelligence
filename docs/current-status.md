@@ -20,7 +20,7 @@ This section supersedes older status statements below where they describe AI-v1.
 - Broker execution: **DISABLED**.
 - Hosted cloud snapshot: **AI-v1.1 / forward_validation_in_progress / durability PASS**.
 - VowSig public rebrand v0.1: **COMPLETE / PRODUCTION VERIFIED / ISSUE #16 CLOSED**.
-- VowSig production main: `3dfc548b0cd89de1ac9e19723dec1ad44b39ca50`.
+- VowSig production main: `5e6b7ae412f79ce11a60ba5f64739d8f2fa951ec` (SEO Phase 8A production cutover; earlier rebrand merge `3dfc548b0cd89de1ac9e19723dec1ad44b39ca50` retained as provenance).
 - Public-surface correction: **VALID / UPSTREAM-VALID / NON-DECISION ONLY**.
 - Post-cutover natural continuity: **PASS** — each AI-v1.1 ledger extended the exact pre-cutover head with a valid first-new-record link; no reset/fork/backfill.
 - Hosted VowSig snapshot after natural publish: **PASS / AI-v1.1 / AI-v1.0 decision protocol / SHADOW_ONLY / broker execution disabled**.

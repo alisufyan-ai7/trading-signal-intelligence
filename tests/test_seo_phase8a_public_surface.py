@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import ast
 
 from trading_signal_intelligence.product.cloud_app import (
     INDEXABLE_PATHS,
@@ -216,6 +217,16 @@ def test_phase8a_copy_preserves_evidence_boundaries() -> None:
 
 
 def test_test_module_does_not_require_http_client_dependency() -> None:
-    text = Path(__file__).read_text(encoding="utf-8")
-    assert "TestClient" not in text
-    assert "httpx" not in text
+    tree = ast.parse(Path(__file__).read_text(encoding="utf-8"))
+    imported_modules: set[str] = set()
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            imported_modules.update(alias.name for alias in node.names)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            imported_modules.add(node.module)
+
+    assert "fastapi.testclient" not in imported_modules
+    assert "starlette.testclient" not in imported_modules
+    assert "httpx" not in imported_modules
+    assert "httpx2" not in imported_modules

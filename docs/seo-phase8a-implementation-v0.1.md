@@ -189,18 +189,22 @@ No intended indexable page is designed as an orphan.
 New `tests/test_seo_phase8a_public_surface.py` verifies:
 
 - exact twelve-route indexable manifest;
+- exact FastAPI route registration;
 - root navigation/canonical/JSON-LD;
 - unique canonical metadata on every new page;
+- indexable file routes resolve existing HTML files;
 - research-beta/non-guarantee disclosure;
 - robots policy;
 - sitemap contents;
 - FastAPI framework docs disabled;
-- API/health noindex headers;
-- static duplicate HTML noindex headers;
-- intended indexable pages are not noindexed;
+- deterministic noindex predicate covers API/health/static plumbing;
+- intended indexable routes are excluded from the noindex predicate;
 - permanent alias redirects;
 - key evidence-boundary wording;
 - no obvious prohibited win/profit marketing phrase in the staged HTML.
+
+The tests deliberately avoid FastAPI/Starlette `TestClient` so Phase 8A does not
+add an undeclared HTTP-client dependency solely for test execution.
 
 Existing branding, cloud runtime and public-surface correction tests must also
 continue to pass.

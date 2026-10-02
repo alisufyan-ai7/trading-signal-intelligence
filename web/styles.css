@@ -11,6 +11,31 @@
 }
 
 * { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 10000;
+  transform: translateY(-180%);
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--warn);
+  color: #09111f;
+  font-weight: 800;
+  text-decoration: none;
+}
+.skip-link:focus { transform: translateY(0); }
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--warn);
+  outline-offset: 3px;
+}
+code { overflow-wrap: anywhere; }
 body {
   margin: 0;
   min-height: 100vh;
@@ -306,6 +331,7 @@ h2 { font-size: 28px; margin: 8px 0 0; }
 .feedback-field select,
 .feedback-field textarea {
   width: 100%;
+  min-height: 44px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: rgba(9,17,31,.78);
@@ -340,7 +366,12 @@ h2 { font-size: 28px; margin: 8px 0 0; }
   color: var(--muted);
   line-height: 1.4;
 }
-.choice-grid input { margin-top: 3px; }
+.choice-grid input {
+  margin-top: 3px;
+  inline-size: 18px;
+  block-size: 18px;
+  flex: 0 0 auto;
+}
 .feedback-actions {
   display: flex;
   align-items: center;
@@ -348,6 +379,7 @@ h2 { font-size: 28px; margin: 8px 0 0; }
   flex-wrap: wrap;
 }
 .feedback-actions button {
+  min-height: 44px;
   border: 1px solid rgba(120,224,177,.35);
   border-radius: 12px;
   background: rgba(120,224,177,.12);
@@ -397,6 +429,15 @@ h2 { font-size: 28px; margin: 8px 0 0; }
   color: var(--text);
   text-decoration: none;
 }
+.site-nav a,
+.site-footer a,
+.content-links a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.site-nav a[aria-current="page"] { color: var(--accent); }
+.nav-links a { padding: 6px 4px; }
 .site-nav a:hover,
 .site-footer a:hover,
 .content-links a:hover,
@@ -518,5 +559,40 @@ h2 { font-size: 28px; margin: 8px 0 0; }
   }
   .content-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .site-nav,
+  .shell,
+  .content-shell {
+    width: calc(100% - 24px);
+  }
+  .site-nav { gap: 12px; }
+  .nav-links {
+    width: 100%;
+    gap: 8px;
+  }
+  .nav-links a {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+  }
+  .feedback-field select,
+  .feedback-field textarea {
+    font-size: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
   }
 }

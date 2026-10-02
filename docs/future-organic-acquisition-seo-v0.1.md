@@ -22,6 +22,21 @@ Canonical public domain:
 
 `https://vowsig.com`
 
+## Tradebise provenance note
+
+Owner clarification recorded 2026-10-02:
+
+- Issue #8 was originally informed by research on `tradebise.com`;
+- Tradebise is the intended SEO/discoverability benchmark;
+- TradingTop remains the product/business-model benchmark;
+- the current default branch does not contain a Tradebise-named research
+  artifact, so specific Tradebise observations must be treated as owner-provided
+  provenance until the exact research notes/screenshots are durably recovered
+  or re-captured into this repository.
+
+Do not invent or attribute specific Tradebise SEO tactics that are not currently
+supported by a durable repository artifact.
+
 ## Why the roadmap changed
 
 The original deferral had a sound purpose: real users should influence language, content priorities, calls-to-action and market-page ordering.
@@ -275,6 +290,39 @@ Useful market/evidence/education surfaces should remain accessible before moneti
 Do not introduce artificial usage friction merely to imitate another product.
 
 Future usage-triggered upsells, accounts or paid plans should follow G4 evidence about what users actually value.
+
+## Advertising monetization hypothesis
+
+Tradebise was also observed by the owner to display advertising. Advertising is
+therefore a legitimate monetization hypothesis for VowSig, but not the primary
+business model at the current stage.
+
+Recommended role:
+
+- keep the core live signal/evidence/AI decision workflow free from distracting
+  or trust-eroding ad placements;
+- consider ads first on high-intent SEO/education pages once meaningful organic
+  traffic exists;
+- measure revenue per visit alongside bounce rate, product click-through,
+  feedback/onboarding actions and any later paid conversion;
+- avoid ads that visually resemble VowSig trade signals, recommendations or
+  system alerts;
+- do not let ad revenue incentivize thin content, exaggerated trading claims or
+  page-count inflation;
+- consider direct/sponsored placements only with clear disclosure and after the
+  audience is large enough to make sponsorship meaningful.
+
+Revenue model priority remains:
+
+1. validate recurring product value;
+2. test paid subscription/paid beta;
+3. add advertising as a secondary traffic-monetization layer if it does not
+   damage trust or conversion;
+4. consider referrals/affiliate economics later under their own disclosure and
+   operational controls.
+
+No ad network, ad placement, sponsorship or affiliate monetization is activated
+by this plan.
 
 ## Retention after acquisition
 

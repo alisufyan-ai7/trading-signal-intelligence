@@ -172,10 +172,9 @@ GitHub Issue #8:
 
 `Organic acquisition & SEO v0.1`
 
-Phase 8A is now the immediate product-growth task: establish the technical SEO
-baseline, search-intent map, information architecture, index/canonical policy,
-initial factual content priorities, and privacy-respecting measurement plan
-before any website mutation.
+Phase 8A remains the immediate product-growth task, but the technical foundation
+is now live and production-verified. The next work is search-engine indexing /
+measurement setup and initial organic-discovery monitoring.
 
 GitHub Issue #9 remains open in parallel:
 
@@ -191,21 +190,27 @@ cadence based on early user, SEO, or trading results.
 
 ### Last owner-verified production state
 
-VowSig production cutover merge:
+Latest production SEO Phase 8A cutover merge:
 
-`3dfc548b0cd89de1ac9e19723dec1ad44b39ca50`
+`5e6b7ae412f79ce11a60ba5f64739d8f2fa951ec`
 
-Post-cutover natural continuity verification:
+Natural post-cutover continuity verification:
 
 - AI-v1.1 natural scheduled run: PASS / exit 0;
 - product publisher natural scheduled run: PASS / exit 0;
-- all three v1.1 ledger chains valid and extended from the exact pre-cutover
-  heads;
+- XAUUSD extended 92 -> 94 records from exact pre-cutover head;
+- USTEC extended 94 -> 96 records from exact pre-cutover head;
+- US30 extended 97 -> 99 records from exact pre-cutover head;
+- first new record in each market linked directly to the exact pre-cutover head;
 - hosted `https://vowsig.com` snapshot naturally republished;
+- hosted SEO contract remained PASS after natural republish;
 - AI-v1.1 scheduler Ready;
 - product publisher Ready;
 - AI-v1.0 scheduler Disabled;
 - broker execution disabled.
+
+The earlier VowSig public-rebrand production merge remains historical provenance:
+`3dfc548b0cd89de1ac9e19723dec1ad44b39ca50`.
 
 Future work must still reconcile current `main` before mutation.
 
@@ -345,9 +350,9 @@ The AI-v1.1 technical transition and VowSig rebrand are complete.
 
 The product-growth sequence is now:
 
-1. **Issue #8 Phase 8A — ACTIVE:** technical SEO/discoverability foundation,
-   search-intent mapping, information architecture, indexing/canonical policy,
-   factual first-page priorities, internal-link foundation and measurement plan;
+1. **Issue #8 Phase 8A — ACTIVE:** technical SEO/discoverability foundation is
+   live and naturally verified; next establish search indexing/measurement and
+   initial organic-discovery monitoring;
 2. **Issue #9 — PARALLEL/NEXT REAL-USER EVIDENCE:** first controlled cohort,
    aggregate comprehension/value findings and willingness-to-pay evidence;
 3. **Issue #8 Phase 8B — GATED ON ISSUE #9:** revise/expand content,

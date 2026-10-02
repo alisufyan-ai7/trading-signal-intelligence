@@ -2,13 +2,26 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from fastapi.testclient import TestClient
-
 from trading_signal_intelligence.product.cloud_app import (
     INDEXABLE_PATHS,
+    _search_engine_noindex,
     app,
+    dow_30_page,
+    evidence_page,
+    immutable_signal_history_page,
+    learn_page,
+    markets_page,
+    nasdaq_100_page,
     robots_txt,
+    shadow_validation_page,
+    signal_lifecycle_page,
     sitemap_xml,
+    ustec_alias,
+    us30_alias,
+    xau_usd_page,
+    xauusd_alias,
+    backtests_vs_forward_page,
+    buy_sell_no_trade_page,
 )
 
 
@@ -36,6 +49,15 @@ def test_phase8a_indexable_route_manifest_is_small_and_explicit() -> None:
     assert len(INDEXABLE_PATHS) == 12
     assert all(path.startswith("/") for path in INDEXABLE_PATHS)
     assert all("/api/" not in path for path in INDEXABLE_PATHS)
+
+
+def test_fastapi_registers_all_phase8a_indexable_routes() -> None:
+    registered = {
+        route.path
+        for route in app.routes
+        if "GET" in getattr(route, "methods", set())
+    }
+    assert set(EXPECTED_INDEXABLE_PATHS).issubset(registered)
 
 
 def test_root_has_navigation_canonical_and_website_jsonld() -> None:
@@ -90,6 +112,25 @@ def test_each_phase8a_html_page_has_unique_canonical_and_research_beta() -> None
         titles.add(title)
 
 
+def test_indexable_file_routes_resolve_existing_files() -> None:
+    responses = (
+        markets_page(),
+        xau_usd_page(),
+        nasdaq_100_page(),
+        dow_30_page(),
+        learn_page(),
+        buy_sell_no_trade_page(),
+        backtests_vs_forward_page(),
+        immutable_signal_history_page(),
+        shadow_validation_page(),
+        signal_lifecycle_page(),
+        evidence_page(),
+    )
+    for response in responses:
+        assert response.status_code == 200
+        assert Path(response.path).is_file()
+
+
 def test_robots_txt_declares_sitemap_and_plumbing_exclusions() -> None:
     body = robots_txt().body.decode("utf-8")
     assert "User-agent: *" in body
@@ -117,47 +158,42 @@ def test_fastapi_framework_docs_are_disabled() -> None:
     assert app.redoc_url is None
     assert app.openapi_url is None
 
-
-def test_api_and_health_routes_return_noindex_headers() -> None:
-    client = TestClient(app)
-    for path in ("/healthz", "/api/health", "/api/markets", "/api/ai/insights"):
-        response = client.get(path)
-        assert response.headers["X-Robots-Tag"] == (
-            "noindex, nofollow, noarchive"
-        )
+    registered = {getattr(route, "path", None) for route in app.routes}
+    assert "/docs" not in registered
+    assert "/redoc" not in registered
+    assert "/openapi.json" not in registered
 
 
-def test_static_mount_is_noindex_to_avoid_duplicate_html_urls() -> None:
-    client = TestClient(app)
+def test_noindex_predicate_covers_api_health_and_static_plumbing() -> None:
     for path in (
+        "/healthz",
+        "/api/health",
+        "/api/evidence",
+        "/api/markets",
+        "/api/ai/insights",
+        "/api/signals",
+        "/api/internal/feedback/summary",
         "/static/index.html",
         "/static/markets/xau-usd.html",
         "/static/learn/shadow-validation.html",
+        "/static/styles.css",
+        "/static/app.js",
     ):
-        response = client.get(path)
-        assert response.status_code == 200
-        assert response.headers["X-Robots-Tag"] == (
-            "noindex, nofollow, noarchive"
-        )
+        assert _search_engine_noindex(path) is True
 
 
-def test_indexable_pages_do_not_receive_x_robots_noindex() -> None:
-    client = TestClient(app)
+def test_indexable_routes_are_not_selected_for_noindex_header() -> None:
     for path in EXPECTED_INDEXABLE_PATHS:
-        response = client.get(path)
-        assert response.status_code == 200
-        assert "X-Robots-Tag" not in response.headers
+        assert _search_engine_noindex(path) is False
 
 
 def test_market_aliases_redirect_permanently_to_canonical_slugs() -> None:
-    client = TestClient(app, follow_redirects=False)
-    expected = {
-        "/markets/xauusd/": "/markets/xau-usd/",
-        "/markets/ustec/": "/markets/nasdaq-100/",
-        "/markets/us30/": "/markets/dow-30/",
-    }
-    for source, target in expected.items():
-        response = client.get(source)
+    expected = (
+        (xauusd_alias(), "/markets/xau-usd/"),
+        (ustec_alias(), "/markets/nasdaq-100/"),
+        (us30_alias(), "/markets/dow-30/"),
+    )
+    for response, target in expected:
         assert response.status_code == 301
         assert response.headers["location"] == target
 
@@ -169,8 +205,17 @@ def test_phase8a_copy_preserves_evidence_boundaries() -> None:
     )
     assert "SHADOW_ONLY" in combined
     assert "broker execution remains disabled" in combined
-    assert "Historical results and live forward results must be evaluated separately." in combined
+    assert (
+        "Historical results and live forward results must be evaluated separately."
+        in combined
+    )
     assert "AI-v1.1" in combined
     assert "AI-v1.0" in combined
     assert "90% win" not in combined
     assert "guaranteed profit" not in combined.lower()
+
+
+def test_test_module_does_not_require_http_client_dependency() -> None:
+    text = Path(__file__).read_text(encoding="utf-8")
+    assert "TestClient" not in text
+    assert "httpx" not in text

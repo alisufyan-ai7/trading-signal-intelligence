@@ -34,6 +34,7 @@ REPORT_VERSION = "AI-v1.1-Observability-v0.1"
 TASK_NAME = "SignalProof AI-v1.1 Shadow Scan"
 
 PUBLIC_SURFACE_CORRECTION_KIND = "AI-v1.1-public-surface-v0.1"
+PUBLIC_SURFACE_CORRECTION_KIND_V2 = "AI-v1.1-public-surface-v0.2"
 PUBLIC_SURFACE_CORRECTION_GLOB = "AI-v1.1-public-surface-correction-*.json"
 PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS = frozenset(
     {
@@ -45,6 +46,8 @@ PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS = frozenset(
         "ai_ui_index",
     }
 )
+PUBLIC_SURFACE_V2_SCHEMA_VERSION = 2
+PUBLIC_SURFACE_WEB_ROOT = "web"
 
 
 def _activation(records: list[dict[str, Any]], symbol: str) -> dict[str, Any]:
@@ -113,62 +116,69 @@ def discover_active_anchor_v1_1(
     )
 
 
-def _public_surface_correction(
+def _is_sha256(value: object) -> bool:
+    text = str(value)
+    return len(text) == 64 and all(
+        ch in "0123456789abcdef" for ch in text
+    )
+
+
+def _tracked_web_hashes(repo_root: Path) -> dict[str, str]:
+    try:
+        output = subprocess.check_output(
+            ["git", "ls-files", "--", PUBLIC_SURFACE_WEB_ROOT],
+            cwd=repo_root,
+            text=True,
+            stderr=subprocess.STDOUT,
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ObservabilityError(
+            f"unable to enumerate tracked public web files: {exc}"
+        ) from exc
+
+    relative_paths = sorted(
+        {
+            line.strip().replace("\\", "/")
+            for line in output.splitlines()
+            if line.strip()
+        }
+    )
+    if not relative_paths:
+        raise ObservabilityError("tracked public web tree is empty")
+
+    return {
+        relative: _file_sha256(repo_root / relative)
+        for relative in relative_paths
+    }
+
+
+def _validate_public_surface_base(
     repo_root: Path,
     anchor: dict[str, Any],
+    path: Path,
+    payload: dict[str, Any],
+    *,
+    exact_override_set: bool,
 ) -> dict[str, Any]:
-    candidates = sorted(
-        (repo_root / "research" / "forward").glob(
-            PUBLIC_SURFACE_CORRECTION_GLOB
-        )
-    )
-    if not candidates:
-        return {
-            "present": False,
-            "valid": True,
-            "artifact_hash_overrides": {},
-        }
-    if len(candidates) != 1:
-        return {
-            "present": True,
-            "valid": False,
-            "reason": "expected_exactly_one_public_surface_correction",
-            "count": len(candidates),
-            "artifact_hash_overrides": {},
-        }
-
-    path = candidates[0]
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        return {
-            "present": True,
-            "valid": False,
-            "reason": "public_surface_correction_unreadable",
-            "detail": str(exc)[:300],
-            "artifact_hash_overrides": {},
-        }
-
-    if payload.get("correction_kind") != PUBLIC_SURFACE_CORRECTION_KIND:
-        return {
-            "present": True,
-            "valid": False,
-            "reason": "unexpected_public_surface_correction_kind",
-            "artifact_hash_overrides": {},
-        }
     if payload.get("runtime_version") != RUNTIME_VERSION:
         return {
-            "present": True,
             "valid": False,
             "reason": "public_surface_runtime_version_mismatch",
-            "artifact_hash_overrides": {},
         }
     if payload.get("decision_protocol_version") != DECISION_PROTOCOL_VERSION:
         return {
-            "present": True,
             "valid": False,
             "reason": "public_surface_decision_protocol_mismatch",
-            "artifact_hash_overrides": {},
+        }
+    if payload.get("brand") != "VowSig":
+        return {
+            "valid": False,
+            "reason": "public_surface_brand_mismatch",
+        }
+    if payload.get("canonical_domain") != "https://vowsig.com":
+        return {
+            "valid": False,
+            "reason": "public_surface_canonical_domain_mismatch",
         }
 
     required_false = (
@@ -183,20 +193,16 @@ def _public_surface_correction(
     for key in required_false:
         if payload.get(key) is not False:
             return {
-                "present": True,
                 "valid": False,
                 "reason": f"public_surface_{key}_must_be_false",
-                "artifact_hash_overrides": {},
             }
 
     base_rel = payload.get("base_activation_anchor")
     base_sha = payload.get("base_activation_anchor_sha256")
     if not isinstance(base_rel, str) or not isinstance(base_sha, str):
         return {
-            "present": True,
             "valid": False,
             "reason": "public_surface_base_anchor_missing",
-            "artifact_hash_overrides": {},
         }
 
     base_path = repo_root / base_rel
@@ -204,73 +210,335 @@ def _public_surface_correction(
         base_payload = json.loads(base_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
         return {
-            "present": True,
             "valid": False,
             "reason": "public_surface_base_anchor_unreadable",
             "detail": str(exc)[:300],
-            "artifact_hash_overrides": {},
         }
     if base_payload != anchor or _file_sha256(base_path) != base_sha:
         return {
-            "present": True,
             "valid": False,
             "reason": "public_surface_base_anchor_mismatch",
-            "artifact_hash_overrides": {},
         }
 
     overrides = payload.get("artifact_hash_overrides")
     if not isinstance(overrides, dict) or not overrides:
         return {
-            "present": True,
             "valid": False,
             "reason": "public_surface_overrides_missing",
-            "artifact_hash_overrides": {},
         }
 
     names = set(overrides)
-    if not names.issubset(PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS):
+    if exact_override_set:
+        if names != set(PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS):
+            return {
+                "valid": False,
+                "reason": "public_surface_v2_override_set_mismatch",
+                "expected_artifacts": sorted(
+                    PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS
+                ),
+                "actual_artifacts": sorted(names),
+            }
+    elif not names.issubset(PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS):
         return {
-            "present": True,
             "valid": False,
             "reason": "public_surface_override_outside_allowlist",
             "unexpected_artifacts": sorted(
                 names - PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS
             ),
-            "artifact_hash_overrides": {},
         }
 
     for name, value in overrides.items():
-        text = str(value)
-        if len(text) != 64 or any(ch not in "0123456789abcdef" for ch in text):
+        if not _is_sha256(value):
             return {
-                "present": True,
                 "valid": False,
                 "reason": "public_surface_override_hash_invalid",
                 "artifact": name,
-                "artifact_hash_overrides": {},
             }
 
     upstream = verify_anchor_upstream_v1_1(repo_root, path)
     if upstream.get("valid") is not True:
         return {
-            "present": True,
             "valid": False,
             "reason": "public_surface_correction_not_upstream",
             "upstream": upstream,
-            "artifact_hash_overrides": {},
         }
 
     return {
-        "present": True,
         "valid": True,
-        "path": str(path.relative_to(repo_root)),
-        "correction_kind": PUBLIC_SURFACE_CORRECTION_KIND,
-        "brand": payload.get("brand"),
-        "canonical_domain": payload.get("canonical_domain"),
         "artifact_hash_overrides": dict(overrides),
         "upstream": upstream,
     }
 
+
+def _validate_public_surface_v2(
+    repo_root: Path,
+    anchor: dict[str, Any],
+    path: Path,
+    payload: dict[str, Any],
+    *,
+    expected_sequence: int,
+    predecessor_path: Path,
+) -> dict[str, Any]:
+    if payload.get("correction_schema_version") != PUBLIC_SURFACE_V2_SCHEMA_VERSION:
+        return {
+            "valid": False,
+            "reason": "public_surface_v2_schema_version_mismatch",
+        }
+    if payload.get("sequence_number") != expected_sequence:
+        return {
+            "valid": False,
+            "reason": "public_surface_v2_sequence_mismatch",
+            "expected_sequence": expected_sequence,
+            "actual_sequence": payload.get("sequence_number"),
+        }
+
+    expected_predecessor = predecessor_path.relative_to(repo_root).as_posix()
+    if payload.get("supersedes_correction") != expected_predecessor:
+        return {
+            "valid": False,
+            "reason": "public_surface_v2_predecessor_path_mismatch",
+        }
+    if payload.get("supersedes_correction_sha256") != _file_sha256(
+        predecessor_path
+    ):
+        return {
+            "valid": False,
+            "reason": "public_surface_v2_predecessor_hash_mismatch",
+        }
+
+    base = _validate_public_surface_base(
+        repo_root,
+        anchor,
+        path,
+        payload,
+        exact_override_set=True,
+    )
+    if base.get("valid") is not True:
+        return base
+
+    web_hashes = payload.get("tracked_web_artifact_hashes")
+    if not isinstance(web_hashes, dict) or not web_hashes:
+        return {
+            "valid": False,
+            "reason": "public_surface_v2_web_manifest_missing",
+        }
+
+    for relative, digest in web_hashes.items():
+        if (
+            not isinstance(relative, str)
+            or not relative.startswith(f"{PUBLIC_SURFACE_WEB_ROOT}/")
+            or relative.startswith("/")
+            or ".." in Path(relative).parts
+        ):
+            return {
+                "valid": False,
+                "reason": "public_surface_v2_web_path_invalid",
+                "path": str(relative),
+            }
+        if not _is_sha256(digest):
+            return {
+                "valid": False,
+                "reason": "public_surface_v2_web_hash_invalid",
+                "path": relative,
+            }
+
+    overrides = base["artifact_hash_overrides"]
+    for artifact_name in ("ai_ui_index", "ai_ui_script"):
+        relative = V11_ARTIFACT_PATHS[artifact_name]
+        if web_hashes.get(relative) != overrides.get(artifact_name):
+            return {
+                "valid": False,
+                "reason": "public_surface_v2_web_override_mismatch",
+                "artifact": artifact_name,
+                "path": relative,
+            }
+
+    return {
+        "valid": True,
+        "artifact_hash_overrides": overrides,
+        "tracked_web_artifact_hashes": dict(web_hashes),
+        "upstream": base["upstream"],
+    }
+
+
+def _public_surface_correction(
+    repo_root: Path,
+    anchor: dict[str, Any],
+) -> dict[str, Any]:
+    candidates = sorted(
+        (repo_root / "research" / "forward").glob(
+            PUBLIC_SURFACE_CORRECTION_GLOB
+        )
+    )
+    if not candidates:
+        return {
+            "present": False,
+            "valid": True,
+            "artifact_hash_overrides": {},
+            "tracked_web_artifact_hashes": None,
+            "sequence_number": 0,
+            "chain_paths": [],
+        }
+
+    loaded: dict[Path, dict[str, Any]] = {}
+    for path in candidates:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            return {
+                "present": True,
+                "valid": False,
+                "reason": "public_surface_correction_unreadable",
+                "detail": str(exc)[:300],
+                "artifact_hash_overrides": {},
+            }
+        if not isinstance(payload, dict):
+            return {
+                "present": True,
+                "valid": False,
+                "reason": "public_surface_correction_not_object",
+                "artifact_hash_overrides": {},
+            }
+        loaded[path] = payload
+
+    legacy_paths = [
+        path
+        for path, payload in loaded.items()
+        if payload.get("correction_kind") == PUBLIC_SURFACE_CORRECTION_KIND
+    ]
+    v2_paths = [
+        path
+        for path, payload in loaded.items()
+        if payload.get("correction_kind") == PUBLIC_SURFACE_CORRECTION_KIND_V2
+    ]
+    unexpected = sorted(
+        str(path.relative_to(repo_root))
+        for path, payload in loaded.items()
+        if payload.get("correction_kind")
+        not in {
+            PUBLIC_SURFACE_CORRECTION_KIND,
+            PUBLIC_SURFACE_CORRECTION_KIND_V2,
+        }
+    )
+    if unexpected:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "unexpected_public_surface_correction_kind",
+            "unexpected_files": unexpected,
+            "artifact_hash_overrides": {},
+        }
+    if len(legacy_paths) != 1:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": "expected_exactly_one_legacy_public_surface_correction",
+            "count": len(legacy_paths),
+            "artifact_hash_overrides": {},
+        }
+
+    legacy_path = legacy_paths[0]
+    legacy_payload = loaded[legacy_path]
+    legacy = _validate_public_surface_base(
+        repo_root,
+        anchor,
+        legacy_path,
+        legacy_payload,
+        exact_override_set=False,
+    )
+    if legacy.get("valid") is not True:
+        return {
+            "present": True,
+            "valid": False,
+            "reason": legacy.get("reason"),
+            "detail": legacy,
+            "artifact_hash_overrides": {},
+        }
+
+    current_path = legacy_path
+    current_payload = legacy_payload
+    current = legacy
+    current_sequence = 1
+    chain_paths = [legacy_path.relative_to(repo_root).as_posix()]
+    remaining = set(v2_paths)
+
+    while remaining:
+        current_rel = current_path.relative_to(repo_root).as_posix()
+        successors = sorted(
+            path
+            for path in remaining
+            if loaded[path].get("supersedes_correction") == current_rel
+        )
+        if not successors:
+            return {
+                "present": True,
+                "valid": False,
+                "reason": "public_surface_v2_orphaned_correction",
+                "remaining_files": sorted(
+                    path.relative_to(repo_root).as_posix()
+                    for path in remaining
+                ),
+                "artifact_hash_overrides": {},
+            }
+        if len(successors) != 1:
+            return {
+                "present": True,
+                "valid": False,
+                "reason": "public_surface_v2_fork_detected",
+                "predecessor": current_rel,
+                "successors": [
+                    path.relative_to(repo_root).as_posix()
+                    for path in successors
+                ],
+                "artifact_hash_overrides": {},
+            }
+
+        successor = successors[0]
+        successor_payload = loaded[successor]
+        validated = _validate_public_surface_v2(
+            repo_root,
+            anchor,
+            successor,
+            successor_payload,
+            expected_sequence=current_sequence + 1,
+            predecessor_path=current_path,
+        )
+        if validated.get("valid") is not True:
+            return {
+                "present": True,
+                "valid": False,
+                "reason": validated.get("reason"),
+                "detail": validated,
+                "artifact_hash_overrides": {},
+            }
+
+        remaining.remove(successor)
+        current_path = successor
+        current_payload = successor_payload
+        current = validated
+        current_sequence += 1
+        chain_paths.append(successor.relative_to(repo_root).as_posix())
+
+    return {
+        "present": True,
+        "valid": True,
+        "path": current_path.relative_to(repo_root).as_posix(),
+        "correction_kind": current_payload.get("correction_kind"),
+        "correction_schema_version": current_payload.get(
+            "correction_schema_version"
+        ),
+        "sequence_number": current_sequence,
+        "brand": current_payload.get("brand"),
+        "canonical_domain": current_payload.get("canonical_domain"),
+        "artifact_hash_overrides": dict(
+            current["artifact_hash_overrides"]
+        ),
+        "tracked_web_artifact_hashes": current.get(
+            "tracked_web_artifact_hashes"
+        ),
+        "chain_paths": chain_paths,
+        "upstream": current["upstream"],
+    }
 
 def verify_v1_1_artifacts(
     repo_root: Path,
@@ -311,9 +579,31 @@ def verify_v1_1_artifacts(
                 "actual": actual,
             }
 
+    web_checked = 0
+    expected_web = correction.get("tracked_web_artifact_hashes")
+    if isinstance(expected_web, dict):
+        try:
+            actual_web = _tracked_web_hashes(repo_root)
+        except ObservabilityError as exc:
+            mismatches["public_web_tree"] = {
+                "expected": "exact tracked web manifest",
+                "actual": str(exc),
+            }
+        else:
+            web_checked = len(expected_web)
+            for relative in sorted(set(expected_web) | set(actual_web)):
+                expected_hash = expected_web.get(relative)
+                actual_hash = actual_web.get(relative)
+                if expected_hash != actual_hash:
+                    mismatches[f"public_web_tree::{relative}"] = {
+                        "expected": expected_hash,
+                        "actual": actual_hash,
+                    }
+
     return {
         "valid": not mismatches,
         "checked": len(V11_ARTIFACT_PATHS),
+        "public_web_tree_checked": web_checked,
         "mismatches": mismatches,
         "public_surface_correction": correction,
     }

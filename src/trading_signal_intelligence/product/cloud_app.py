@@ -8,7 +8,7 @@ from typing import Any
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Query, Request
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from trading_signal_intelligence.product.feedback import (
@@ -125,11 +125,149 @@ def _market_rows(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
 
 app = FastAPI(
     title="VowSig Research Beta Cloud",
-    version="0.5.0",
+    version="0.6.0",
     description="VowSig public research-beta surface fed by the private Windows collector.",
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
 )
 
 app.mount("/static", StaticFiles(directory=WEB), name="static")
+
+
+INDEXABLE_PATHS = (
+    "/",
+    "/markets/",
+    "/markets/xau-usd/",
+    "/markets/nasdaq-100/",
+    "/markets/dow-30/",
+    "/learn/",
+    "/learn/buy-sell-no-trade/",
+    "/learn/backtests-vs-forward-results/",
+    "/learn/immutable-signal-history/",
+    "/learn/shadow-validation/",
+    "/learn/signal-lifecycle/",
+    "/evidence/",
+)
+
+
+def _search_engine_noindex(path: str) -> bool:
+    return (
+        path == "/healthz"
+        or path.startswith("/api/")
+        or path.startswith("/static/")
+    )
+
+
+@app.middleware("http")
+async def add_search_engine_headers(request: Request, call_next):
+    response = await call_next(request)
+    if _search_engine_noindex(request.url.path):
+        response.headers["X-Robots-Tag"] = "noindex, nofollow, noarchive"
+    return response
+
+
+def _seo_file(relative: str) -> FileResponse:
+    return FileResponse(WEB / relative)
+
+
+@app.get("/robots.txt", include_in_schema=False)
+def robots_txt() -> Response:
+    body = """User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /healthz
+Disallow: /docs
+Disallow: /redoc
+Disallow: /openapi.json
+
+Sitemap: https://vowsig.com/sitemap.xml
+"""
+    return Response(content=body, media_type="text/plain")
+
+
+@app.get("/sitemap.xml", include_in_schema=False)
+def sitemap_xml() -> Response:
+    urls = "".join(
+        f"<url><loc>https://vowsig.com{path}</loc></url>"
+        for path in INDEXABLE_PATHS
+    )
+    body = (
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        f"{urls}</urlset>"
+    )
+    return Response(content=body, media_type="application/xml")
+
+
+@app.get("/markets/", include_in_schema=False)
+def markets_page() -> FileResponse:
+    return _seo_file("markets/index.html")
+
+
+@app.get("/markets/xau-usd/", include_in_schema=False)
+def xau_usd_page() -> FileResponse:
+    return _seo_file("markets/xau-usd.html")
+
+
+@app.get("/markets/nasdaq-100/", include_in_schema=False)
+def nasdaq_100_page() -> FileResponse:
+    return _seo_file("markets/nasdaq-100.html")
+
+
+@app.get("/markets/dow-30/", include_in_schema=False)
+def dow_30_page() -> FileResponse:
+    return _seo_file("markets/dow-30.html")
+
+
+@app.get("/markets/xauusd/", include_in_schema=False)
+def xauusd_alias() -> RedirectResponse:
+    return RedirectResponse("/markets/xau-usd/", status_code=301)
+
+
+@app.get("/markets/ustec/", include_in_schema=False)
+def ustec_alias() -> RedirectResponse:
+    return RedirectResponse("/markets/nasdaq-100/", status_code=301)
+
+
+@app.get("/markets/us30/", include_in_schema=False)
+def us30_alias() -> RedirectResponse:
+    return RedirectResponse("/markets/dow-30/", status_code=301)
+
+
+@app.get("/learn/", include_in_schema=False)
+def learn_page() -> FileResponse:
+    return _seo_file("learn/index.html")
+
+
+@app.get("/learn/buy-sell-no-trade/", include_in_schema=False)
+def buy_sell_no_trade_page() -> FileResponse:
+    return _seo_file("learn/buy-sell-no-trade.html")
+
+
+@app.get("/learn/backtests-vs-forward-results/", include_in_schema=False)
+def backtests_vs_forward_page() -> FileResponse:
+    return _seo_file("learn/backtests-vs-forward-results.html")
+
+
+@app.get("/learn/immutable-signal-history/", include_in_schema=False)
+def immutable_signal_history_page() -> FileResponse:
+    return _seo_file("learn/immutable-signal-history.html")
+
+
+@app.get("/learn/shadow-validation/", include_in_schema=False)
+def shadow_validation_page() -> FileResponse:
+    return _seo_file("learn/shadow-validation.html")
+
+
+@app.get("/learn/signal-lifecycle/", include_in_schema=False)
+def signal_lifecycle_page() -> FileResponse:
+    return _seo_file("learn/signal-lifecycle.html")
+
+
+@app.get("/evidence/", include_in_schema=False)
+def evidence_page() -> FileResponse:
+    return _seo_file("evidence/index.html")
 
 
 @app.get("/healthz")

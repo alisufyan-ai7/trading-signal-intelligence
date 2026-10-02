@@ -35,6 +35,7 @@ class _AuditParser(HTMLParser):
         super().__init__()
         self.h1_count = 0
         self.main_ids: list[str | None] = []
+        self.main_tabindexes: list[str | None] = []
         self.skip_links: list[str | None] = []
         self.icon_hrefs: list[str] = []
         self.apple_hrefs: list[str] = []
@@ -54,6 +55,7 @@ class _AuditParser(HTMLParser):
             self.h1_count += 1
         if tag == "main":
             self.main_ids.append(values.get("id"))
+            self.main_tabindexes.append(values.get("tabindex"))
         if tag == "a" and "skip-link" in (values.get("class") or "").split():
             self.skip_links.append(values.get("href"))
         if tag == "meta" and values.get("name") == "viewport":
@@ -121,6 +123,7 @@ def test_all_indexable_pages_have_search_branding_and_accessibility_foundation()
         assert parser.theme_color, path
         assert parser.h1_count == 1, path
         assert parser.main_ids == ["main-content"], path
+        assert parser.main_tabindexes == ["-1"], path
         assert parser.skip_links == ["#main-content"], path
         assert parser.primary_nav, path
         assert parser.images_missing_alt == 0, path

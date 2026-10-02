@@ -20,12 +20,12 @@ This section supersedes older status statements below where they describe AI-v1.
 - Broker execution: **DISABLED**.
 - Hosted cloud snapshot: **AI-v1.1 / forward_validation_in_progress / durability PASS**.
 - VowSig public rebrand v0.1: **COMPLETE / PRODUCTION VERIFIED / ISSUE #16 CLOSED**.
-- VowSig production main: `5e6b7ae412f79ce11a60ba5f64739d8f2fa951ec` (SEO Phase 8A production cutover; earlier rebrand merge `3dfc548b0cd89de1ac9e19723dec1ad44b39ca50` retained as provenance).
+- VowSig production main: `f365f42c349468abd9a84ab4e2d28f4c0636c262` (Phase 8A favicon/search-branding + performance/mobile/accessibility production cutover; earlier SEO cutover `5e6b7ae412f79ce11a60ba5f64739d8f2fa951ec` and rebrand merge `3dfc548b0cd89de1ac9e19723dec1ad44b39ca50` retained as provenance).
 - Public-surface correction: **VALID / UPSTREAM-VALID / NON-DECISION ONLY**.
 - Post-cutover natural continuity: **PASS** — each AI-v1.1 ledger extended the exact pre-cutover head with a valid first-new-record link; no reset/fork/backfill.
 - Hosted VowSig snapshot after natural publish: **PASS / AI-v1.1 / AI-v1.0 decision protocol / SHADOW_ONLY / broker execution disabled**.
 - Canonical rebrand record: `docs/vowsig-public-rebrand-v0.1.md`.
-- Immediate product-growth milestone: **Organic Acquisition & SEO v0.1 Phase 8A / GitHub Issue #8** — technical foundation is live/naturally verified; Google/Bing properties + sitemap submissions + Day-0 baseline are complete. Remaining: indexing propagation/Day-7/14/28 measurement, favicon/search-result branding follow-up, and practical performance/mobile/accessibility review.
+- Immediate product-growth milestone: **Organic Acquisition & SEO v0.1 Phase 8A / GitHub Issue #8** — technical SEO plus favicon/search branding and practical performance/mobile/accessibility polish are live and naturally verified; Google/Bing properties + sitemap submissions + Day-0 baseline are complete. Remaining: indexing propagation and Day-7/14/28 measurement only.
 - Parallel real-user evidence milestone: **First cohort G4 customer-value evidence v0.1 / GitHub Issue #9**.
 - Issue #9 gates **Phase 8B evidence-informed SEO/content expansion**, but no longer blocks Phase 8A technical discoverability work.
 
@@ -75,7 +75,7 @@ Immediate work is **not** model tuning. The active sequence is:
 4. **DONE / CLOUD VERIFIED:** AI Insights UI from sanitized read-only exported evidence;
 5. **DONE / REDEPLOY VERIFIED:** sanitized cloud snapshot durability;
 6. **DONE / PRODUCTION VERIFIED:** VowSig public rebrand v0.1 with governed public-surface correction and natural post-cutover lineage continuity;
-7. **ACTIVE / OBSERVATION + POLISH:** Organic Acquisition & SEO v0.1 Phase 8A under GitHub Issue #8 — production technical SEO + natural continuity PASS; Google/Bing setup + Day-0 baseline complete; next resolve/observe indexing propagation, perform Day-7/14/28 measurement, add governed favicon/search-result branding, and review practical performance/mobile/accessibility;
+7. **ACTIVE / OBSERVATION ONLY:** Organic Acquisition & SEO v0.1 Phase 8A under GitHub Issue #8 — production technical SEO + favicon/search branding + practical performance/mobile/accessibility + natural continuity PASS; Google/Bing setup + Day-0 baseline complete; next resolve/observe indexing propagation and perform Day-7/14/28 measurement;
 8. **PARALLEL / NEXT REAL-USER EVIDENCE:** First cohort G4 customer-value evidence v0.1 under GitHub Issue #9; its initial aggregate findings gate Issue #8 Phase 8B;
 9. review A1/A2/A3 only at their frozen eligibility thresholds.
 

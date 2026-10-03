@@ -60,3 +60,7 @@ Checkout displays $10/month content access with automatic rebilling after 30 day
 Radar shows Binance Futures BTC perpetual data, order books, liquidity/sweep/spoofing/funding/OI/CVD panels and threshold alerts. Scores are unvalidated UI outputs; several snapshot prices disagreed, cause unknown. Annual registration is closed in DOM, raster replacement pending; monthly registration is behind a video gate.
 
 Required independent audits and four-platform synthesis remain pending authenticated access and navigation reconciliation.
+
+## Secure reauthentication attempt
+
+Normal login was reached after the cloud session was already signed out. A secure browser-auth request returned submitted, but no positive signed-in evidence appeared. Fresh homepage showed Login/Sign Up navigation; requested /dashboard redirected to /. Authentication is NOT confirmed. Owner manual completion of the normal login is the next step. No filled login screenshots or credentials were retained. Tradebise's existing credential-protected document cannot be observed by the agent; no new authentication/CAPTCHA attempt was made.

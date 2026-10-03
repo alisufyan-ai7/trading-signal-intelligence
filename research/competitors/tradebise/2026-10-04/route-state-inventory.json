@@ -1,0 +1,472 @@
+{
+  "date": "2026-10-04 Asia/Karachi (research UTC 2026-10-03)",
+  "status": "Incomplete: cloud authenticated and visual audit blocked; available first-party source review preserved.",
+  "counts": {
+    "publicSourceRoutes": 34,
+    "historicalBrowserRoutes": 2,
+    "distinctInspectedOrSourceReviewedPaths": 35,
+    "failedMetadataPaths": 2,
+    "totalUniqueRequestedPaths": 37,
+    "historicalBrowserPageStates": 2,
+    "sourceDescribedStateGroupsAwaitingInteraction": 40,
+    "durableScreenshots": 0
+  },
+  "publicRoutes": [
+    {
+      "path": "/",
+      "url": "https://tradebise.com/",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/about",
+      "url": "https://tradebise.com/about",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/advertise",
+      "url": "https://tradebise.com/advertise",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn",
+      "url": "https://tradebise.com/learn",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/ai-trading-explained",
+      "url": "https://tradebise.com/learn/ai-trading-explained",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/beyond-charts-ai-market-intelligence",
+      "url": "https://tradebise.com/learn/beyond-charts-ai-market-intelligence",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/false-breakouts",
+      "url": "https://tradebise.com/learn/false-breakouts",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/how-ai-predicts-market-direction",
+      "url": "https://tradebise.com/learn/how-ai-predicts-market-direction",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/how-to-read-a-tradebise-signal",
+      "url": "https://tradebise.com/learn/how-to-read-a-tradebise-signal",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/how-to-set-a-stop-loss",
+      "url": "https://tradebise.com/learn/how-to-set-a-stop-loss",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/multi-timeframe-analysis",
+      "url": "https://tradebise.com/learn/multi-timeframe-analysis",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/position-sizing",
+      "url": "https://tradebise.com/learn/position-sizing",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/psychology-of-trading",
+      "url": "https://tradebise.com/learn/psychology-of-trading",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/reading-market-structure",
+      "url": "https://tradebise.com/learn/reading-market-structure",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/right-analysis-still-losing",
+      "url": "https://tradebise.com/learn/right-analysis-still-losing",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/rsi-divergence-explained",
+      "url": "https://tradebise.com/learn/rsi-divergence-explained",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/support-and-resistance",
+      "url": "https://tradebise.com/learn/support-and-resistance",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/what-makes-a-good-trading-signal",
+      "url": "https://tradebise.com/learn/what-makes-a-good-trading-signal",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/learn/why-most-traders-lose-money",
+      "url": "https://tradebise.com/learn/why-most-traders-lose-money",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/privacy",
+      "url": "https://tradebise.com/privacy",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/promotion",
+      "url": "https://tradebise.com/promotion",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/risk-disclaimer",
+      "url": "https://tradebise.com/risk-disclaimer",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/aapl",
+      "url": "https://tradebise.com/signals/aapl",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/btcusdt",
+      "url": "https://tradebise.com/signals/btcusdt",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/ethusdt",
+      "url": "https://tradebise.com/signals/ethusdt",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/eurusd",
+      "url": "https://tradebise.com/signals/eurusd",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/gbpusd",
+      "url": "https://tradebise.com/signals/gbpusd",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/solusdt",
+      "url": "https://tradebise.com/signals/solusdt",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/tsla",
+      "url": "https://tradebise.com/signals/tsla",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/us30",
+      "url": "https://tradebise.com/signals/us30",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/xagusd",
+      "url": "https://tradebise.com/signals/xagusd",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/signals/xauusd",
+      "url": "https://tradebise.com/signals/xauusd",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/support",
+      "url": "https://tradebise.com/support",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    },
+    {
+      "path": "/terms",
+      "url": "https://tradebise.com/terms",
+      "status": "public-source-reviewed; cloud visual capture pending",
+      "screenshots": []
+    }
+  ],
+  "historicalBrowserStates": [
+    {
+      "path": "/",
+      "status": "Public terminal/advertisements observed historically; safe durable capture missing"
+    },
+    {
+      "path": "/login",
+      "status": "Cloudflare verification failed; native-credential protection; no secret-bearing capture"
+    }
+  ],
+  "failedMetadataRequests": [
+    {
+      "url": "https://tradebise.com/robots.txt",
+      "result": "Retriever Internal Error; site status and contents unknown"
+    },
+    {
+      "url": "https://tradebise.com/sitemap.xml",
+      "result": "Retriever Internal Error; site status and contents unknown"
+    }
+  ],
+  "sourceStateBacklog": [
+    {
+      "id": 1,
+      "name": "Search results/market selection",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 2,
+      "name": "Market-class dropdown",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 3,
+      "name": "15m result",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 4,
+      "name": "1H result",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 5,
+      "name": "4H result",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 6,
+      "name": "1D result",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 7,
+      "name": "Watchlist add/remove/persistence",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 8,
+      "name": "Trending results",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 9,
+      "name": "Top Gainers results",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 10,
+      "name": "Top Losers results",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 11,
+      "name": "Refresh/retry/generate output",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 12,
+      "name": "Completed result/history drilldown",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 13,
+      "name": "All-time stats drilldown",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 14,
+      "name": "News",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 15,
+      "name": "Daily preview/chart limit",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 16,
+      "name": "Daily signal limit/reset",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 17,
+      "name": "Registration choice/form",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 18,
+      "name": "Registration email-verification outcome",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 19,
+      "name": "Premium trial eligibility",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 20,
+      "name": "Standard upgrade/payable amount",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 21,
+      "name": "Alert upgrade/payable amount",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 22,
+      "name": "Bot forthcoming offer",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 23,
+      "name": "Payment waiting",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 24,
+      "name": "Payment confirmed",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 25,
+      "name": "Payment expired",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 26,
+      "name": "Payment issue",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 27,
+      "name": "Account/profile settings",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 28,
+      "name": "Security/session settings",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 29,
+      "name": "Premium/payment history settings",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 30,
+      "name": "My Stats/display setting",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 31,
+      "name": "Browser notification prompt/delivery",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 32,
+      "name": "Alert-market choice",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 33,
+      "name": "Telegram linking/result delivery",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 34,
+      "name": "Password reset form/outcome",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 35,
+      "name": "Two-factor setup/login/disable dialogs",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 36,
+      "name": "Logout confirmation",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 37,
+      "name": "Mobile application shell",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 38,
+      "name": "Sponsored coin placement/slide-up",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 39,
+      "name": "Promotion agreed-amount payment form",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    },
+    {
+      "id": 40,
+      "name": "Football/prize promotion scaffold",
+      "status": "Public source scaffold or historical control observation only; not interacted/verified; screenshots absent"
+    }
+  ],
+  "authenticationBoundary": {
+    "site": "Cloudflare Verification failed in Work cloud browser; owner's local access not shared",
+    "review": "Renewed requestManualHandoff rejected by automatic approval review as repeating the already failed one-attempt handoff",
+    "response": "No further authentication attempt, cloud alternate-route probe, CAPTCHA solve, fingerprint/network change or session transfer; first-party public web sources reviewed",
+    "next": "Explicit renewed owner authorization for one additional manual handoff is required before retry; browser/backend review must permit it. Do not assume the previous request succeeded."
+  },
+  "navigationReconciliation": {
+    "source": "Homepage popular/footer links, Learn list, all 15 article context links, Advertise→promotion inspected/resolved from public sources",
+    "contextualArticleLinksResolved": 34,
+    "additionalPublicRoutesFromContextLinks": 0,
+    "cloud": "Header/sidebar/account/footer reopening unavailable; actual dynamic/authenticated route enumeration not complete"
+  },
+  "gatedOrInaccessible": [
+    "Actual authenticated account/profile/security/subscription/payment-history menus",
+    "Loaded/generated signal and quota-dependent states",
+    "Actual watchlist/search/timeframe/trending/gainer/loser results",
+    "Performance drilldown and complete losing/outcome history",
+    "Browser/Telegram alert permissions and delivery",
+    "Premium/alerts/bot functionality",
+    "Rendered ad fill/density/labels/mobile/campaign states",
+    "Robots/sitemap/head canonical/schema metadata"
+  ],
+  "boundaries": [
+    "No payment/purchase/upgrade",
+    "No exchange/broker connection, deposit, trade or bot enablement",
+    "No new agreements/account-security changes",
+    "No marketing/support/advertiser messages, notification permission or prize entry"
+  ],
+  "captureRequirement": "Every listed public route and material state still requires screenshots. Source index/hashes are not screenshots. Login secrets must never be retained."
+}
+

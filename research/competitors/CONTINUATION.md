@@ -1,17 +1,28 @@
 # Competitor audit continuation checkpoint
 
-Research branch: research/competitors-waqarzaka-tradebise-20261004. No merge to main. Owner authorized read-only paid WaqarZaka audit and one legitimate manual Tradebise cloud verification opportunity; no purchase, deposit, exchange connection, trading, bots, consequential account changes or message submission.
+Branch: research/competitors-waqarzaka-tradebise-20261004. Initial checkpoint: 35b0d2da3a5f01a59deada95c1e2fcde5792b542. Paid WaqarZaka preservation checkpoint: 1bc40f0603569921f7534f9fa6875ee73a251024. Current exact head must be read from the branch ref; no merge to main.
 
-## WaqarZaka
+## Completed durable work
 
-95 retained captures; deterministic sequences 01–95. 77 reviewed states, 12 distinct rendered routes plus signup redirect request. Structural navigation reconciled; recent/old archives sampled per owner selection, all Beginner/Advance catalog pagination captured. Full report: docs/waqarzaka-authenticated-product-business-audit-2026-10-04.md. Capture folder inventory specifies screenshot exceptions, remaining gaps and boundaries.
+- WaqarZaka: 95 screenshot files, SHA-256 index/privacy check, 77 UI states, 12 rendered routes plus signup redirect. Full structural paid/public audit with recent/old archive examples; all Beginner/Advance catalog pagination. Preserve scope and gaps, do not recapture except incomplete/obstructed evidence.
+- Tradebise: 34 first-party public text/metadata routes; all ten requested symbols, 15 articles, public information/legal/commercial pages and discovered /promotion. 34 contextual article links resolved, no additional target route. Public-source audit plus explicit authenticated/visual block.
+- Four-way synthesis and reusable SEO-pattern memo written with current main/Issues #8/#9 constraints. Current main at review: 099f8e89599023769ed29aa023c7916d4560ce10. No code/runtime/strategy/cloud/production mutation.
 
-## Tradebise
+## Remaining blocker and exact continuation
 
-Two routes inspected historically (homepage/login), zero durable screenshots. Previous cloud verification rejected while local access works. Existing tab /login is credential-protected, so do not inspect filled form or recover via lower-level APIs. Fresh manual attempt under renewed owner authorization pending; use existing tab requestManualHandoff, then stop this turn. On return verify safe positive cloud-authentication evidence. If rejected, stop authentication/cloud probing and record the environment boundary; continue publicly available first-party evidence with source limitations. No anti-bot bypass, fingerprint/network changes, secret/session transfer or local-auth inference.
+Tradebise has **zero durable screenshots**, two historical browser page states and no confirmed cloud authentication. The owner local session does not transfer. Prior cloud verification failed. Renewed handoff request was rejected by automatic approval review as repeating the failed one-attempt authorization; no new manual attempt occurred. A safe URL observation also hit native-credential protection. Do not inspect protected credentials or bypass with lower-level APIs.
 
-## Still required
+Before any further Tradebise handoff/auth retry, obtain explicit renewed owner authorization for one additional manual attempt and ensure the browser approval review permits it. Use the existing Tradebise tab if available; requestManualHandoff alone is supported for protected documents. Do not automatically repeat the denied action. If the tab is unavailable, use only documented authorized login recovery, not anti-bot evasion. The public source review already exists; do not re-run it as a substitute for missing UI captures.
 
-Complete Tradebise authenticated audit if access succeeds, otherwise explicit blocked authenticated audit plus full reachable public/SEO/advertising work. Recursively reconcile its real observed links/templates; capture every material reachable state with SHA-256 index; report unavailable screenshots and gated/blocked routes. Produce the requested Tradebise audit, four-way synthesis and reusable SEO-pattern document only with supported evidence. Fetch current repository product constraints before recommending scope; current VowSig AI Insights/provenance/immutable logs are already implemented and AI-v1.1 is SHADOW_ONLY. No runtime/model/production edits.
+If manual login succeeds, verify positive safe cloud-authentication evidence, then inspect all material UI and menus against route-state-inventory.json. Capture every material route/state and long-page content; start Tradebise capture numbering at 01. Update SHA-256 index incrementally. If Cloudflare rejects the additional authorized attempt, stop auth/cloud probing and mark persistent cloud environment block. Do not infer a local session as cloud access.
 
-Screenshot text scan is supplemental; raw OCR/owner identifiers must not be committed. Final branch head, actual per-site screenshot and route/state counts, inaccessible routes and gaps remain required at whole-task completion.
+## Remaining research gaps
+
+Tradebise all 34 public routes lack durable screenshots; search/timeframes/watchlist/trending/results/history/account/settings/alerts/bot/payment/menu states and actual ad density/mobile behavior remain unverified. Robots/sitemap retrieval failed; canonical/schema/head tags unknown. Waqar unsampled archives, full course playback/assets, loading charts/calculator/panels, closed/coming-soon sections, native dropdown raster, native apps, actual alert delivery/support response and referral economics remain bounded in its report.
+
+Current VowSig AI Insights/provenance/immutable records and Phase 8A already exist; AI-v1.1 SHADOW_ONLY, fixed protocol/universe/cadence, broker execution disabled. Issue #9 initial aggregate real-user evidence gates Phase 8B wording/content/conversion/pricing. Do not execute invitations, product changes or runtime tuning from this competitor audit.
+
+No purchases/upgrades/renewals, exchange accounts/deposits/connections, trades/bots, account-security/profile changes, paid agreements, messages, permissions or giveaway entry. Never commit filled login, OTP/CAPTCHA/token/cookie/API-key/card/owner-identifying content. Raw OCR/local privacy crops remain uncommitted.
+
+Whole-task completion remains **blocked**, not declared complete. When truly finished report exact head, per-site screenshot and UI/source-route counts, inaccessible/gated states and remaining gaps. Keep research branch unmerged.
+

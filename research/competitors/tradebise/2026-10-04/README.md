@@ -1,49 +1,54 @@
-# Tradebise authenticated product/business/SEO audit — IN PROGRESS
+# Tradebise capture index — VISUAL/AUTHENTICATED AUDIT BLOCKED
 
-Research date: 2026-10-04 (Asia/Karachi). Base main: `099f8e89599023769ed29aa023c7916d4560ce10`.
+Date: 2026-10-04 Asia/Karachi; research UTC 2026-10-03. Existing research branch only; no merge.
 
-## Capture index
+**0 durable screenshots.** No deterministic screenshot number has been consumed; next safe capture is 01. The empty [capture manifest](capture-manifest.json) does not imply successful coverage.
 
-No screenshot files stored yet. The credential-filled login state was intentionally not captured. Full homepage and every material route/state require safe captures after the owner authentication step.
+34 public-source routes reviewed, including all ten requested symbols and all 15 Learn articles. Two historical cloud-browser page states (homepage/login); union of paths = 35. Robots/sitemap retrieval failed separately; total distinct requested paths = 37. Public text/metadata is not cloud authentication, live interaction evidence or screenshots.
 
-## Visited routes
+[Full bounded report](../../../../docs/tradebise-authenticated-product-business-seo-audit-2026-10-04.md) · [Public evidence](public-evidence.json) · [Route/state backlog](route-state-inventory.json) · [Source SHA-256 index](source-sha256.json) · [Continuation](../../CONTINUATION.md)
 
-| Requested route | Final route | Result |
+Cloud verification previously failed; a renewed manual handoff was rejected by automatic approval review as repeating the failed one-attempt handoff. No further attempt/workaround followed. Explicit additional owner authorization and a permitted browser handoff are needed to resume. Native-credential images were not captured. Actual header/sidebar/account/footer reopening, signal generation, plan/payment state, notification delivery, dynamic menus and rendered advertising remain unverified.
+
+| Route | Coverage | Screenshot |
 |---|---|---|
-| / | / | Public homepage/interface inspected |
-| Log in control on / | /login | Login modal inspected; Gmail and email/password methods visible |
-| /login (secure sign-in submission) | /login | Site displays Please complete the CAPTCHA verification. Authentication unconfirmed. |
+| [/](https://tradebise.com/) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/about](https://tradebise.com/about) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/advertise](https://tradebise.com/advertise) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn](https://tradebise.com/learn) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/ai-trading-explained](https://tradebise.com/learn/ai-trading-explained) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/beyond-charts-ai-market-intelligence](https://tradebise.com/learn/beyond-charts-ai-market-intelligence) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/false-breakouts](https://tradebise.com/learn/false-breakouts) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/how-ai-predicts-market-direction](https://tradebise.com/learn/how-ai-predicts-market-direction) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/how-to-read-a-tradebise-signal](https://tradebise.com/learn/how-to-read-a-tradebise-signal) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/how-to-set-a-stop-loss](https://tradebise.com/learn/how-to-set-a-stop-loss) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/multi-timeframe-analysis](https://tradebise.com/learn/multi-timeframe-analysis) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/position-sizing](https://tradebise.com/learn/position-sizing) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/psychology-of-trading](https://tradebise.com/learn/psychology-of-trading) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/reading-market-structure](https://tradebise.com/learn/reading-market-structure) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/right-analysis-still-losing](https://tradebise.com/learn/right-analysis-still-losing) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/rsi-divergence-explained](https://tradebise.com/learn/rsi-divergence-explained) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/support-and-resistance](https://tradebise.com/learn/support-and-resistance) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/what-makes-a-good-trading-signal](https://tradebise.com/learn/what-makes-a-good-trading-signal) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/learn/why-most-traders-lose-money](https://tradebise.com/learn/why-most-traders-lose-money) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/privacy](https://tradebise.com/privacy) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/promotion](https://tradebise.com/promotion) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/risk-disclaimer](https://tradebise.com/risk-disclaimer) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/aapl](https://tradebise.com/signals/aapl) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/btcusdt](https://tradebise.com/signals/btcusdt) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/ethusdt](https://tradebise.com/signals/ethusdt) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/eurusd](https://tradebise.com/signals/eurusd) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/gbpusd](https://tradebise.com/signals/gbpusd) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/solusdt](https://tradebise.com/signals/solusdt) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/tsla](https://tradebise.com/signals/tsla) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/us30](https://tradebise.com/signals/us30) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/xagusd](https://tradebise.com/signals/xagusd) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/signals/xauusd](https://tradebise.com/signals/xauusd) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/support](https://tradebise.com/support) | First-party public text/metadata; cloud UI not verified | Missing |
+| [/terms](https://tradebise.com/terms) | First-party public text/metadata; cloud UI not verified | Missing |
+| /login | Historical cloud verification failure; protected login | Intentionally absent |
+| /robots.txt | Retriever Internal Error; contents/status unknown | Missing |
+| /sitemap.xml | Retriever Internal Error; contents/status unknown | Missing |
 
-## Initial reachable inventory — not yet traversed
+The available source review is preserved; the comprehensive screenshot/authenticated audit is **not complete**. All remaining states/boundaries are explicit in the inventory. No passwords, OTPs, CAPTCHA tokens, cookies, keys, cards or owner identifiers were stored. Public sources were summarized, not wholesale copied. If cloud access resumes, keep existing state evidence and capture material UI; don't restart WaqarZaka's completed bounded pass.
 
-- Footer: /learn, /about, /privacy, /terms, /risk-disclaimer, /support, /advertise.
-- Popular-market links: /signals/btcusdt, /signals/ethusdt, /signals/solusdt, /signals/xauusd, /signals/xagusd, /signals/eurusd, /signals/gbpusd, /signals/aapl, /signals/tsla, /signals/us30.
-- Interface states: search; 15m/1H/4H/1D timeframe selectors; market dropdown; watchlist; Trending/Top Gainers/Top Losers; all-time statistics drilldown; registration/login; notification opt-in; featured-coin promotion.
-- Authenticated account navigation, pricing, alert/bot management and settings are still unknown.
-- Discover sitemap/robots and all further internal links during the public SEO audit. Do not claim enumeration of all routes from this initial footer inventory.
-
-## Initial observations, claims and unknowns
-
-- Observed: AI-signal positioning across crypto, forex, metals, stocks and indices; named symbol URLs; a Learn section; two labeled ADVERTISEMENT regions; visible Tradebise self-promotion offering ad booking; an ad frame branded SevioAd with adx.ws hosts. Actual fill/density across page templates and commercial terms still require inspection.
-- Site claim: 5,000+ markets and multi-timeframe confirmation. This is not a verified count.
-- Site claim at this observation: 375,261 generated signals, 93% success rate, 26,137 stop-loss hits and some signals still ongoing. The displayed all-time scope lacks an inspected start date, outcome definition, independent audit and treatment of costs/ongoing positions. Do not adopt the percentage as verified accuracy.
-- Observed conversion cues: guest 0/2 signal counter; free signup promising unlimited chart views; notification prompt; premium alerts/bot service banner starting at $14.99; accepted-payment label USDT Crypto. Billing interval, tier inclusions and actual bot execution capability are unknown.
-- Inference only: free tools/market pages may support traffic acquisition feeding advertising and premium conversion. Search rankings, traffic, revenue and actual SEO effectiveness have not been measured.
-- Unknown: proprietary signal algorithm, disclosed model names, confidence calibration, complete pricing, broker/exchange connection permissions and actual historical auditability.
-
-## Blocker and continuation
-
-Secure email/password submission reached a CAPTCHA requirement. No CAPTCHA was solved and no sign-in success is claimed. Owner needs manual control of the existing login tab. Credentials/OTP/security tokens must not be copied into chat, screenshots or GitHub.
-
-After sign-in: verify positive signed-in evidence; inspect all account menus and route states; capture material UI; audit learning/category/symbol templates and visible metadata/schema; reconcile every reachable material route or list it as inaccessible; write the requested audit and synthesis documents.
-
-**Not complete.** Initial public navigation evidence is only a starting checklist.
-
-## Updated boundary — 2026-10-04
-
-Owner's manual cloud attempt displayed Cloudflare Verification failed. Authentication remains unconfirmed. Local-browser access is not cloud authentication. Owner requests a legitimate manual verification opportunity if the existing login page offers one. Stop after persistent rejection; no bypass/alternate browser routes. Public/SEO/ad audit remains incomplete: 2 routes inspected, 0 screenshots stored.
-
-
-## Current continuation checkpoint
-
-WaqarZaka paid audit now has 95 retained captures, 77 reviewed states and a full report. Tradebise remains incomplete: zero durable captures, two historically inspected routes. One fresh manual cloud verification opportunity is pending under the owner's renewed authorization. Do not retry after a persistent rejection; do not treat local-browser authentication as cloud evidence. Full public/SEO/advertising coverage and the synthesis remain outstanding. See the [continuation checkpoint](../../CONTINUATION.md).

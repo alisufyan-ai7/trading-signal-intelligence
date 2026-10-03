@@ -346,5 +346,383 @@
     "sha256": "c43a447ce24661b702f5dcf45160caa02178be449bfba56504b87c6115587ad3",
     "size": 46087,
     "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 31,
+    "name": "waqarzaka-20261004-31-paid-futures-page-01.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:14:35.969Z",
+    "description": "Paid dashboard Futures page 1: LONG/SHORT, OPEN, relative issue time, entry/TP/SL and old-trade warning",
+    "bytes": 329349,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "458f479d9690c09d4854387edd85c0481c7b1e11f2c0606ad48ba468ca5ba9ae",
+    "dimensions": [
+      1350,
+      2532
+    ]
+  },
+  {
+    "seq": 32,
+    "name": "waqarzaka-20261004-32-paid-crypto-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:15:33.054Z",
+    "description": "Paid Crypto Trades page 1: exchange/leverage/margin mode/entry/SL/TP/margin/position size and analyst commentary",
+    "bytes": 193262,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "91cd01a290ff162ed0db163da023f5361f218c8379fe662913e01452d1925dff",
+    "dimensions": [
+      1000,
+      2371
+    ]
+  },
+  {
+    "seq": 33,
+    "name": "waqarzaka-20261004-33-paid-stock-commodities-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:15:46.221Z",
+    "description": "Paid Stock and Commodities Trades page 1",
+    "bytes": 874993,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "2fd0cbf0e488f4e22c751942effa27aa6b0bfd89a5d1fb1f4ebe78aa69d304c1",
+    "dimensions": [
+      1000,
+      7736
+    ]
+  },
+  {
+    "seq": 34,
+    "name": "waqarzaka-20261004-34-paid-market-updates-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:16:03.027Z",
+    "description": "Paid Market Updates page 1",
+    "bytes": 4981738,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "58f409e0a3a7c50723f5a0abd35b8f68f11f63a4d2573ea4aa616da5ee1eb77a",
+    "dimensions": [
+      1000,
+      41826
+    ]
+  },
+  {
+    "seq": 35,
+    "name": "waqarzaka-20261004-35-paid-education-beginner-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:16:37.528Z",
+    "description": "Education Beginner category and video lesson cards",
+    "bytes": 111602,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "987ac353cffb1df420cd55234f22bcf4d60a25e3963614cdede5928acd7e27ee",
+    "dimensions": [
+      1000,
+      2595
+    ]
+  },
+  {
+    "seq": 36,
+    "name": "waqarzaka-20261004-36-paid-education-advance-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:16:51.221Z",
+    "description": "Education Advance category",
+    "bytes": 130053,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "272b1cc6e007891e2b73f4231215e70bcdb129da7063e96fb1ff6e82a9c94bc4",
+    "dimensions": [
+      1000,
+      2862
+    ]
+  },
+  {
+    "seq": 37,
+    "name": "waqarzaka-20261004-37-paid-education-exclusive-coming-soon.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:17:05.464Z",
+    "description": "Exclusive category: annual group lessons coming soon",
+    "bytes": 25598,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "bebf25d96933dc0318a651fd7515508f6cff5b00a78694402aec7958574207a9",
+    "dimensions": [
+      1000,
+      500
+    ]
+  },
+  {
+    "seq": 38,
+    "name": "waqarzaka-20261004-38-paid-live-sessions.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:17:15.270Z",
+    "description": "Live Session Sessions catalog",
+    "bytes": 158122,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "2f98bedf3b91a8a1fa2f0a45b9c20ab6d065f225d4f6db57d17516387f7a4afb",
+    "dimensions": [
+      1000,
+      3096
+    ]
+  },
+  {
+    "seq": 39,
+    "name": "waqarzaka-20261004-39-paid-live-trades.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:17:27.791Z",
+    "description": "Live Session Live Trades subview",
+    "bytes": 141981,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "389a465ae19f5544db539bf2a74be42e49e2e53447b85538fe72e5acde979410",
+    "dimensions": [
+      1000,
+      1953
+    ]
+  },
+  {
+    "seq": 40,
+    "name": "waqarzaka-20261004-40-paid-live-session-player.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:17:52.869Z",
+    "description": "Latest session playback container after Watch; player loading/result boundary",
+    "bytes": 209952,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "c88b8534ac40b1c9026f66fee6d317199e8360e22f963d7d6fdcb28555fd787e",
+    "dimensions": [
+      1000,
+      3096
+    ]
+  },
+  {
+    "seq": 41,
+    "name": "waqarzaka-20261004-41-paid-session-chat-closed.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:18:06.728Z",
+    "description": "Session chat: closed; no messages sent",
+    "bytes": 200313,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "804a6739e1431cb937ddba4c117cada021c5555ed166ad05263eca66f36830fa",
+    "dimensions": [
+      1000,
+      3096
+    ]
+  },
+  {
+    "seq": 42,
+    "name": "waqarzaka-20261004-42-paid-futures-page-41.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:18:30.724Z",
+    "description": "Oldest Futures page 41 and remaining outcome labels",
+    "bytes": 176929,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "8a671742b007fac78ca621f83966ccc51372458b56313dde6ca9da8274b48ff8",
+    "dimensions": [
+      1000,
+      1548
+    ]
+  },
+  {
+    "seq": 43,
+    "name": "waqarzaka-20261004-43-education-beginner-page-02.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:12.169Z",
+    "description": "Beginner page 2; verified changed lesson titles, replacing premature capture",
+    "bytes": 89269,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "755a389cd2152aec38c524711e409c596692500117696da27f47e7439e0442d7",
+    "dimensions": [
+      1000,
+      2442
+    ]
+  },
+  {
+    "seq": 44,
+    "name": "waqarzaka-20261004-44-education-beginner-page-03.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:13.014Z",
+    "description": "Beginner page 3; verified changed lesson titles, replacing premature capture",
+    "bytes": 90394,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "da937699ecca5d5ebd97f426446b72281492777b12993543139d83096954eea6",
+    "dimensions": [
+      1000,
+      2442
+    ]
+  },
+  {
+    "seq": 45,
+    "name": "waqarzaka-20261004-45-education-beginner-page-04.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:13.828Z",
+    "description": "Beginner page 4; verified changed lesson titles, replacing premature capture",
+    "bytes": 90050,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "ff13074430c65a94fc910ce6e7c37b596144c352a86bab0be89d0dab69f279a4",
+    "dimensions": [
+      1000,
+      2442
+    ]
+  },
+  {
+    "seq": 46,
+    "name": "waqarzaka-20261004-46-education-beginner-page-05.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:31.037Z",
+    "description": "Beginner page 5; verified lesson titles and complete capture",
+    "bytes": 91807,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "2d306e0ed660706599c2492f674a14a3779abd4e3f041fee1ff88bcbb46b3800",
+    "dimensions": [
+      1000,
+      2442
+    ]
+  },
+  {
+    "seq": 47,
+    "name": "waqarzaka-20261004-47-education-beginner-page-06.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:31.888Z",
+    "description": "Beginner page 6; verified lesson titles and complete capture",
+    "bytes": 93792,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "fb1a32c3a7612eb7a537a321b46354ba946ef10ec5c431655b42fbaf3d8ef5e1",
+    "dimensions": [
+      1000,
+      2442
+    ]
+  },
+  {
+    "seq": 48,
+    "name": "waqarzaka-20261004-48-education-beginner-page-07.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:55.033Z",
+    "description": "Beginner page 7; verified lesson titles and complete capture",
+    "bytes": 93809,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "9dd70470f2f6e3c6ca0391cb526316d661ee3f251a007ad929cabc22f4633949",
+    "dimensions": [
+      1000,
+      2442
+    ]
+  },
+  {
+    "seq": 49,
+    "name": "waqarzaka-20261004-49-education-beginner-page-08.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:55.942Z",
+    "description": "Beginner page 8; verified lesson titles and complete capture",
+    "bytes": 50872,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "75f62efcd8b5fb6a5d45c4521ee088384fdcdde1dc487e11a5c80a7fcedf7e5c",
+    "dimensions": [
+      1000,
+      1140
+    ]
+  },
+  {
+    "seq": 50,
+    "name": "waqarzaka-20261004-50-education-advance-page-02.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:26:47.329Z",
+    "description": "Advance catalog page 2, loaded Gamma/FX lessons; replaces premature capture",
+    "bytes": 109611,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "62c852bf4b698ed3ff465e0b12d0cad91bd6c481a9eb9419000e6f2c71c55e9a",
+    "dimensions": [
+      1000,
+      2523
+    ]
+  },
+  {
+    "seq": 51,
+    "name": "waqarzaka-20261004-51-education-advance-page-03.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:26:48.444Z",
+    "description": "Advance catalog page 3, loaded bond/commodity lessons; replaces premature capture",
+    "bytes": 107499,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "aeb4f06f4b997300482c3a5918891a913fc01c80474ce57d167cc46ab650e559",
+    "dimensions": [
+      1000,
+      2496
+    ]
+  },
+  {
+    "seq": 52,
+    "name": "waqarzaka-20261004-52-education-advance-page-04.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:27:10.249Z",
+    "description": "Advance page 4 after loaded fixed-income/yield-curve lessons",
+    "bytes": 109375,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "cd1199c707fb1f189be0937c4f498fd016bae28efc4ff8944c6e8ae45ded58c8",
+    "dimensions": [
+      1000,
+      2496
+    ]
+  },
+  {
+    "seq": 53,
+    "name": "waqarzaka-20261004-53-education-advance-page-05.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:27:11.060Z",
+    "description": "Advance page 5 after loaded neuroeconomics lessons",
+    "bytes": 132083,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "7e649b62fb4798b90713b7650e7859d0cbb77bdf1b3c7d53cdddfa954dfe1257",
+    "dimensions": [
+      1000,
+      2685
+    ]
+  },
+  {
+    "seq": 54,
+    "name": "waqarzaka-20261004-54-education-advance-page-06.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:27:25.872Z",
+    "description": "Advance page 6 after loaded demo/spot/market-structure lessons",
+    "bytes": 116163,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "26bedfdfa4581b6efe3488172da152c8320ad7da06800c749995b89cb016791e",
+    "dimensions": [
+      1000,
+      2550
+    ]
+  },
+  {
+    "seq": 55,
+    "name": "waqarzaka-20261004-55-education-video-player.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:27:46.984Z",
+    "description": "Paid education Dacast player; 02:17 displayed duration, playback controls and viewer claim",
+    "bytes": 132008,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "618282559691102ecdf91c4b08967a283f997ae46bc0753941b0e60d5f002121",
+    "dimensions": [
+      1000,
+      2550
+    ]
+  },
+  {
+    "seq": 56,
+    "name": "waqarzaka-20261004-56-crypto-archive-page-199.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:28:08.105Z",
+    "description": "Oldest crypto archive, 2-year-old spot posts, entry/TP/investment without visible SL or outcome labels",
+    "bytes": 298769,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "480780a51073a7c6129b3b8f7788e211287843afec5aafcc48bc4b0899732267",
+    "dimensions": [
+      1000,
+      3785
+    ]
+  },
+  {
+    "seq": 57,
+    "name": "waqarzaka-20261004-57-stock-commodities-archive-page-91.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:28:24.809Z",
+    "description": "Oldest stock/commodity archive: narrative conditional TSLA and cocoa setup, broker-link promotion and 2-year relative ages",
+    "bytes": 553173,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "4dc65d53fc4eae176e151f2efd6794a73cc5376ef393b6d87be636d4d044ddea",
+    "dimensions": [
+      1000,
+      5605
+    ]
   }
 ]

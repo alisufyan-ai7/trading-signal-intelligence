@@ -38,3 +38,7 @@ Secure email/password submission reached a CAPTCHA requirement. No CAPTCHA was s
 After sign-in: verify positive signed-in evidence; inspect all account menus and route states; capture material UI; audit learning/category/symbol templates and visible metadata/schema; reconcile every reachable material route or list it as inaccessible; write the requested audit and synthesis documents.
 
 **Not complete.** Initial public navigation evidence is only a starting checklist.
+
+## Updated boundary — 2026-10-04
+
+Owner's manual cloud attempt displayed Cloudflare Verification failed. Authentication remains unconfirmed. Local-browser access is not cloud authentication. Owner requests a legitimate manual verification opportunity if the existing login page offers one. Stop after persistent rejection; no bypass/alternate browser routes. Public/SEO/ad audit remains incomplete: 2 routes inspected, 0 screenshots stored.

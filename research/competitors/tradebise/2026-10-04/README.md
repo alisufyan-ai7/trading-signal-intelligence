@@ -42,3 +42,8 @@ After sign-in: verify positive signed-in evidence; inspect all account menus and
 ## Updated boundary — 2026-10-04
 
 Owner's manual cloud attempt displayed Cloudflare Verification failed. Authentication remains unconfirmed. Local-browser access is not cloud authentication. Owner requests a legitimate manual verification opportunity if the existing login page offers one. Stop after persistent rejection; no bypass/alternate browser routes. Public/SEO/ad audit remains incomplete: 2 routes inspected, 0 screenshots stored.
+
+
+## Current continuation checkpoint
+
+WaqarZaka paid audit now has 95 retained captures, 77 reviewed states and a full report. Tradebise remains incomplete: zero durable captures, two historically inspected routes. One fresh manual cloud verification opportunity is pending under the owner's renewed authorization. Do not retry after a persistent rejection; do not treat local-browser authentication as cloud evidence. Full public/SEO/advertising coverage and the synthesis remain outstanding. See the [continuation checkpoint](../../CONTINUATION.md).

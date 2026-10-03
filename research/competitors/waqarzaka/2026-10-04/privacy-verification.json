@@ -1,0 +1,13 @@
+{
+  "checkedUTC": "2026-10-03T22:15:46.055Z",
+  "screenshots": 95,
+  "sha256Matches": 95,
+  "decodedImages": 95,
+  "screenReview": "Capture-time visual review and browser crops exclude owner account/profile/payment identifying fields. Filled native-credential documents were not captured.",
+  "supplementalOCR": "All 95 screenshots checked; capture 34 exceeded single-image OCR limits and passed six document-coordinate analysis tiles. No raw OCR is committed.",
+  "credentialTokenPatternMatches": 0,
+  "contactEmailReview": "Detected site-contact email text in captures 1,9,10,20,21,22,26; public footer/contact material, not owner identifiers. Two OCR variants reviewed against images.",
+  "textArtifactPatternCheck": "No credential-token patterns or populated auth-cookie/password/OTP assignment patterns in committed audit/index/inventory/manifest/continuation text.",
+  "limitations": "OCR/regex cannot prove absence of every possible secret; primary control was excluding credential/account fields during capture. Public referral codes and publisher order identifiers are research evidence.",
+  "actions": "No payment, exchange signup/deposit/connection, trade/bot activation, cancellation/security change or support/chat submission."
+}

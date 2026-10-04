@@ -1,0 +1,40 @@
+{
+  "kind": "SHA-256 of authored source-review artifacts; NOT screenshots",
+  "artifacts": [
+    {
+      "path": "public-evidence.json",
+      "sha256": "d38e6b5c748e1e5961b4ab7b670295aa0acceb6a01c5f395bd64f9d5cc25c68e",
+      "bytes": 10698
+    },
+    {
+      "path": "route-state-inventory.json",
+      "sha256": "c01e7d21a27f0d0249a309434976a1f2226254a4018098a359dbbab067065971",
+      "bytes": 18030
+    },
+    {
+      "path": "README.md",
+      "sha256": "be4032ca6403605c1638b29e5de8d6813b4fdb0b2843e3dbe4926d3c7c07ab94",
+      "bytes": 6963
+    },
+    {
+      "path": "capture-manifest.json",
+      "sha256": "5239a7754876b9a70871c45e41f1bd9abbd91ed2de67af926c1cfcc9c9377d51",
+      "bytes": 4
+    },
+    {
+      "path": "../../../../docs/tradebise-authenticated-product-business-seo-audit-2026-10-04.md",
+      "sha256": "6d4d53c51973dd6d56515557a8f230c2766428ba03274766120b18f03babbf89",
+      "bytes": 16969
+    },
+    {
+      "path": "../../../../docs/competitor-synthesis-waqarzaka-tradebise-tradingtop-vowsig-2026-10-04.md",
+      "sha256": "c97b72fb9659c7885acf16db3653b078f1bc94bc2883cf7e099919c0f831389e",
+      "bytes": 12049
+    },
+    {
+      "path": "../../../../docs/tradebise-seo-patterns-for-vowsig-v0.1.md",
+      "sha256": "5eb64f46abf50a8b94f13cf91115417fa52c9505f87400701970d2d369995b7b",
+      "bytes": 4336
+    }
+  ]
+}

@@ -1,0 +1,1335 @@
+[
+  {
+    "seq": 1,
+    "name": "waqarzaka-20261004-01-home.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": null,
+    "description": "Initial public homepage; modal obstructs hero",
+    "sha256": "c78b7c309099f87930e9394ebd9e56aeb9405e648ee5b1c51904896b512eecc7",
+    "state": "Public",
+    "caveat": "Timestamp not recorded. Clean homepage coverage in capture 22."
+  },
+  {
+    "seq": 2,
+    "name": "waqarzaka-20261004-02-dashboard-paid-gate.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T20:33:47.177Z",
+    "description": "Cloud dashboard paid-content gate before owner's purchase; not evidence of current owner membership status",
+    "bytes": 50886,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "0a5bb08edd876e9107fd478f903014c2379a968d6d6b927950a2172ce51a607a",
+    "size": 50886,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 3,
+    "name": "waqarzaka-20261004-03-subscription-offer.jpg",
+    "url": "https://waqarzaka.net/checkout",
+    "capturedUTC": "2026-10-03T20:34:13.706Z",
+    "description": "Educational membership benefits",
+    "bytes": 54665,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "8a2e193c8ce66c329476dceb1580237b7a2fab1f076a5d4c7c78510a355f1454",
+    "size": 54665,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 4,
+    "name": "waqarzaka-20261004-04-subscription-price.jpg",
+    "url": "https://waqarzaka.net/checkout",
+    "capturedUTC": "2026-10-03T20:34:13.963Z",
+    "description": "USD 10 per month with automatic rebilling after 30 days",
+    "bytes": 9553,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "fb13df08e89f29029fc61e8b6bff38c98976e03ae59c33be75649bdbe4c7b46d",
+    "size": 9553,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 5,
+    "name": "waqarzaka-20261004-05-subscription-controls.jpg",
+    "url": "https://waqarzaka.net/checkout",
+    "capturedUTC": "2026-10-03T20:34:14.218Z",
+    "description": "Checkout controls and cancellation/access copy; payment not initiated",
+    "bytes": 13599,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "b9684f5c2f4fd93ebd8e44dae4b7e3da0e1c5c1082e2ae37711582699ea86a24",
+    "size": 13599,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 6,
+    "name": "waqarzaka-20261004-06-payment-tutorial.jpg",
+    "url": "https://waqarzaka.net/checkout",
+    "capturedUTC": "2026-10-03T20:34:36.564Z",
+    "description": "Payment tutorial and Dacast video player, duration 2:40",
+    "bytes": 49339,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "f173ae9b9188d3803b0041561bba53d65df9c62e61edff847537ad09a359f832",
+    "size": 49339,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 7,
+    "name": "waqarzaka-20261004-07-liquidity-radar-top.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T20:35:01.508Z",
+    "description": "Radar primary bias/confidence/target/strength panels; feeds populated by screenshot time",
+    "bytes": 99305,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "754980afcc0234c2e4068bf830f266a9bd996ea0e60607075ac547021621275a",
+    "size": 99305,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 8,
+    "name": "waqarzaka-20261004-08-liquidity-radar-lower.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T20:35:03.294Z",
+    "description": "Radar lower sweep/trap/spoofing/funding/open-interest/CVD panels",
+    "bytes": 88430,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Mostly repeats the upper Radar panel; full lower-panel capture is pending. Partial/obstructed capture; material coverage replaced or extended by 65.",
+    "sha256": "66443a8a9bbcf64149f82ac900b4fbde57815cb33411c58c69f072fe0bed0561",
+    "size": 88430,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 9,
+    "name": "waqarzaka-20261004-09-liquidity-advanced.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T20:35:23.226Z",
+    "description": "Advanced order book, liquidation map, CVD, volume profile and active-wall UI",
+    "bytes": 151127,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Partial/obstructed capture; material coverage replaced or extended by 67.",
+    "sha256": "60dba52b1922d39032ef9d6b790ae490547fac75e1e10c7c4c637f3226eb7bb6",
+    "size": 151127,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 10,
+    "name": "waqarzaka-20261004-10-liquidity-order-events.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T20:35:46.142Z",
+    "description": "Order-event log with APPEAR, INCREASE, PARTIAL_FILL and CANCEL; spoof-watch panel",
+    "bytes": 167873,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Partial/obstructed capture; material coverage replaced or extended by 68.",
+    "sha256": "f603c2455e3b094ba6ea6de8c80a4b2425656c5066e409b42fff22a1615f723f",
+    "size": 167873,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 11,
+    "name": "waqarzaka-20261004-11-liquidity-alerts.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T20:36:07.702Z",
+    "description": "Alert categories and thresholds; checkboxes left unchanged",
+    "bytes": 86399,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "8c33501cb37868336d7267b8a9e6021ebd00a7c5ba1073022c85f0bd23a38f2d",
+    "size": 86399,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 12,
+    "name": "waqarzaka-20261004-12-broadcast-channels.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T20:36:19.762Z",
+    "description": "Broadcast-channel modal links to Instagram and Facebook Messenger",
+    "bytes": 63952,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "a67816e9217f9c8928cc1f1f7ed6570f1ca5b6a237d2bafcf8c9d3aaf0d0a945",
+    "size": 63952,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 13,
+    "name": "waqarzaka-20261004-13-account-menu.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T20:37:36.662Z",
+    "description": "Account menu: payment history, support, profile and logout",
+    "bytes": 5651,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Partial account menu crop; Pay History/Support and part of Profile visible; Logout established by DOM. Partial/obstructed capture; material coverage replaced or extended by 62.",
+    "sha256": "0a9ba30dca8e6fe9564313a670128c8d7a518589ce05f95bfb9c89edaba04ac0",
+    "size": 5651,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 14,
+    "name": "waqarzaka-20261004-14-subscription-history.jpg",
+    "url": "https://waqarzaka.net/subscription/history",
+    "capturedUTC": "2026-10-03T20:37:57.134Z",
+    "description": "Subscription-history columns and empty-state UI; no payment details captured",
+    "bytes": 51512,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "d79255e5339a24cdb603f365348c4b1419438d924f37403aeb492dab719d7d60",
+    "size": 51512,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 15,
+    "name": "waqarzaka-20261004-15-support-list.jpg",
+    "url": "https://waqarzaka.net/support",
+    "capturedUTC": "2026-10-03T20:38:15.681Z",
+    "description": "Ticket-list UI and create-ticket link",
+    "bytes": 53824,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "8ec2db548d34963b6433ae4c4f2239b1768792e8736f61c43c2bf63876a13fbe",
+    "size": 53824,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 16,
+    "name": "waqarzaka-20261004-16-support-ticket-form.jpg",
+    "url": "https://waqarzaka.net/support/create-ticket",
+    "capturedUTC": "2026-10-03T20:38:24.866Z",
+    "description": "Ticket category selector, description and optional screenshot; no submission",
+    "bytes": 39321,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "69bf35a68084d11f6b72849b065fb373a0ece5c0bbd170e945c83b2a9aa2e43e",
+    "size": 39321,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 17,
+    "name": "waqarzaka-20261004-17-support-issue-types.jpg",
+    "url": "https://waqarzaka.net/support/create-ticket",
+    "capturedUTC": "2026-10-03T20:38:36.124Z",
+    "description": "Support dropdown includes exchange Telegram, payment, OTP and live-session categories",
+    "bytes": 39319,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Native issue dropdown was present in AX but absent from raster capture; options need supplementary evidence. Native select options were available in DOM/AX but did not render in screenshot; not visual evidence of option contents.",
+    "sha256": "47b81ee20370adadb3f2414d5d432a7f0b0ce2a37e3b5fc353a9d39e233f4282",
+    "size": 39319,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 18,
+    "name": "waqarzaka-20261004-18-profile-verified-heading.jpg",
+    "url": "https://waqarzaka.net/profile",
+    "capturedUTC": "2026-10-03T20:39:05.742Z",
+    "description": "Verified-account label and profile-heading UI; personal fields intentionally excluded",
+    "bytes": 18478,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "d3d4957da49fcb5fea2e4712f8c09ec7254deedf1da42cf8e88c75052f567687",
+    "size": 18478,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 19,
+    "name": "waqarzaka-20261004-19-market-overview.jpg",
+    "url": "https://waqarzaka.net/market-overview",
+    "capturedUTC": "2026-10-03T20:39:26.845Z",
+    "description": "Crypto overview: sentiment, market cap, ETF flows, gas and dominance",
+    "bytes": 150752,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Numerical tiles rendered; several charts blank in raster capture. Partial/obstructed capture; material coverage replaced or extended by 93.",
+    "sha256": "53c7ad39264bf4d2a4c564207a1887a332cddb3918135b0c9fe9b2d8f4b635d5",
+    "size": 150752,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 20,
+    "name": "waqarzaka-20261004-20-terms-full.jpg",
+    "url": "https://waqarzaka.net/terms-and-conditions",
+    "capturedUTC": "2026-10-03T20:40:15.103Z",
+    "description": "Full legal terms covering signals, affiliate commissions, subscriptions, cancellation and refunds",
+    "bytes": 1850162,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "47e11cbd6bbd571a40bf84696f17371259dcc609a5da039eebb0d7ff08ae8b84",
+    "size": 1850162,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 21,
+    "name": "waqarzaka-20261004-21-privacy-full.jpg",
+    "url": "https://waqarzaka.net/privacy-policy",
+    "capturedUTC": "2026-10-03T20:40:46.709Z",
+    "description": "Privacy policy including marketing-email purpose and account-deletion support path",
+    "bytes": 315310,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "d0905c274fa33187dcef438b18ae1090a1e0eb96baeceebb11761cde189c7c77",
+    "size": 315310,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 22,
+    "name": "waqarzaka-20261004-22-home-clean-full.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T20:41:08.437Z",
+    "description": "Clean homepage: complete offer, social proof, education, calculator, about, Telegram previews and support",
+    "bytes": 800100,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "dc4d052a49ef43b990d4b8ba5dc5d4eec6e2abfb6b598432bd337970646c81e1",
+    "size": 800100,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 23,
+    "name": "waqarzaka-20261004-23-annual-group-closed.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T20:41:28.050Z",
+    "description": "Annual membership currently closed",
+    "bytes": 95770,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Video modal captured; closure text below viewport, established by DOM only. Replacement pending. Partial/obstructed capture; material coverage replaced or extended by 80.",
+    "sha256": "62c24266dbf7f7f5a162e40b85e881992acf64a22296a33b1245fe9c618c01ee",
+    "size": 95770,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 24,
+    "name": "waqarzaka-20261004-24-monthly-video-gate.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T20:42:56.823Z",
+    "description": "Monthly registration is gated behind watching an explanatory video",
+    "bytes": 24861,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "be357c9396dff80e3680f50c50198435d4e36b903c15e27877440a0ca9af9722",
+    "size": 24861,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 25,
+    "name": "waqarzaka-20261004-25-exchange-community-top.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T20:47:40.495Z",
+    "description": "Trade viewing modal: MEXC/WEEX referral and 100 USDT access conditions",
+    "bytes": 114429,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Only top of modal captured, not exchange steps; see 26 for lower body. Partial/obstructed capture; material coverage replaced or extended by 81.",
+    "sha256": "4c35cbe5961de39569207c149b0710a63c82d33f36064f5aadd598762cfd35af",
+    "size": 114429,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 26,
+    "name": "waqarzaka-20261004-26-exchange-community-full.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T20:48:17.989Z",
+    "description": "Full trade viewing modal and underlying homepage; five exchange referral/deposit/bot paths",
+    "bytes": 806190,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Referral modal body captured with underlying homepage; modal top may be clipped. Combine with 25. Partial/obstructed capture; material coverage replaced or extended by 82.",
+    "sha256": "a1846a93a3b11ef0b74ae713b3dff6f24661d62909d99acdb58fd30816d543d0",
+    "size": 806190,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 27,
+    "name": "waqarzaka-20261004-27-annual-closed-message.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T20:49:19.839Z",
+    "description": "Annual offer closed; future updates requested",
+    "bytes": 88344,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Closure message remains below viewport; screenshot does not substantiate description. Replacement pending. Partial/obstructed capture; material coverage replaced or extended by 80.",
+    "sha256": "e05f72075b720033aaf11c5d81c268184266915236a9b07f7da08672f002735f",
+    "size": 88344,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 28,
+    "name": "waqarzaka-20261004-28-briefing-instructors.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T20:49:21.095Z",
+    "description": "Instructors accordion",
+    "bytes": 130753,
+    "caveat": "Viewport clipped below account header to exclude owner identity. Viewport stayed at hero; instructors accordion absent. Superseded by 29. Partial/obstructed capture; material coverage replaced or extended by 29.",
+    "sha256": "78c5d0aa69eb983d11b10da452e3077d937b4e7a9fe76c96dbcbaec2f80acede",
+    "size": 130753,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 29,
+    "name": "waqarzaka-20261004-29-instructors-panel.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T20:50:23.381Z",
+    "description": "Instructors accordion open",
+    "bytes": 16287,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "77eda6679295f9d6266777c2b587c3a9bcc51eebb8f64221c8eae84f1254be27",
+    "size": 16287,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 30,
+    "name": "waqarzaka-20261004-30-warning-panel.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T20:50:24.066Z",
+    "description": "Warning accordion open",
+    "bytes": 46087,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "c43a447ce24661b702f5dcf45160caa02178be449bfba56504b87c6115587ad3",
+    "size": 46087,
+    "state": "Authenticated; public UI or verified account without paid entitlement reflected in cloud at capture"
+  },
+  {
+    "seq": 31,
+    "name": "waqarzaka-20261004-31-paid-futures-page-01.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:14:35.969Z",
+    "description": "Paid dashboard Futures page 1: LONG/SHORT, OPEN, relative issue time, entry/TP/SL and old-trade warning",
+    "bytes": 329349,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "458f479d9690c09d4854387edd85c0481c7b1e11f2c0606ad48ba468ca5ba9ae",
+    "dimensions": [
+      1350,
+      2532
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 32,
+    "name": "waqarzaka-20261004-32-paid-crypto-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:15:33.054Z",
+    "description": "Paid Crypto Trades page 1: exchange/leverage/margin mode/entry/SL/TP/margin/position size and analyst commentary",
+    "bytes": 193262,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "91cd01a290ff162ed0db163da023f5361f218c8379fe662913e01452d1925dff",
+    "dimensions": [
+      1000,
+      2371
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 33,
+    "name": "waqarzaka-20261004-33-paid-stock-commodities-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:15:46.221Z",
+    "description": "Paid Stock and Commodities Trades page 1",
+    "bytes": 874993,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "2fd0cbf0e488f4e22c751942effa27aa6b0bfd89a5d1fb1f4ebe78aa69d304c1",
+    "dimensions": [
+      1000,
+      7736
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 34,
+    "name": "waqarzaka-20261004-34-paid-market-updates-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:16:03.027Z",
+    "description": "Paid Market Updates page 1",
+    "bytes": 4981738,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "58f409e0a3a7c50723f5a0abd35b8f68f11f63a4d2573ea4aa616da5ee1eb77a",
+    "dimensions": [
+      1000,
+      41826
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 35,
+    "name": "waqarzaka-20261004-35-paid-education-beginner-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:16:37.528Z",
+    "description": "Education Beginner category and video lesson cards",
+    "bytes": 111602,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "987ac353cffb1df420cd55234f22bcf4d60a25e3963614cdede5928acd7e27ee",
+    "dimensions": [
+      1000,
+      2595
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 36,
+    "name": "waqarzaka-20261004-36-paid-education-advance-page-001.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:16:51.221Z",
+    "description": "Education Advance category",
+    "bytes": 130053,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "272b1cc6e007891e2b73f4231215e70bcdb129da7063e96fb1ff6e82a9c94bc4",
+    "dimensions": [
+      1000,
+      2862
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 37,
+    "name": "waqarzaka-20261004-37-paid-education-exclusive-coming-soon.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:17:05.464Z",
+    "description": "Exclusive category: annual group lessons coming soon",
+    "bytes": 25598,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "bebf25d96933dc0318a651fd7515508f6cff5b00a78694402aec7958574207a9",
+    "dimensions": [
+      1000,
+      500
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 38,
+    "name": "waqarzaka-20261004-38-paid-live-sessions.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:17:15.270Z",
+    "description": "Live Session Sessions catalog",
+    "bytes": 158122,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "2f98bedf3b91a8a1fa2f0a45b9c20ab6d065f225d4f6db57d17516387f7a4afb",
+    "dimensions": [
+      1000,
+      3096
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 39,
+    "name": "waqarzaka-20261004-39-paid-live-trades.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:17:27.791Z",
+    "description": "Live Session Live Trades subview",
+    "bytes": 141981,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "389a465ae19f5544db539bf2a74be42e49e2e53447b85538fe72e5acde979410",
+    "dimensions": [
+      1000,
+      1953
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 40,
+    "name": "waqarzaka-20261004-40-paid-live-session-player.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:17:52.869Z",
+    "description": "Latest session playback container after Watch; player loading/result boundary",
+    "bytes": 209952,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "c88b8534ac40b1c9026f66fee6d317199e8360e22f963d7d6fdcb28555fd787e",
+    "dimensions": [
+      1000,
+      3096
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 41,
+    "name": "waqarzaka-20261004-41-paid-session-chat-closed.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:18:06.728Z",
+    "description": "Session chat: closed; no messages sent",
+    "bytes": 200313,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "804a6739e1431cb937ddba4c117cada021c5555ed166ad05263eca66f36830fa",
+    "dimensions": [
+      1000,
+      3096
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 42,
+    "name": "waqarzaka-20261004-42-paid-futures-page-41.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:18:30.724Z",
+    "description": "Oldest Futures page 41 and remaining outcome labels",
+    "bytes": 176929,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "8a671742b007fac78ca621f83966ccc51372458b56313dde6ca9da8274b48ff8",
+    "dimensions": [
+      1000,
+      1548
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 43,
+    "name": "waqarzaka-20261004-43-education-beginner-page-02.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:12.169Z",
+    "description": "Beginner page 2; verified changed lesson titles, replacing premature capture",
+    "bytes": 89269,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "755a389cd2152aec38c524711e409c596692500117696da27f47e7439e0442d7",
+    "dimensions": [
+      1000,
+      2442
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 44,
+    "name": "waqarzaka-20261004-44-education-beginner-page-03.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:13.014Z",
+    "description": "Beginner page 3; verified changed lesson titles, replacing premature capture",
+    "bytes": 90394,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "da937699ecca5d5ebd97f426446b72281492777b12993543139d83096954eea6",
+    "dimensions": [
+      1000,
+      2442
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 45,
+    "name": "waqarzaka-20261004-45-education-beginner-page-04.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:13.828Z",
+    "description": "Beginner page 4; verified changed lesson titles, replacing premature capture",
+    "bytes": 90050,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "ff13074430c65a94fc910ce6e7c37b596144c352a86bab0be89d0dab69f279a4",
+    "dimensions": [
+      1000,
+      2442
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 46,
+    "name": "waqarzaka-20261004-46-education-beginner-page-05.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:31.037Z",
+    "description": "Beginner page 5; verified lesson titles and complete capture",
+    "bytes": 91807,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "2d306e0ed660706599c2492f674a14a3779abd4e3f041fee1ff88bcbb46b3800",
+    "dimensions": [
+      1000,
+      2442
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 47,
+    "name": "waqarzaka-20261004-47-education-beginner-page-06.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:31.888Z",
+    "description": "Beginner page 6; verified lesson titles and complete capture",
+    "bytes": 93792,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "fb1a32c3a7612eb7a537a321b46354ba946ef10ec5c431655b42fbaf3d8ef5e1",
+    "dimensions": [
+      1000,
+      2442
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 48,
+    "name": "waqarzaka-20261004-48-education-beginner-page-07.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:55.033Z",
+    "description": "Beginner page 7; verified lesson titles and complete capture",
+    "bytes": 93809,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "9dd70470f2f6e3c6ca0391cb526316d661ee3f251a007ad929cabc22f4633949",
+    "dimensions": [
+      1000,
+      2442
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 49,
+    "name": "waqarzaka-20261004-49-education-beginner-page-08.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:30:55.942Z",
+    "description": "Beginner page 8; verified lesson titles and complete capture",
+    "bytes": 50872,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "75f62efcd8b5fb6a5d45c4521ee088384fdcdde1dc487e11a5c80a7fcedf7e5c",
+    "dimensions": [
+      1000,
+      1140
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 50,
+    "name": "waqarzaka-20261004-50-education-advance-page-02.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:26:47.329Z",
+    "description": "Advance catalog page 2, loaded Gamma/FX lessons; replaces premature capture",
+    "bytes": 109611,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "62c852bf4b698ed3ff465e0b12d0cad91bd6c481a9eb9419000e6f2c71c55e9a",
+    "dimensions": [
+      1000,
+      2523
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 51,
+    "name": "waqarzaka-20261004-51-education-advance-page-03.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:26:48.444Z",
+    "description": "Advance catalog page 3, loaded bond/commodity lessons; replaces premature capture",
+    "bytes": 107499,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "aeb4f06f4b997300482c3a5918891a913fc01c80474ce57d167cc46ab650e559",
+    "dimensions": [
+      1000,
+      2496
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 52,
+    "name": "waqarzaka-20261004-52-education-advance-page-04.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:27:10.249Z",
+    "description": "Advance page 4 after loaded fixed-income/yield-curve lessons",
+    "bytes": 109375,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "cd1199c707fb1f189be0937c4f498fd016bae28efc4ff8944c6e8ae45ded58c8",
+    "dimensions": [
+      1000,
+      2496
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 53,
+    "name": "waqarzaka-20261004-53-education-advance-page-05.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:27:11.060Z",
+    "description": "Advance page 5 after loaded neuroeconomics lessons",
+    "bytes": 132083,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "7e649b62fb4798b90713b7650e7859d0cbb77bdf1b3c7d53cdddfa954dfe1257",
+    "dimensions": [
+      1000,
+      2685
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 54,
+    "name": "waqarzaka-20261004-54-education-advance-page-06.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:27:25.872Z",
+    "description": "Advance page 6 after loaded demo/spot/market-structure lessons",
+    "bytes": 116163,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "26bedfdfa4581b6efe3488172da152c8320ad7da06800c749995b89cb016791e",
+    "dimensions": [
+      1000,
+      2550
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 55,
+    "name": "waqarzaka-20261004-55-education-video-player.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:27:46.984Z",
+    "description": "Paid education Dacast player; 02:17 displayed duration, playback controls and viewer claim",
+    "bytes": 132008,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "618282559691102ecdf91c4b08967a283f997ae46bc0753941b0e60d5f002121",
+    "dimensions": [
+      1000,
+      2550
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 56,
+    "name": "waqarzaka-20261004-56-crypto-archive-page-199.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:28:08.105Z",
+    "description": "Oldest crypto archive, 2-year-old spot posts, entry/TP/investment without visible SL or outcome labels",
+    "bytes": 298769,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "480780a51073a7c6129b3b8f7788e211287843afec5aafcc48bc4b0899732267",
+    "dimensions": [
+      1000,
+      3785
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 57,
+    "name": "waqarzaka-20261004-57-stock-commodities-archive-page-91.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:28:24.809Z",
+    "description": "Oldest stock/commodity archive: narrative conditional TSLA and cocoa setup, broker-link promotion and 2-year relative ages",
+    "bytes": 553173,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "4dc65d53fc4eae176e151f2efd6794a73cc5376ef393b6d87be636d4d044ddea",
+    "dimensions": [
+      1000,
+      5605
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 58,
+    "name": "waqarzaka-20261004-58-market-updates-archive-page-600.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:34:15.109Z",
+    "description": "Oldest market-update archive page 600; oldest retained narrative/news format",
+    "bytes": 1125463,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "4d022d474724b9dbfcfe0bcc672837963f8c99c190836b1e7ec93b2f213aa356",
+    "dimensions": [
+      1000,
+      7506
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 59,
+    "name": "waqarzaka-20261004-59-live-sessions-archive-page-62.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:34:30.533Z",
+    "description": "Oldest session recording archive, retained recordings, dates and relative ages",
+    "bytes": 103649,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "b950e86a5648fb80459d7a1f552dc36ed83d443a7a5c1476e59b865b20de71af",
+    "dimensions": [
+      1000,
+      1854
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 60,
+    "name": "waqarzaka-20261004-60-live-trades-archive-page-04.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:34:41.852Z",
+    "description": "Live Trades oldest page; retained CLOSED cards with direction, entry, TP and SL",
+    "bytes": 83717,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "12f7cd187cd315b85f3c18468321f53084f443d14e51ca9fe224f2175c788ba1",
+    "dimensions": [
+      1000,
+      1295
+    ],
+    "state": "Authenticated paid account; paid dashboard"
+  },
+  {
+    "seq": 61,
+    "name": "waqarzaka-20261004-61-subscription-already-subscribed.jpg",
+    "url": "https://waqarzaka.net/checkout",
+    "capturedUTC": "2026-10-03T21:35:22.795Z",
+    "description": "Paid checkout Already Subscribed control; billing email excluded",
+    "bytes": 3461,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "c47c97bd3bb4778672f7e57d6e807f41e1d41288778f7c9731437eb46f7c6a62",
+    "dimensions": [
+      425,
+      48
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 62,
+    "name": "waqarzaka-20261004-62-account-menu-complete.jpg",
+    "url": "https://waqarzaka.net/checkout",
+    "capturedUTC": "2026-10-03T21:35:35.176Z",
+    "description": "Complete account dropdown: Pay History, Support, Profile and Logout; owner-name button excluded",
+    "bytes": 6462,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "ae6771132aba09d14cb31425046a95909a8b3a997128b2ec1eff47fac947b4c9",
+    "dimensions": [
+      157,
+      135
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 63,
+    "name": "waqarzaka-20261004-63-payment-history-headers.jpg",
+    "url": "https://waqarzaka.net/subscription/history",
+    "capturedUTC": "2026-10-03T21:36:24.868Z",
+    "description": "Subscription History column headings; paid billing row deliberately excluded",
+    "bytes": 3645,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "e0bc4a720a403249a6af437600a8a8d5bbf0c60ab56d9480b1fd3b09fed87615",
+    "dimensions": [
+      1248,
+      50
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 64,
+    "name": "waqarzaka-20261004-64-subscription-cancel-surface.jpg",
+    "url": "https://waqarzaka.net/subscription/history",
+    "capturedUTC": "2026-10-03T21:54:11.400Z",
+    "description": "Cancellation question and Click Here control; no cancellation action initiated",
+    "bytes": 4035,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "0bf614d55fb608a1b2bc6ae5d540dfe116b314f1d2804fc52e9b08e888ec353e",
+    "dimensions": [
+      1296,
+      24
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 65,
+    "name": "waqarzaka-20261004-65-liquidity-radar-complete.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T21:37:01.421Z",
+    "description": "Complete Radar primary view including sweep/trap/spoofing, funding/OI and CVD; UI scores unvalidated",
+    "bytes": 119646,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "a041606ff7baf3d7e340559c63ce473429c005669e63feef79174d3fbc656f1f",
+    "dimensions": [
+      1300,
+      1036
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 66,
+    "name": "waqarzaka-20261004-66-radar-methodology-explanations.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T21:38:00.288Z",
+    "description": "Six Radar explanatory help panels expanded; unobstructed replacement after returning to page top",
+    "bytes": 158107,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "e8eef710f3c680c8f0fdea0c3e944d624104468163d80ca0afe8835b22a38f48",
+    "dimensions": [
+      1300,
+      1208
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 67,
+    "name": "waqarzaka-20261004-67-radar-advanced-complete.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T21:37:34.126Z",
+    "description": "Full Advanced view; book/walls populated, liquidation map and volume profile still loading at observation",
+    "bytes": 102733,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "3208dd89319bd446d0b2f538bf74cb9f2c986c8170d69b6842f509af73556eb3",
+    "dimensions": [
+      1300,
+      1213
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 68,
+    "name": "waqarzaka-20261004-68-radar-order-events-complete.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T21:37:47.412Z",
+    "description": "Order Events live log and active spoof-watch panel; samples of appear/increase/partial-fill/cancel UI",
+    "bytes": 80977,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "bacdca57b3afdb1cb24c66beeaeb0f52c0ff2a082b47bf7947b37b2a6c26570a",
+    "dimensions": [
+      1300,
+      706
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 69,
+    "name": "waqarzaka-20261004-69-radar-alert-triggered.jpg",
+    "url": "https://waqarzaka.net/liquidity-radar",
+    "capturedUTC": "2026-10-03T21:37:59.401Z",
+    "description": "Radar alert thresholds and populated liquidity-target alert log; checkboxes unchanged",
+    "bytes": 33454,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "20049dd284fbfd7174fc8ddada83044750f2369b47488720467aa27b783e1030",
+    "dimensions": [
+      1300,
+      369
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 70,
+    "name": "waqarzaka-20261004-70-service-blockchain.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:39:13.912Z",
+    "description": "Blockchain learning-track panel and signup CTA",
+    "bytes": 109642,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "8ab913115beacfd73e44dae261cf54c62a964a31139462d926cd3cd618b19098",
+    "dimensions": [
+      1296,
+      875
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 71,
+    "name": "waqarzaka-20261004-71-service-market-data.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:39:14.918Z",
+    "description": "Market Data Analysis learning-track panel and signup CTA",
+    "bytes": 95147,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "a46a6b46f35386dacfe20513e4a47b7f25b4d2ce68a032febc3bb932ad906c2c",
+    "dimensions": [
+      1296,
+      875
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 72,
+    "name": "waqarzaka-20261004-72-service-probability-risk.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:39:30.527Z",
+    "description": "Probability & Risk Analysis track and signup CTA",
+    "bytes": 85974,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "7344239f13ab2654f98efe023b281377e80f0fe0980360fd6a8f5d0d560f86fc",
+    "dimensions": [
+      1296,
+      875
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 73,
+    "name": "waqarzaka-20261004-73-service-stock-research.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:39:31.389Z",
+    "description": "Stocks & Commodities Research track and signup CTA",
+    "bytes": 93968,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "69aebb992959f3ad42504de2641c3af14a46fddb2c8f45ae37cea7aa36337ab8",
+    "dimensions": [
+      1296,
+      875
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 74,
+    "name": "waqarzaka-20261004-74-briefing-working-hours.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:39:43.568Z",
+    "description": "Working Hours briefing accordion expanded",
+    "bytes": 39838,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "3c74a38c8d22010bfb18ca263b01f794d566457fbe201631be9410e2aad0ea30",
+    "dimensions": [
+      1296,
+      523
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 75,
+    "name": "waqarzaka-20261004-75-calculator-input-state.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:40:32.172Z",
+    "description": "Illustrative BTC calculator with filled $100/date/BTC inputs; zero results and Loading feed, date-validation message observed in AX",
+    "bytes": 80009,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "b4e7019ae176739e23710148bffa98e408f7fd67380b4e66f450c1a810716e65",
+    "dimensions": [
+      1296,
+      1000
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 76,
+    "name": "waqarzaka-20261004-76-content-risk-disclosure.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:40:46.497Z",
+    "description": "Expanded content disclaimer: no fixed trade schedule, paid content/independent decisions, no profits promised and blanket no-refund copy",
+    "bytes": 186054,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "811f20b8c616b811bbca54e38b0a2b8fe131508bc4ca3b76d804ad4f7bd6485e",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 77,
+    "name": "waqarzaka-20261004-77-footer-legal-modal-top.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:41:19.871Z",
+    "description": "Footer legal disclosure modal, top sections; full matching legal content also captured in Terms page 20",
+    "bytes": 155639,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "d27a6c4449c1814860f8b3007f4852cfcf07e5a053fae97cdad4b6eada54bc62",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 78,
+    "name": "waqarzaka-20261004-78-footer-legal-modal-bottom.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:41:20.626Z",
+    "description": "Footer legal modal after scroll, bottom policy clauses; read-only no agreement acceptance",
+    "bytes": 161590,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "86317b351471355636315656dd45459da9d81b7dba7340ba528b3173fe88ed36",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 79,
+    "name": "waqarzaka-20261004-79-footer-legal-modal-final.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:43:45.383Z",
+    "description": "Footer legal final accuracy/cancellation/support/refund clauses brought into viewport; intervening content overlaps full terms capture 20",
+    "bytes": 150031,
+    "caveat": "Actual visible viewport; modal covers material content and account header is outside frame.",
+    "sha256": "ae723f840fc75cc39c766c9f6cd51c547d0a17d504d28af26b9339c5abe2c15d",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 80,
+    "name": "waqarzaka-20261004-80-annual-membership-closed-visible.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:43:43.585Z",
+    "description": "Annual closure and future-opening message now visibly framed; replaces obstructed 23/27",
+    "bytes": 98984,
+    "caveat": "Actual visible viewport; modal covers material content and account header is outside frame.",
+    "sha256": "db4dc98f322b7f58b6ab5c677e5118f38347cfe9f516ac2be89b95c464488293",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 81,
+    "name": "waqarzaka-20261004-81-referral-mexc-weex.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:43:19.043Z",
+    "description": "Exchange-access modal top: MEXC/WEEX referral codes, 100 USDT conditions and verification bots; no links followed",
+    "bytes": 126198,
+    "caveat": "Actual visible viewport; modal covers material content and account header is outside frame.",
+    "sha256": "02d5505715aa0ffa198ab4a1f56a811dba24cad4ae4e79a01aca473c8632880d",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 82,
+    "name": "waqarzaka-20261004-82-referral-yubit-bybit.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:43:19.793Z",
+    "description": "Referral modal middle: YUBIT/BYBIT account, deposit and verification steps",
+    "bytes": 136732,
+    "caveat": "Actual visible viewport; modal covers material content and account header is outside frame.",
+    "sha256": "03dfa388dbbabb420752e8727bb7e19c3a6e1917ce9d1e086169ae6adfaa2ac6",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 83,
+    "name": "waqarzaka-20261004-83-referral-blofin-community.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:43:20.472Z",
+    "description": "Referral modal bottom: BLOFIN steps and community access promise; consequential boundary not crossed",
+    "bytes": 131269,
+    "caveat": "Actual visible viewport; modal covers material content and account header is outside frame.",
+    "sha256": "2d0932ab58d3306cfd981cfe8f24bd1f622f8962499fab81a9ad43cb8029bcec",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 84,
+    "name": "waqarzaka-20261004-84-footer-legal-risk-liability.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:44:18.687Z",
+    "description": "Legal modal risk, jurisdiction and liability sections",
+    "bytes": 137551,
+    "caveat": "Actual visible viewport; modal covers material content and account header is outside frame.",
+    "sha256": "fee71f8bc6d8ff9cc994b25c5f944c8d059799e86e17cf098b9ec202527ed619",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 85,
+    "name": "waqarzaka-20261004-85-footer-legal-refund-agreement.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:44:19.313Z",
+    "description": "Legal modal blanket refund/chargeback prohibition and binding-agreement claims; no acceptance action",
+    "bytes": 126982,
+    "caveat": "Actual visible viewport; modal covers material content and account header is outside frame.",
+    "sha256": "30ef6a552f291ee54d2487c01748388fcb8b98240bb33516589f867a63550ef5",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 86,
+    "name": "waqarzaka-20261004-86-footer-legal-general-disclaimer.jpg",
+    "url": "https://waqarzaka.net/#services",
+    "capturedUTC": "2026-10-03T21:44:20.011Z",
+    "description": "Legal modal general financial-advice, risk and responsibility sections",
+    "bytes": 147550,
+    "caveat": "Actual visible viewport; modal covers material content and account header is outside frame.",
+    "sha256": "850c72921f9bc3e4654b9768f3d92800ea7c4fad88eed95456b99be4567ec0a6",
+    "dimensions": [
+      1363,
+      936
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 87,
+    "name": "waqarzaka-20261004-87-mobile-app-information.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T21:45:28.386Z",
+    "description": "Mobile app modal: iOS/Android links/QRs, same-account sign-in, trades/updates/education/live-content claims",
+    "bytes": 84879,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "0bb876b6356e2739b01ea762782a90cde509073b2e159d385c0836c4bcb6fab2",
+    "dimensions": [
+      950,
+      723
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 88,
+    "name": "waqarzaka-20261004-88-mobile-app-tutorial.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T21:45:45.324Z",
+    "description": "Mobile tutorial embedded Dacast player; displayed duration 04:31",
+    "bytes": 64499,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "c4f84c8f0eef0100928eff1aabc7c4eaf1ebc0e69896838d4ba609cd9708df2a",
+    "dimensions": [
+      950,
+      676
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 89,
+    "name": "waqarzaka-20261004-89-help-chat-availability.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T21:46:18.562Z",
+    "description": "Intercom message entry and online-later availability; owner greeting and account header excluded",
+    "bytes": 9814,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "b482bef99835485e56ec97c91cf7a8f1f9f15838e59662cf0fd593e2eeddd344",
+    "dimensions": [
+      400,
+      472
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 90,
+    "name": "waqarzaka-20261004-90-help-team-chat.jpg",
+    "url": "https://waqarzaka.net/",
+    "capturedUTC": "2026-10-03T21:47:09.765Z",
+    "description": "Second chat launcher claims Team Waqar Zaka help 24/7; blank question input, no message sent",
+    "bytes": 15145,
+    "caveat": "Viewport clipped below account header to exclude owner identity.",
+    "sha256": "04e6f85e834da8a8d8aa6cbdbb1e4a705449c60ce5cef37e5a08c602ed4e0774",
+    "dimensions": [
+      399,
+      408
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 91,
+    "name": "waqarzaka-20261004-91-onboarding-video.jpg",
+    "url": "https://waqarzaka.net/checkout",
+    "capturedUTC": "2026-10-03T21:47:45.550Z",
+    "description": "Onboarding native video player, duration about 14:34; rendered older site design/tutorial copy",
+    "bytes": 56646,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "cd448127c4b722248dd94d976ad5bb9799fb73ad0b2fe8ecc216b9f61d1e3621",
+    "dimensions": [
+      800,
+      493
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 92,
+    "name": "waqarzaka-20261004-92-profile-action-controls.jpg",
+    "url": "https://waqarzaka.net/profile",
+    "capturedUTC": "2026-10-03T21:48:00.298Z",
+    "description": "Profile Edit Profile and Update Password controls; owner fields omitted and controls left untouched",
+    "bytes": 7523,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "1ed58255035b1c3b4d54427c15bbb32d296dab19034076f12c829947dd0eb36a",
+    "dimensions": [
+      395,
+      132
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 93,
+    "name": "waqarzaka-20261004-93-market-overview-complete.jpg",
+    "url": "https://waqarzaka.net/market-overview",
+    "capturedUTC": "2026-10-03T21:49:38.193Z",
+    "description": "Full populated Market Overview: crypto prices/sentiment/cap/ETF/gas/dominance; displayed data not independently validated",
+    "bytes": 94485,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "7395d1755b4aa46e595ef9bed3f78cb6a6465b5ea6153746525ae8d9393b7f6b",
+    "dimensions": [
+      1357,
+      1378
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 94,
+    "name": "waqarzaka-20261004-94-stock-trade-image-carousel.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:50:16.777Z",
+    "description": "Alternative analyst-image carousel state associated with the published stock trade; publisher evidence not independently verified",
+    "bytes": 36886,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "75cce3122d1d71d4a3771f3794666e214aae0fb95f5d92e927cec85231cb9020",
+    "dimensions": [
+      454,
+      774
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  },
+  {
+    "seq": 95,
+    "name": "waqarzaka-20261004-95-stock-trade-image-carousel-last.jpg",
+    "url": "https://waqarzaka.net/dashboard",
+    "capturedUTC": "2026-10-03T21:52:04.101Z",
+    "description": "Third unique image in analyst trade carousel, settled replacement; displayed broker screenshots and TP Hit claim are unverified",
+    "bytes": 52264,
+    "caveat": "Document-coordinate crop of material UI; excludes account identity.",
+    "sha256": "86bf6f18e45395b058c4069eff5171901f5d9bb5404aca4551fe39aa82f1ba08",
+    "dimensions": [
+      454,
+      774
+    ],
+    "state": "Authenticated paid account; entitlement requirement of non-dashboard UI not established"
+  }
+]

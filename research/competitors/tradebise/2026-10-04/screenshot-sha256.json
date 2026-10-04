@@ -1,0 +1,440 @@
+[
+  {
+    "seq": 1,
+    "name": "tradebise-20261004-001-authenticated-home-prompts.jpg",
+    "sha256": "9633e000903219834c24d70549962601ac47661cc7d8cb0d0f66f166bd13944f",
+    "bytes": 285311
+  },
+  {
+    "seq": 2,
+    "name": "tradebise-20261004-002-home-clean.jpg",
+    "sha256": "660ff6d9446bbafc86b80864a471dbfed8dca0ff86af489a7e3bc64ee89b1604",
+    "bytes": 286179
+  },
+  {
+    "seq": 3,
+    "name": "tradebise-20261004-003-account-menu.jpg",
+    "sha256": "e7301821aa4e3287ad93824259c118bd90f4c4df68be877a77e7953fc68dbd48",
+    "bytes": 290608
+  },
+  {
+    "seq": 4,
+    "name": "tradebise-20261004-004-settings-account.jpg",
+    "sha256": "e44ec4060978c5367dd160de1c824a4c8878a8b766ded624660cda1d8aab3715",
+    "bytes": 165699
+  },
+  {
+    "seq": 5,
+    "name": "tradebise-20261004-005-settings-premium-history.jpg",
+    "sha256": "c905066a60bbc4aff2940e62124a30cc0c13d9328696c036d5926a7367c0044b",
+    "bytes": 175123
+  },
+  {
+    "seq": 7,
+    "name": "tradebise-20261004-007-settings-my-stats-loaded.jpg",
+    "sha256": "3ebc170ca9883d307f684e718105f4e19e097e1e97d2d00703a2a57af8b4f19b",
+    "bytes": 180302
+  },
+  {
+    "seq": 8,
+    "name": "tradebise-20261004-008-settings-security-overview.jpg",
+    "sha256": "b6b1f13a94abd799c92d0c0a8f46ba48ebaa38e2479fd9ad4cd56702f03d7dfc",
+    "bytes": 149864
+  },
+  {
+    "seq": 9,
+    "name": "tradebise-20261004-009-settings-account-loaded.jpg",
+    "sha256": "0f8971ed17fc2229ca28343f5bcffd5e16c2047afe6fb76621c8ea0b48b3187d",
+    "bytes": 165693
+  },
+  {
+    "seq": 10,
+    "name": "tradebise-20261004-010-plan-standard.jpg",
+    "sha256": "9d9abbb943fb68f3ebdb7f8979d035dca1ef473e047a5a094041fb04f0b5f752",
+    "bytes": 196568
+  },
+  {
+    "seq": 11,
+    "name": "tradebise-20261004-011-plan-alerts.jpg",
+    "sha256": "e74deffd10100f28fc07869185bd296bb4a3886538924423faf16f2bf55d61c6",
+    "bytes": 196237
+  },
+  {
+    "seq": 14,
+    "name": "tradebise-20261004-014-alert-market-upgrade-gate-loaded.jpg",
+    "sha256": "090fdffa0799e147980d1fdb1456e34d09bc0da63f42764bdaa0f9097f036f78",
+    "bytes": 285417
+  },
+  {
+    "seq": 15,
+    "name": "tradebise-20261004-015-btc-market-loaded.jpg",
+    "sha256": "1945df0e3bc851d2bda470c480792f5b60c2125b43f59f6cdcb60adc27aa3919",
+    "bytes": 256532
+  },
+  {
+    "seq": 16,
+    "name": "tradebise-20261004-016-market-category-dropdown.jpg",
+    "sha256": "2cb836d6e38a5c596aba78afc5c5cd76b96acd7716f3f6f6a18596dab4d9de80",
+    "bytes": 255358
+  },
+  {
+    "seq": 17,
+    "name": "tradebise-20261004-017-category-us-stocks.jpg",
+    "sha256": "fbb836d786c9ca840f6c949f7d971fcfe9d748c5879a8decab608fa19854bf97",
+    "bytes": 249478
+  },
+  {
+    "seq": 18,
+    "name": "tradebise-20261004-018-category-forex-gold.jpg",
+    "sha256": "c1b7742048cea8006c7046d5f60cbff21be76dd8f55900ab852041681d61f1d6",
+    "bytes": 251892
+  },
+  {
+    "seq": 21,
+    "name": "tradebise-20261004-021-watchlist-btc-loaded.jpg",
+    "sha256": "c112556e430ea2154e3c0737675d6464e710afa58ba48f6bdb055143d6082f02",
+    "bytes": 259574
+  },
+  {
+    "seq": 22,
+    "name": "tradebise-20261004-022-btc-15m-quota-state.jpg",
+    "sha256": "8bda7902f4f029682933bc48bba57c9393c6f6df34bdcdba8772b90701428bcf",
+    "bytes": 246159
+  },
+  {
+    "seq": 23,
+    "name": "tradebise-20261004-023-btc-15m-settled.jpg",
+    "sha256": "5c253979ca0e6c3deae225eab1eb59a4eb8a6385b93ec1dd2ba4d86f98a784e6",
+    "bytes": 227933
+  },
+  {
+    "seq": 24,
+    "name": "tradebise-20261004-024-btc-4h.jpg",
+    "sha256": "c32d7b0a2104e9d7d2f0c3cd9af7ecd627b63d9d0575fda3e94038528b2da1d6",
+    "bytes": 228299
+  },
+  {
+    "seq": 25,
+    "name": "tradebise-20261004-025-btc-1d.jpg",
+    "sha256": "5b192032d36c9343b676624d49283e7cc5cf33e0dfb29a875a00547a243740dc",
+    "bytes": 252297
+  },
+  {
+    "seq": 26,
+    "name": "tradebise-20261004-026-stop-loss-history.jpg",
+    "sha256": "f0e07b6cfdc4df509f9b841cee0e05e78ea26c682357cee7b4844fea8efc70d5",
+    "bytes": 156907
+  },
+  {
+    "seq": 27,
+    "name": "tradebise-20261004-027-target-hit-history.jpg",
+    "sha256": "1a0d85c2a0240ec749e1d4090bfe2d9eb368b31ba50ef18b084367d3147d4847",
+    "bytes": 158733
+  },
+  {
+    "seq": 28,
+    "name": "tradebise-20261004-028-signals-generated-drilldown.jpg",
+    "sha256": "4ddc8f406247e60c2a1c61e76cb58130e43318383b61af0262eb68f6dee3b70a",
+    "bytes": 158601
+  },
+  {
+    "seq": 29,
+    "name": "tradebise-20261004-029-search-xau-suggestions.jpg",
+    "sha256": "53c492a1420e21b96cef3a1d7ab0df97dc050fffafc79922c57b2f81edde3445",
+    "bytes": 254713
+  },
+  {
+    "seq": 30,
+    "name": "tradebise-20261004-030-ethusdt-market.jpg",
+    "sha256": "4502d2531870a83a7c64b98c80cbd481a6e38de634bf2fb53602816ac1c7941d",
+    "bytes": 178034
+  },
+  {
+    "seq": 31,
+    "name": "tradebise-20261004-031-solusdt-market.jpg",
+    "sha256": "083d0a14ccacb48c5bf547dd0093b089b33983186cf44b546c06e52dcacf3a86",
+    "bytes": 177698
+  },
+  {
+    "seq": 32,
+    "name": "tradebise-20261004-032-xauusd-market.jpg",
+    "sha256": "496342d1d9b2ede4af0cfafd622bcce0adc85319a95c5c374db00e8c0c97a1f1",
+    "bytes": 121262
+  },
+  {
+    "seq": 39,
+    "name": "tradebise-20261004-039-about.jpg",
+    "sha256": "d7ef0dc587ce138fefbce9be4626867d3e0eeb9fc41ac8402f445d09e57312fc",
+    "bytes": 553662
+  },
+  {
+    "seq": 40,
+    "name": "tradebise-20261004-040-advertise.jpg",
+    "sha256": "c7e7ee01ade02f7921c3fb948a57c5699e04504e456870879d07f60a5b2ee365",
+    "bytes": 326491
+  },
+  {
+    "seq": 41,
+    "name": "tradebise-20261004-041-support.jpg",
+    "sha256": "a5432fe86f7875beeafcdfcc683df3d77fa9a89b1c2a221d445d258f64fc7eda",
+    "bytes": 436683
+  },
+  {
+    "seq": 45,
+    "name": "tradebise-20261004-045-learn.jpg",
+    "sha256": "81886ab3ddf68b81377cdd19bc09f5b6a93314b6ed8f0fe5692a37d78db1e1ce",
+    "bytes": 335663
+  },
+  {
+    "seq": 46,
+    "name": "tradebise-20261004-046-learn-psychology-of-trading.jpg",
+    "sha256": "46280dd04e1efbefe5899437f080d8493b86dbceadf3d2a4273015b44db3457d",
+    "bytes": 877382
+  },
+  {
+    "seq": 47,
+    "name": "tradebise-20261004-047-learn-right-analysis-still-losing.jpg",
+    "sha256": "ee797ce13f13a16d0011724fd5e5e10e6880143fcc8ac8621b8d9d8642c66cbc",
+    "bytes": 965944
+  },
+  {
+    "seq": 48,
+    "name": "tradebise-20261004-048-learn-beyond-charts-ai-market-intelligence.jpg",
+    "sha256": "027bb35b4f9b52d3f4abca8c6dbd7a6cf0d35c0bd9eee67cf35c66698fea9d9e",
+    "bytes": 1200525
+  },
+  {
+    "seq": 51,
+    "name": "tradebise-20261004-051-learn-what-makes-a-good-trading-signal.jpg",
+    "sha256": "bb06604c067bbe1bd6b06ef89fd7375f8877fffe1723343a45a4e35b8d752a4e",
+    "bytes": 1190809
+  },
+  {
+    "seq": 52,
+    "name": "tradebise-20261004-052-learn-multi-timeframe-analysis.jpg",
+    "sha256": "1ee57848c5d0ade39fe76fa259c926139a9c898cc9d6c5aec7ddf153f23bea46",
+    "bytes": 1143251
+  },
+  {
+    "seq": 53,
+    "name": "tradebise-20261004-053-learn-how-ai-predicts-market-direction.jpg",
+    "sha256": "9b0dde4da61bb0c02a107873f8f4fe83fd00e3727f6172154e22bd39098008bb",
+    "bytes": 1131946
+  },
+  {
+    "seq": 56,
+    "name": "tradebise-20261004-056-learn-position-sizing.jpg",
+    "sha256": "a1728a0ba39b9046ed310423406289fa5e24f7796d37a8fdd0692b910dd5a6ab",
+    "bytes": 467278
+  },
+  {
+    "seq": 57,
+    "name": "tradebise-20261004-057-learn-rsi-divergence-explained.jpg",
+    "sha256": "58b8a2b9b84673f6289d53e01b5bc9253bb476f86ed6c0a2cd8ee2afeae28276",
+    "bytes": 544652
+  },
+  {
+    "seq": 58,
+    "name": "tradebise-20261004-058-learn-support-and-resistance.jpg",
+    "sha256": "ff17a9d8eece56156f8cf454cdb4f9407b6a7a23c69388ba4e82042405cac392",
+    "bytes": 539488
+  },
+  {
+    "seq": 59,
+    "name": "tradebise-20261004-059-learn-why-most-traders-lose-money.jpg",
+    "sha256": "4403410502fe5c5f860430801a0b8c56dc9cf3f4c8c695e5f338b993dc775b04",
+    "bytes": 635680
+  },
+  {
+    "seq": 61,
+    "name": "tradebise-20261004-061-coin-promotion.jpg",
+    "sha256": "d62c4dc4cb7ceb5d56e6d27a35a119490b5ed3cc805166baccd115276e6474c0",
+    "bytes": 257410
+  },
+  {
+    "seq": 62,
+    "name": "tradebise-20261004-062-home-navigation-persistence.jpg",
+    "sha256": "5cba9601a154103aa03fec21cad3aad9ab5b0c8cfecca6f472a51b8f365464f8",
+    "bytes": 285098
+  },
+  {
+    "seq": 63,
+    "name": "tradebise-20261004-063-xagusd-settled-replacement.jpg",
+    "sha256": "8ec6fb8e0465b21e94877686696036221b96b2c9f093a2bdbbabb8c7cfd117e0",
+    "bytes": 180292
+  },
+  {
+    "seq": 64,
+    "name": "tradebise-20261004-064-eurusd-settled-replacement.jpg",
+    "sha256": "83d573959806d2f70da051ceb14b16647c8e25bff5f214b97bd97bd0f5e60ec1",
+    "bytes": 179741
+  },
+  {
+    "seq": 65,
+    "name": "tradebise-20261004-065-gbpusd-settled-replacement.jpg",
+    "sha256": "92d3562089f1c88be6250ec73c8cc593fc5c9b877ef45441a2542bd40468a969",
+    "bytes": 180327
+  },
+  {
+    "seq": 66,
+    "name": "tradebise-20261004-066-aapl-settled-replacement.jpg",
+    "sha256": "f20f0b9cb84f242e15c3794204b777340ea3c3821f9f7c843dbbe6a8c15eb963",
+    "bytes": 177633
+  },
+  {
+    "seq": 67,
+    "name": "tradebise-20261004-067-tsla-settled-replacement.jpg",
+    "sha256": "92fe14682e3b00933e829e7124a2071035836a5d914b2dcf973d8c32e19e5a99",
+    "bytes": 179198
+  },
+  {
+    "seq": 68,
+    "name": "tradebise-20261004-068-us30-settled-replacement.jpg",
+    "sha256": "990996973422e9b5999dd556dbd5d5833c09244ea3e199b74065023d254de56f",
+    "bytes": 179037
+  },
+  {
+    "seq": 69,
+    "name": "tradebise-20261004-069-privacy-replacement.jpg",
+    "sha256": "ddedfad5282d66798f88de5d8c8378b447a00475ea46b0fe7871bc5053e2bcf3",
+    "bytes": 781749
+  },
+  {
+    "seq": 70,
+    "name": "tradebise-20261004-070-terms-replacement.jpg",
+    "sha256": "e81168ff973c6e93f9cb0684406df217ff91e09310322c1476e7713b382c7f86",
+    "bytes": 808812
+  },
+  {
+    "seq": 71,
+    "name": "tradebise-20261004-071-risk-replacement.jpg",
+    "sha256": "66a1c0424ea91ab09a8a06353afefd14d21c8785a5852476b2b554c24a0c9647",
+    "bytes": 532969
+  },
+  {
+    "seq": 72,
+    "name": "tradebise-20261004-072-learn-structure-replacement.jpg",
+    "sha256": "7ce25d4b1a25b44ae49eb8b6070c062143bce6e6adbce8e7606c2c86791ce599",
+    "bytes": 1104224
+  },
+  {
+    "seq": 73,
+    "name": "tradebise-20261004-073-learn-false-breakouts-replacement.jpg",
+    "sha256": "045edee295b69d74c658d90558c1f0acbf1ac45718e9c70c41d8c02c1a683be8",
+    "bytes": 1153933
+  },
+  {
+    "seq": 74,
+    "name": "tradebise-20261004-074-learn-ai-explained-replacement.jpg",
+    "sha256": "2c2c1a1e5921d15842546dcbe47992406f3f8e08f99935b4f38476c6640cfff7",
+    "bytes": 1183447
+  },
+  {
+    "seq": 75,
+    "name": "tradebise-20261004-075-learn-stop-loss-replacement.jpg",
+    "sha256": "c95e049a07c10a75357313aef500455a121bfe899ef7f49c0b39a0a950929941",
+    "bytes": 565625
+  },
+  {
+    "seq": 76,
+    "name": "tradebise-20261004-076-learn-signal-reading-replacement.jpg",
+    "sha256": "3b632598ce1099ed6a15e37bdde2cee75ffb523269337e20cdb377452bd4f225",
+    "bytes": 547043
+  },
+  {
+    "seq": 77,
+    "name": "tradebise-20261004-077-top-gainers.jpg",
+    "sha256": "9c52d59828dfebc5e9c13c0a29ebf44c2c48f8503a30ad029d7d0edb728fa3ae",
+    "bytes": 285390
+  },
+  {
+    "seq": 78,
+    "name": "tradebise-20261004-078-top-losers.jpg",
+    "sha256": "9a5a94855741a1e18ed900b0c6b20c316367b96c34db344af30d7bf4fbf1ec39",
+    "bytes": 283157
+  },
+  {
+    "seq": 79,
+    "name": "tradebise-20261004-079-search-xauusd-enter-result.jpg",
+    "sha256": "3dad1c8a9430dbe30eb964bc05bda35d6b362e41a85c37896add1fff439ed5a8",
+    "bytes": 287350
+  },
+  {
+    "seq": 80,
+    "name": "tradebise-20261004-080-watchlist-menu-empty.jpg",
+    "sha256": "a96208cc4348790ccdea86ea4badb45339f8b4cf0cc3cb9e093d6a4bca5d65d8",
+    "bytes": 285203
+  },
+  {
+    "seq": 81,
+    "name": "tradebise-20261004-081-plan-bot-loaded-replacement.jpg",
+    "sha256": "2eb943db9621fcdeb66a7b460c0a3b8db6470097f0e61c56597e560a8ac40587",
+    "bytes": 200205
+  },
+  {
+    "seq": 82,
+    "name": "tradebise-20261004-082-telegram-upgrade-gate.jpg",
+    "sha256": "8c317025b9807a0a74978ff976c2d2b82e291c2986f4f2cd452c7eb8517f93af",
+    "bytes": 198262
+  },
+  {
+    "seq": 83,
+    "name": "tradebise-20261004-083-payment-history-loaded.jpg",
+    "sha256": "8eaaaa477b75412d1b95eef10ad306482a0c02f3a09b72ec5e36a978e42370c3",
+    "bytes": 176096
+  },
+  {
+    "seq": 84,
+    "name": "tradebise-20261004-084-security-controls-redacted.jpg",
+    "sha256": "36e921210135d502e71e8a2f2132fca6e21b3503c5d22fa0ee8cf5a9ace0298f",
+    "bytes": 188827
+  },
+  {
+    "seq": 85,
+    "name": "tradebise-20261004-085-security-twofactor-overview.jpg",
+    "sha256": "54590383fff4d9d63bab3a2b57cd91f44632abe8fbdbcdaedcdded39f8afb491",
+    "bytes": 193503
+  },
+  {
+    "seq": 86,
+    "name": "tradebise-20261004-086-account-alert-settings-redacted.jpg",
+    "sha256": "d3fd72a0b955e7f4917dc218b20983d86340a93b59c9a6c06e1a6b9ae9d5a491",
+    "bytes": 179102
+  },
+  {
+    "seq": 87,
+    "name": "tradebise-20261004-087-indian-category-loaded-replacement.jpg",
+    "sha256": "8b07fa7cb35dad75b30c29c9a42005357c664e31d9d8d52be7e939e938516b2b",
+    "bytes": 284543
+  },
+  {
+    "seq": 88,
+    "name": "tradebise-20261004-088-hero-search-btc.jpg",
+    "sha256": "2707bb59fee8c86fcd25d0d16c704cee2ee9968fa27d1fde99104a2e6a8ef31a",
+    "bytes": 260591
+  },
+  {
+    "seq": 89,
+    "name": "tradebise-20261004-089-hero-search-enter-result.jpg",
+    "sha256": "a28c35b71c7b3a55f33b00c550157c96b6ab8c5d22271913a35123fb7c6483e2",
+    "bytes": 261211
+  },
+  {
+    "seq": 90,
+    "name": "tradebise-20261004-090-choose-alert-markets-settled.jpg",
+    "sha256": "7527248ad7037de481c967567d57b7705fc0bb97d48d8b3931f47f7e8f8172a1",
+    "bytes": 198219
+  },
+  {
+    "seq": 91,
+    "name": "tradebise-20261004-091-btc-search-selected-quota.jpg",
+    "sha256": "9dce7baaac58bf05f1354f5cb6824190021c9a186fcfef51e91b0662f8d39381",
+    "bytes": 190078
+  },
+  {
+    "seq": 92,
+    "name": "tradebise-20261004-092-xauusd-settled-quota-replacement.jpg",
+    "sha256": "53b5c08e1539d1a2881484eb63ca08d206810b1bc33934c0e0c1bbc30ae791af",
+    "bytes": 179460
+  }
+]

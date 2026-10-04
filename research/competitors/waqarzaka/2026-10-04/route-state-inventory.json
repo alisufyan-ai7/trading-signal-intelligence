@@ -1,0 +1,913 @@
+{
+  "scope": "All material UI states with recent/old archive examples, per owner scope selection. Not all archive pages or videos.",
+  "date": "2026-10-04 Asia/Karachi (capture UTC 2026-10-03)",
+  "renderedRoutes": [
+    "/",
+    "/login",
+    "/dashboard",
+    "/checkout",
+    "/liquidity-radar",
+    "/subscription/history",
+    "/support",
+    "/support/create-ticket",
+    "/profile",
+    "/market-overview",
+    "/terms-and-conditions",
+    "/privacy-policy"
+  ],
+  "states": [
+    {
+      "id": 1,
+      "name": "Homepage clean",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        22
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 2,
+      "name": "Monthly access modal",
+      "route": "/",
+      "access": "Public offer",
+      "captures": [
+        24
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 3,
+      "name": "Annual subscription closed",
+      "route": "/",
+      "access": "Public offer",
+      "captures": [
+        80
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 4,
+      "name": "Five-exchange referral/community flow",
+      "route": "/",
+      "access": "Public offer; external access gated",
+      "captures": [
+        81,
+        82,
+        83
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 5,
+      "name": "Channels menu",
+      "route": "/",
+      "access": "Navigation observed in authenticated session",
+      "captures": [
+        12
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 6,
+      "name": "Blockchain track",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        70
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 7,
+      "name": "Market data track",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        71
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 8,
+      "name": "Probability and risk track",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        72
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 9,
+      "name": "Stock research track",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        73
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 10,
+      "name": "Instructors accordion",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        29
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 11,
+      "name": "Working hours accordion",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        74
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 12,
+      "name": "Warning accordion",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        30
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 13,
+      "name": "Calculator default",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        22
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 14,
+      "name": "Calculator populated/error/loading",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        75
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 15,
+      "name": "Expanded content risk disclosure",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        76
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 16,
+      "name": "Expanded footer legal policy",
+      "route": "/",
+      "access": "Public",
+      "captures": [
+        77,
+        78,
+        79,
+        84,
+        85,
+        86
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 17,
+      "name": "Mobile app information",
+      "route": "/",
+      "access": "Public information",
+      "captures": [
+        87
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 18,
+      "name": "Mobile app tutorial",
+      "route": "/",
+      "access": "Public information",
+      "captures": [
+        88
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 19,
+      "name": "Intercom help availability",
+      "route": "/",
+      "access": "Help observed in authenticated session",
+      "captures": [
+        89
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 20,
+      "name": "Team help chat",
+      "route": "/",
+      "access": "Help observed in authenticated session",
+      "captures": [
+        90
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 21,
+      "name": "Dashboard pre-refresh paid gate",
+      "route": "/dashboard",
+      "access": "Historical authenticated gate",
+      "captures": [
+        2
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 22,
+      "name": "Crypto page 1",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        32
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 23,
+      "name": "Crypto page 199",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        56
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 24,
+      "name": "Stock/commodities page 1",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        33
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 25,
+      "name": "Stock/commodities page 91",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        57
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 26,
+      "name": "Stock trade image carousel second image",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        94
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 27,
+      "name": "Stock trade image carousel third image",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        95
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 28,
+      "name": "Market updates page 1",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        34
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 29,
+      "name": "Market updates page 600",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        58
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 30,
+      "name": "Beginner catalog page 1",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        35
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 31,
+      "name": "Beginner catalog page 2",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        43
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 32,
+      "name": "Beginner catalog page 3",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        44
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 33,
+      "name": "Beginner catalog page 4",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        45
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 34,
+      "name": "Beginner catalog page 5",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        46
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 35,
+      "name": "Beginner catalog page 6",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        47
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 36,
+      "name": "Beginner catalog page 7",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        48
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 37,
+      "name": "Beginner catalog page 8",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        49
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 38,
+      "name": "Advance catalog page 1",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        36
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 39,
+      "name": "Advance catalog page 2",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        50
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 40,
+      "name": "Advance catalog page 3",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        51
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 41,
+      "name": "Advance catalog page 4",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        52
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 42,
+      "name": "Advance catalog page 5",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        53
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 43,
+      "name": "Advance catalog page 6",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        54
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 44,
+      "name": "Exclusive education coming soon",
+      "route": "/dashboard",
+      "access": "Paid session; unavailable content",
+      "captures": [
+        37
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 45,
+      "name": "Education video player",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        55
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 46,
+      "name": "Live sessions page 1",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        38
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 47,
+      "name": "Live sessions page 62",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        59
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 48,
+      "name": "Session player",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        40
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 49,
+      "name": "Session chat closed",
+      "route": "/dashboard",
+      "access": "Paid content; interaction unavailable",
+      "captures": [
+        41
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 50,
+      "name": "Live trades page 1",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        39
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 51,
+      "name": "Live trades page 4",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        60
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 52,
+      "name": "Futures page 1",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        31
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 53,
+      "name": "Futures page 41",
+      "route": "/dashboard",
+      "access": "Paid content",
+      "captures": [
+        42
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 54,
+      "name": "Subscription offer before refresh",
+      "route": "/checkout",
+      "access": "Historical authenticated offer",
+      "captures": [
+        3,
+        4,
+        5
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 55,
+      "name": "Already Subscribed",
+      "route": "/checkout",
+      "access": "Current paid entitlement",
+      "captures": [
+        61
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 56,
+      "name": "Payment tutorial",
+      "route": "/checkout",
+      "access": "Offer tutorial; purchase not initiated",
+      "captures": [
+        6
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 57,
+      "name": "Onboarding video",
+      "route": "/checkout",
+      "access": "Paid session",
+      "captures": [
+        91
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 58,
+      "name": "Complete account menu",
+      "route": "/dashboard",
+      "access": "Authenticated navigation",
+      "captures": [
+        62
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 59,
+      "name": "Empty payment history before refresh",
+      "route": "/subscription/history",
+      "access": "Historical pre-refresh state",
+      "captures": [
+        14
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 60,
+      "name": "Paid history amount/type observed",
+      "route": "/subscription/history",
+      "access": "Authenticated paid account",
+      "captures": [
+        63
+      ],
+      "coverage": "partial-redacted",
+      "note": "One $10 Monthly row observed read-only; identifying row deliberately not retained. Screenshot records table headers."
+    },
+    {
+      "id": 61,
+      "name": "Cancellation question/link",
+      "route": "/subscription/history",
+      "access": "Authenticated paid account",
+      "captures": [
+        64
+      ],
+      "coverage": "screenshot",
+      "note": "Link not activated."
+    },
+    {
+      "id": 62,
+      "name": "Verified profile heading",
+      "route": "/profile",
+      "access": "Authenticated account",
+      "captures": [
+        18
+      ],
+      "coverage": "partial-redacted",
+      "note": "Owner profile fields excluded."
+    },
+    {
+      "id": 63,
+      "name": "Profile action controls",
+      "route": "/profile",
+      "access": "Authenticated account",
+      "captures": [
+        92
+      ],
+      "coverage": "screenshot",
+      "note": "Edit profile/password actions not activated."
+    },
+    {
+      "id": 64,
+      "name": "Support ticket list empty",
+      "route": "/support",
+      "access": "Authenticated account",
+      "captures": [
+        15
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 65,
+      "name": "Create support ticket form",
+      "route": "/support/create-ticket",
+      "access": "Authenticated account",
+      "captures": [
+        16
+      ],
+      "coverage": "screenshot",
+      "note": "No submission."
+    },
+    {
+      "id": 66,
+      "name": "Support category options",
+      "route": "/support/create-ticket",
+      "access": "Authenticated account",
+      "captures": [
+        17
+      ],
+      "coverage": "DOM-only",
+      "note": "Native option popup was absent from raster even after normal opening."
+    },
+    {
+      "id": 67,
+      "name": "Market overview",
+      "route": "/market-overview",
+      "access": "Available before and after paid refresh; paid-only not established",
+      "captures": [
+        19,
+        93
+      ],
+      "coverage": "screenshot",
+      "note": "Numerical tiles populated; charts blank in screenshot despite AX ticks."
+    },
+    {
+      "id": 68,
+      "name": "Liquidity Radar primary",
+      "route": "/liquidity-radar",
+      "access": "Available before and after paid refresh; paid-only not established",
+      "captures": [
+        7,
+        65
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 69,
+      "name": "Liquidity Radar six explanations",
+      "route": "/liquidity-radar",
+      "access": "Authenticated session",
+      "captures": [
+        66
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 70,
+      "name": "Liquidity Radar advanced",
+      "route": "/liquidity-radar",
+      "access": "Authenticated session",
+      "captures": [
+        9,
+        67
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 71,
+      "name": "Liquidity Radar order events",
+      "route": "/liquidity-radar",
+      "access": "Authenticated session",
+      "captures": [
+        10,
+        68
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 72,
+      "name": "Liquidity Radar empty alerts",
+      "route": "/liquidity-radar",
+      "access": "Historical authenticated state",
+      "captures": [
+        11
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 73,
+      "name": "Liquidity Radar triggered alerts",
+      "route": "/liquidity-radar",
+      "access": "Authenticated session",
+      "captures": [
+        69
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 74,
+      "name": "Terms",
+      "route": "/terms-and-conditions",
+      "access": "Public legal",
+      "captures": [
+        20
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 75,
+      "name": "Privacy",
+      "route": "/privacy-policy",
+      "access": "Public legal",
+      "captures": [
+        21
+      ],
+      "coverage": "screenshot",
+      "note": ""
+    },
+    {
+      "id": 76,
+      "name": "Login and secure owner authentication",
+      "route": "/login",
+      "access": "Credential-protected document",
+      "captures": [],
+      "coverage": "intentionally-not-retained",
+      "note": "No filled login form, password, OTP or CAPTCHA image retained."
+    },
+    {
+      "id": 77,
+      "name": "Signup CTA redirect",
+      "route": "/signup → /checkout",
+      "access": "Paid account redirect",
+      "captures": [
+        61
+      ],
+      "coverage": "redirect",
+      "note": "CTA requested /signup; paid account reached /checkout. No separate rendered signup form."
+    }
+  ],
+  "summary": {
+    "retainedScreenshots": 95,
+    "reviewedStates": 77,
+    "renderedRoutes": 12,
+    "redirectRequests": 1,
+    "statesWithScreenshotReferences": 76,
+    "DOMOnlyStates": 1,
+    "credentialStatesNotRetained": 1
+  },
+  "unsampledArchives": {
+    "Crypto": "2–198 of 199",
+    "StockAndCommodities": "2–90 of 91",
+    "MarketUpdates": "2–599 of 600",
+    "LiveSessions": "2–61 of 62",
+    "LiveTrades": "2–3 of 4",
+    "Futures": "2–40 of 41"
+  },
+  "discoveredNotAudited": [
+    "/forget-password blank reset form",
+    "External exchange/broker referral destinations beyond displayed links",
+    "Education spreadsheet asset contents",
+    "External course tools",
+    "Native iOS/Android apps"
+  ],
+  "boundaries": [
+    "Annual closed",
+    "Exclusive education coming soon",
+    "Exchange signup/deposit/bot verification required beyond referral offer",
+    "Account edit/password, cancellation, payment retry/details not activated",
+    "Closed session chat",
+    "Future live broadcasts not sampled",
+    "Market charts blank; advanced liquidation map/volume profile loading; calculator failed/loading",
+    "No OS notification permission or external alert-delivery test"
+  ],
+  "navigationReconciliation": "Header Channels, Services, Market, Liquidity Radar, Subscription, Dashboard and Mobile App reopened; account Payment History, Support, Profile and Logout reconciled; footer and expanded legal/referral/help menus reviewed. No additional sidebar/internal material route found; /forget-password remains an explicit discovery-only gap. Trade Summary appeared in historical unpaid preview, absent from populated paid navigation; no separate route discovered."
+}

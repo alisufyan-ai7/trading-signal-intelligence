@@ -1,0 +1,1102 @@
+{
+  "date": "2026-10-04 UTC (current authenticated capture pass); public source review retained from earlier pass",
+  "status": "Accessible desktop Free-account pass complete; paid delivery/execution, consequential actions, mobile/native apps and independent performance validation excluded or gated.",
+  "counts": {
+    "publicSourceRoutes": 34,
+    "renderedPublicRoutes": 34,
+    "renderedAuthenticatedRoutes": 5,
+    "renderedPaths": 39,
+    "reviewedRouteStateGroups": 64,
+    "durableScreenshots": 73,
+    "attemptedScreenshotSequences": 92,
+    "missingScreenshotFiles": 19
+  },
+  "countMethod": "39 path-level groups plus 25 material interaction/variant groups. Repeated, loading and replacement captures do not increment states. Gated symbol pages count as rendered routes, not completed signal output. URL/body mismatch captures are assigned by visible state.",
+  "routes": [
+    {
+      "path": "/",
+      "url": "https://tradebise.com/",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-001-authenticated-home-prompts.jpg",
+        "tradebise-20261004-002-home-clean.jpg",
+        "tradebise-20261004-003-account-menu.jpg",
+        "tradebise-20261004-087-indian-category-loaded-replacement.jpg",
+        "tradebise-20261004-088-hero-search-btc.jpg",
+        "tradebise-20261004-089-hero-search-enter-result.jpg"
+      ]
+    },
+    {
+      "path": "/about",
+      "url": "https://tradebise.com/about",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-039-about.jpg"
+      ]
+    },
+    {
+      "path": "/advertise",
+      "url": "https://tradebise.com/advertise",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-040-advertise.jpg"
+      ]
+    },
+    {
+      "path": "/learn",
+      "url": "https://tradebise.com/learn",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-045-learn.jpg"
+      ]
+    },
+    {
+      "path": "/learn/ai-trading-explained",
+      "url": "https://tradebise.com/learn/ai-trading-explained",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-074-learn-ai-explained-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/learn/beyond-charts-ai-market-intelligence",
+      "url": "https://tradebise.com/learn/beyond-charts-ai-market-intelligence",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-048-learn-beyond-charts-ai-market-intelligence.jpg"
+      ]
+    },
+    {
+      "path": "/learn/false-breakouts",
+      "url": "https://tradebise.com/learn/false-breakouts",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-073-learn-false-breakouts-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/learn/how-ai-predicts-market-direction",
+      "url": "https://tradebise.com/learn/how-ai-predicts-market-direction",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-053-learn-how-ai-predicts-market-direction.jpg"
+      ]
+    },
+    {
+      "path": "/learn/how-to-read-a-tradebise-signal",
+      "url": "https://tradebise.com/learn/how-to-read-a-tradebise-signal",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-076-learn-signal-reading-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/learn/how-to-set-a-stop-loss",
+      "url": "https://tradebise.com/learn/how-to-set-a-stop-loss",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-075-learn-stop-loss-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/learn/multi-timeframe-analysis",
+      "url": "https://tradebise.com/learn/multi-timeframe-analysis",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-052-learn-multi-timeframe-analysis.jpg"
+      ]
+    },
+    {
+      "path": "/learn/position-sizing",
+      "url": "https://tradebise.com/learn/position-sizing",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-056-learn-position-sizing.jpg"
+      ]
+    },
+    {
+      "path": "/learn/psychology-of-trading",
+      "url": "https://tradebise.com/learn/psychology-of-trading",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-046-learn-psychology-of-trading.jpg"
+      ]
+    },
+    {
+      "path": "/learn/reading-market-structure",
+      "url": "https://tradebise.com/learn/reading-market-structure",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-072-learn-structure-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/learn/right-analysis-still-losing",
+      "url": "https://tradebise.com/learn/right-analysis-still-losing",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-047-learn-right-analysis-still-losing.jpg"
+      ]
+    },
+    {
+      "path": "/learn/rsi-divergence-explained",
+      "url": "https://tradebise.com/learn/rsi-divergence-explained",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-057-learn-rsi-divergence-explained.jpg"
+      ]
+    },
+    {
+      "path": "/learn/support-and-resistance",
+      "url": "https://tradebise.com/learn/support-and-resistance",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-058-learn-support-and-resistance.jpg"
+      ]
+    },
+    {
+      "path": "/learn/what-makes-a-good-trading-signal",
+      "url": "https://tradebise.com/learn/what-makes-a-good-trading-signal",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-051-learn-what-makes-a-good-trading-signal.jpg"
+      ]
+    },
+    {
+      "path": "/learn/why-most-traders-lose-money",
+      "url": "https://tradebise.com/learn/why-most-traders-lose-money",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-059-learn-why-most-traders-lose-money.jpg"
+      ]
+    },
+    {
+      "path": "/privacy",
+      "url": "https://tradebise.com/privacy",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-069-privacy-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/promotion",
+      "url": "https://tradebise.com/promotion",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-061-coin-promotion.jpg"
+      ]
+    },
+    {
+      "path": "/risk-disclaimer",
+      "url": "https://tradebise.com/risk-disclaimer",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-071-risk-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/signals/aapl",
+      "url": "https://tradebise.com/signals/aapl",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-066-aapl-settled-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/signals/btcusdt",
+      "url": "https://tradebise.com/signals/btcusdt",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-015-btc-market-loaded.jpg",
+        "tradebise-20261004-016-market-category-dropdown.jpg",
+        "tradebise-20261004-017-category-us-stocks.jpg",
+        "tradebise-20261004-018-category-forex-gold.jpg",
+        "tradebise-20261004-021-watchlist-btc-loaded.jpg",
+        "tradebise-20261004-022-btc-15m-quota-state.jpg",
+        "tradebise-20261004-023-btc-15m-settled.jpg",
+        "tradebise-20261004-024-btc-4h.jpg",
+        "tradebise-20261004-025-btc-1d.jpg",
+        "tradebise-20261004-026-stop-loss-history.jpg",
+        "tradebise-20261004-027-target-hit-history.jpg",
+        "tradebise-20261004-028-signals-generated-drilldown.jpg",
+        "tradebise-20261004-029-search-xau-suggestions.jpg"
+      ]
+    },
+    {
+      "path": "/signals/ethusdt",
+      "url": "https://tradebise.com/signals/ethusdt",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-030-ethusdt-market.jpg"
+      ]
+    },
+    {
+      "path": "/signals/eurusd",
+      "url": "https://tradebise.com/signals/eurusd",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-064-eurusd-settled-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/signals/gbpusd",
+      "url": "https://tradebise.com/signals/gbpusd",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-065-gbpusd-settled-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/signals/solusdt",
+      "url": "https://tradebise.com/signals/solusdt",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-031-solusdt-market.jpg"
+      ]
+    },
+    {
+      "path": "/signals/tsla",
+      "url": "https://tradebise.com/signals/tsla",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-067-tsla-settled-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/signals/us30",
+      "url": "https://tradebise.com/signals/us30",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-068-us30-settled-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/signals/xagusd",
+      "url": "https://tradebise.com/signals/xagusd",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-063-xagusd-settled-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/signals/xauusd",
+      "url": "https://tradebise.com/signals/xauusd",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-032-xauusd-market.jpg",
+        "tradebise-20261004-092-xauusd-settled-quota-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/support",
+      "url": "https://tradebise.com/support",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-041-support.jpg"
+      ]
+    },
+    {
+      "path": "/terms",
+      "url": "https://tradebise.com/terms",
+      "kind": "public",
+      "status": "rendered and captured; signal output subject to quota/transition limits",
+      "screenshots": [
+        "tradebise-20261004-070-terms-replacement.jpg"
+      ]
+    },
+    {
+      "path": "/settings/account",
+      "url": "https://tradebise.com/settings/account",
+      "kind": "authenticated",
+      "status": "read-only controls/offers reviewed",
+      "screenshots": [
+        "tradebise-20261004-004-settings-account.jpg",
+        "tradebise-20261004-009-settings-account-loaded.jpg",
+        "tradebise-20261004-086-account-alert-settings-redacted.jpg"
+      ]
+    },
+    {
+      "path": "/settings/subscription",
+      "url": "https://tradebise.com/settings/subscription",
+      "kind": "authenticated",
+      "status": "read-only controls/offers reviewed",
+      "screenshots": [
+        "tradebise-20261004-005-settings-premium-history.jpg",
+        "tradebise-20261004-083-payment-history-loaded.jpg"
+      ]
+    },
+    {
+      "path": "/settings/stats",
+      "url": "https://tradebise.com/settings/stats",
+      "kind": "authenticated",
+      "status": "read-only controls/offers reviewed",
+      "screenshots": [
+        "tradebise-20261004-007-settings-my-stats-loaded.jpg"
+      ]
+    },
+    {
+      "path": "/settings/security",
+      "url": "https://tradebise.com/settings/security",
+      "kind": "authenticated",
+      "status": "read-only controls/offers reviewed",
+      "screenshots": [
+        "tradebise-20261004-008-settings-security-overview.jpg",
+        "tradebise-20261004-084-security-controls-redacted.jpg",
+        "tradebise-20261004-085-security-twofactor-overview.jpg"
+      ]
+    },
+    {
+      "path": "/premium",
+      "url": "https://tradebise.com/premium",
+      "kind": "authenticated",
+      "status": "read-only controls/offers reviewed",
+      "screenshots": [
+        "tradebise-20261004-010-plan-standard.jpg",
+        "tradebise-20261004-011-plan-alerts.jpg",
+        "tradebise-20261004-081-plan-bot-loaded-replacement.jpg",
+        "tradebise-20261004-082-telegram-upgrade-gate.jpg",
+        "tradebise-20261004-090-choose-alert-markets-settled.jpg"
+      ]
+    }
+  ],
+  "reviewedStates": [
+    {
+      "id": "route-01",
+      "name": "/",
+      "captureSequences": [
+        2
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-02",
+      "name": "/about",
+      "captureSequences": [
+        39
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-03",
+      "name": "/advertise",
+      "captureSequences": [
+        40
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-04",
+      "name": "/learn",
+      "captureSequences": [
+        45
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-05",
+      "name": "/learn/ai-trading-explained",
+      "captureSequences": [
+        74
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-06",
+      "name": "/learn/beyond-charts-ai-market-intelligence",
+      "captureSequences": [
+        48
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-07",
+      "name": "/learn/false-breakouts",
+      "captureSequences": [
+        73
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-08",
+      "name": "/learn/how-ai-predicts-market-direction",
+      "captureSequences": [
+        53
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-09",
+      "name": "/learn/how-to-read-a-tradebise-signal",
+      "captureSequences": [
+        76
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-10",
+      "name": "/learn/how-to-set-a-stop-loss",
+      "captureSequences": [
+        75
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-11",
+      "name": "/learn/multi-timeframe-analysis",
+      "captureSequences": [
+        52
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-12",
+      "name": "/learn/position-sizing",
+      "captureSequences": [
+        56
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-13",
+      "name": "/learn/psychology-of-trading",
+      "captureSequences": [
+        46
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-14",
+      "name": "/learn/reading-market-structure",
+      "captureSequences": [
+        72
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-15",
+      "name": "/learn/right-analysis-still-losing",
+      "captureSequences": [
+        47
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-16",
+      "name": "/learn/rsi-divergence-explained",
+      "captureSequences": [
+        57
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-17",
+      "name": "/learn/support-and-resistance",
+      "captureSequences": [
+        58
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-18",
+      "name": "/learn/what-makes-a-good-trading-signal",
+      "captureSequences": [
+        51
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-19",
+      "name": "/learn/why-most-traders-lose-money",
+      "captureSequences": [
+        59
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-20",
+      "name": "/privacy",
+      "captureSequences": [
+        69
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-21",
+      "name": "/promotion",
+      "captureSequences": [
+        61
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-22",
+      "name": "/risk-disclaimer",
+      "captureSequences": [
+        71
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-23",
+      "name": "/signals/aapl",
+      "captureSequences": [
+        66
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-24",
+      "name": "/signals/btcusdt",
+      "captureSequences": [
+        15
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-25",
+      "name": "/signals/ethusdt",
+      "captureSequences": [
+        30
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-26",
+      "name": "/signals/eurusd",
+      "captureSequences": [
+        64
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-27",
+      "name": "/signals/gbpusd",
+      "captureSequences": [
+        65
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-28",
+      "name": "/signals/solusdt",
+      "captureSequences": [
+        31
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-29",
+      "name": "/signals/tsla",
+      "captureSequences": [
+        67
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-30",
+      "name": "/signals/us30",
+      "captureSequences": [
+        68
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-31",
+      "name": "/signals/xagusd",
+      "captureSequences": [
+        63
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-32",
+      "name": "/signals/xauusd",
+      "captureSequences": [
+        92
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-33",
+      "name": "/support",
+      "captureSequences": [
+        41
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-34",
+      "name": "/terms",
+      "captureSequences": [
+        70
+      ],
+      "status": "rendered and captured; signal output subject to quota/transition limits"
+    },
+    {
+      "id": "route-35",
+      "name": "/settings/account",
+      "captureSequences": [
+        86
+      ],
+      "status": "read-only controls/offers reviewed"
+    },
+    {
+      "id": "route-36",
+      "name": "/settings/subscription",
+      "captureSequences": [
+        83
+      ],
+      "status": "read-only controls/offers reviewed"
+    },
+    {
+      "id": "route-37",
+      "name": "/settings/stats",
+      "captureSequences": [
+        7
+      ],
+      "status": "read-only controls/offers reviewed"
+    },
+    {
+      "id": "route-38",
+      "name": "/settings/security",
+      "captureSequences": [
+        84
+      ],
+      "status": "read-only controls/offers reviewed"
+    },
+    {
+      "id": "route-39",
+      "name": "/premium",
+      "captureSequences": [
+        10
+      ],
+      "status": "read-only controls/offers reviewed"
+    },
+    {
+      "id": "interaction-01",
+      "name": "Home optional notification/featured prompts",
+      "captureSequences": [
+        1
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-02",
+      "name": "Account navigation menu",
+      "captureSequences": [
+        3
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-03",
+      "name": "Market-category menu",
+      "captureSequences": [
+        16
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-04",
+      "name": "US stocks category",
+      "captureSequences": [
+        17
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-05",
+      "name": "Forex/gold category",
+      "captureSequences": [
+        18
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-06",
+      "name": "Indian category 58 markets",
+      "captureSequences": [
+        87
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-07",
+      "name": "BTC watchlist added; later removed",
+      "captureSequences": [
+        21
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-08",
+      "name": "BTC 15m WAIT",
+      "captureSequences": [
+        23
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-09",
+      "name": "BTC 4H partial result",
+      "captureSequences": [
+        24
+      ],
+      "status": "4H selected; numeric signal/chart fields still blank or transitioning. No complete 4H output claimed."
+    },
+    {
+      "id": "interaction-10",
+      "name": "BTC 1D open BUY",
+      "captureSequences": [
+        25
+      ],
+      "status": "Raster verifies an open 1D BUY. Later DOM described a closed SELL; that later state is independently visible in 29. Do not merge those records."
+    },
+    {
+      "id": "interaction-11",
+      "name": "BTC 1D closed SL SELL",
+      "captureSequences": [
+        29
+      ],
+      "status": "XAU suggestions visible in raster. Also verifies BTC 1D closed SELL stop-loss record."
+    },
+    {
+      "id": "interaction-12",
+      "name": "Recent stop-loss list",
+      "captureSequences": [
+        26
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-13",
+      "name": "Recent target-hit list",
+      "captureSequences": [
+        27
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-14",
+      "name": "Signals-generated drilldown returns target list",
+      "captureSequences": [
+        28
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-15",
+      "name": "Sidebar XAU suggestions",
+      "captureSequences": [
+        29
+      ],
+      "status": "XAU suggestions visible in raster. Also verifies BTC 1D closed SELL stop-loss record."
+    },
+    {
+      "id": "interaction-16",
+      "name": "Top Gainers",
+      "captureSequences": [
+        77
+      ],
+      "status": "Gainers homepage body while US30 URL/title persisted; ranks are site claims."
+    },
+    {
+      "id": "interaction-17",
+      "name": "Top Losers",
+      "captureSequences": [
+        78
+      ],
+      "status": "Losers homepage body while US30 URL/title persisted; ranks are site claims."
+    },
+    {
+      "id": "interaction-18",
+      "name": "Hero BTC suggestions",
+      "captureSequences": [
+        88
+      ],
+      "status": "BTC suggestions visible in raster despite immediate DOM omission."
+    },
+    {
+      "id": "interaction-19",
+      "name": "Hero Enter retained suggestions",
+      "captureSequences": [
+        89
+      ],
+      "status": "Enter retained BTC suggestions/homepage; no selection verified."
+    },
+    {
+      "id": "interaction-20",
+      "name": "Search selection mismatch at quota",
+      "captureSequences": [
+        91
+      ],
+      "status": "Click on Binance BTCUSDT suggestion ended in US30 quota/chart state. Filename describes intended action; BTC destination was not verified."
+    },
+    {
+      "id": "interaction-21",
+      "name": "Telegram upgrade gate",
+      "captureSequences": [
+        82
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-22",
+      "name": "Choose-alert-markets upgrade gate",
+      "captureSequences": [
+        90
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-23",
+      "name": "Two-factor read-only overview",
+      "captureSequences": [
+        85
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-24",
+      "name": "Alerts plan selected",
+      "captureSequences": [
+        11
+      ],
+      "status": "Observed; no consequential action submitted"
+    },
+    {
+      "id": "interaction-25",
+      "name": "Bot plan selected",
+      "captureSequences": [
+        81
+      ],
+      "status": "Observed; no consequential action submitted"
+    }
+  ],
+  "captureFailures": [
+    {
+      "seq": 6,
+      "name": "tradebise-20261004-006-settings-my-stats.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 7
+    },
+    {
+      "seq": 12,
+      "name": "tradebise-20261004-012-plan-bot.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 81
+    },
+    {
+      "seq": 13,
+      "name": "tradebise-20261004-013-alert-market-gate.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 90
+    },
+    {
+      "seq": 19,
+      "name": "tradebise-20261004-019-category-indian-markets.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 87
+    },
+    {
+      "seq": 20,
+      "name": "tradebise-20261004-020-watchlist-add-btc.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 21
+    },
+    {
+      "seq": 33,
+      "name": "tradebise-20261004-033-xagusd-market.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 63
+    },
+    {
+      "seq": 34,
+      "name": "tradebise-20261004-034-eurusd-market.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 64
+    },
+    {
+      "seq": 35,
+      "name": "tradebise-20261004-035-gbpusd-market.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 65
+    },
+    {
+      "seq": 36,
+      "name": "tradebise-20261004-036-aapl-market.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 66
+    },
+    {
+      "seq": 37,
+      "name": "tradebise-20261004-037-tsla-market.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 67
+    },
+    {
+      "seq": 38,
+      "name": "tradebise-20261004-038-us30-market.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 68
+    },
+    {
+      "seq": 42,
+      "name": "tradebise-20261004-042-privacy.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 69
+    },
+    {
+      "seq": 43,
+      "name": "tradebise-20261004-043-terms.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 70
+    },
+    {
+      "seq": 44,
+      "name": "tradebise-20261004-044-risk-disclaimer.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 71
+    },
+    {
+      "seq": 49,
+      "name": "tradebise-20261004-049-learn-reading-market-structure.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 72
+    },
+    {
+      "seq": 50,
+      "name": "tradebise-20261004-050-learn-false-breakouts.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 73
+    },
+    {
+      "seq": 54,
+      "name": "tradebise-20261004-054-learn-ai-trading-explained.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 74
+    },
+    {
+      "seq": 55,
+      "name": "tradebise-20261004-055-learn-how-to-set-a-stop-loss.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 75
+    },
+    {
+      "seq": 60,
+      "name": "tradebise-20261004-060-learn-how-to-read-a-tradebise-signal.jpg",
+      "result": "Screenshot file not persisted; excluded from retained count",
+      "replacementSeq": 76
+    }
+  ],
+  "additionalReplacements": [
+    {
+      "seq": 5,
+      "replacementSeq": 83,
+      "reason": "Payment-history loading; replaced by 83."
+    },
+    {
+      "seq": 4,
+      "replacementSeq": 86,
+      "reason": "Account pane heavily masked; use 86 for controls."
+    },
+    {
+      "seq": 8,
+      "replacementSeq": 84,
+      "reason": "Security pane heavily masked; use 84/85."
+    },
+    {
+      "seq": 9,
+      "replacementSeq": 86,
+      "reason": "Account pane heavily masked; use 86."
+    },
+    {
+      "seq": 14,
+      "replacementSeq": 90,
+      "reason": "Early alert action retained homepage instead of settled plan; use 90."
+    },
+    {
+      "seq": 22,
+      "replacementSeq": 23,
+      "reason": "Filename refers to quota, but raster is an early 15m transition; use 23 for 15m."
+    },
+    {
+      "seq": 32,
+      "replacementSeq": 92,
+      "reason": "Early XAU chart-loaded shell, no generated levels; settled quota captured in 92."
+    }
+  ],
+  "failedMetadataRequests": [
+    {
+      "url": "https://tradebise.com/robots.txt",
+      "publicRetriever": "Internal Error in earlier pass",
+      "cloud": "net::ERR_BLOCKED_BY_CLIENT; content/status unavailable; ordinary browser/client failure, not evidence of bot detection"
+    },
+    {
+      "url": "https://tradebise.com/sitemap.xml",
+      "publicRetriever": "Internal Error in earlier pass",
+      "cloud": "net::ERR_BLOCKED_BY_CLIENT; content/status unavailable; ordinary browser/client failure, not evidence of bot detection"
+    }
+  ],
+  "authentication": "User successfully signed in to this cloud session before current pass. Earlier failed handoff is historical and no longer a current access blocker.",
+  "navigationReconciliation": {
+    "public": "Header/footer, ten popular markets, Learn catalog/all 15 articles and contextual links, Advertise\u2192promotion reviewed. Earlier 34 contextual links resolved within existing set.",
+    "authenticated": "Account menu and four settings tabs, three plan choices, alert/Telegram gates, watchlist, four categories, four timeframe selectors, three home market lists and search reviewed.",
+    "additionalPublicPaths": 0,
+    "schemaOnlyPaths": [
+      "/login",
+      "/register"
+    ],
+    "limitations": "Search suggestions rendered after immediate DOM observation; Enter did not select; BTC suggestion click ended at US30 quota. Home body sometimes retains prior symbol URL/title. All 5000 claimed markets not individually enumerated."
+  },
+  "remainingGaps": [
+    "Free two-call allowance exhausted; newly generated output for other symbols and a complete settled 4H result unavailable",
+    "Premium last-20 history and complete cost-adjusted outcomes unavailable",
+    "Telegram linking/delivery, browser notification permission/delivery and actual Bot behavior not tested",
+    "Payment creation/wait/confirmation/expiry/issues, account creation/reset, 2FA setup/secrets, logout and prize participation not triggered",
+    "Mobile viewport and native Android/iOS apps not reviewed",
+    "Robots/sitemap contents inaccessible; no search-console/ranking/traffic/conversion data",
+    "Ad tracking/consent, revenue, sponsored-selection independence and support delivery unverified",
+    "Model calibration, algorithm reproducibility, aggregate denominator and version/snapshot inconsistencies unresolved"
+  ],
+  "boundaries": [
+    "No purchases/upgrades/payments",
+    "No exchange/broker connection, deposit, trade or bot activation",
+    "No password/profile/security/preference changes or new agreements",
+    "No marketing/support/advertiser messages, notification subscriptions or prize participation"
+  ],
+  "privacy": "Published JPEGs have opaque account/session redactions; safe metadata excludes body text and redaction coordinates. Raw screenshots/OCR are not committed."
+}

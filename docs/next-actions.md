@@ -100,6 +100,24 @@ runtime, market-universe, broker, pricing, alert or content mutations.
   community access, dense ad placement near signal analysis, paid ranking and
   urgency mechanics.
 
+### Pre-cohort production decision
+
+Do **not** add another major production feature before Issue #9. The production
+beta is sufficiently complete for customer-value testing. Perform only a
+read-only/narrow cohort-readiness check before invitations.
+
+Product benchmark direction:
+- TradingTop is the primary software/product/business comparator for VowSig;
+- WaqarZaka community/live-session/personal-authority mechanics are not current
+  VowSig priorities.
+
+Monetization hypothesis:
+- Free tier may eventually include clearly labelled ads;
+- Paid tier should be ad-free;
+- no ad should be inserted inside or visually confused with a
+  BUY/SELL/NO_TRADE decision, risk levels, reasoning or provenance;
+- ad deployment waits for customer evidence + meaningful traffic.
+
 ### Active growth roadmap — Organic Acquisition & SEO v0.1
 
 **PHASE 8A ACTIVE NOW. PHASE 8B REMAINS GATED ON INITIAL ISSUE #9 REAL-USER EVIDENCE.**

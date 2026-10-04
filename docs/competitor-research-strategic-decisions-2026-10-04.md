@@ -238,6 +238,64 @@ competitor prose or create a mass symbol-page farm.
 
 Phase 8B remains gated on the first aggregate real-user evidence from Issue #9.
 
+## Pre-Issue #9 product decision
+
+No major production feature expansion should be inserted before the first Issue
+#9 cohort.
+
+Reason:
+
+- the current production beta already exposes structured AI decisions, reasons,
+  immutable history/evidence and the customer-discovery form;
+- the next unknown is customer value/comprehension, not another engineering
+  capability;
+- adding alerts, pricing, ads, accounts, broader markets or community features
+  before observing real users would reduce the value of the cohort by solving
+  assumed rather than observed problems.
+
+Before outreach, allow only a narrow cohort-readiness verification:
+
+- current production loads correctly;
+- supported markets and AI evidence are visible;
+- feedback submission still persists;
+- no stale/broken CTA or obvious blocker prevents a first-time user from
+  completing the review.
+
+Do not treat this readiness check as a new product phase or public-surface
+expansion.
+
+### Community/live-session direction
+
+WaqarZaka's community/live-session/personal-authority model is **out of scope**
+for VowSig's current direction.
+
+TradingTop is the more relevant product/business comparator **for VowSig's
+software-led goals**, not an assertion that TradingTop is objectively superior
+in every dimension. WaqarZaka remains useful evidence for membership,
+education, analyst publishing and referral economics, but VowSig should not
+prioritize founder-personality, live-room or community-host mechanics.
+
+### Free-with-ads / paid-ad-free hypothesis
+
+Owner direction:
+
+- a future Free tier may display clearly labelled advertising;
+- a future Paid tier should be ad-free;
+- ads may appear on free terminal/content surfaces if they remain visually and
+  semantically separate from VowSig's trading decision;
+- never insert an ad inside a BUY/SELL/NO_TRADE card or between direction,
+  entry, stop, target, reasoning, lifecycle or provenance fields;
+- ads must not visually resemble a VowSig signal, system alert or market
+  recommendation;
+- start with low ad density and measure whether ads reduce product use,
+  feedback completion or later paid conversion;
+- educational/SEO pages remain the lowest-risk first ad surface once meaningful
+  traffic exists.
+
+This is a monetization architecture decision, not authorization to deploy an ad
+network now. Actual ad implementation remains downstream of initial customer
+evidence and meaningful traffic.
+
 ## Immediate next execution track — Issue #9
 
 While Phase 8A indexing observation runs, the active growth task is the first

@@ -263,9 +263,37 @@ evidence-first positioning, immutable forward record, explicit research-beta
 status and no unsupported performance claims.
 
 The authenticated TradingTop teardown and screenshots are durable in this
-repository. During the 2026-10-02 default-branch reconciliation, no
-Tradebise-named artifact was located; specific Tradebise SEO tactics therefore
-remain evidence-dependent until the exact repository artifact is located.
+repository. The completed 2026-10-04 WaqarZaka + Tradebise research archive is
+also durable in main through PR #20 / merge
+`dd8cb32f7e948d1d9981cd461e1b4a773aa61451`.
+
+Tradebise now has an authenticated Free-account product/business/SEO audit,
+73 redacted screenshots and a reusable SEO-pattern memo. WaqarZaka now has an
+authenticated paid-account audit with 95 screenshots. Competitor observations
+remain comparison evidence, not implementation authorization or proof of
+predictive/commercial superiority.
+
+## Competitor research archive — 2026-10-04
+
+Canonical synthesis:
+
+`docs/competitor-synthesis-waqarzaka-tradebise-tradingtop-vowsig-2026-10-04.md`
+
+Key directional conclusions:
+
+- TradingTop remains the primary AI-signal/product/business-model comparator.
+- Tradebise remains the primary SEO/discoverability comparator.
+- WaqarZaka contributes useful evidence on low-price membership, education/live
+  sessions, manual/discretionary trade publishing, market updates, community
+  and exchange-referral acquisition.
+- VowSig should preserve structured signals, visible NO_TRADE/losses, immutable
+  provenance and scoped evidence rather than copying competitor headline
+  success-rate presentation.
+- Educational intent clusters, contextual product CTAs, alert channels and
+  subscription pricing are TEST items gated by real-user/customer evidence.
+- Mass market expansion, credit complexity, broker execution, deposit-linked
+  community access and dense ad/ranking mechanics remain deferred/rejected for
+  the current product stage.
 
 ## AI-first product pivot — 2026-09-28
 

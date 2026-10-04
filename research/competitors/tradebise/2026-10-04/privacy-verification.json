@@ -1,0 +1,137 @@
+{
+  "method": "Opaque masking of DOM-derived private regions; supplemental OCR; raw images and OCR excluded from GitHub.",
+  "results": [
+    {
+      "name": "tradebise-20261004-011-plan-alerts.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-007-settings-my-stats-loaded.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-004-settings-account.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-001-authenticated-home-prompts.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-002-home-clean.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-010-plan-standard.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-026-stop-loss-history.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-025-btc-1d.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-017-category-us-stocks.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-023-btc-15m-settled.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-014-alert-market-upgrade-gate-loaded.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-015-btc-market-loaded.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-008-settings-security-overview.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-018-category-forex-gold.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-021-watchlist-btc-loaded.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-003-account-menu.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-009-settings-account-loaded.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-016-market-category-dropdown.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-005-settings-premium-history.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-022-btc-15m-quota-state.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-027-target-hit-history.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    },
+    {
+      "name": "tradebise-20261004-024-btc-4h.jpg",
+      "ocr_exit": 0,
+      "private_identifier": false,
+      "credential_pattern": false
+    }
+  ]
+}

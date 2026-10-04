@@ -27,6 +27,7 @@ This section supersedes older status statements below where they describe AI-v1.
 - Canonical rebrand record: `docs/vowsig-public-rebrand-v0.1.md`.
 - Immediate product-growth milestone: **Organic Acquisition & SEO v0.1 Phase 8A / GitHub Issue #8** — technical SEO plus favicon/search branding and practical performance/mobile/accessibility polish are live and naturally verified; Google/Bing properties + sitemap submissions + Day-0 baseline are complete. Remaining: indexing propagation and Day-7/14/28 measurement only.
 - Parallel real-user evidence milestone: **First cohort G4 customer-value evidence v0.1 / GitHub Issue #9**.
+- WaqarZaka/Tradebise competitor research archive: **COMPLETE / MERGED** — PR #20, merge `dd8cb32f7e948d1d9981cd461e1b4a773aa61451`; 95 WaqarZaka paid-account screenshots + 73 Tradebise authenticated Free-account screenshots; four-way synthesis and Tradebise SEO-pattern memo durable in main.
 - Issue #9 gates **Phase 8B evidence-informed SEO/content expansion**, but no longer blocks Phase 8A technical discoverability work.
 
 
@@ -76,7 +77,7 @@ Immediate work is **not** model tuning. The active sequence is:
 5. **DONE / REDEPLOY VERIFIED:** sanitized cloud snapshot durability;
 6. **DONE / PRODUCTION VERIFIED:** VowSig public rebrand v0.1 with governed public-surface correction and natural post-cutover lineage continuity;
 7. **ACTIVE / OBSERVATION ONLY:** Organic Acquisition & SEO v0.1 Phase 8A under GitHub Issue #8 — production technical SEO + favicon/search branding + practical performance/mobile/accessibility + natural continuity PASS; Google/Bing setup + Day-0 baseline complete; next resolve/observe indexing propagation and perform Day-7/14/28 measurement;
-8. **PARALLEL / NEXT REAL-USER EVIDENCE:** First cohort G4 customer-value evidence v0.1 under GitHub Issue #9; its initial aggregate findings gate Issue #8 Phase 8B;
+8. **ACTIVE NEXT / REAL-USER EVIDENCE:** First cohort G4 customer-value evidence v0.1 under GitHub Issue #9; competitor research is complete and now informs what to test, but the initial aggregate real-user findings still gate Issue #8 Phase 8B;
 9. review A1/A2/A3 only at their frozen eligibility thresholds.
 
 Canonical plan: `docs/ai-v1-observability-plan.md`.

@@ -24,18 +24,28 @@ Canonical public domain:
 
 ## Tradebise provenance note
 
-Owner clarification recorded 2026-10-02:
+Owner clarification recorded 2026-10-02 and evidence reconciliation completed
+2026-10-04:
 
 - Issue #8 was originally informed by research on `tradebise.com`;
 - Tradebise is the intended SEO/discoverability benchmark;
 - TradingTop remains the product/business-model benchmark;
-- the current default branch does not contain a Tradebise-named research
-  artifact, so specific Tradebise observations must be treated as owner-provided
-  provenance until the exact research notes/screenshots are durably recovered
-  or re-captured into this repository.
+- the completed Tradebise evidence is now durable in
+  `research/competitors/tradebise/2026-10-04/`;
+- the canonical audit is
+  `docs/tradebise-authenticated-product-business-seo-audit-2026-10-04.md`;
+- reusable, bounded SEO observations are recorded in
+  `docs/tradebise-seo-patterns-for-vowsig-v0.1.md`.
 
-Do not invent or attribute specific Tradebise SEO tactics that are not currently
-supported by a durable repository artifact.
+Observed transferable patterns include supported-market URLs, descriptive
+education paths, factual author/date context, contextual cross-links,
+education-to-product next steps and discoverable methodology/risk pages.
+Observed anti-patterns include homepage-canonicalized symbol pages, drifting
+price/coverage copy, unreconciled performance Dataset figures, duplicate or
+overstated schema and ad/overlay interference with analysis.
+
+These are architecture observations, not evidence that Tradebise ranks well or
+that copying its pages would improve VowSig search performance.
 
 ## Why the roadmap changed
 
@@ -293,9 +303,13 @@ Future usage-triggered upsells, accounts or paid plans should follow G4 evidence
 
 ## Advertising monetization hypothesis
 
-Tradebise was also observed by the owner to display advertising. Advertising is
-therefore a legitimate monetization hypothesis for VowSig, but not the primary
-business model at the current stage.
+The completed Tradebise audit confirms two labelled desktop ad regions on the
+terminal/home experience, filled/self-promotional placements through visible
+ad-provider infrastructure, a featured-coin slide-up, and an Advertise surface
+offering banner/native/Hot Coins placements. Commercial effectiveness,
+CPM/CPC/revenue and traffic attribution were not established. Advertising is
+therefore a legitimate secondary monetization hypothesis for VowSig, not a
+primary business model or proven competitor success factor.
 
 Recommended role:
 

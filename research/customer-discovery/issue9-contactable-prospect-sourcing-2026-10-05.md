@@ -1,97 +1,146 @@
 # Issue #9 — Contactable prospect sourcing — 2026-10-05
 
-**Status: CHANNEL REVIEW COMPLETE — Reddit is not currently viable for verified contactable sourcing in this browser. No sendable batch is nominated.** This continuation meets the owner's second stopping condition: sufficient evidence of a Reddit inspection blocker. The requested 15–20-person pool and 10–15-person shortlist remain unmet. Stop for owner review; Issue #9 is not completed or closed.
+**Current status: 10 CONTACTABLE CANDIDATES READY FOR OWNER REVIEW — ZERO OUTREACH.** The owner manually completed Reddit authentication after the earlier checkpoint. Authenticated public-profile inspection became available, the Reddit channel assessment was reopened, and candidate-specific contact controls were verified directly. The earlier browser/passkey blocker is preserved below as historical chronology; it is no longer the channel conclusion.
 
 ## Reconciliation and scope
 
-- Project: TradingTop Analysis / VowSig.
-- Repository: `alisufyan-ai7/trading-signal-intelligence` (private).
-- Working branch: `research/issue9-prospect-sourcing-20261004`.
-- Initial sourcing head: `66b7ac8ff75303b2d37f193cb36f8943b9a35199`.
-- This continuation reconciled the owner-provided current branch head: `7ff4355164097685e59f0ec7f0cb09c4eb7fa956`, including the existing checkpoint report and tracker.
-- Issue #9 and the existing tracker, first-cohort sourcing report, and contact-route verification report were read at that head.
-- Issue #9 remains a pre-cohort customer-discovery task requiring owner selection and message approval. Inspection does not constitute approval or recruitment.
-- Existing P001–P030 remain in the tracker. Only the notes for P029 and P030 are annotated with the current Reddit channel blocker; neither profile was individually rechecked in this continuation. All other tracker values remain unchanged. Existing Forex Factory prospects remain reserve candidates. No Forex Factory page, additional prospect, account workaround, alternate identity, or contact database was inspected in this pass.
-- The prior report records `Private Messages Restricted Per Account Status`. That restriction was accepted without attempting a bypass.
-- The requested report date is 2026-10-05; public observations occurred on 2026-10-04 UTC. Relative activity labels below are recorded as observed rather than converted into unsupported exact dates.
+- Project: TradingTop Analysis / VowSig; only this Work chat, private repository `alisufyan-ai7/trading-signal-intelligence`, and necessary public prospect pages were used.
+- Branch: `research/issue9-prospect-sourcing-20261004`.
+- Starting committed checkpoint head reverified: `a5cad7bd930f389c61558d7bf09d35fc3e437e8f`.
+- Issue #9, current tracker and checkpoint were reconciled. Issue #9 still requires explicit owner recipient selection and message approval before any invitation.
+- Existing first-cohort sourcing and contact-route verification reports retain their historical state. No Forex Factory page or workaround was used; P001–P028 remain unchanged reserve rows.
+- Report date follows the requested 2026-10-05 date and the owner's Asia/Karachi local date. This authenticated inspection occurred on 2026-10-04 UTC / 2026-10-05 Asia/Karachi.
+- Existing P029 and P030 were rechecked first, followed by all six previously screened Reddit accounts. Already-excluded accounts were reconsidered through their public qualification evidence; unsuitable accounts were not pursued for contact controls.
 
-## Outcome
+## Current outcome
 
 | Measure | Result |
 |---|---:|
-| Individually screened public candidates, cumulative across checkpoint and continuation | 7 |
-| Existing screening candidates whose public contact UI was rechecked in this continuation | 1 (Pleasant_Rice3949) |
-| Additional individuals screened in this continuation | 0 |
-| Potentially relevant individuals awaiting contact-route verification | 3 |
-| New qualified retained in tracker | 0 |
-| Contactable retained | 0 |
-| Nominated for owner-review outreach batch | 0 |
-| Verified contact-route types | 0 |
-| New A / B graded retained | 0 / 0 |
-| New platform / market distributions | None: no retained rows |
+| Unique Reddit candidates assessed in this authenticated pass | 20 |
+| Public candidate profiles inspected | 14 |
+| Qualification exclusions reviewed through public posts only | 6 |
+| Qualified contactable candidates retained for owner review | 10 |
+| Newly appended tracker rows | 9 (P031–P039) |
+| Existing prospect promoted to contactable review pool | 1 (P030) |
+| Existing P029 | Reserve; no candidate-specific contact control visible |
+| Excluded from this batch | 10 |
+| A / B grades, nominated pool | 5 / 5 |
+| A / B grades, newly appended rows | 5 / 4 |
+| Platform distribution, nominated pool | Reddit 10 |
+| Verified contact route | Available — Reddit Open chat (all 10) |
+| Delivery/read capability | Unknown (all 10) |
+| Outreach/contact attempts | 0 |
 
-The 15–20-person sourcing target and 10–15-person sendable shortlist are **not met**. IDs P031 onward remain unassigned. Unknown routes were excluded rather than recorded as available.
+The current requested 10–15-person owner-review target is met at 10. The older 15–20-person retained-pool ambition has not been met; 20 were assessed, not retained. IDs P040 onward remain unassigned. No weak or unknown-contact account was added to fill a market quota.
 
-## Candidate screening checkpoint
+## Qualification and contact-control method
 
-These are screening records, not retained prospects or outreach nominations. Qualifications are public, self-reported evidence; profitability, identity, and account access were not inferred.
+Only ordinary public profiles and public trading posts/comments were inspected. For every retained candidate, the **Open chat link was visibly present inside that candidate's Profile information sidebar**. Reddit's global header Open chat button was never counted as a recipient-specific route. No profile contact control was clicked or opened.
 
-| Public handle | Platform | Public evidence | Assessment | Contact outcome |
-|---|---|---|---|---|
-| Pleasant_Rice3949 (display name scc24) | Reddit / r/algotrading | [NQ Research Lab](https://www.reddit.com/r/algotrading/comments/1wubkbk/nq_research_lab/) | Potential Nasdaq candidate. Discusses original NQ market-state research, an observer tool, data validation, and discretionary trading. Post and trading-related replies displayed 4 days ago and 3 days ago. | Unknown. Signed-out public profile exposed Follow and a menu with Block Account / Report Profile, but no private contact action. Public profile reply controls were visible; their usability and suitability for recruitment were not verified. Not retained. |
-| chadiusmaximus | Reddit / r/algotrading | [NQ research discussion](https://www.reddit.com/r/algotrading/comments/1wubkbk/nq_research_lab/) | Potential Nasdaq candidate. Original discussion of regime research, QQQ flow, and manually using a daily trading brief. Observed in the same recent discussion. | Unknown. Individual contact UI was not verified. Not retained. |
-| Intrepid-Baseball904 | Reddit / r/FuturesTradingNQ | [Where to start?](https://www.reddit.com/r/FuturesTradingNQ/comments/1w6c4hy/where_to_start/) | Potential multi-market candidate. Explicitly discusses trading NQ and YM with price action, breakouts/fakeouts, and testing. Public evidence displayed 3 days ago. | Unknown. Individual public reply/contact UI was not rechecked in this continuation; the current account sign-in remains incomplete. Not retained. |
-| Candlune | Reddit / r/Forex | [Six NFP mornings on gold](https://www.reddit.com/r/Forex/comments/1wak1bc/6_nfp_mornings_on_gold_5m_first_15_minute_ranges/) | Excluded: the post explicitly identifies an AI account belonging to a replay-tool builder. It does not meet the preference for an individual active trader. | No contact route investigated after qualification exclusion. |
-| Exciting_Vanilla_614 | Reddit / r/FuturesTradingNQ | [Where to start?](https://www.reddit.com/r/FuturesTradingNQ/comments/1w6c4hy/where_to_start/) | Excluded for this batch: exploratory index question; later reply says they will focus on ES. Current supported-market trading relevance is insufficient. | No contact route investigated after qualification exclusion. |
-| Skiwagon | Reddit / r/FuturesTradingNQ | [Where to start?](https://www.reddit.com/r/FuturesTradingNQ/comments/1w6c4hy/where_to_start/) | Excluded for this batch: self-reported current focus is ES and disclosure of running a trader education group. | No outreach. A textual DM invitation was not treated as verification of an available UI mechanism. |
-| Indicesforlife | TradingView | [Public US30 ideas](https://www.tradingview.com/symbols/CMCMARKETS-US30/ideas/) | Original US30 setup evidence appears relevant, but platform solicitation restrictions prevent treating native comments/chat as a legitimate VowSig recruitment route. | Excluded from the sendable batch. No contact UI, form, or account workaround opened. |
+The controlled tracker value is `Available — Reddit Open chat`. This denotes the visible native contact route specified by the owner. It does not establish that a future request will be accepted or that the sender/recipient has no additional restriction. Those cannot be tested without crossing the zero-outreach boundary.
 
-Search-result titles, incidental commenters, brokers, and unrelated results were not counted as screened candidates. No cross-platform identity matching was performed.
+Grade A means specific original supported-market trading/tool discussion with substantive process evidence and recent public activity. Grade B means useful but limited evidence, such as a chart without explanation, one original technical/risk reply, hidden profile activity, or older instrument evidence. Public accounts, trading experience, and performance are self-reported. No profitability or identity verification was inferred.
 
-## Platform restrictions and blocking evidence
+Gold followers/tool evaluators are included where they discuss original trading risk and plausibly can assess VowSig. P038/P039 are lower-confidence follower/evaluator candidates; active live trading is not established. P036 is a demo/research trader. These limits remain explicit for owner selection.
 
-### Reddit
+## Contactable owner-review batch
 
-The previous checkpoint recorded automatic approval-review denials of account access and subsequent browser navigation. The owner's new authorization explicitly permits public Reddit inspection and secure existing-account sign-in solely to inspect legitimate candidate contact controls. Those historical denials are not the current blocker.
+| ID | Reddit handle / public profile | Supported-market evidence (other markets shown for context) | Grade | Qualification evidence | Recent public activity | Candidate control |
+|---|---|---|---|---|---|---|
+| P030 | [Appropriate-Dig-9705](https://www.reddit.com/user/Appropriate-Dig-9705/) | NQ; ES | B | [Public evidence](https://www.reddit.com/r/FuturesTrading/comments/1uxqpw1/comment/oy2amie/) | Public trading comment 2026-09-29; NQ source displays 3mo ago | Open chat visible |
+| P031 | [Pleasant_Rice3949](https://www.reddit.com/user/Pleasant_Rice3949/) | NQ | A | [Public evidence](https://www.reddit.com/r/algotrading/comments/1wubkbk/nq_research_lab/) | 4 days ago post; 3 days ago trading replies (observed 2026-10-04 UTC) | Open chat visible |
+| P032 | [chadiusmaximus](https://www.reddit.com/user/chadiusmaximus/) | NQ; QQQ | A | [Public evidence](https://www.reddit.com/r/algotrading/comments/1wubkbk/comment/pd4gtoc/?context=3) | 2 days ago NQ research reply; 4 days ago manual-trading workflow (observed 2026-10-04 UTC) | Open chat visible |
+| P033 | [Intrepid-Baseball904](https://www.reddit.com/user/Intrepid-Baseball904/) | NQ; YM | B | [Public evidence](https://www.reddit.com/r/FuturesTradingNQ/comments/1w6c4hy/comment/p7qjbhp/) | 1 month ago NQ/YM trading and strategy discussion (observed 2026-10-04 UTC) | Open chat visible |
+| P034 | [Journeystep2me](https://www.reddit.com/user/Journeystep2me/) | XAUUSD; US30; USDJPY | A | [Public evidence](https://www.reddit.com/r/ForexrookieGBPJPY/comments/1wxn8ch/04oct_xauusdusdjpyus30/) | 1 hour ago analysis; repeated daily supported-market posts (observed 2026-10-04 UTC) | Open chat visible |
+| P035 | [yuppiemaggie](https://www.reddit.com/user/yuppiemaggie/) | XAUUSD | B | [Public evidence](https://www.reddit.com/r/FOREXTRADING/comments/1wxh1x7/gold_my_analysis/) | 6 hours ago Gold chart post (observed 2026-10-04 UTC) | Open chat visible |
+| P036 | [MapDependent7203](https://www.reddit.com/user/MapDependent7203/) | XAUUSD | A | [Public evidence](https://www.reddit.com/r/Forexstrategy/comments/1wu47jf/finally_found_a_xauusd_strategy_that_works_for_me/) | 12 hours ago validation reply; 4 days ago original strategy post (observed 2026-10-04 UTC) | Open chat visible |
+| P037 | [PurringAdvertising](https://www.reddit.com/user/PurringAdvertising/) | NQ | A | [Public evidence](https://www.reddit.com/r/FuturesTrading/comments/1wsbkue/rfuturestrading_daily_trading_discussion_sep_28/) | 6 days ago NQ decision; 3 days ago stop/replay discussion (observed 2026-10-04 UTC) | Open chat visible |
+| P038 | [Breakfast_punch](https://www.reddit.com/user/Breakfast_punch/) | XAUUSD / Gold | B | [Public evidence](https://www.reddit.com/r/Forexstrategy/comments/1wvpaji/comment/pddswqb/) | 2 days ago Gold/NFP risk discussion (observed 2026-10-04 UTC) | Open chat visible |
+| P039 | [nks-90](https://www.reddit.com/user/nks-90/) | XAUUSD / Gold | B | [Public evidence](https://www.reddit.com/r/algorithmictrading/comments/1wtdgwc/comment/pcy1qp4/) | 5 days ago Gold strategy-risk critique (observed 2026-10-04 UTC) | Open chat visible |
 
-Under the new authorization, public Reddit profile inspection succeeded. The public profile for Pleasant_Rice3949 remained signed out and exposed Log In / Sign Up and Follow, without a verified private contact action. No Follow, reply, chat, message, or contact action was used.
+Every row above remains `owner_approved=no`, `status=identified`, with no outreach, message, delivery, seen, reply, or beta-visit state.
 
-The normal Reddit login dialog was opened. After correcting a locator error, the secure browser authentication flow accepted the selected Google sign-in option and the selected existing Google account. Google's next visible step was “Complete sign-in using your passkey.” The secure browser authentication API could not represent that step: the passkey option lacked the selector/credential fields required by its schema. A fresh public Reddit profile still displayed Log In / Sign Up. Reddit authentication was therefore not verified as complete.
+### Individual qualification and limitations
 
-No credentials were pasted into chat or handled directly by the agent. No alternate identity, account creation, guessed endpoint, alternate network route, or authentication bypass was attempted. No further authentication or Reddit sourcing attempts were made after this blocker. The account's private inbox, chat history, private messages, notifications, and settings were not opened.
+- **P030 — Appropriate-Dig-9705:** NQ/ES London-session VWAP, volume profile and opening-range workflow; current trading discussion. Older supported-instrument evidence; B-grade owner-review caveat.
+- **P031 — Pleasant_Rice3949:** Self-reported discretionary NQ trader discusses original market-state observer research, data validation and trading-tool use. Public self-report of 15 years of NQ trading; profitability and identity not verified.
+- **P032 — chadiusmaximus:** Discusses original NQ regime research, a daily brief used to trade manually, trade journaling and risk management. Research/tool user; market brief is generated, but manual trading and research workflow are self-described.
+- **P033 — Intrepid-Baseball904:** Explicitly describes current NQ/YM futures trading, lower-timeframe price action, breakouts/fakeouts and backtesting/forward testing. Profile feed hidden; public thread remains accessible. Fresh review displays 1mo ago, correcting the earlier checkpoint's 3d label. Evidence is older than the other nominees.
+- **P034 — Journeystep2me:** Posts original XAUUSD/US30 multi-timeframe market structure, correction-entry plans and confirmation/risk conditions. Only XAUUSD and US30 count toward VowSig relevance; USDJPY is an additional unsupported market.
+- **P035 — yuppiemaggie:** Publishes an original-looking XAUUSD 4H analysis chart with horizontal levels, descending trendline and short risk/reward box. Chart-only evidence inspected visually; no explanatory text. Profile feed hidden; no hidden history inspected.
+- **P036 — MapDependent7203:** Individual XAUUSD H1 strategy tester explains Donchian approach, demo/backtesting, trend/range limitations and validation plans. Demo/research trader; live execution and claimed performance not verified. Suitable to evaluate tooling rather than evidence of profitability.
+- **P037 — PurringAdvertising:** Describes NQ DOM observation, overnight-range chop and a decision to abstain; also discusses trailing stops, replay and session metrics. Self-described trading decisions and methods; no performance or professional identity verification.
+- **P038 — Breakfast_punch:** Original Gold event-risk discussion distinguishes the initial NFP spike from settled fundamental direction and appropriate trading horizon. Public Gold follower/risk-discussion evidence; active live trading not established. Profile feed hidden. Lower-confidence owner-review candidate.
+- **P039 — nks-90:** Original Gold trading-tool risk critique uses test-window length, expected payoff, risk/reward and drawdown to evaluate a strategy. Public Gold tool evaluator/follower; active live trading not established. Profile feed hidden. Lower-confidence owner-review candidate.
 
-**Conclusion for this pass:** public Reddit pages are accessible, but authenticated candidate contact controls cannot currently be verified safely in this browser. This is a browser/session limitation, not a claim that Reddit lacks contact features or that any specific recipient disables messages. Visible public reply controls alone were not sufficient to establish a usable, legitimate VowSig recruitment route.
+Fresh inspection corrected two recency descriptions: Intrepid-Baseball904's accessible NQ/YM thread displays **1 month ago**, rather than the earlier checkpoint's 3-day label. P030's original NQ/ES workflow now displays **3 months ago**; its more recent public trading comment is dated **2026-09-29**, at [this public comment](https://www.reddit.com/r/Daytrading/comments/1wsazaf/comment/pcpixcb/?context=3). The report and tracker keep these differences explicit.
 
-### BabyPips public forum
+### Market mix
 
-After the Reddit blocker, the ordinary public forum homepage at [forums.babypips.com](https://forums.babypips.com/) was inspected as another trading-community channel. It displayed Cloudflare's “Performing security verification” / bot-verification page. One normal reload returned the same challenge. The browser's bot-detection capability recorded a challenge loop, and inspection stopped. No challenge solving, alternate endpoint, network workaround, account creation, or contact action was attempted. No individual forum member was retained or counted as screened from search snippets.
+| Exclusive primary classification | Candidates |
+|---|---:|
+| Gold | 4 |
+| Nasdaq | 4 |
+| Multi-market | 2 |
+| Dow-only | 0 |
 
-### TradingView
+Overlapping supported-market coverage is Gold/XAUUSD **5**, Nasdaq/NQ **5**, and Dow/US30/YM **2**. P033 explicitly trades NQ and YM; P034 publishes XAUUSD and US30 analysis. Additional ES, QQQ, or USDJPY references do not count as unsupported VowSig live-signal coverage. No unsupported-market-only account was nominated.
 
-[TradingView House Rules](https://www.tradingview.com/house-rules/) were inspected fresh. The rules prohibit promotion/solicitation in publications, comments, and public/private chat. A visible generic comment or message control would therefore not establish a legitimate route for VowSig recruitment. No exception, permission, paid subscription, or moderator approval was assumed or sought.
+### Recommended review order
 
-### Forex Factory
+Review the five A-grade candidates first: **P031, P032, P034, P036, P037**. Then assess the B-grade limits for **P030, P033, P035, P038, P039**. The complete nominated owner-review set is **P030–P039**.
 
-The existing restriction is retained as a blocker. No additional Forex Factory sourcing or contact checks were conducted.
+These are inspection-qualified review candidates. None is approved for sending, and this pass creates no invitation draft, chat request, or cohort evidence.
 
-## Delivery/read capability
+## Exclusions and reserve decisions
 
-**Unknown for all unresolved candidates.** No delivery receipt, read receipt, sender-side message state, or other delivery/read UI was observed. No platform-wide inference was made. No message was sent to test these features.
+| Public handle | Public evidence / profile | Decision |
+|---|---|---|
+| AngryMcYeti (P029) | [Profile](https://www.reddit.com/user/AngryMcYeti/) and existing tracker post | Hidden activity feed and no candidate-specific chat/message control visible. Reserve; not nominated. |
+| Candlune | [Gold NFP post](https://www.reddit.com/r/Forex/comments/1wak1bc/6_nfp_mornings_on_gold_5m_first_15_minute_ranges/) | Reconfirmed explicit company AI-account/replay-tool disclosure; exclude from individual-trader batch. |
+| Exciting_Vanilla_614 | [Existing index thread](https://www.reddit.com/r/FuturesTradingNQ/comments/1w6c4hy/where_to_start/) | Reconfirmed subsequent ES focus; insufficient current supported-market relevance. |
+| Skiwagon | [Existing index thread](https://www.reddit.com/r/FuturesTradingNQ/comments/1w6c4hy/where_to_start/) | Reconfirmed ES focus and trader-education-group disclosure. |
+| bigsteve901 | [Gold scalper post](https://www.reddit.com/r/Forex/comments/1wu4xs5/retired_xauusd_scalper_here/) | Self-describes moving away from Gold to other pairs; current supported-market relevance insufficient. External social handle was not investigated or retained. |
+| Forextanii | [Profile](https://www.reddit.com/user/Forextanii/) and [Gold NFP plan](https://www.reddit.com/r/Forexstrategy/comments/1wvpaji/xauusdnfp_trade_plan/) | Visible chat control, but public profile promotes a signals channel. Excluded under trader-over-seller preference; no external channel inspected or stored. |
+| Polish_gal | [Profile](https://www.reddit.com/user/Polish_gal/) and [Gold NFP thread](https://www.reddit.com/r/Forexstrategy/comments/1wvpaji/xauusdnfp_trade_plan/) | Relevant reversal discussion, but no candidate-specific contact control visible. |
+| Strong_Towel | [Profile](https://www.reddit.com/user/Strong_Towel/) and [Gold strategy post](https://www.reddit.com/r/algorithmictrading/comments/1wtdgwc/developed_something_crazy_for_xauusd_not_trying/) | Public profile states “This account has been banned.” Not contactable in reviewed UI; excluded. This is a recipient-account condition, not a browser bot block. |
+| Emergency-Tower4892 | [US30 question](https://www.reddit.com/r/Forex/comments/1w81w72/us30_traders/) | Generic request for setups without original trading/analysis evidence; exclude. |
+| Possible_Donut4451 | [US30 discussion](https://www.reddit.com/r/Forex/comments/1w81w72/us30_traders/) | Describes currency/index macro approach but lacks explicit supported-instrument evidence sufficient for this batch. |
 
-## First sendable owner-review batch
+Incidental search hits, advertisements, moderators, and other commenters were not prospect rows. No external identity matching occurred.
 
-**None.** No IDs are nominated while their contact routes remain unknown or their platform prohibits solicitation. The three potential individuals above may be reconsidered only after safe, authorized contact-route verification. They are not approved, retained, or sendable.
+## Historical chronology — earlier Reddit authentication blocker
 
-## Safety and integrity checks
+The following text records the earlier checkpoint before the owner's successful manual sign-in. It is preserved as history and is superseded by the authenticated observations above:
 
-- Zero DMs, public replies/comments, emails, follows/connections, group joins, moderator contacts, contact forms, recruitment posts, reactions, or subscriptions.
-- Zero contact attempts or outreach messages.
-- No new account and no Forex Factory workaround.
-- No private emails, phone numbers, external scraped contacts, private account data, or unrelated social identities stored.
-- Tracker remains exactly P001–P030. Only two notes cells (P029/P030) changed; no new rows were appended and P031 onward remain unassigned.
-- Existing unapproved/unsent outreach state is preserved.
-- This continuation commits only the tracker and this checkpoint report. The historical first-cohort sourcing and contact-route verification reports remain unchanged.
-- All 30 tracker rows were checked: owner_approved=no, status=identified, feedback_submitted=no, follow_up_required=no; outreach_utc, message_variant, delivery_state, seen_state, reply_state, and beta_visit_known remain blank.
-- Branch remains unmerged. Inspection stops for owner review under the user's second stopping condition. No further permission for the already-authorized inspection is being requested; the remaining limitation is the secure passkey flow, alongside the public-forum challenge and TradingView solicitation rule.
+> The previous checkpoint recorded automatic approval-review denials of account access and subsequent browser navigation. The owner's new authorization explicitly permits public Reddit inspection and secure existing-account sign-in solely to inspect legitimate candidate contact controls. Those historical denials are not the current blocker.
+> 
+> Under the new authorization, public Reddit profile inspection succeeded. The public profile for Pleasant_Rice3949 remained signed out and exposed Log In / Sign Up and Follow, without a verified private contact action. No Follow, reply, chat, message, or contact action was used.
+> 
+> The normal Reddit login dialog was opened. After correcting a locator error, the secure browser authentication flow accepted the selected Google sign-in option and the selected existing Google account. Google's next visible step was “Complete sign-in using your passkey.” The secure browser authentication API could not represent that step: the passkey option lacked the selector/credential fields required by its schema. A fresh public Reddit profile still displayed Log In / Sign Up. Reddit authentication was therefore not verified as complete.
+> 
+> No credentials were pasted into chat or handled directly by the agent. No alternate identity, account creation, guessed endpoint, alternate network route, or authentication bypass was attempted. No further authentication or Reddit sourcing attempts were made after this blocker. The account's private inbox, chat history, private messages, notifications, and settings were not opened.
+> 
+> **Conclusion for this pass:** public Reddit pages are accessible, but authenticated candidate contact controls cannot currently be verified safely in this browser. This is a browser/session limitation, not a claim that Reddit lacks contact features or that any specific recipient disables messages. Visible public reply controls alone were not sufficient to establish a usable, legitimate VowSig recruitment route.
 
-The exact checkpoint head is reported in Work chat after the commit and remote verification; it is not embedded here to avoid a self-referential commit hash.
+**Subsequent update:** the owner reported completing Reddit login manually. The agent confirmed authenticated UI on the existing public Pleasant_Rice3949 profile and a candidate-specific Open chat link, without opening it. This authorized continuation reopened sourcing and directly verified the 10 nominated profiles. The earlier blocker was real at the time and is not a current limitation.
+
+## Other platform restrictions retained from earlier passes
+
+- Forex Factory's recorded `Private Messages Restricted Per Account Status` remains accepted. No additional checks or bypass attempted.
+- BabyPips previously remained at a Cloudflare verification challenge after one ordinary reload. That site was not retried here.
+- TradingView's previously inspected [House Rules](https://www.tradingview.com/house-rules/) prohibit promotional solicitation through publications/comments/chat. No TradingView candidate is nominated and no exception was assumed.
+- Visible Reddit community rules observed prohibit promotional posts, signal promotion and/or soliciting off-subreddit discussion. No public recruitment/comment route is nominated. A visible profile chat control is not permission for bulk/spam or an exemption from platform rules. Owner review and message approval remain required.
+
+## Completion checks
+
+- **Zero outreach:** no DMs, chat requests, replies/comments, modmail, forms, posts, follows, joins/subscriptions, reactions, emails, or notifications sent.
+- **Privacy:** no inbox, existing chat history, private messages, notifications, saved/private content, or settings opened. No private contact details or authentication data recorded.
+- **Candidate controls:** all 10 nominees have candidate-specific Open chat visibly verified on their public profiles; controls never clicked.
+- **Delivery/read:** Unknown for all 10; no conversation or message state inspected and no test send.
+- **Tracker:** exactly 39 unique rows P001–P039; only P029/P030 existing rows updated; P001–P028 unchanged. Nine new rows, no duplicate handles/IDs.
+- **States:** all 39 owner_approved=no, status=identified, feedback_submitted=no, follow_up_required=no; outreach_utc, message_variant, delivery_state, seen_state, reply_state and beta_visit_known remain blank.
+- **GitHub:** only the tracker and this report are committed on the existing sourcing branch; historical reports and runtime/product files unchanged; branch unmerged.
+- **Stop:** contactable batch ready; stop for owner review. Recipient selection and outreach-message approval are still pending. No cohort/customer-feedback milestone is claimed complete.
+
+The exact resulting branch head is reported in Work chat after remote verification rather than embedded in its own commit.

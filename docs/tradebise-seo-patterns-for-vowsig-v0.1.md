@@ -1,6 +1,6 @@
 # Tradebise SEO patterns for VowSig v0.1 — evidence memo
 
-Date: 2026-10-04 Asia/Karachi. Proposal only: no website/content/CTA/runtime implementation. Sources and limits: [Tradebise audit](tradebise-authenticated-product-business-seo-audit-2026-10-04.md) and [public evidence index](../research/competitors/tradebise/2026-10-04/public-evidence.json). Its cloud UI/screenshots, canonical/schema/robots/sitemap and search outcomes remain unverified. No SEO-success or ranking claim follows from page architecture.
+Date: 2026-10-04 Asia/Karachi. Proposal only: no website/content/CTA/runtime implementation. Sources and limits: [Tradebise audit](tradebise-authenticated-product-business-seo-audit-2026-10-04.md) and [rendered metadata](../research/competitors/tradebise/2026-10-04/rendered-metadata.json), supplemented by the earlier [public source index](../research/competitors/tradebise/2026-10-04/public-evidence.json). Current scope: 73 redacted captures, 39 paths and 64 reviewed route/state groups. Desktop Free-account UI/head metadata were inspected; robots/sitemap contents and actual search-engine outcomes remain unavailable. No SEO-success or ranking claim follows from page architecture.
 
 ## Observable patterns
 
@@ -13,7 +13,21 @@ Date: 2026-10-04 Asia/Karachi. Proposal only: no website/content/CTA/runtime imp
 | Education-to-product CTA | [Sizing article](https://tradebise.com/learn/position-sizing) | Offer a relevant next step after the explanation; test comprehension/value first |
 | Shared site/legal navigation | [About](https://tradebise.com/about) and public information pages | Keep methodology, risk and operating identity discoverable |
 
-Five observed editorial topic labels are getting started, risk, technical analysis, AI/technology and psychology. They are labels in the retrieved catalog; separate category routes were not found. Article sectioning and contextual links are established, but canonical/schema and a dedicated related-card module are unknown. Public app text can expose hidden dialogs; it is not evidence those states are indexed or visible to visitors.
+Five observed editorial topic labels are getting started, risk, technical analysis, AI/technology and psychology. They are labels in the rendered catalog; separate category routes/pagination were not found. Articles have self-canonical URLs and unique titles/descriptions; no article JSON-LD or distinct related-card module was observed. Immediate DOM snapshots sometimes omitted search lists that appeared in the raster, so text alone is insufficient for UI conclusions.
+
+
+## Observed patterns to avoid copying
+
+| Finding | Evidence | VowSig implication |
+|---|---|---|
+| All ten symbol pages canonicalize to homepage | Rendered head metadata; index,follow/shared description | Preserve accurate canonical/index policy for useful supported pages; no ranking impact inferred |
+| Price/coverage copy drifts | Schema Premium $19 versus UI $14.99/$19.99/$29.99; 100+ description versus 5,000+ UI; Terms two paid plans | Keep published offers, metadata and user-facing scope synchronized |
+| Performance Dataset conflicts | 77,630 total/26,308 stops/93%, while visible counter 378,213; ongoing included in success | Do not add performance schema without a reconciled population, outcome rules and cost/ongoing treatment |
+| App markup duplicates/types overstate certainty | Duplicate Organization/WebSite; FAQ/SearchAction/SoftwareApplication/Dataset; Android/iOS unverified | Use factual, maintained markup only; no assumption of rich-result eligibility |
+| Ads/overlays obscure analysis | Two terminal slots plus floating featured coin; desktop sample | Preserve clarity and analytical independence; mobile impact not measured |
+| Search/URL state mismatch | BTC suggestions rendered; Enter did not select; selection ended in US30 quota; home body retained symbol URL | Verify route, heading, selected market and metadata agree before relying on programmatic expansion |
+
+Robots/sitemap cloud requests returned ERR_BLOCKED_BY_CLIENT; contents/status are unknown, not absent. No console/index coverage/rankings/traffic/backlink/Core Web Vitals data was collected. Editorial pages were self-canonical, but observed architecture does not establish SEO success.
 
 ## Apply within current VowSig governance
 

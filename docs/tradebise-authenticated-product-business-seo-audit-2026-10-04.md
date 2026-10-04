@@ -1,118 +1,108 @@
-# Tradebise product, business and SEO audit — authenticated/visual access blocked
+# Tradebise authenticated product, business and SEO audit
 
-Research date: 2026-10-04 Asia/Karachi; retrieval/capture UTC: 2026-10-03. Repository main reconciled at 099f8e89599023769ed29aa023c7916d4560ce10. Research branch only; no merge or product/runtime changes.
+Current capture pass: 2026-10-04 UTC. Earlier public-source review dated 2026-10-04 Asia/Karachi is preserved separately. Repository main reviewed at 099f8e89599023769ed29aa023c7916d4560ce10. Research branch only; no merge, deployment, strategy or runtime changes.
 
-## Coverage and access result
+## Coverage and evidence standard
 
-**34 public-source routes reviewed; two historical browser page states (homepage/login); zero durable Tradebise screenshots.** Login adds one distinct route to the public set: 35 inspected/discovered-source paths in total. Robots and sitemap were separately requested but not retrieved, making 37 requested paths including failures. These counts do not imply 35 successful browser renders or authenticated access.
+**73 redacted screenshots, 39 rendered paths, 64 reviewed route/state groups.** The paths comprise all 34 previously researched public routes plus four settings routes and /premium. The states comprise those 39 path-level groups plus 25 material interaction/variant groups; duplicate/replacement captures do not increase the count. All ten requested market routes and all 15 Learn articles have visual evidence. Most non-BTC market pages are Free-account quota gates, not complete signal outputs.
 
-The earlier cloud sign-in reached Cloudflare Verification failed. The owner's local session is separate. A fresh handoff was requested under renewed authorization, but automatic approval review rejected it as repeating the already-failed one-attempt handoff. The preceding safe-URL observation was also blocked by native-credential protection; no filled form was captured. No additional authentication attempt, alternate cloud route, fingerprint/network change or CAPTCHA bypass followed the rejection.
+The user successfully logged into this cloud session. Earlier Cloudflare/handoff failures are historical and no longer the authentication blocker. This pass inspected a **Free** account. One of two daily calls was already used on arrival; BTC analysis consumed the remaining allowance. Subsequent market pages showed the two-call gate and reset countdown; charts remained accessible. No purchase or quota bypass occurred.
 
-This report preserves the complete available first-party source review and an explicit UI/capture backlog. **The comprehensive authenticated and screenshot requirement is not complete.** Web-retrieved text is distinct from the cloud page and may reflect a crawler snapshot or hidden UI scaffolding; payment-success, account-security, counters and viewer states in that text do not establish actual user/session state. Source provenance: [public evidence index](../research/competitors/tradebise/2026-10-04/public-evidence.json), [route/state inventory](../research/competitors/tradebise/2026-10-04/route-state-inventory.json), [capture index](../research/competitors/tradebise/2026-10-04/README.md).
+Evidence: [capture register](../research/competitors/tradebise/2026-10-04/README.md), [manifest](../research/competitors/tradebise/2026-10-04/capture-manifest.json), [route/state inventory](../research/competitors/tradebise/2026-10-04/route-state-inventory.json), [rendered metadata](../research/competitors/tradebise/2026-10-04/rendered-metadata.json), [SHA-256](../research/competitors/tradebise/2026-10-04/screenshot-sha256.json), [privacy checks](../research/competitors/tradebise/2026-10-04/privacy-verification.json). Earlier [public evidence](../research/competitors/tradebise/2026-10-04/public-evidence.json) remains distinct source provenance.
 
-## Public routes, templates and navigation
+Nineteen attempted files failed to persist; replacements are enumerated and numbers were not reused. Early loading, heavily masked and stale URL/body captures are explicitly identified. A screenshot records a displayed claim, not verified execution/performance. Published images mask owner/contact/ID/session/IP values. Raw screenshots, account body text and OCR are uncommitted. All images passed decoding/hash checks; supplemental OCR found no owner/credential patterns and only public tradebise.com emails. Visual contact-sheet and targeted full-resolution review supplemented OCR.
 
-Homepage, ten required symbol pages, Learn/catalog plus all 15 linked articles, About, Advertise, Support, Privacy, Terms, Risk Disclaimer and the newly discovered /promotion were retrieved. The 34 contextual article links were resolved; each landed within the existing article/legal set. No extra category URL or pagination was exposed in the retrieved Learn list. This is a statement about observed source links, not proof that client-side search or authenticated menus have no additional routes.
+## Routes, navigation and account surfaces
 
-| Template | Requested routes / coverage | Evidence and limits |
+| Template | Coverage | Boundary |
 |---|---|---|
-| Market terminal | / and /signals/{symbol} | Public text repeats the application shell; actual loaded prices, generated calls and ads not verified in cloud |
-| Crypto | btcusdt, ethusdt, solusdt | [BTC](https://tradebise.com/signals/btcusdt), [ETH](https://tradebise.com/signals/ethusdt), [SOL](https://tradebise.com/signals/solusdt) |
-| Metals | xauusd, xagusd | [Gold](https://tradebise.com/signals/xauusd), [Silver](https://tradebise.com/signals/xagusd) |
-| Forex | eurusd, gbpusd | [EUR/USD](https://tradebise.com/signals/eurusd), [GBP/USD](https://tradebise.com/signals/gbpusd) |
-| Stocks/indices | aapl, tsla, us30 | [Apple](https://tradebise.com/signals/aapl), [Tesla](https://tradebise.com/signals/tsla), [US30](https://tradebise.com/signals/us30) |
-| Editorial | /learn plus 15 /learn/{slug} articles | [Catalog](https://tradebise.com/learn); all canonical observed URLs indexed in evidence JSON |
-| Commercial | /advertise, /promotion | Direct booking/quote and coin-promotion payment form; no submission |
-| Information/legal | /about, /support, /privacy, /terms, /risk-disclaimer | Public source review; no account/support action |
+| Terminal | /; btcusdt, ethusdt, solusdt, xauusd, xagusd, eurusd, gbpusd, aapl, tsla, us30 under /signals/ | BTC results reviewed; other routes predominantly quota gates |
+| Education | /learn and all 15 linked articles | Full-page captures; five topic labels; no separate category path/pagination found |
+| Information | /about, /support, /privacy, /terms, /risk-disclaimer | Read-only content; no outreach |
+| Commercial | /advertise, /promotion, /premium | Quote/promotion forms and three plan selections; no payment |
+| Settings | /settings/account, /settings/security, /settings/subscription, /settings/stats | Controls/Free entitlement/empty payment history viewed; private values masked |
 
-## Signal product and methodology
+Header/footer, popular markets, Learn/contextual links and Advertise→promotion were reconciled. Earlier 34 contextual article links resolved within the existing route set. Account navigation exposed Home, Watchlist, alerts/Telegram/upgrade and settings. Watchlist returned the existing sidebar rather than a dedicated route. Crypto, US stocks, Forex/Gold and Indian categories were inspected; Indian selection displayed 58 markets. This does not enumerate the claimed 5,000+ universe. No separate news route surfaced in inspected navigation.
 
-Historical homepage browser observation showed market search, four timeframes, watchlist, Trending/Gainers/Losers, signal-generation/registration prompts and performance figures. Interaction outcomes for those controls remain unverified. Symbol source text supplies a common direction/entry/target/SL and analysis interface, last-call/result areas and waiting placeholders. Some retrieved snapshots expose one main target; refreshed text exposes TP1–TP3. That is a source-version/UI-format difference, not a verified entitlement distinction. [Market shell](https://tradebise.com/signals/btcusdt), [Alternative retrieved template](https://tradebise.com/signals/gbpusd), [Multi-target fields](https://tradebise.com/signals/xauusd).
+BTC watchlist add succeeded; removal restored the initially empty list. Trending/Gainers/Losers showed different lists. Sample gainers included RAIN +25.81% and STRK +23.69%; losers BTW −34.59% and BR −19.28%, as dated site claims. Ranking/sponsorship independence was not verified.
 
-The signal-reading article describes BUY/SELL/WAIT, entry, target, stop, reasoning and timeframe interpretation. An educational BTC example has entry 67,200, target 69,800 and SL 65,850; **it is an instructional example, not an audited live issuance**. An indexed US30 snippet showed BUY near 51,349.92, ended/target 51,780.5 and SL 50,975.79. Its exact issuance, timeframe, completeness and live resolution were not confirmed. [Signal explanation](https://tradebise.com/learn/how-to-read-a-tradebise-signal), [Illustration](https://tradebise.com/learn/how-to-set-a-stop-loss), [Indexed result route](https://tradebise.com/signals/us30).
+Search suggestions are visible in **rasters**: XAU currency/metals variants and BTC entries differentiated by exchange. Immediate DOM observations sometimes omitted the newly populated list. Enter retained the homepage/suggestions without selecting. Clicking the visible Binance BTCUSDT suggestion later ended in **US30 quota/chart state** (91); successful BTC search navigation is not claimed. Home/Gainers/Losers sometimes retained an earlier US30 URL/title. These are session observations, not proof all search is broken.
 
-The AI explanation characterizes the engine as software that consistently applies rules to momentum, trend/structure and price history; it describes buy/sell/abstain with structure-based targets/stops. The founder claims more than 2,000 algorithm variants were tested. No model identity, training/test data, weights, reproducible algorithm, out-of-sample evaluation or calibrated forecast accuracy is supplied by these statements. The timeframe article explicitly says each resolution is analysed independently rather than blended, leaving comparison to the user; the broad multi-timeframe-confirmation positioning does not establish an automatic fusion algorithm. [Engine description](https://tradebise.com/learn/ai-trading-explained), [Founder claims](https://tradebise.com/about), [Timeframe implementation claim](https://tradebise.com/learn/multi-timeframe-analysis).
+Account settings expose profile/country/member date/ID and browser-alert/Telegram controls. Security shows password validation, active session and 2FA OFF; no reset/enable/password/session action occurred. Browser alerts are advertised free with a target-hit daily cap; Telegram opens the paid gate. My Stats shows usage/Free status and a display toggle, unchanged. Payment history settled to “No payments yet.” Optional notification and featured-coin overlays were observed/dismissed; no notification permission/subscription was accepted.
 
-| Displayed claim | Provenance | Interpretation |
+## Signal fields, examples and methodology
+
+BTC exposes BUY/SELL/WAIT, confidence label, outlook, RSI/market condition, current price, timeframe, last signal with entry/target/SL/status, analysis, additional-target fields and chart. Current **WAIT** can coexist with bullish outlook and a previous BUY/SELL; outlook is not an executable call. WAIT analysis had N/A stops/TP2/TP3. Some fields/charts were blank while loading; 4H was captured with incomplete numeric output, so no complete settled 4H result is claimed.
+
+| Example | Exact displayed values | Limit |
 |---|---|---|
-| 5,000+ markets | Historical homepage + public mission text | Site coverage claim; no enumerated universe verification |
-| 375,261 signals; 93% success; 26,137 stops | Earlier homepage browser observation | Exact historical site claim; refreshed source has blank counters. Not current/live verified totals |
-| Every call has a stop; losses shown beside wins | Homepage positioning | Live complete population not independently reconciled |
-| 19,000+ registered traders | Advertise page | Commercial audience claim, not measured users/traffic |
-| More than 2,000 algorithm variants | About page | Founder statement, not documented experimental evidence |
+| BTC 1H, 15 | Current 85,016.08, WAIT/Low, RSI 59.01. Last BUY near 84,747.51; ended/target 85,037.63; SL 84,202.65; closed 42 minutes ago | Target reached/finished warning; relative time, no audited fill/P&L |
+| BTC 1D, 25 | Last BUY near 84,769.99; current 85,016.08; target 85,508; SL 83,468.56; started five hours ago, still open, 33% progress; RSI 55.42 | Open setup, not realized profit |
+| BTC 1D, 29 | Last SELL near 85,315.48; ended/SL 86,335.15; target 82,563; closed two days ago; RSI 64.53 | Separate prior stop-loss result, not the open BUY above |
+| Stops list, 26 | Five rows including MOVRUSDT/AINUSDT/DASHUSDT/BRUSDT with BUY/SELL/timeframes and SL Hit | Losing results visible; truncated Free history |
+| Targets list, 27 | SANDUSDT 4h TP3; MARSCOINUSDT/NEARUSDT/MOVRUSDT 15m TP1; SANDUSDT 1h TP1 | Heading says TP1/TP2 while a row shows TP3; incomplete population |
 
-Success definition, TP level used, ongoing-call treatment, sample dates, repeat calls, revisions, bid/ask/slippage/fees and complete losing history remain unknown. A quality-of-signal article itself cautions that win definitions, unresolved positions and measurement period must be specified. The privacy policy states signal-history deletion after 30 days; whether aggregate counters retain a separately auditable population is unresolved. [Outcome-quality discussion](https://tradebise.com/learn/what-makes-a-good-trading-signal), [Retention policy](https://tradebise.com/privacy).
+The all-signals counter opened the same Targets Hit modal (28), not a complete generated-call ledger. Free lists show five rows with upgrade to last 20. Absolute issuance/expiry, fills, costs and revisions were not established. BTC 1D changed between DOM and raster observations: raster 25 verifies the open BUY; raster 29 independently verifies the separate closed SELL. These records must not be combined into one lifecycle.
 
-## Business model and conversion
+Education describes algorithms applying rules to momentum, structure and prices; About claims over 2,000 variants tested. No reproducible model identity, training/test data, weights, out-of-sample results or calibration was exposed. The timeframe article says resolutions are analysed independently; broad confirmation language does not prove automatic fusion. Educational examples and historical indexed snippets are distinct from browser examples.
 
-Observed/public positioning supports a **funnel hypothesis**: indexed market/editorial pages → free tool/content → ad inventory and registration → paid usage/alerts. Coexisting acquisition pages, quotas, ad products and paid tiers support this inference. No channel attribution, conversion analytics, revenue, retention or causal funnel effectiveness was measured.
+## Performance claims and denominator caveat
 
-| Offer | Stated commercial terms | Availability certainty |
+Current home began at 378,213 signals / 93% / 26,313 stops; later 378,237 / 93% / 26,314; final Gold raster 92 shows 378,383 / 93% / 26,324. Historical 375,261 / 93% / 26,137 figures remain dated claims. Advertise claims 19,000+ registered traders; UI claims 5,000+ markets. Neither audience nor universe was independently measured.
+
+Public **Dataset JSON-LD defines success as signals that did not hit stop-loss divided by total signals, with ongoing outcomes subject to change**. This is not a completed-trade win rate. Capture 1's schema contained total 77,630, stops 26,308, ongoing 15,530, success 93, modified 2026-10-04. Its stated formula yields **66.11%**, while its total differs from the visible 378,213. Visible total/stops approximately yield rounded 93%, but do not reconcile structured data or unresolved calls. Stale/versioned metadata is a possible explanation; no deception or superiority is inferred.
+
+Complete outcome rules/population, overlapping calls, repeat/revised records, bid/ask, fees/slippage and aggregation remain unknown. Privacy states 30-day signal-history retention; a separately auditable lifetime population was not established. Winning/losing samples improve presentation transparency but do not validate the headline.
+
+## Plans, conversion and commercial mechanics
+
+| Live selection | Price/period | Included claims / verification |
 |---|---|---|
-| Standard | $14.99 for 30 days, USDT, no automatic renewal | Public terms; actual checkout not opened |
-| Premium with alerts | $19.99 for 30 days; includes Telegram new-signal/result messages | Terms describe it; retrieved app shell also marks alert surfaces as forthcoming, requiring verification |
-| Alerts plus bot | $29.99 with forthcoming label in source shell | Source-only roadmap offer; no functional bot or execution permission established |
-| Coin promotion | Custom agreed amount/duration; OxaPay crypto form; manual activation | Public commercial page, no payment initiated |
+| Standard, 10 | $14.99 / 30 days | 12 calls/day, unlimited charts/watchlist, priority support; offer only |
+| Alerts, 11/82/90 | $19.99 / 30 days | Telegram new-signal/target-hit messages; Telegram and Choose alert markets open this gate |
+| Alerts + Bot, 81 | $29.99 / 30 days | Opens the pair on a supported platform with levels to copy, per offer; actual functionality untested |
+| Promotion, 61 | Agreed amount/duration; blank amount form | Boosted Hot Coins/slide-up, manual activation; no submission |
 
-[Plans/payment terms](https://tradebise.com/terms), [App-shell plan labels](https://tradebise.com/signals/ethusdt), [Promotion purchase surface](https://tradebise.com/promotion).
+Selected plan/payment buttons agree with prices. USDT BEP20/ERC20/TRC20, OxaPay, no automatic renewal and final/non-refundable crypto sales are displayed. The live banner announces alerts/Bot available, superseding older forthcoming source labels. Terms describes two paid plans while UI offers three; SoftwareApplication schema still prices Premium at **$19**. Earlier source payment-success scaffolding does not establish a transaction.
 
-Source shells include a free allowance of two calls/day, Standard 12/day, free watchlist cap five versus unrestricted paid list, registration and premium-preview messaging. These are publicly retrieved UI copy, not tested quotas or eligibility. A payment dialog stub displays $19, while terms specify $14.99/$19.99. Hidden/stale/default dialog content may explain the difference; actual payable amount was not verified. Payment processor is labelled OxaPay. Never equate source payment-success text with a transaction. [Quota copy](https://tradebise.com/signals/btcusdt), [Dialog stub](https://tradebise.com/signals/gbpusd), [Authoritative posted plan description](https://tradebise.com/terms).
+Support describes confirmation-based activation, 30-day expiry, one active session, paid priority and correction of activation/incorrect-charge faults; not tested. The **funnel inference** is market/editorial discovery → free tool/registration → ads/quotas/paid usage and alerts. Attribution, retention, revenue and conversion were not measured. Bot wording does not establish automatic order execution; no platform connection or trade occurred.
 
-Support says crypto confirmation precedes activation, premium stops after 30 days, and one active session per account is permitted. This may affect a future cloud login's local-session continuity; it does not explain the separately observed Cloudflare rejection. Refund language excludes poor trading outcomes but describes correcting activation/incorrect-charge faults. Founder-operated support aims at 24-hour replies with paid users prioritised; quality/SLA untested. [Support/activation/session rules](https://tradebise.com/support).
+## Advertising and sponsorship
 
-## Advertising audit
-
-| Page/type | Observed or offered inventory | Physical count / placement certainty |
+| Surface | Current desktop evidence | Limit |
 |---|---|---|
-| Earlier homepage | Two Advertisement-labelled areas, direct-booking/self-promotion; SevioAd/adx.ws labels | Historical browser observation only; no durable screenshot; exact current fill unknown |
-| Signal-page commercial offer | Native placement before signal; banner between signal and chart (728×90 desktop, 320×100 mobile) | Two offered placements on every market page; not a verified rendered total |
-| Application shell | 300×250 ad-placeholder text near market navigation | Source-only; relationship to the two marketed slots and actual fill unresolved |
-| Coin promotion | Boosted top-of-list coin and optional homepage slide-up linking into its market | Sponsorship product, not independent trending rank; actual campaign not sampled |
-| Learn/About/legal/support | No ad-placement labels exposed by retrieved text | Cannot infer zero ads from a text extractor; density unverified |
+| Terminal/home | Two labelled regions: native above search/signal; banner between analysis and chart | Sampled desktop, dynamic fill |
+| Filled ads | Tradebise self-promotion via adx.ws; Sevio/SevioAd “Advertise here” | Provider visibility, not tracking/economics validation |
+| Featured coin | Repeated floating slide-up, sometimes blank promotional text | Obscures content; actual paid campaign unidentified |
+| Advertise/promotion | Offered native/banner/Hot Coins placement and manual booking/activation | Reach and independence unverified |
+| Learn/About/legal/support | No labelled/filled ad modules observed in sampled captures | Does not prove ad-free mobile/future sessions |
 
-[Placement and booking description](https://tradebise.com/advertise), [Shell placeholder](https://tradebise.com/signals/eurusd), [Sponsored discovery product](https://tradebise.com/promotion).
+Advertise offers 728×90 desktop/320×100 mobile banners, negotiable quotes and manual review; rejects gambling/guaranteed-return/fund-handling and other categories. No inquiry was sent. Promotion claims visibility does not affect algorithm output; unverified. CPM/CPC/revenue/consent were not audited. Provider presence alone does not prove the policy's no-cross-site-profiling claim false.
 
-Advertise claims human campaign review and rejects gambling, guaranteed-return, unlicensed fund-handling, malicious and adult categories. Booking is via email quote with placement, market, duration, creative and budget; no fixed rate is published. It claims every advertisement is labelled. Earlier homepage labels support limited sample separation, but signal-page labelling, mobile density, sticky/interstitial behavior and ad-versus-analysis separation still require screenshots. Promotion claims sponsorship changes visibility but not algorithm output; independence is not audited. Actual CPM/CPC, revenue split, provider relationships, fill, tracking/consent and sponsored-selection impacts remain unknown. No advertiser inquiry/payment was submitted.
+## SEO and editorial architecture
 
-## SEO architecture
-
-| Dimension | Observable evidence | Unknown / caution |
+| Dimension | Rendered evidence | Interpretation |
 |---|---|---|
-| URLs | Lowercase /signals/{symbol}, descriptive /learn/{slug}; separate information/commercial paths | All possible symbol routes not enumerated; 5,000 markets ≠ 5,000 indexed pages |
-| Title/H1 | Symbol-specific title and same symbol/direction/level H1 pattern across all ten; homepage multiasset positioning | Exact metadata retained once in source index; canonical and description head tags not available |
-| Editorial | 15 articles across five topic labels; author/date/read-time; H2/H3 sections | Category labels appear without separate category links in retrieved catalog |
-| Internal links | Homepage ten popular markets; footer informational links; catalog articles; 34 contextual cross-links; article-end product CTA | Client-side links/search outcomes not reconciled |
-| Breadcrumb-like text | Back-to-markets and generic site/select-market trail | Structured BreadcrumbList schema not observed; generic trail does not prove selected symbol |
-| Related content | Contextual in-body article links | No distinct related-card module established by text |
-| Pagination | No pagination in retrieved 15-guide catalog | Dynamic pagination unknown |
-| Programmatic pattern | Ten symbol routes share extensive shell/copy with substituted symbol | Distinct useful body/data and actual indexability untested; repetition is not proof of rankings |
-| Conversion placement | Signup cues in navigation, product CTA after education, quota/upgrade scaffolding | Real impressions/conversion/notification delivery unmeasured |
-| Robots/sitemap | Both public endpoints requested | Retriever Internal Error; no content/status obtained, no absence/404 claim |
-| Schema/head | Page titles/H1 observable | Canonical, robots meta, JSON-LD, OG/description source tags and hreflang unverified |
+| URLs/headings | Ten lowercase /signals/{symbol} routes, symbol heading/initial title | Template architecture, not rankings |
+| Symbol canonical | All ten canonicalize to https://tradebise.com/; index,follow; shared description | Potential clustering; actual search-engine choice unmeasured |
+| Consistency | Description 100+ markets versus UI 5,000+; titles sometimes hydrate to generic Tradebise | Metadata/content mismatch, impact unknown |
+| Editorial/legal | Unique title/meta, self-canonical; no explicit robots meta/JSON-LD observed | No explicit robots tag does not mean noindex |
+| Learn | 15 articles, five labels, author/date/read-time, H2/H3, contextual links/product CTA | No category paths, pagination or distinct related-card module found |
+| App schema | Duplicated Organization/WebSite graphs, SearchAction, SoftwareApplication, FAQPage, Dataset | Markup observed; eligibility/validation untested |
+| Schema mismatch | Premium $19; Dataset denominator conflict; Web/Android/iOS claim | Native apps unverified; schema volume does not establish accuracy |
+| Promotion | noindex; no canonical/description observed | Directive observed, index status not measured |
+| Robots/sitemap | Earlier retriever errors; cloud net::ERR_BLOCKED_BY_CLIENT | Client restriction; site contents/status unknown, no 404/bot inference |
 
-[Homepage](https://tradebise.com/), [Symbol template](https://tradebise.com/signals/aapl), [Editorial hub](https://tradebise.com/learn), [Contextual-link example](https://tradebise.com/learn/reading-market-structure).
+Safe head markup/links are retained; article body text is not. No newsletter form surfaced; notification prompts are separate. No search-console, ranking/backlink/indexation, Core Web Vitals or mobile evidence was collected. The [SEO memo](tradebise-seo-patterns-for-vowsig-v0.1.md) proposes useful architecture while avoiding observed consistency problems.
 
-No measured rankings, search traffic, index coverage, backlinks, Core Web Vitals, canonical consolidation or ad-layout stability evidence was collected. The reusable pattern memo is a proposal constrained by current VowSig gates, not an implementation or forecast of SEO success.
+## Completion boundary and remaining gaps
 
-## Legal/privacy and inaccessible states
+The **accessible desktop Free-account pass is complete**. It is not an unrestricted paid audit or predictive validation.
 
-Risk disclaimer says the platform is algorithmic analysis, is not a licensed broker/adviser or registered financial institution, and does not guarantee accuracy/results; third-party data may be delayed. This is a site disclosure, not independent regulatory verification. [Risk disclosure](https://tradebise.com/risk-disclaimer).
+- Allowance blocks fresh output across other symbols and complete settled 4H; routes/charts/gates are captured.
+- Last-20/complete history, paid Telegram/delivery and actual Bot behavior remain gated/untested; no upgrade/payment/platform connection.
+- Registration/reset, payment lifecycle, 2FA secrets/setup/disable, logout and prize participation were not triggered. Browser notification permission/delivery and support response remain untested.
+- Mobile/native apps, full 5,000-market enumeration, tracking/consent/economics, sponsorship independence and conversion/traffic remain unknown.
+- Robots/sitemap contents, aggregate denominator/version consistency, calibrated accuracy and full cost-adjusted outcomes remain unresolved.
 
-Privacy describes account/watchlist/device/visitor/rate-limit data, optional notifications/2FA and crypto transaction references; declares seven-day search/activity and 30-day signal/security-log retention. It claims no cross-site profiling ad networks/advertising cookies. That claim needs technical verification alongside the earlier third-party ad-provider observation; the audit does not assert a privacy violation or validate provider behavior. [Data policy](https://tradebise.com/privacy).
-
-| State / requirement | Status and remaining work |
-|---|---|
-| Cloud login/CAPTCHA | Failed verification; credential-protected observation; automatic review rejected renewed handoff. No further attempt performed |
-| Search, market dropdown, four timeframe results | Controls observed/source-described; click outcomes, persistence and call quotas untested |
-| Watchlist, Trending/Gainers/Losers, news | Public shell exists; list contents/ranking rules/add behavior untested |
-| Performance drilldown / recent results | Source scaffold; exact outcome population and history untested |
-| Notifications/alert markets/Telegram | Source plan/settings copy; no permissions, Telegram linking or delivery test |
-| Account/profile/security/payment history | Source-only placeholders; actual authenticated menu/data inaccessible |
-| Registration/reset/payment states | Blank source scaffolds; no new account/agreement/reset/payment initiated |
-| Bot offer / trading platforms | Forthcoming/source-only; functional behavior and permissions unknown |
-| Prize promotion scaffold | Source includes a football-vote/BNB giveaway and paid-odds cue; whether live/visible/available is unverified. No participation |
-| Mobile/ad templates | All physical placements, scroll coverage and responsive differences lack screenshots |
-| Robots/sitemap/head schema | Retrieval/observability gaps explicitly retained |
-
-All **34 public routes need durable visual evidence**, and the authenticated state backlog needs successful cloud access before reconciliation. The zero-entry screenshot manifest is intentional and honest; source documents/hashes are not substituted for screenshots. No passwords, OTPs, CAPTCHA tokens, cookies, API keys, card or owner-account data were retained. Read-only metadata/source text contains placeholders only and was summarized rather than committing secret-bearing login content or wholesale articles. The audit remains blocked at the visual/authenticated boundary.
-
+Risk/legal pages disclose algorithmic analysis, capital risk, third-party delays and no guarantee; these are publisher disclosures, not independent regulatory verification. Privacy states seven-day search/activity and 30-day signal/security retention. Profile/security controls were read-only. Only reversible BTC watchlist add/remove changed product data and restored initial state. No messages, permissions, purchases, agreements or runtime/product changes followed this research.

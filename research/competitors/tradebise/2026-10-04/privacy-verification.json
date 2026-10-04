@@ -1,137 +1,676 @@
 {
-  "method": "Opaque masking of DOM-derived private regions; supplemental OCR; raw images and OCR excluded from GitHub.",
+  "files": 73,
   "results": [
     {
-      "name": "tradebise-20261004-011-plan-alerts.jpg",
+      "seq": 1,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-007-settings-my-stats-loaded.jpg",
+      "seq": 2,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-004-settings-account.jpg",
+      "seq": 3,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-001-authenticated-home-prompts.jpg",
+      "seq": 4,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-002-home-clean.jpg",
+      "seq": 5,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-010-plan-standard.jpg",
+      "seq": 7,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-026-stop-loss-history.jpg",
+      "seq": 8,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-025-btc-1d.jpg",
+      "seq": 9,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-017-category-us-stocks.jpg",
+      "seq": 10,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-023-btc-15m-settled.jpg",
+      "seq": 11,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-014-alert-market-upgrade-gate-loaded.jpg",
+      "seq": 14,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-015-btc-market-loaded.jpg",
+      "seq": 15,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-008-settings-security-overview.jpg",
+      "seq": 16,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-018-category-forex-gold.jpg",
+      "seq": 17,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-021-watchlist-btc-loaded.jpg",
+      "seq": 18,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-003-account-menu.jpg",
+      "seq": 21,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-009-settings-account-loaded.jpg",
+      "seq": 22,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-016-market-category-dropdown.jpg",
+      "seq": 23,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-005-settings-premium-history.jpg",
+      "seq": 24,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-022-btc-15m-quota-state.jpg",
+      "seq": 25,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-027-target-hit-history.jpg",
+      "seq": 26,
+      "hash_ok": true,
       "ocr_exit": 0,
-      "private_identifier": false,
-      "credential_pattern": false
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
     },
     {
-      "name": "tradebise-20261004-024-btc-4h.jpg",
+      "seq": 27,
+      "hash_ok": true,
       "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 28,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 29,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 30,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 31,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 32,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 39,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 1,
+      "email_domains": [
+        "tradebise.com"
+      ],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 40,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 1,
+      "email_domains": [
+        "tradebise.com"
+      ],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 41,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 2,
+      "email_domains": [
+        "tradebise.com"
+      ],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 45,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 46,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 47,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 48,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 51,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 52,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 53,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 56,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 57,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 58,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 59,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 61,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 62,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 63,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 64,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 65,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 66,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 67,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 68,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 69,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 3,
+      "email_domains": [
+        "tradebise.com"
+      ],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 70,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 4,
+      "email_domains": [
+        "tradebise.com"
+      ],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 71,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 1,
+      "email_domains": [
+        "tradebise.com"
+      ],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 72,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 73,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 74,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 75,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 76,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 77,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 78,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 79,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 80,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 81,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 82,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 83,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 84,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 85,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 86,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 87,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 88,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 89,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 90,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "high_risk_pattern": false,
+      "private_identifier": false
+    },
+    {
+      "seq": 91,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
       "private_identifier": false,
-      "credential_pattern": false
+      "high_risk_pattern": false
+    },
+    {
+      "seq": 92,
+      "hash_ok": true,
+      "ocr_exit": 0,
+      "email_count": 0,
+      "email_domains": [],
+      "private_identifier": false,
+      "high_risk_pattern": false
     }
-  ]
+  ],
+  "method": "Image decoding/SHA-256 verification for all retained JPEGs; supplemental local Tesseract OCR; opaque account/contact/ID/session/IP masking; visual contact-sheet and targeted full-resolution checks. OCR is supplemental, not a guarantee.",
+  "rawOcrCommitted": false
 }

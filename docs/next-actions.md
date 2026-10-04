@@ -74,11 +74,31 @@ Owner direction for product/marketing research:
   preserving VowSig's own evidence-first positioning and avoiding thin/copied
   content.
 
-The authenticated TradingTop teardown is durable in this repository. A
-Tradebise-specific artifact was not located on the current default branch
-during the 2026-10-02 roadmap reconciliation, so no specific Tradebise tactic
-should be asserted or implemented until that exact repository evidence is
-located/reconciled.
+The authenticated TradingTop teardown is durable in this repository. The
+2026-10-04 competitor archive is now also durable in main:
+- WaqarZaka: 95 retained screenshots / paid-account audit;
+- Tradebise: 73 redacted screenshots / authenticated Free-account audit;
+- four-way synthesis and Tradebise SEO-pattern memo.
+
+Canonical synthesis:
+`docs/competitor-synthesis-waqarzaka-tradebise-tradingtop-vowsig-2026-10-04.md`.
+
+Use those findings as evidence inputs only. They do not authorize model,
+runtime, market-universe, broker, pricing, alert or content mutations.
+
+### Competitor-informed immediate decisions
+
+- **Preserve now:** structured signal lifecycle, reasons, immutable provenance,
+  visible abstentions/losses, supported-market URLs and factual risk/methodology
+  explanations.
+- **Test through Issue #9:** alert-channel demand, subscription willingness to
+  pay, education topics users actually need, and whether contextual CTAs help
+  users move from explanation to product use.
+- **Defer:** search/watchlist/trending breadth, large market expansion,
+  calculators, liquidity-score tooling and credit economies.
+- **Reject for current v1:** broker/automatic execution, deposit-linked exchange
+  community access, dense ad placement near signal analysis, paid ranking and
+  urgency mechanics.
 
 ### Active growth roadmap — Organic Acquisition & SEO v0.1
 

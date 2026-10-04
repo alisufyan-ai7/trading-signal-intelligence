@@ -6,7 +6,7 @@ _Parent milestone: Issue #9 — First cohort G4 customer-value evidence v0.1_
 
 ## Purpose
 
-Prepare the first controlled SignalProof AI research-beta cohort after the feedback system has passed durability, privacy and access-boundary verification.
+Prepare the first controlled VowSig research-beta cohort after the feedback system has passed durability, privacy and access-boundary verification.
 
 This document is an owner-reviewed draft only. No invitations are sent automatically.
 
@@ -24,15 +24,15 @@ The target size is operational guidance, not a performance or commercial claim.
 
 Subject / opener:
 
-**Want to test SignalProof AI and tell me what is unclear?**
+**Want to test VowSig and tell me what is unclear?**
 
 Message:
 
-> I’m testing an early research-beta version of SignalProof AI.
+> I’m testing an early research-beta version of VowSig at https://vowsig.com.
 >
 > It shows two separate evidence streams:
 >
-> - AI-v1 shadow intelligence, which produces BUY / SELL / NO_TRADE decisions but does not place broker orders; and
+> - VowSig AI shadow intelligence, which produces BUY / SELL / NO_TRADE decisions but does not place broker orders; and
 > - the existing rule-based S02 benchmark.
 >
 > The product also keeps a visible record of issued signals and outcomes so wins, losses and unresolved signals stay on the record.
@@ -47,7 +47,7 @@ Message:
 > - Which markets and alert channels matter to you?
 > - Would you consider paying for something like this if the evidence remains credible?
 >
-> If you have 5–10 minutes, open the research beta, look through the AI and signal-history sections, then use the **Help shape SignalProof AI** form near the bottom.
+> If you have 5–10 minutes, open https://vowsig.com, look through the AI Insights and signal-history sections, then use the **Help shape VowSig** form near the bottom.
 >
 > Please do not submit broker credentials, account IDs, passwords, API keys, card details or sensitive financial information.
 >
@@ -56,10 +56,10 @@ Message:
 ## What the owner should ask the cohort to do
 
 1. Open the public beta.
-2. Spend a few minutes on the AI-v1 section.
+2. Spend a few minutes on the AI Insights section.
 3. Inspect at least one recent AI decision.
 4. Inspect the immutable forward/signal record.
-5. Notice the distinction between AI-v1 and S02.
+5. Notice the distinction between VowSig AI and S02.
 6. Complete the feedback form once.
 7. Optionally send separate qualitative comments if something is confusing before submitting.
 
@@ -73,6 +73,29 @@ Do not state or imply:
 - that AI-v1 places broker trades;
 - that S02 signals are AI-generated;
 - that A1/A2/A3 thresholds have been achieved before they actually are.
+
+## Competitor-informed questions for the first aggregate review
+
+In addition to the existing structured form fields, use the first cohort to
+interpret these product questions:
+
+- can users distinguish BUY / SELL / NO_TRADE from general market outlook;
+- do users understand issuance, expiry, OPEN/CLOSED and outcome state;
+- does immutable history/provenance increase trust compared with screenshots or
+  headline accuracy claims;
+- which creates more recurring value: alerts, more markets, deeper reasoning,
+  education or historical evidence;
+- would Telegram, browser or email alerts increase repeat use;
+- what exact capability makes a monthly price worthwhile;
+- do users prefer education/content around the product or a cleaner
+  terminal-only experience;
+- would clearly labelled ads on free educational/terminal surfaces be
+  acceptable if paid access is ad-free and core signal/evidence cards remain
+  free of ads.
+
+Do not ask users to evaluate competitor products unless they independently
+mention them. The cohort is for VowSig customer-value evidence, not competitor
+preference polling.
 
 ## Owner review after first cohort
 

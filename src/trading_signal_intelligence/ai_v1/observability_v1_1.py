@@ -755,17 +755,30 @@ def _market_report(
         reason = str(row["payload"].get("reason", "UNKNOWN"))
         reasons[reason] = reasons.get(reason, 0) + 1
 
+    missed_reason_counts: dict[str, int] = {}
     sync_reasons: dict[str, int] = {}
     for row in records:
+        reason = str(row["payload"].get("reason", "UNKNOWN"))
+        if row["record_type"] == "MISSED_INFERENCE":
+            missed_reason_counts[reason] = (
+                missed_reason_counts.get(reason, 0) + 1
+            )
         if row["record_type"] not in {"MISSED_INFERENCE", "SYNC_STATUS"}:
             continue
-        reason = str(row["payload"].get("reason", "UNKNOWN"))
         if reason.startswith("rates_") or reason.startswith("no_current_"):
             sync_reasons[reason] = sync_reasons.get(reason, 0) + 1
 
     inferences = counts.get("INFERENCE", 0)
     errors = counts.get("ERROR", 0)
     missed = counts.get("MISSED_INFERENCE", 0)
+    no_current_h1_tick = missed_reason_counts.get(
+        "no_current_h1_tick",
+        0,
+    )
+    processing_miss_count = missed - no_current_h1_tick
+    processing_miss_denominator = (
+        inferences + errors + processing_miss_count
+    )
     attempted = inferences + errors
     processed = attempted + missed
 
@@ -786,6 +799,15 @@ def _market_report(
         "counts_by_type": counts,
         "valid_inferences": inferences,
         "missed_inferences": missed,
+        "missed_reason_counts": dict(sorted(missed_reason_counts.items())),
+        "no_current_h1_tick_count": no_current_h1_tick,
+        "processing_miss_count": processing_miss_count,
+        "processing_miss_denominator": processing_miss_denominator,
+        "processing_miss_rate_excluding_no_current_h1_tick": (
+            processing_miss_count / processing_miss_denominator
+            if processing_miss_denominator
+            else 0.0
+        ),
         "errors": errors,
         "error_rate_of_attempted_cycles": (
             errors / attempted if attempted else 0.0
@@ -876,6 +898,22 @@ def build_report_v1_1(
     signals = sum(
         m["counts_by_type"].get("SIGNAL", 0) for m in markets.values()
     )
+
+    missed_reason_counts: dict[str, int] = {}
+    for market in markets.values():
+        for reason, count in market["missed_reason_counts"].items():
+            missed_reason_counts[reason] = (
+                missed_reason_counts.get(reason, 0) + int(count)
+            )
+    no_current_h1_tick = missed_reason_counts.get(
+        "no_current_h1_tick",
+        0,
+    )
+    processing_miss_count = missed - no_current_h1_tick
+    processing_miss_denominator = (
+        valid_inferences + errors + processing_miss_count
+    )
+
     attempted_cycles = valid_inferences + errors
     processed_opportunities = attempted_cycles + missed
 
@@ -1009,6 +1047,17 @@ def build_report_v1_1(
             "no_trade": no_trade,
             "rejected_inferences": rejected,
             "missed_inferences": missed,
+            "missed_reason_counts": dict(
+                sorted(missed_reason_counts.items())
+            ),
+            "no_current_h1_tick_count": no_current_h1_tick,
+            "processing_miss_count": processing_miss_count,
+            "processing_miss_denominator": processing_miss_denominator,
+            "processing_miss_rate_excluding_no_current_h1_tick": (
+                processing_miss_count / processing_miss_denominator
+                if processing_miss_denominator
+                else 0.0
+            ),
             "errors": errors,
             "error_rate_of_attempted_cycles": (
                 errors / attempted_cycles if attempted_cycles else 0.0

@@ -1,11 +1,11 @@
 {
   "artifact_hash_overrides": {
-    "ai_ui_index": "003ed0db7b5aa9721e13343afcf3e1e893918c3b092a86ae6a450244d46fee12",
+    "ai_ui_index": "8d83465d6197d005c496b7de1a4c213be6a8ca02deb283df703f81be3622381a",
     "ai_ui_script": "50d4e56bd9efa23a8dedc4441e0e4f97d2e9e68cadf1f42f1429a63a3c22025c",
     "cloud_app_source": "513be64f8ef9339f057b23050056e89e3a03cbc1e147c3f38acd16a67350f9ca",
-    "cloud_snapshot_verifier_script": "c8e6aa53fdfc8e60a85a16ebcc697321282e6b0181e34e649584fc2c27b508b0",
+    "cloud_snapshot_verifier_script": "1f94d2b842cb9cae3c2992f200ad164728cf38f956d8b5c03fd665986e36b33a",
     "observability_source_v1_1": "deb8fafe59fa6d75f62294a76ed46888e3a2b8664f2e18892cfd077eb7d175aa",
-    "product_publish_task_runner_script": "60e05ac11cc5cd733e1cec620b8ec8393fe90beebee7e415105983b09fd217e0"
+    "product_publish_task_runner_script": "4740374471a8a571e2eda6e32e688909d8e79d8a35d788a44cce981129ec9b2c"
   },
   "backfill_performed": false,
   "base_activation_anchor": "research/forward/AI-v1.1-activation-2026-09-30T114412Z.json",
@@ -39,22 +39,22 @@
   "tracked_web_artifact_count": 17,
   "tracked_web_artifact_hashes": {
     "web/app.js": "50d4e56bd9efa23a8dedc4441e0e4f97d2e9e68cadf1f42f1429a63a3c22025c",
-    "web/evidence/index.html": "34c14ddaa334828d7167d7cc4ab9653df451b439ccca552eb687d5869999933a",
-    "web/index.html": "003ed0db7b5aa9721e13343afcf3e1e893918c3b092a86ae6a450244d46fee12",
-    "web/learn/backtests-vs-forward-results.html": "5a4a37ed5119f90d18ba47cee5a461d3e46079fafcbe6c3264d22a24f1e29a4a",
-    "web/learn/buy-sell-no-trade.html": "6b41066ad3db2c6433e058dab377f29a58a2b0a720b28d83df99aaddbe9e1986",
-    "web/learn/immutable-signal-history.html": "bbf1eed293df9d0b3e99b058ce3edb2d9c248b418b3a0e890a85bb3b669f6f25",
-    "web/learn/index.html": "e86660d38ea02126cb5b0aa2ec5eb405abb95af21834fb642d5e31336f1ac566",
-    "web/learn/shadow-validation.html": "b0d47a8bdaee8d432286695b7314c523e0537726ce6fa5b0ba7a4bab89f19e0e",
-    "web/learn/signal-lifecycle.html": "09a300488a6b83abdfd4febb71815b5646c266efcb832b15e2f4087b9d3865a0",
-    "web/markets/dow-30.html": "a92bb812734a0ce59b7bf897564452391822f7158075dda8e93d1800d9924877",
-    "web/markets/index.html": "87e24756779295923f34bcf1f4173d4209df0abdc51a446da7e77bb1585ec567",
-    "web/markets/nasdaq-100.html": "f6e8e5df9b5f3ae2e1f77d47166b2ad793df6ac8b1f811cc8fddcf3759ffcacb",
-    "web/markets/xau-usd.html": "f6fba6b434ae3b2f05ec7a86f941fcc2e79adc9d879434692c8eb13d17c7deb1",
-    "web/styles.css": "472189eba7b9df838721c68f951fdad8ea5a73fcd1747c191e7c18a7224efa83",
+    "web/evidence/index.html": "7084b056275dfb3f18c233b719347ef25e0e51b887371ae96f79a3076819603e",
+    "web/index.html": "8d83465d6197d005c496b7de1a4c213be6a8ca02deb283df703f81be3622381a",
+    "web/learn/backtests-vs-forward-results.html": "a62c00cb31c375c22078c8dae644b18a117f6fb085e654d79f67b6b10d699822",
+    "web/learn/buy-sell-no-trade.html": "1c7ba302f2905e42539220f1239259616327b4be76d084adb716efdaf08789b8",
+    "web/learn/immutable-signal-history.html": "b380e687863c4a0bd19406dd41bc49d4bb274a9d97665e5dc5aa58bc4d399850",
+    "web/learn/index.html": "1680618873268ace6655503d070fb32c399183fed70cd65906f775c95a2504d0",
+    "web/learn/shadow-validation.html": "0644eb7f6170e58d925d273ca69457d1666b9028a11bb8d0bf85cb74002ac75d",
+    "web/learn/signal-lifecycle.html": "7b06d120c5728bd1ff0d7c3886a42ef017883443f96ce5c95738e80a14d01147",
+    "web/markets/dow-30.html": "2f9123f1e52b4247bb1d9ecdd491ff7121f6926ebe780d47e3bf22629c97cff3",
+    "web/markets/index.html": "fb9c1e445b13d361ea831e69aecbad8bdecbc745794b377c2f2a9bb194690b3c",
+    "web/markets/nasdaq-100.html": "8caa864bdea5c3cdf9de0efeae284fbf775601fbbab60503025b30d660218692",
+    "web/markets/xau-usd.html": "85f159db5447d87b8ee913e0daf3c03a759875c00ec79f200f3e69ecc09973c7",
+    "web/styles.css": "d90d8d4fe798457971b66010e2e4c7eda776422b8b625904fa3498b6ab9062d3",
     "web/vowsig-apple-touch-icon.png": "d5febbff0b512bd9d7a72d80c0c949975b3c984c73ae4befd0ed51931ddc62ce",
     "web/vowsig-favicon-96.png": "878a805af67bf5579d8a23b54ed6638d06eeccf187a8998403488b0af232ee5b",
-    "web/vowsig-favicon.svg": "adaccd2a2ddc7d98e004df3cb5d242bbd2dcf4325a3a8c09b4b7047243577447"
+    "web/vowsig-favicon.svg": "6cace903d6c30e8299f9fe27db3a8acbd8fe1eb97096768ef3220ef8061e22d7"
   },
   "tracked_web_tree_mode": "git_tracked_exact",
   "vowsig_ai_redirect_in_scope": false

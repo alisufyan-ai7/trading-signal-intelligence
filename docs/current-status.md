@@ -918,3 +918,19 @@ The activation bundle builder now fingerprints the runtime specification/source/
 The first activation must now be preserved as a **superseded pre-performance activation**, its activation-only databases archived without deletion, and a replacement AI-v1.0 activation created from the final runtime commit.
 
 This correction is not performance-driven: all three current AI ledgers still contain activation only.
+
+## Missed-inference VPS diagnosis — COMPLETE / 2026-10-05
+
+Read-only VPS evidence resolves the weekend metric concern as an observability-labeling defect, not a newly observed AI-v1.1 synchronization regression.
+
+- `MISSED_INFERENCE`: 156 total.
+- `no_current_h1_tick`: 153.
+- non-no-tick misses: 3, all `scheduler_gap_or_stale_at_discovery` dated 2026-09-30.
+- since 2026-10-02: 147 no-tick; zero stale/rates-sync/next-open/other misses.
+- weekend effective-boundary no-tick rows: 138.
+- DB bytes unchanged; production HEAD/worktree unchanged; scheduler healthy.
+- AI-v1.1 / AI-v1.0 / SHADOW_ONLY and broker-execution-disabled boundaries remain unchanged.
+
+Canonical record: `docs/vowsig-missed-inference-diagnosis-2026-10-05.md`.
+
+Issue #9 outreach remains paused pending a separately reviewed and approved public/observability correction.

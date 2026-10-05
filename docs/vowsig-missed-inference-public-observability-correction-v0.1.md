@@ -359,17 +359,87 @@ Attempt-3 production safety proof:
 - publisher task before/after: Ready, LastTaskResult 0, definition SHA-256
   `982d304c4bd9ff3ac859584f1f1a50a31cd5c7f82594cb27fe160c18011435f5`.
 
-A fourth isolated VPS attempt is required against the new exact PR head. No PASS claim
-should be made until the focused suite and required regression suite pass.
+### Isolated VPS attempt 4 — required verification PASS
 
-Recommended focused command after owner review, before any cutover:
+Exact tested commit:
+
+`99ef15ac3f17d6f48ec7dca440bfedba5e0ffdca`
+
+Environment:
+
+- separate detached Git worktree:
+  `trading-signal-intelligence-pr21-test-20261005-122435`;
+- production worktree remained on
+  `f365f42c349468abd9a84ab4e2d28f4c0636c262`;
+- PR relation to base at test time: 0 behind, 21 ahead;
+- `ai_insights.py` Git blob identity remained
+  `8a5991e4fa776c8dfc3a8b7460187ca76e78060d`;
+- no production checkout/switch;
+- no scheduler change;
+- no publisher change;
+- no ledger mutation.
+
+Exact commands executed in the isolated PR worktree:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q -W error tests\test_ai_v1_observability_v1_1.py tests\test_cloud_ai_runtime_validation.py tests\test_vowsig_public_miss_metrics_ui.py
+C:\Users\Administrator\Desktop\Signal Projects\trading-signal-intelligence\.venv\Scripts\python.exe -m compileall -q src scripts tests
+C:\Users\Administrator\Desktop\Signal Projects\trading-signal-intelligence\.venv\Scripts\python.exe -m pytest -q -W error --junitxml=<evidence-dir>\focused.xml tests/test_ai_v1_observability_v1_1.py tests/test_cloud_ai_runtime_validation.py tests/test_vowsig_public_miss_metrics_ui.py
+C:\Users\Administrator\Desktop\Signal Projects\trading-signal-intelligence\.venv\Scripts\python.exe -m pytest -q -W error --junitxml=<evidence-dir>\regression.xml <20 required governance/runtime/public regression test files>
 ```
 
-Then run the broader public/runtime verification suite appropriate to the existing
-public-surface correction runbook.
+Results:
+
+- Stage 1 Python compilation: **PASS**;
+- Stage 2 focused correction suite: **PASS — 12 passed, 0 failed, 0 errors, 0 skipped**;
+- Stage 3 governance/runtime/public regression:
+  **PASS — 127 passed, 0 failed, 0 errors, 0 skipped**;
+- Stage 4 exact correction semantics: **PASS**;
+- warnings: **0 observed**; both pytest stages ran with `-W error`;
+- required verification result: **PASS**.
+
+The optional entire-repository pytest suite was **SKIPPED_SAFETY_WINDOW**, not failed.
+At that checkpoint only 36.65 minutes remained before the next AI task and 39.70 minutes
+before the next publisher task, below the harness's 40-minute threshold. No environment
+or code failure occurred in the optional suite because it was not started.
+
+Attempt-4 production safety proof:
+
+- production HEAD before:
+  `f365f42c349468abd9a84ab4e2d28f4c0636c262`;
+- production HEAD after:
+  `f365f42c349468abd9a84ab4e2d28f4c0636c262`;
+- production worktree before/after: clean;
+- XAUUSD ledger SHA-256 before/after:
+  `92ccb6cf34860b78becb8eb53a1fda10f4b737ecd0235114ea2db92e6e36f194`;
+- USTEC ledger SHA-256 before/after:
+  `4331c9ecc6e6e845442c63578c664efd48ac4a4840f063586cfbbf9598d72f49`;
+- US30 ledger SHA-256 before/after:
+  `614e725ba8879891e153b7ee471c9e3f9f7b506fb6f8050ab5f33b5474b65da3`;
+- all three ledger comparisons: byte-identical `True`;
+- AI-v1.1 scheduled task before/after:
+  `Ready`, `LastTaskResult = 0`, definition SHA-256
+  `7fd1589aa1e55684897a3b0e908f28ae4cb78ac3789c6f4f20c4917442529b02`;
+- publisher scheduled task before/after:
+  `Ready`, `LastTaskResult = 0`, definition SHA-256
+  `982d304c4bd9ff3ac859584f1f1a50a31cd5c7f82594cb27fe160c18011435f5`.
+
+Attempt-4 evidence paths on the VPS:
+
+- summary:
+  `C:\Users\Administrator\Desktop\Signal Projects\pr21-vps-test-evidence-20261005-122435\pr21-vps-test-summary.json`;
+- transcript:
+  `C:\Users\Administrator\Desktop\Signal Projects\pr21-vps-test-evidence-20261005-122435\pr21-vps-test-transcript.txt`;
+- isolated tested worktree:
+  `C:\Users\Administrator\Desktop\Signal Projects\trading-signal-intelligence-pr21-test-20261005-122435`.
+
+Conclusion:
+
+The required isolated verification of PR #21 has **PASSED** at exact tested commit
+`99ef15ac3f17d6f48ec7dca440bfedba5e0ffdca`.
+
+This PASS does **not** authorize merge, production pull, sequence-4 creation, Railway
+deployment, public snapshot publication or Issue #9 outreach. The PR remains a draft
+review candidate pending the owner's next explicit approval boundary.
 
 ## Public-surface correction governance
 

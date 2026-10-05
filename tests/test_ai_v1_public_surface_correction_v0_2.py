@@ -257,6 +257,7 @@ def test_v2_builder_is_confirmation_gated_and_non_trading() -> None:
     assert '"broker_execution_enabled": False' in text
     assert '"scheduler_changed": False' in text
     assert '"tracked_web_tree_mode": "git_tracked_exact"' in text
+    assert '"change_scope": "VowSig missed-inference public observability correction v0.1"' in text
     assert "supersedes_correction" in text
 
     assert "OpenAIResponsesAdapter" not in text

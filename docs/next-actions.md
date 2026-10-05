@@ -450,3 +450,21 @@ Stop there and provide:
 - resulting Git commit SHA.
 
 After that checkpoint is verified, create the replacement activation from the final runtime-bound repository commit. Do not install the scheduler until the replacement activation anchor is also committed and verified upstream.
+
+## Missed-inference VPS diagnosis — COMPLETE / 2026-10-05
+
+Immediate next action is **not** outreach and **not** a runtime change.
+
+Prepare/review a public/observability-only correction that:
+- preserves all immutable `MISSED_INFERENCE` records;
+- keeps AI-v1.1 runtime and AI-v1.0 decision protocol unchanged;
+- keeps `scripts/run_ai_v1_1_live.py` and ledger semantics unchanged;
+- exposes exact missed-inference reason counts in derived observability;
+- separates `no_current_h1_tick` operational cycles from non-no-tick processing misses;
+- removes/replaces the public label `Missed opportunities`;
+- retains raw counts for evidence/backward compatibility;
+- adds focused tests and zero-mutation verification.
+
+No implementation/cutover is authorized yet. Before publication, present the exact implementation commit/package/diff and request separate owner approval.
+
+Issue #9 Wave 1 (P031/P032/P034/P036/P037) remains held until that public correction is live and verified.

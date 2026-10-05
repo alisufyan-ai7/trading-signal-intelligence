@@ -217,10 +217,10 @@ function renderAi(ai) {
       <div class="metric-row">
         <div><span>Inferences</span><strong>${esc(m.valid_inferences)}</strong></div>
         <div><span>Signals</span><strong>${esc(m.signals)}</strong></div>
-        <div><span>Processing misses</span><strong>${m.processing_miss_count == null ? "—" : esc(m.processing_miss_count)}</strong></div>
+        <div><span>NO_TRADE</span><strong>${esc(m.no_trade)}</strong></div>
         <div><span>Errors</span><strong>${esc(m.errors)}</strong></div>
       </div>
-      <div class="state">No-current-tick cycles: ${m.no_current_h1_tick_count == null ? "—" : esc(m.no_current_h1_tick_count)} • Processing-miss rate: ${m.processing_miss_rate == null ? "—" : fmtPct(m.processing_miss_rate)} • latest evidence: ${esc(fmtTime(m.latest_recorded_at_utc))}</div>
+      <div class="state">Operational miss categories are summarized above • latest evidence: ${esc(fmtTime(m.latest_recorded_at_utc))}</div>
     </article>
   `).join("");
 

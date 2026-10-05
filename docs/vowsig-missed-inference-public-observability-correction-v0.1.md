@@ -251,16 +251,71 @@ Attempt-1 production safety proof:
 - publisher task before/after: Ready, LastTaskResult 0, definition SHA-256
   `982d304c4bd9ff3ac859584f1f1a50a31cd5c7f82594cb27fe160c18011435f5`.
 
-A second isolated VPS attempt is required against the new exact PR head. No PASS claim
+### Isolated VPS attempt 2 — preserved baseline-state failure
+
+Exact tested commit:
+
+`faba704cef4515f6f8dc954832b6a23956761ea3`
+
+Results:
+
+- Stage 1 Python compilation: **PASS**;
+- Stage 2 focused correction suite: **PASS — 12 passed**;
+- Stage 3 governance/runtime/public regression:
+  **FAIL — 1 failed, 125 passed**;
+- failing test:
+  `tests/test_ai_v1_activation_v1_1.py::test_preactivation_report_passes_without_creating_v1_1_state`;
+- exact mismatch: expected `preactivation_check == "PASS"`, observed
+  `"FAIL"`;
+- Stage 4 exact semantics: not reached;
+- full repository suite: not attempted.
+
+Diagnosis:
+
+The failure is **baseline post-activation test drift**, not a PR #21 production-code
+regression. The failing test, the activation implementation, and the durable activation
+anchor are byte-identical on `main` and the tested PR head. The test still assumed that
+no AI-v1.1 activation anchor exists, but the current repository intentionally contains:
+
+`research/forward/AI-v1.1-activation-2026-09-30T114412Z.json`
+
+The production implementation correctly defines preactivation readiness as FAIL whenever
+an activation anchor already exists. Therefore the observed FAIL is the correct
+fail-closed behavior for the current activated repository.
+
+The test-only correction:
+
+1. changes the real repository-state integration assertion to require fail-closed
+   `preactivation_check == "FAIL"` with the exact durable activation anchor present;
+2. adds a separate prospective clean-state unit case using a temporary root and patched
+   pure helpers, preserving explicit coverage that a genuinely clean preactivation state
+   would still return PASS.
+
+No production artifact changed as part of this correction.
+
+Attempt-2 production safety proof:
+
+- production HEAD before/after:
+  `f365f42c349468abd9a84ab4e2d28f4c0636c262`;
+- production worktree before/after: clean;
+- XAUUSD ledger SHA-256 before/after:
+  `92ccb6cf34860b78becb8eb53a1fda10f4b737ecd0235114ea2db92e6e36f194`;
+- USTEC ledger SHA-256 before/after:
+  `4331c9ecc6e6e845442c63578c664efd48ac4a4840f063586cfbbf9598d72f49`;
+- US30 ledger SHA-256 before/after:
+  `614e725ba8879891e153b7ee471c9e3f9f7b506fb6f8050ab5f33b5474b65da3`;
+- AI-v1.1 task before/after: Ready, LastTaskResult 0, definition SHA-256
+  `7fd1589aa1e55684897a3b0e908f28ae4cb78ac3789c6f4f20c4917442529b02`;
+- publisher task before/after: Ready, LastTaskResult 0, definition SHA-256
+  `982d304c4bd9ff3ac859584f1f1a50a31cd5c7f82594cb27fe160c18011435f5`.
+
+A third isolated VPS attempt is required against the new exact PR head. No PASS claim
 should be made until the focused suite and required regression suite pass.
 
 Recommended focused command after owner review, before any cutover:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q \
-  tests\test_ai_v1_observability_v1_1.py \
-  tests\test_cloud_ai_runtime_validation.py \
-  tests\test_vowsig_public_miss_metrics_ui.py
+.\.venv\Scripts\python.exe -m pytest -q -W error tests\test_ai_v1_observability_v1_1.py tests\test_cloud_ai_runtime_validation.py tests\test_vowsig_public_miss_metrics_ui.py
 ```
 
 Then run the broader public/runtime verification suite appropriate to the existing

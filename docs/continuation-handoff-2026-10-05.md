@@ -213,3 +213,21 @@ Relevant production/runtime files:
 The next chat should begin from the owner-provided **read-only VPS diagnostic output**.
 
 No outreach and no production change should occur before that output is analyzed.
+
+## Missed-inference VPS diagnosis — COMPLETE / 2026-10-05
+
+The owner-supplied read-only VPS diagnostic is now reviewed. Canonical diagnosis: `docs/vowsig-missed-inference-diagnosis-2026-10-05.md`.
+
+Conclusion:
+- 156 total `MISSED_INFERENCE`;
+- 153 = `no_current_h1_tick`;
+- 3 = `scheduler_gap_or_stale_at_discovery`, all dated 2026-09-30;
+- since 2026-10-02 cutoff: 147 no-tick and zero stale/rates-sync/next-open/other misses;
+- 138 no-tick rows fall on Saturday/Sunday effective boundaries;
+- no evidence of a new AI-v1.1 synchronization/staleness regression after Friday;
+- DB hashes byte-identical before/after;
+- production HEAD/worktree unchanged;
+- scheduler remained healthy;
+- public `Missed opportunities` label is materially misleading.
+
+Decision: preserve immutable evidence and prepare only a derived observability/public-label correction. No runtime, ledger, model, scheduler or trading change is authorized. Issue #9 Wave 1 remains paused until a separately approved correction is live and verified.

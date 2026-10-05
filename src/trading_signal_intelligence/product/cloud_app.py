@@ -315,6 +315,46 @@ def markets() -> list[dict]:
     return _market_rows(snapshot) if snapshot else []
 
 
+def _with_public_miss_metrics(ai_v1: dict[str, Any]) -> dict[str, Any]:
+    """Add non-misleading public miss metrics without mutating the snapshot."""
+
+    payload = dict(ai_v1)
+    totals = dict(payload.get("totals") or {})
+    sync_counts = dict(totals.get("sync_operational_counts") or {})
+
+    raw_missed_inferences = int(totals.get("missed_inferences") or 0)
+    no_current_h1_tick_count = int(
+        sync_counts.get("no_current_h1_tick") or 0
+    )
+    processing_miss_count = max(
+        0,
+        raw_missed_inferences - no_current_h1_tick_count,
+    )
+    processing_miss_denominator = (
+        int(totals.get("valid_inferences") or 0)
+        + int(totals.get("errors") or 0)
+        + processing_miss_count
+    )
+    processing_miss_rate = (
+        processing_miss_count / processing_miss_denominator
+        if processing_miss_denominator
+        else 0.0
+    )
+
+    totals["no_current_h1_tick_count"] = no_current_h1_tick_count
+    totals["processing_miss_count"] = processing_miss_count
+    totals["processing_miss_denominator"] = processing_miss_denominator
+    totals["processing_miss_rate"] = processing_miss_rate
+
+    payload["totals"] = totals
+    payload["operational_miss_notice"] = (
+        "No-current-tick cycles are operational availability events, "
+        "commonly closed-session periods. They are not missed trades or "
+        "profitable opportunities."
+    )
+    return payload
+
+
 @app.get("/api/ai/insights")
 def ai_insights() -> dict:
     snapshot = _load_snapshot()
@@ -333,7 +373,7 @@ def ai_insights() -> dict:
             "provider_request_metadata_included": False,
             "hidden_reasoning_included": False,
         }
-    return snapshot.get("ai_v1", {
+    return _with_public_miss_metrics(snapshot.get("ai_v1", {
         "schema_version": 1,
         "runtime_version": "UNKNOWN",
         "decision_protocol_version": "AI-v1.0",
@@ -346,7 +386,7 @@ def ai_insights() -> dict:
         "raw_feature_snapshots_included": False,
         "provider_request_metadata_included": False,
         "hidden_reasoning_included": False,
-    })
+    }))
 
 
 @app.get("/api/signals")

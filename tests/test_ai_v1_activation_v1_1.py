@@ -39,7 +39,10 @@ def test_preactivation_report_fails_closed_after_activation_anchor_exists() -> N
     assert report["runtime_version"] == "AI-v1.1"
     assert report["decision_protocol_version"] == "AI-v1.0"
     assert report["frozen_decision_artifacts_match_upstream"] is True
-    assert report["v1_1_activation_anchors"] == [
+    assert [
+        Path(value).as_posix()
+        for value in report["v1_1_activation_anchors"]
+    ] == [
         "research/forward/AI-v1.1-activation-2026-09-30T114412Z.json"
     ]
     assert not any(report["v1_1_ledger_paths_exist"].values())

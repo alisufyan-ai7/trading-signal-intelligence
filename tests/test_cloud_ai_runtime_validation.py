@@ -112,3 +112,23 @@ def test_public_miss_metrics_handle_missing_counts_fail_safely() -> None:
     assert result["totals"]["processing_miss_count"] == 0
     assert result["totals"]["processing_miss_denominator"] == 0
     assert result["totals"]["processing_miss_rate"] == 0.0
+
+
+def test_public_miss_metrics_bound_no_tick_to_raw_missed_count() -> None:
+    result = _with_public_miss_metrics(
+        {
+            "totals": {
+                "valid_inferences": 10,
+                "missed_inferences": 2,
+                "errors": 0,
+                "sync_operational_counts": {
+                    "no_current_h1_tick": 5,
+                },
+            }
+        }
+    )
+
+    assert result["totals"]["no_current_h1_tick_count"] == 2
+    assert result["totals"]["processing_miss_count"] == 0
+    assert result["totals"]["processing_miss_denominator"] == 10
+    assert result["totals"]["processing_miss_rate"] == 0.0

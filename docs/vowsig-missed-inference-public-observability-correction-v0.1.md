@@ -194,16 +194,65 @@ Static regression guard asserts:
 
 ## Test execution status
 
-Tests are **prepared but not yet executed** in this chat.
+### Isolated VPS attempt 1 — preserved failure
 
-Reason:
+Exact tested commit:
 
-- this repository currently has no GitHub Actions workflow;
-- this session cannot resolve GitHub from the local container, so an authenticated local
-  checkout cannot be obtained here.
+`56795182ce1ca51e70b0daa3431cf8580bead8ce`
 
-No PASS claim should be made until the focused suite is executed in a real repository
-checkout.
+Environment:
+
+- separate detached Git worktree on the VPS;
+- production worktree remained on
+  `f365f42c349468abd9a84ab4e2d28f4c0636c262`;
+- no production checkout/switch;
+- no scheduler change;
+- no publisher change;
+- no ledger mutation.
+
+Results:
+
+- Stage 1 Python compilation: **PASS**;
+- Stage 2 focused correction suite: **FAIL — 1 failed, 11 passed**;
+- failing test:
+  `tests/test_vowsig_public_miss_metrics_ui.py::test_public_ai_ui_does_not_label_raw_missed_records_as_opportunities`;
+- exact failed assertion:
+  `assert "Processing-miss rate:" in text`;
+- Stage 3 regression suite: not attempted;
+- full suite: not attempted.
+
+Diagnosis:
+
+The failure was a **stale test assertion**, not evidence of a public-product or
+observability implementation failure. The final UI intentionally displays the aggregate
+processing-miss rate inside the `Processing misses` value as
+`count • fmtPct(t.processing_miss_rate)`. The literal per-market label
+`Processing-miss rate:` was removed when per-market raw/unseparated miss metrics were
+removed. The canonical design requires the rate to be displayed, but does not require
+that literal label.
+
+The test-only correction replaces the stale literal-label assertion with a direct guard
+that the UI consumes `t.processing_miss_rate` through `fmtPct(...)`. No production
+artifact changed as part of this correction.
+
+Attempt-1 production safety proof:
+
+- production HEAD before/after:
+  `f365f42c349468abd9a84ab4e2d28f4c0636c262`;
+- production worktree before/after: clean;
+- XAUUSD ledger SHA-256 before/after:
+  `7a38ce2a8a38b1d136a87d53f1571865e0f8a92fda09f08c106110ca0b14c1f8`;
+- USTEC ledger SHA-256 before/after:
+  `60457c88d87c30307f0e52c12d2bb909ded3d0d7a311f94564856298d492a620`;
+- US30 ledger SHA-256 before/after:
+  `9cabb047f00ebfe94c1a00e881be1cefd6252ebadde7e74670b0dc395602a240`;
+- AI-v1.1 task before/after: Ready, LastTaskResult 0, definition SHA-256
+  `7fd1589aa1e55684897a3b0e908f28ae4cb78ac3789c6f4f20c4917442529b02`;
+- publisher task before/after: Ready, LastTaskResult 0, definition SHA-256
+  `982d304c4bd9ff3ac859584f1f1a50a31cd5c7f82594cb27fe160c18011435f5`.
+
+A second isolated VPS attempt is required against the new exact PR head. No PASS claim
+should be made until the focused suite and required regression suite pass.
 
 Recommended focused command after owner review, before any cutover:
 

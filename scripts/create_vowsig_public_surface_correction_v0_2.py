@@ -243,7 +243,7 @@ def main() -> None:
         "supersedes_correction_sha256": predecessor_sha,
         "brand": "VowSig",
         "canonical_domain": "https://vowsig.com",
-        "change_scope": "VowSig SEO Phase 8A public surface",
+        "change_scope": "VowSig missed-inference public observability correction v0.1",
         "artifact_hash_overrides": dict(sorted(overrides.items())),
         "corrected_artifact_names": sorted(overrides),
         "tracked_web_tree_mode": "git_tracked_exact",

@@ -209,6 +209,38 @@ def build_public_ai_insights(
 
         market = report["markets"][symbol]
         counts = market["counts_by_type"]
+        raw_missed_inferences = int(market["missed_inferences"])
+        missed_reason_counts = dict(market.get("missed_reason_counts", {}))
+        no_current_h1_tick_count = int(
+            market.get(
+                "no_current_h1_tick_count",
+                missed_reason_counts.get("no_current_h1_tick", 0),
+            )
+        )
+        processing_miss_count = int(
+            market.get(
+                "processing_miss_count",
+                raw_missed_inferences - no_current_h1_tick_count,
+            )
+        )
+        processing_miss_denominator = int(
+            market.get(
+                "processing_miss_denominator",
+                int(market["valid_inferences"])
+                + int(market["errors"])
+                + processing_miss_count,
+            )
+        )
+        processing_miss_rate = float(
+            market.get(
+                "processing_miss_rate_excluding_no_current_h1_tick",
+                (
+                    processing_miss_count / processing_miss_denominator
+                    if processing_miss_denominator
+                    else 0.0
+                ),
+            )
+        )
         market_rows.append(
             {
                 "source_symbol": symbol,
@@ -222,7 +254,12 @@ def build_public_ai_insights(
                 ]["completed_trades"],
                 "no_trade": counts.get("NO_TRADE", 0),
                 "rejected_inferences": counts.get("REJECTED_INFERENCE", 0),
-                "missed_inferences": market["missed_inferences"],
+                "missed_inferences": raw_missed_inferences,
+                "missed_reason_counts": missed_reason_counts,
+                "no_current_h1_tick_count": no_current_h1_tick_count,
+                "processing_miss_count": processing_miss_count,
+                "processing_miss_denominator": processing_miss_denominator,
+                "processing_miss_rate": processing_miss_rate,
                 "errors": market["errors"],
                 "missed_rate": market[
                     "missed_rate_of_processed_opportunities"
@@ -254,6 +291,38 @@ def build_public_ai_insights(
     }
 
     totals = report["totals"]
+    raw_missed_inferences = int(totals["missed_inferences"])
+    missed_reason_counts = dict(totals.get("missed_reason_counts", {}))
+    no_current_h1_tick_count = int(
+        totals.get(
+            "no_current_h1_tick_count",
+            missed_reason_counts.get("no_current_h1_tick", 0),
+        )
+    )
+    processing_miss_count = int(
+        totals.get(
+            "processing_miss_count",
+            raw_missed_inferences - no_current_h1_tick_count,
+        )
+    )
+    processing_miss_denominator = int(
+        totals.get(
+            "processing_miss_denominator",
+            int(totals["valid_inferences"])
+            + int(totals["errors"])
+            + processing_miss_count,
+        )
+    )
+    processing_miss_rate = float(
+        totals.get(
+            "processing_miss_rate_excluding_no_current_h1_tick",
+            (
+                processing_miss_count / processing_miss_denominator
+                if processing_miss_denominator
+                else 0.0
+            ),
+        )
+    )
     performance_bearing_records = (
         int(totals["valid_inferences"])
         + int(totals["missed_inferences"])
@@ -306,6 +375,11 @@ def build_public_ai_insights(
             "Raw confidence is an uncalibrated model score, not a probability "
             "of profit or success."
         ),
+        "operational_miss_notice": (
+            "No-current-tick cycles are operational availability events, "
+            "commonly closed-session periods. They are not missed trades or "
+            "profitable opportunities."
+        ),
         "health": {
             "healthy": report["health"]["healthy"],
             "ledgers_valid": report["health"]["ledgers_valid"],
@@ -326,7 +400,12 @@ def build_public_ai_insights(
             "signals": totals["signals"],
             "no_trade": totals["no_trade"],
             "rejected_inferences": totals["rejected_inferences"],
-            "missed_inferences": totals["missed_inferences"],
+            "missed_inferences": raw_missed_inferences,
+            "missed_reason_counts": missed_reason_counts,
+            "no_current_h1_tick_count": no_current_h1_tick_count,
+            "processing_miss_count": processing_miss_count,
+            "processing_miss_denominator": processing_miss_denominator,
+            "processing_miss_rate": processing_miss_rate,
             "errors": totals["errors"],
             "error_rate": totals["error_rate_of_attempted_cycles"],
             "missed_rate": totals[

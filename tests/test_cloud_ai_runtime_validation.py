@@ -5,7 +5,10 @@ import copy
 import pytest
 from fastapi import HTTPException
 
-from trading_signal_intelligence.product.cloud_app import _validate_snapshot
+from trading_signal_intelligence.product.cloud_app import (
+    _validate_snapshot,
+    _with_public_miss_metrics,
+)
 
 
 def _snapshot() -> dict:
@@ -75,3 +78,37 @@ def test_cloud_snapshot_rejects_wrong_decision_protocol_version() -> None:
     payload["ai_v1"]["decision_protocol_version"] = "AI-v9"
     with pytest.raises(HTTPException):
         _validate_snapshot(payload)
+
+
+def test_public_miss_metrics_separate_no_tick_without_mutating_snapshot() -> None:
+    ai_v1 = {
+        "runtime_version": "AI-v1.1",
+        "totals": {
+            "valid_inferences": 177,
+            "missed_inferences": 156,
+            "errors": 0,
+            "sync_operational_counts": {
+                "no_current_h1_tick": 153,
+            },
+        },
+    }
+    original = copy.deepcopy(ai_v1)
+
+    result = _with_public_miss_metrics(ai_v1)
+
+    assert ai_v1 == original
+    assert result["totals"]["missed_inferences"] == 156
+    assert result["totals"]["no_current_h1_tick_count"] == 153
+    assert result["totals"]["processing_miss_count"] == 3
+    assert result["totals"]["processing_miss_denominator"] == 180
+    assert result["totals"]["processing_miss_rate"] == 1 / 60
+    assert "not missed trades" in result["operational_miss_notice"].lower()
+
+
+def test_public_miss_metrics_handle_missing_counts_fail_safely() -> None:
+    result = _with_public_miss_metrics({"runtime_version": "UNKNOWN"})
+
+    assert result["totals"]["no_current_h1_tick_count"] == 0
+    assert result["totals"]["processing_miss_count"] == 0
+    assert result["totals"]["processing_miss_denominator"] == 0
+    assert result["totals"]["processing_miss_rate"] == 0.0

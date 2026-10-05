@@ -197,6 +197,21 @@ def test_public_ai_insights_are_sanitized_and_read_only(tmp_path) -> None:
     assert payload["totals"]["signals"] == 1
     assert payload["totals"]["open_shadow_signals"] == 1
     assert payload["totals"]["missed_inferences"] == 1
+    assert payload["totals"]["missed_reason_counts"] == {}
+    assert payload["totals"]["no_current_h1_tick_count"] == 0
+    assert payload["totals"]["processing_miss_count"] == 1
+    assert payload["totals"]["processing_miss_denominator"] == 3
+    assert payload["totals"]["processing_miss_rate"] == 1 / 3
+    assert "not missed trades" in payload["operational_miss_notice"].lower()
+    us30_public = next(
+        row for row in payload["markets"]
+        if row["source_symbol"] == "US30"
+    )
+    assert us30_public["missed_inferences"] == 1
+    assert us30_public["no_current_h1_tick_count"] == 0
+    assert us30_public["processing_miss_count"] == 1
+    assert us30_public["processing_miss_denominator"] == 1
+    assert us30_public["processing_miss_rate"] == 1.0
     assert payload["recent_decisions"][0]["decision"] == "BUY"
     assert payload["recent_decisions"][0]["raw_confidence"] == 73
     assert payload["recent_decisions"][0]["status"] == "SHADOW_SIGNAL"

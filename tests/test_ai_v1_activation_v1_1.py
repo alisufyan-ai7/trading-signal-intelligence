@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pytest
 
+from trading_signal_intelligence.ai_v1 import activation_v1_1 as activation_v1_1_module
 from trading_signal_intelligence.ai_v1.activation_v1_1 import (
     ActivationV11Error,
     RUNTIME_VERSION,
@@ -25,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UTC = timezone.utc
 
 
-def test_preactivation_report_passes_without_creating_v1_1_state() -> None:
+def test_preactivation_report_fails_closed_after_activation_anchor_exists() -> None:
     before = {
         market: (ROOT / relative).exists()
         for market, relative in DATABASE_PATHS.items()
@@ -34,11 +35,13 @@ def test_preactivation_report_passes_without_creating_v1_1_state() -> None:
 
     report = preactivation_report_v1_1(ROOT)
 
-    assert report["preactivation_check"] == "PASS"
+    assert report["preactivation_check"] == "FAIL"
     assert report["runtime_version"] == "AI-v1.1"
     assert report["decision_protocol_version"] == "AI-v1.0"
     assert report["frozen_decision_artifacts_match_upstream"] is True
-    assert report["v1_1_activation_anchors"] == []
+    assert report["v1_1_activation_anchors"] == [
+        "research/forward/AI-v1.1-activation-2026-09-30T114412Z.json"
+    ]
     assert not any(report["v1_1_ledger_paths_exist"].values())
     assert report["provider_call_made"] is False
     assert report["mt5_call_made"] is False
@@ -50,6 +53,52 @@ def test_preactivation_report_passes_without_creating_v1_1_state() -> None:
         for market, relative in DATABASE_PATHS.items()
     }
     assert after == before
+
+
+def test_preactivation_report_passes_for_clean_prospective_state(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(
+        activation_v1_1_module,
+        "require_clean_tracked_worktree",
+        lambda repo_root: None,
+    )
+    monkeypatch.setattr(
+        activation_v1_1_module,
+        "verify_frozen_decision_lineage",
+        lambda repo_root: {
+            "match": True,
+            "mismatches": {},
+            "observed": {},
+        },
+    )
+    monkeypatch.setattr(
+        activation_v1_1_module,
+        "artifact_hashes",
+        lambda repo_root, paths: {},
+    )
+    monkeypatch.setattr(
+        activation_v1_1_module,
+        "git_commit_sha",
+        lambda repo_root: "a" * 40,
+    )
+    monkeypatch.setattr(
+        activation_v1_1_module,
+        "file_sha256",
+        lambda path: "b" * 64,
+    )
+
+    report = preactivation_report_v1_1(tmp_path)
+
+    assert report["preactivation_check"] == "PASS"
+    assert report["frozen_decision_artifacts_match_upstream"] is True
+    assert report["v1_1_activation_anchors"] == []
+    assert not any(report["v1_1_ledger_paths_exist"].values())
+    assert report["provider_call_made"] is False
+    assert report["mt5_call_made"] is False
+    assert report["activation_performed"] is False
+    assert report["scheduler_changed"] is False
 
 
 def test_activation_preview_binds_upstream_and_restarts_evidence() -> None:

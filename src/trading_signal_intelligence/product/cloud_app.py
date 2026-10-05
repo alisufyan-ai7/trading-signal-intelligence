@@ -323,12 +323,12 @@ def _with_public_miss_metrics(ai_v1: dict[str, Any]) -> dict[str, Any]:
     sync_counts = dict(totals.get("sync_operational_counts") or {})
 
     raw_missed_inferences = int(totals.get("missed_inferences") or 0)
-    no_current_h1_tick_count = int(
-        sync_counts.get("no_current_h1_tick") or 0
+    no_current_h1_tick_count = min(
+        raw_missed_inferences,
+        max(0, int(sync_counts.get("no_current_h1_tick") or 0)),
     )
-    processing_miss_count = max(
-        0,
-        raw_missed_inferences - no_current_h1_tick_count,
+    processing_miss_count = (
+        raw_missed_inferences - no_current_h1_tick_count
     )
     processing_miss_denominator = (
         int(totals.get("valid_inferences") or 0)

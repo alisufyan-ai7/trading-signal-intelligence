@@ -159,16 +159,24 @@ function renderAi(ai) {
     </div>
     <p class="ai-notice">${esc(ai.customer_notice)}</p>
     ${ai.lineage_notice ? `<p class="ai-notice">${esc(ai.lineage_notice)}</p>` : ""}
+    ${ai.operational_miss_notice ? `<p class="ai-notice">${esc(ai.operational_miss_notice)}</p>` : ""}
   `;
 
   const t = ai.totals || {};
+  const processingMissDisplay = t.processing_miss_count == null
+    ? "—"
+    : `${t.processing_miss_count} • ${fmtPct(t.processing_miss_rate)}`;
+  const noCurrentTickDisplay = t.no_current_h1_tick_count == null
+    ? "—"
+    : t.no_current_h1_tick_count;
   overviewHost.innerHTML = [
     ["Valid inferences", t.valid_inferences ?? 0],
     ["Shadow signals", t.signals ?? 0],
     ["Open signals", t.open_shadow_signals ?? 0],
     ["Completed trades", t.completed_shadow_trades ?? 0],
     ["NO_TRADE", t.no_trade ?? 0],
-    ["Missed opportunities", `${t.missed_inferences ?? 0} • ${fmtPct(t.missed_rate)}`],
+    ["Processing misses", processingMissDisplay],
+    ["No-current-tick cycles", noCurrentTickDisplay],
     ["Errors", t.errors ?? 0],
     ["Net R", fmtR(t.performance_observational_only?.cumulative_net_r)],
   ].map(([label, value]) => `
@@ -209,10 +217,10 @@ function renderAi(ai) {
       <div class="metric-row">
         <div><span>Inferences</span><strong>${esc(m.valid_inferences)}</strong></div>
         <div><span>Signals</span><strong>${esc(m.signals)}</strong></div>
-        <div><span>Missed</span><strong>${esc(m.missed_inferences)}</strong></div>
+        <div><span>Processing misses</span><strong>${m.processing_miss_count == null ? "—" : esc(m.processing_miss_count)}</strong></div>
         <div><span>Errors</span><strong>${esc(m.errors)}</strong></div>
       </div>
-      <div class="state">Missed-rate: ${fmtPct(m.missed_rate)} • latest evidence: ${esc(fmtTime(m.latest_recorded_at_utc))}</div>
+      <div class="state">No-current-tick cycles: ${m.no_current_h1_tick_count == null ? "—" : esc(m.no_current_h1_tick_count)} • Processing-miss rate: ${m.processing_miss_rate == null ? "—" : fmtPct(m.processing_miss_rate)} • latest evidence: ${esc(fmtTime(m.latest_recorded_at_utc))}</div>
     </article>
   `).join("");
 

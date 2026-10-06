@@ -46,8 +46,12 @@ PARALLEL_TO_RUNTIME_VERSION = "AI-v1.1"
 PARALLEL_RUNTIME_ANCHOR = (
     "research/forward/AI-v1.1-activation-2026-09-30T114412Z.json"
 )
+READINESS_EVIDENCE = (
+    "research/forward/AI-v1.2-expansion-readiness-2026-10-06T190314Z.json"
+)
 
 EXPANSION_ARTIFACT_PATHS = {
+    "readiness_evidence": READINESS_EVIDENCE,
     "preregistration_exp_2026_015": (
         "research/experiments/EXP-2026-015-ai-v1.2-market-expansion-preregistration.md"
     ),
@@ -153,6 +157,68 @@ def _parallel_anchor(repo_root: Path) -> dict[str, Any]:
     return payload
 
 
+
+def _validate_readiness_evidence(repo_root: Path) -> dict[str, Any]:
+    path = repo_root / READINESS_EVIDENCE
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ActivationV12Error(
+            f"unable to load AI-v1.2 readiness evidence: {path}"
+        ) from exc
+    if not isinstance(payload, dict):
+        raise ActivationV12Error("AI-v1.2 readiness evidence root must be object")
+    if payload.get("status") != "PASS":
+        raise ActivationV12Error("AI-v1.2 live readiness is not PASS")
+    if payload.get("runtime_version") != RUNTIME_VERSION:
+        raise ActivationV12Error("readiness runtime version mismatch")
+    if payload.get("decision_protocol_version") != DECISION_PROTOCOL_VERSION:
+        raise ActivationV12Error("readiness decision protocol mismatch")
+    markets = payload.get("markets")
+    if not isinstance(markets, dict) or set(markets) != set(MARKETS):
+        raise ActivationV12Error("readiness market set mismatch")
+    for market in MARKETS:
+        item = markets[market]
+        if not isinstance(item, dict):
+            raise ActivationV12Error(f"{market} readiness item invalid")
+        if item.get("readiness") != "READY":
+            raise ActivationV12Error(f"{market} readiness is not READY")
+        if item.get("feature_snapshot_built") is not True:
+            raise ActivationV12Error(
+                f"{market} readiness feature snapshot was not built"
+            )
+        age = float(item.get("data_age_seconds"))
+        if age < 0 or age > 300:
+            raise ActivationV12Error(
+                f"{market} readiness was outside frozen freshness"
+            )
+    required_false = (
+        "provider_call_made",
+        "ledger_write_performed",
+        "scheduler_changed",
+        "public_exposure_changed",
+        "broker_execution_enabled",
+    )
+    for key in required_false:
+        if payload.get(key) is not False:
+            raise ActivationV12Error(
+                f"readiness evidence {key} must be false"
+            )
+    if payload.get("active_ai_v1_1_ledger_byte_identity") is not True:
+        raise ActivationV12Error(
+            "readiness did not prove AI-v1.1 ledger byte identity"
+        )
+    before = payload.get("expansion_ledger_presence_before")
+    after = payload.get("expansion_ledger_presence_after")
+    if not isinstance(before, dict) or not isinstance(after, dict):
+        raise ActivationV12Error("readiness expansion-ledger proof missing")
+    if any(bool(before.get(market)) for market in MARKETS):
+        raise ActivationV12Error("expansion ledger existed before readiness")
+    if any(bool(after.get(market)) for market in MARKETS):
+        raise ActivationV12Error("expansion ledger appeared during readiness")
+    return payload
+
+
 def _validate_expansion_profiles(repo_root: Path) -> None:
     load_expansion_config(repo_root)
     schema = feature_schema_equivalence_report(repo_root)
@@ -199,6 +265,7 @@ def _shared_payload_fields(
             f"frozen AI-v1.0 decision lineage mismatch: {lineage['mismatches']}"
         )
     _validate_expansion_profiles(repo_root)
+    _validate_readiness_evidence(repo_root)
     _parallel_anchor(repo_root)
 
     provider_config = load_json(
@@ -254,6 +321,9 @@ def _shared_payload_fields(
         ),
         "review_gates_sha256": file_sha256(repo_root / REVIEW_GATES),
         "expansion_config_sha256": file_sha256(repo_root / EXPANSION_CONFIG),
+        "readiness_evidence_sha256": file_sha256(
+            repo_root / READINESS_EVIDENCE
+        ),
         "feature_builder_source_sha256": frozen["feature_builder_source"],
         "inference_adapter_source_sha256": frozen["inference_adapter_source"],
         "provider_neutral_inference_source_sha256": frozen[
@@ -334,6 +404,7 @@ def validate_activation_payload_v1_2(payload: dict[str, Any]) -> None:
         "expansion_guardrails_sha256",
         "review_gates_sha256",
         "expansion_config_sha256",
+        "readiness_evidence_sha256",
         "feature_builder_source_sha256",
         "inference_adapter_source_sha256",
         "provider_neutral_inference_source_sha256",
@@ -391,6 +462,7 @@ def validate_activation_payload_v1_2(payload: dict[str, Any]) -> None:
         "expansion_guardrails_sha256",
         "review_gates_sha256",
         "expansion_config_sha256",
+        "readiness_evidence_sha256",
         "feature_builder_source_sha256",
         "inference_adapter_source_sha256",
         "provider_neutral_inference_source_sha256",
@@ -412,6 +484,7 @@ def preactivation_report_v1_2(repo_root: Path) -> dict[str, Any]:
     schema = feature_schema_equivalence_report(repo_root)
     guards = guardrails_equivalence_report(repo_root)
     gates = review_gates_report(repo_root)
+    readiness = _validate_readiness_evidence(repo_root)
     parallel = _parallel_anchor(repo_root)
 
     from trading_signal_intelligence.ai_v1.shadow_runtime_v1_2 import (
@@ -460,6 +533,12 @@ def preactivation_report_v1_2(repo_root: Path) -> dict[str, Any]:
         "feature_schema_compatibility": schema,
         "guardrails_compatibility": guards,
         "review_gates": gates,
+        "readiness_evidence": {
+            "path": READINESS_EVIDENCE,
+            "sha256": file_sha256(repo_root / READINESS_EVIDENCE),
+            "status": readiness["status"],
+            "observed_at_utc": readiness["observed_at_utc"],
+        },
         "expansion_artifact_hashes": artifacts,
         "expansion_ledger_paths_exist": ledgers,
         "expansion_activation_anchors": anchors,

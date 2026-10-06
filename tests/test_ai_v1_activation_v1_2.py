@@ -85,6 +85,7 @@ def test_v1_2_activation_payload_is_parallel_and_restarts_evidence() -> None:
     assert payload["public_exposure_enabled"] is False
     assert payload["broker_execution_enabled"] is False
     assert len(payload["activation_bundle_sha256"]) == 64
+    assert len(payload["readiness_evidence_sha256"]) == 64
 
 
 def test_v1_2_activation_validation_rejects_boundary_changes() -> None:
@@ -117,6 +118,7 @@ def test_v1_2_activation_validation_rejects_boundary_changes() -> None:
 
 def test_v1_2_artifact_bundle_is_complete() -> None:
     required = {
+        "readiness_evidence",
         "preregistration_exp_2026_015",
         "compatibility_plan_v0_1",
         "activation_plan_v0_1",

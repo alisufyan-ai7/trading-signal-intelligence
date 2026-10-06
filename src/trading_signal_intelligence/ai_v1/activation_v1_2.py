@@ -48,6 +48,16 @@ PARALLEL_RUNTIME_ANCHOR = (
 )
 
 EXPANSION_ARTIFACT_PATHS = {
+    "preregistration_exp_2026_015": (
+        "research/experiments/EXP-2026-015-ai-v1.2-market-expansion-preregistration.md"
+    ),
+    "compatibility_plan_v0_1": (
+        "docs/ai-v1.2-market-expansion-compatibility-v0.1.md"
+    ),
+    "activation_plan_v0_1": (
+        "docs/ai-v1.2-expansion-activation-plan-v0.1.md"
+    ),
+    "instrument_registry": "config/instruments.json",
     "activation_schema_v1_2": "config/ai_v1_2_activation_schema.json",
     "activation_anchor_schema_v1_2": "config/ai_v1_2_anchor_schema.json",
     "expansion_config": EXPANSION_CONFIG,

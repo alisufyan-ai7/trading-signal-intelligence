@@ -280,3 +280,23 @@ def test_review_gates_are_frozen_before_activation() -> None:
         "completed_shadow_trades": 100,
         "minimum_calendar_days": 120,
     }
+
+
+def test_activation_script_has_no_provider_or_mt5_path() -> None:
+    text = (ROOT / "scripts" / "activate_ai_v1_2.py").read_text(
+        encoding="utf-8"
+    )
+    assert "OpenAIResponsesAdapter" not in text
+    assert "MT5Connector" not in text
+    assert "run_ai_v1_2_live" not in text
+    assert "Register-ScheduledTask" not in text
+    assert "ACTIVATE-AI-V1.2-LEDGERS" in text
+
+
+def test_live_runner_uses_expansion_guard_profile() -> None:
+    text = (ROOT / "scripts" / "run_ai_v1_2_live.py").read_text(
+        encoding="utf-8"
+    )
+    assert 'load_json("config/ai_v1_2_guardrails.json")' in text
+    assert '"public_exposure_enabled": False' in text
+    assert '"broker_execution_enabled": False' in text

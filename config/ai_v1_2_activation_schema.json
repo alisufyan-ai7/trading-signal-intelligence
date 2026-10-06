@@ -28,6 +28,7 @@
     "expansion_guardrails_sha256",
     "review_gates_sha256",
     "expansion_config_sha256",
+    "readiness_evidence_sha256",
     "feature_builder_source_sha256",
     "inference_adapter_source_sha256",
     "provider_neutral_inference_source_sha256",
@@ -42,40 +43,141 @@
     "broker_execution_enabled"
   ],
   "properties": {
-    "runtime_version": {"const": "AI-v1.2"},
-    "decision_protocol_version": {"const": "AI-v1.0"},
-    "market": {"type": "string", "enum": ["EURUSD", "XAGUSD", "USOIL"]},
-    "activated_at_utc": {"type": "string"},
-    "repository_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-    "activation_bundle_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "parallel_to_runtime_version": {"const": "AI-v1.1"},
-    "parallel_runtime_anchor": {"type": "string", "minLength": 1},
-    "parallel_runtime_anchor_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "gate_counts_carry_forward": {"const": false},
-    "backfill_prior_missed": {"const": false},
-    "provider": {"const": "openai"},
-    "model_id": {"const": "gpt-5.4-2026-03-05"},
-    "model_parameter_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "feature_definitions_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "base_feature_schema_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "expansion_feature_schema_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "decision_schema_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "base_guardrails_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "expansion_guardrails_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "review_gates_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "expansion_config_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "feature_builder_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "inference_adapter_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "provider_neutral_inference_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "contract_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "guard_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "ai_ledger_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "lifecycle_evaluator_source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "cost_policy_fingerprint": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-    "sync_max_wait_seconds": {"const": 30.0},
-    "sync_poll_interval_seconds": {"const": 1.0},
-    "public_exposure_enabled": {"const": false},
-    "broker_execution_enabled": {"const": false}
+    "runtime_version": {
+      "const": "AI-v1.2"
+    },
+    "decision_protocol_version": {
+      "const": "AI-v1.0"
+    },
+    "market": {
+      "type": "string",
+      "enum": [
+        "EURUSD",
+        "XAGUSD",
+        "USOIL"
+      ]
+    },
+    "activated_at_utc": {
+      "type": "string"
+    },
+    "repository_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "activation_bundle_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "parallel_to_runtime_version": {
+      "const": "AI-v1.1"
+    },
+    "parallel_runtime_anchor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parallel_runtime_anchor_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gate_counts_carry_forward": {
+      "const": false
+    },
+    "backfill_prior_missed": {
+      "const": false
+    },
+    "provider": {
+      "const": "openai"
+    },
+    "model_id": {
+      "const": "gpt-5.4-2026-03-05"
+    },
+    "model_parameter_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "policy_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "feature_definitions_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "base_feature_schema_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "expansion_feature_schema_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "decision_schema_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "base_guardrails_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "expansion_guardrails_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "review_gates_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "expansion_config_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "feature_builder_source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "inference_adapter_source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "provider_neutral_inference_source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "contract_source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "guard_source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "ai_ledger_source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "lifecycle_evaluator_source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "cost_policy_fingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "sync_max_wait_seconds": {
+      "const": 30
+    },
+    "sync_poll_interval_seconds": {
+      "const": 1
+    },
+    "public_exposure_enabled": {
+      "const": false
+    },
+    "broker_execution_enabled": {
+      "const": false
+    },
+    "readiness_evidence_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
   }
 }

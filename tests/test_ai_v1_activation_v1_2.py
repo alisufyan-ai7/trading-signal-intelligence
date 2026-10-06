@@ -117,6 +117,10 @@ def test_v1_2_activation_validation_rejects_boundary_changes() -> None:
 
 def test_v1_2_artifact_bundle_is_complete() -> None:
     required = {
+        "preregistration_exp_2026_015",
+        "compatibility_plan_v0_1",
+        "activation_plan_v0_1",
+        "instrument_registry",
         "activation_schema_v1_2",
         "activation_anchor_schema_v1_2",
         "expansion_config",

@@ -437,12 +437,15 @@ def build_report_v1_2(
         ),
     }
 
-    aggregate_exits = [
-        row
-        for symbol in MARKETS
-        for row in records[symbol]
-        if row["record_type"] == "EXIT"
-    ]
+    aggregate_exits = sorted(
+        [
+            row
+            for symbol in MARKETS
+            for row in records[symbol]
+            if row["record_type"] == "EXIT"
+        ],
+        key=lambda row: (row["effective_at_utc"], row["recorded_at_utc"]),
+    )
 
     activated_at = datetime.fromisoformat(
         str(anchor["activated_at_utc"]).replace("Z", "+00:00")

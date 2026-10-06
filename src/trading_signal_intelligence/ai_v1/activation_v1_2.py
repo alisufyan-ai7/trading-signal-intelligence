@@ -78,6 +78,12 @@ EXPANSION_ARTIFACT_PATHS = {
     "preactivation_verifier_script_v1_2": (
         "scripts/verify_ai_v1_2_expansion_pre_activation.py"
     ),
+    "activation_readiness_verifier_script_v1_2": (
+        "scripts/verify_ai_v1_2_activation_readiness.py"
+    ),
+    "progress_report_script_v1_2": (
+        "scripts/report_ai_v1_2_progress.py"
+    ),
     "readiness_probe_script_v1_2": (
         "scripts/probe_ai_v1_2_market_readiness.py"
     ),

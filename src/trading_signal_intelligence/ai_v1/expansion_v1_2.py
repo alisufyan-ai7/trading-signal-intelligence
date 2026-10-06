@@ -28,6 +28,9 @@ DATABASE_PATHS = {
 EXPANSION_CONFIG = "config/ai_v1_2_expansion.json"
 EXPANSION_FEATURE_SCHEMA = "config/ai_v1_2_feature_schema.json"
 BASE_FEATURE_SCHEMA = "config/ai_v1_feature_schema.json"
+EXPANSION_GUARDRAILS = "config/ai_v1_2_guardrails.json"
+BASE_GUARDRAILS = "config/ai_v1_guardrails.json"
+REVIEW_GATES = "config/ai_v1_2_review_gates.json"
 
 EXPECTED_MARKETS = {
     "EURUSD": {
@@ -119,6 +122,10 @@ def load_expansion_config(repo_root: Path) -> dict[str, Any]:
         raise ExpansionV12Error("no_backfill must be true")
     if config.get("shares_gate_counts_with_ai_v1_1") is not False:
         raise ExpansionV12Error("AI-v1.1 gate-count pooling is forbidden")
+    if config.get("guardrails_path") != EXPANSION_GUARDRAILS:
+        raise ExpansionV12Error("expansion guardrails path mismatch")
+    if config.get("review_gates_path") != REVIEW_GATES:
+        raise ExpansionV12Error("expansion review-gates path mismatch")
     if float(config.get("sync_max_wait_seconds")) != float(
         SYNC_MAX_WAIT_SECONDS
     ):
@@ -247,6 +254,84 @@ def feature_schema_equivalence_report(repo_root: Path) -> dict[str, Any]:
     }
 
 
+
+def guardrails_equivalence_report(repo_root: Path) -> dict[str, Any]:
+    base = _load_json(repo_root / BASE_GUARDRAILS)
+    expansion = _load_json(repo_root / EXPANSION_GUARDRAILS)
+
+    normalized_base = copy.deepcopy(base)
+    normalized_expansion = copy.deepcopy(expansion)
+    normalized_base["status"] = "<status>"
+    normalized_expansion["status"] = "<status>"
+    normalized_base["shadow_markets"] = ["<market-set>"]
+    normalized_expansion["shadow_markets"] = ["<market-set>"]
+
+    return {
+        "equivalent_except_status_and_shadow_market_allowlist": (
+            normalized_base == normalized_expansion
+        ),
+        "base_shadow_markets": base.get("shadow_markets"),
+        "expansion_shadow_markets": expansion.get("shadow_markets"),
+        "expected_expansion_shadow_markets": list(MARKETS),
+        "broker_execution_disabled": (
+            expansion.get("broker_execution_enabled") is False
+        ),
+        "protocol_version_preserved": (
+            expansion.get("protocol_version") == DECISION_PROTOCOL_VERSION
+        ),
+    }
+
+
+def review_gates_report(repo_root: Path) -> dict[str, Any]:
+    payload = _load_json(repo_root / REVIEW_GATES)
+    expected = {
+        "X1": {
+            "purpose": "operational_audit_only",
+            "valid_inferences": 100,
+            "completed_shadow_trades": 20,
+            "minimum_calendar_days": 0,
+        },
+        "X2": {
+            "purpose": "interim_expansion_economic_review",
+            "valid_inferences": 500,
+            "completed_shadow_trades": 50,
+            "minimum_calendar_days": 60,
+        },
+        "X3": {
+            "purpose": "first_expansion_publishability_graduation_decision",
+            "valid_inferences": 1000,
+            "completed_shadow_trades": 100,
+            "minimum_calendar_days": 120,
+        },
+    }
+    valid = (
+        payload.get("runtime_version") == RUNTIME_VERSION
+        and payload.get("decision_protocol_version")
+        == DECISION_PROTOCOL_VERSION
+        and payload.get("status") == "frozen_pre_activation"
+        and payload.get("markets") == list(MARKETS)
+        and payload.get("gates") == expected
+        and payload.get("eligibility_rule")
+        == "all_thresholds_for_gate_must_be_met"
+        and payload.get("per_market_reporting_required") is True
+        and payload.get("weak_or_low_activity_market_may_not_be_hidden_or_dropped_post_activation")
+        is True
+        and payload.get("gate_results_do_not_authorize_broker_execution")
+        is True
+        and payload.get("gate_results_do_not_modify_ai_v1_1") is True
+    )
+    return {
+        "valid": valid,
+        "gates": payload.get("gates"),
+        "per_market_reporting_required": payload.get(
+            "per_market_reporting_required"
+        ),
+        "gate_results_do_not_authorize_broker_execution": payload.get(
+            "gate_results_do_not_authorize_broker_execution"
+        ),
+    }
+
+
 def preactivation_report_v1_2(repo_root: Path) -> dict[str, Any]:
     repo_root = repo_root.resolve()
     _require_clean_tracked_worktree(repo_root)
@@ -254,6 +339,8 @@ def preactivation_report_v1_2(repo_root: Path) -> dict[str, Any]:
     config = load_expansion_config(repo_root)
     specs = expansion_market_specs(repo_root)
     schema_report = feature_schema_equivalence_report(repo_root)
+    guardrails_report = guardrails_equivalence_report(repo_root)
+    gates_report = review_gates_report(repo_root)
     lineage = verify_frozen_decision_lineage(repo_root)
 
     expansion_ledgers = {
@@ -274,6 +361,11 @@ def preactivation_report_v1_2(repo_root: Path) -> dict[str, Any]:
         ]
         and schema_report["feature_schema_version_preserved"]
         and schema_report["expansion_source_symbol_enum"] == list(MARKETS)
+        and guardrails_report["equivalent_except_status_and_shadow_market_allowlist"]
+        and guardrails_report["expansion_shadow_markets"] == list(MARKETS)
+        and guardrails_report["broker_execution_disabled"]
+        and guardrails_report["protocol_version_preserved"]
+        and gates_report["valid"]
         and not any(expansion_ledgers.values())
         and not anchor_candidates
     )
@@ -298,6 +390,8 @@ def preactivation_report_v1_2(repo_root: Path) -> dict[str, Any]:
             "mismatches"
         ],
         "feature_schema_compatibility": schema_report,
+        "guardrails_compatibility": guardrails_report,
+        "review_gates": gates_report,
         "feature_formula_change": False,
         "decision_contract_change": False,
         "policy_change": False,

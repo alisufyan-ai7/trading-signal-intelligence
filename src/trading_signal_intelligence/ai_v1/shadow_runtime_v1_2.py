@@ -137,6 +137,10 @@ def _require_v1_2_activation(ledger: AILedger) -> dict[str, Any]:
         raise ShadowRuntimeV12Error("activation runtime_version mismatch")
     if payload.get("decision_protocol_version") != DECISION_PROTOCOL_VERSION:
         raise ShadowRuntimeV12Error("activation decision protocol mismatch")
+    if payload.get("parallel_to_runtime_version") != "AI-v1.1":
+        raise ShadowRuntimeV12Error("parallel runtime binding mismatch")
+    if payload.get("public_exposure_enabled") is not False:
+        raise ShadowRuntimeV12Error("public exposure must remain disabled")
     if payload.get("broker_execution_enabled") is not False:
         raise ShadowRuntimeV12Error("broker execution must remain disabled")
     return payload

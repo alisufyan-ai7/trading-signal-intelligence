@@ -134,6 +134,12 @@ def load_expansion_config(repo_root: Path) -> dict[str, Any]:
         SYNC_POLL_INTERVAL_SECONDS
     ):
         raise ExpansionV12Error("sync poll interval differs from AI-v1.1")
+    if int(config.get("scheduler_target_minute")) != 3:
+        raise ExpansionV12Error("expansion scheduler target minute must be 3")
+    if config.get("scheduler_cadence") != "hourly_near_completed_h1_boundary":
+        raise ExpansionV12Error("expansion scheduler cadence mismatch")
+    if int(config.get("scheduler_parallel_offset_from_ai_v1_1_minutes")) != 1:
+        raise ExpansionV12Error("expansion scheduler offset mismatch")
 
     listed = config.get("markets")
     if not isinstance(listed, list):

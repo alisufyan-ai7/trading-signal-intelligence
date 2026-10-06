@@ -1,0 +1,102 @@
+{
+  "evidence_kind": "AI-v1.2-expansion-live-readiness-v0.1",
+  "status": "PASS",
+  "observed_at_utc": "2026-10-06T19:03:14.097765+00:00",
+  "expansion_preparation_commit": "853a5af765fddbeb176a1d41b82b65376acaba44",
+  "active_production_commit": "e343f17ba8612c76b429052b87980dc178d3037a",
+  "runtime_version": "AI-v1.2",
+  "decision_protocol_version": "AI-v1.0",
+  "mode": "READ_ONLY",
+  "fresh_window": {
+    "preceding_ai_v1_1_natural_run": "2026-10-06T19:02:02",
+    "freshness_check_utc": "2026-10-06T19:03:02.1080872Z",
+    "seconds_after_hour": 182,
+    "maximum_allowed_data_age_seconds": 300,
+    "met": true
+  },
+  "markets": {
+    "EURUSD": {
+      "canonical_symbol": "EUR/USD",
+      "synchronization_status": "READY",
+      "synchronization_attempts": 2,
+      "synchronization_waited_seconds": 1.139999999999418,
+      "h1_rows": 500,
+      "h4_rows": 200,
+      "feature_snapshot_built": true,
+      "feature_snapshot_sha256": "29c26ba9ba4e51117ef4870a76786f7edc4fd8612c8833b36dff3776c6eb9a8c",
+      "source_bar_open_utc": "2026-10-06T18:00:00Z",
+      "source_bar_close_utc": "2026-10-06T19:00:00Z",
+      "data_age_seconds": 194.097765,
+      "atr_14": 0.0014250405534089376,
+      "spread_price": 0.00006000000000000001,
+      "spread_atr_fraction": 0.042104064937990626,
+      "quality_flags": [],
+      "readiness": "READY"
+    },
+    "XAGUSD": {
+      "canonical_symbol": "XAG/USD",
+      "synchronization_status": "READY",
+      "synchronization_attempts": 2,
+      "synchronization_waited_seconds": 1.0930000000007567,
+      "h1_rows": 500,
+      "h4_rows": 200,
+      "feature_snapshot_built": true,
+      "feature_snapshot_sha256": "5ff82b0d33d5ff38e3b48dcb89784378ddbfbc0b6c88c620dff7e0595d7f3805",
+      "source_bar_open_utc": "2026-10-06T18:00:00Z",
+      "source_bar_close_utc": "2026-10-06T19:00:00Z",
+      "data_age_seconds": 194.097765,
+      "atr_14": 0.34672092995225284,
+      "spread_price": 0.018000000000000002,
+      "spread_atr_fraction": 0.05191495074288937,
+      "quality_flags": [],
+      "readiness": "READY"
+    },
+    "USOIL": {
+      "canonical_symbol": "WTI",
+      "synchronization_status": "READY",
+      "synchronization_attempts": 2,
+      "synchronization_waited_seconds": 1.1869999999980791,
+      "h1_rows": 500,
+      "h4_rows": 200,
+      "feature_snapshot_built": true,
+      "feature_snapshot_sha256": "3c6af8d20ffe130ac521145d77d4400a817ce79dbcafbaa4d976d2b5af66c580",
+      "source_bar_open_utc": "2026-10-06T18:00:00Z",
+      "source_bar_close_utc": "2026-10-06T19:00:00Z",
+      "data_age_seconds": 194.097765,
+      "atr_14": 0.7188265736321366,
+      "spread_price": 0.014,
+      "spread_atr_fraction": 0.019476185930717378,
+      "quality_flags": [],
+      "readiness": "READY"
+    }
+  },
+  "active_ai_v1_1_ledger_hashes_before": {
+    "XAUUSD": "52d013ad2b20173f515a06d83b084cb9456ed31938e7f4fa17fd4a2a03ca4ebc",
+    "USTEC": "37cd3185a5a16d6e27cdb7a04d5a01124e4dc641d67c407144962712c1413689",
+    "US30": "a23a73bd2462bc3451358ff38c18097238107b5c2822a1df35517f265a2aca14"
+  },
+  "active_ai_v1_1_ledger_hashes_after": {
+    "XAUUSD": "52d013ad2b20173f515a06d83b084cb9456ed31938e7f4fa17fd4a2a03ca4ebc",
+    "USTEC": "37cd3185a5a16d6e27cdb7a04d5a01124e4dc641d67c407144962712c1413689",
+    "US30": "a23a73bd2462bc3451358ff38c18097238107b5c2822a1df35517f265a2aca14"
+  },
+  "active_ai_v1_1_ledger_byte_identity": true,
+  "active_production_worktree_unchanged": true,
+  "expansion_ledger_presence_before": {
+    "EURUSD": false,
+    "XAGUSD": false,
+    "USOIL": false
+  },
+  "expansion_ledger_presence_after": {
+    "EURUSD": false,
+    "XAGUSD": false,
+    "USOIL": false
+  },
+  "provider_call_made": false,
+  "ledger_write_performed": false,
+  "scheduler_changed": false,
+  "public_exposure_changed": false,
+  "broker_execution_enabled": false,
+  "final_production_branch": "main",
+  "final_production_commit": "e343f17ba8612c76b429052b87980dc178d3037a"
+}

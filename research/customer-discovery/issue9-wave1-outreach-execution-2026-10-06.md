@@ -46,3 +46,47 @@ Automatic approval review rejected two broad chat-text observations because they
 - No production/runtime/trading code or infrastructure was changed. Research branch remains unmerged.
 
 Stop for owner review. No automatic retry or resumption is scheduled.
+
+## Post-Wave-1 response and invitation-blocker recheck — 2026-10-06
+
+Reconciled exact starting head `d360e0c15eeac958c509196a91e06544aca905ec`, the canonical tracker and this execution record before Reddit inspection. Existing authentication remained active. This is a read-only check; the earlier send results and timestamps above remain immutable.
+
+### Sent-conversation observations
+
+| ID | Candidate | Checked UTC | Existing Variant A | Actual recipient reply | Explicit delivery/read/seen |
+| --- | --- | --- | --- | --- | --- |
+| P031 | Pleasant_Rice3949 | 2026-10-06T13:21:09.789Z | Exact original message still visible | None observed | No explicit state visible |
+| P032 | chadiusmaximus | 2026-10-06T13:21:56.554Z | Exact original message still visible | None observed | No explicit state visible |
+| P034 | Journeystep2me | 2026-10-06T13:22:50.628Z | Exact original message still visible | None observed | No explicit state visible |
+
+Each selected candidate header was verified before reading its rendered conversation. Each contained one message event: the already-sent owner invitation. Its accessible message label exposed `0 replies, 0 reactions`; no recipient-authored message appeared. This is an observation at the recorded time, not a prediction about later responses or evidence that anyone declined/read the invitation. There is no exact recipient reply to preserve in this pass.
+
+P034's initial contact action temporarily retained the previously selected P032 header. No P034 result was recorded from that stale selection; the stale window was closed, P034's own profile contact control reopened, and the Journeystep2me header verified before its conversation was inspected.
+
+### Invitation restriction — Unknown; not proven cleared
+
+At `2026-10-06T13:23:10.785Z`, P036's public-profile Open chat target and candidate composer user ID matched. Its rendered candidate UI showed:
+
+- Candidate: `MapDependent7203`.
+- Banner: `Send an invite message to start chatting! 👋`.
+- Empty message textbox: enabled.
+- Send message: disabled with the empty composer.
+- No red invitation warning or explicit clearance/available-invites indicator visible in the reviewed candidate UI.
+
+The prior red warning remains historical evidence. Its current absence and an enabled empty textbox do not establish that Reddit would now accept a new invite: the earlier blocked attempt also began with an enabled textbox. No text was entered, no test message was sent, and P036 was not retried. The restriction therefore remains **Unknown**, rather than confirmed active or confirmed cleared. P037 was not opened or attempted.
+
+### Tracker and task boundaries
+
+Only notes for P031, P032, P034 and P036 were appended with these time-stamped observations. All outreach-state fields were preserved:
+
+- P031/P032/P034: status=message_sent; original outreach_utc and message_variant=A unchanged.
+- P036/P037: status=owner_approved; outreach_utc blank; message_variant=A.
+- All five: owner_approved=yes; delivery_state, seen_state, reply_state and beta_visit_known blank; feedback_submitted=no; follow_up_required=no.
+- No delivery, read, reply, visit or feedback inference was made.
+- No new initial outreach, retry, follow-up or recipient response was sent.
+- No general inbox, notifications, unrelated private conversation, alternate account or guessed endpoint was used. Reads were scoped to the three verified sent conversations and P036's candidate invitation UI.
+- Wave 2 was untouched; no new prospects were sourced.
+- Tracker remains 39 rows; CSV round-trip and field-difference checks passed. Exactly four notes cells changed; all other cells, including every Wave 2 row and original send timestamp, are unchanged.
+- No merge or production/runtime/trading change occurred.
+
+Stopped for owner review. P036/P037 remain held; this task does not authorize a later send.

@@ -25,15 +25,15 @@
   ],
   "h1_bars": 500,
   "h4_bars": 200,
-  "sync_max_wait_seconds": 30.0,
-  "sync_poll_interval_seconds": 1.0,
+  "sync_max_wait_seconds": 30,
+  "sync_poll_interval_seconds": 1,
   "feature_schema_path": "config/ai_v1_2_feature_schema.json",
   "base_feature_schema_path": "config/ai_v1_feature_schema.json",
   "policy_path": "config/ai_v1_policy.txt",
   "decision_schema_path": "config/ai_v1_decision_schema.json",
   "provider_response_schema_path": "config/ai_v1_openai_response_schema.json",
   "provider_config_path": "config/ai_v1_provider.json",
-  "guardrails_path": "config/ai_v1_guardrails.json",
+  "guardrails_path": "config/ai_v1_2_guardrails.json",
   "reuse_feature_formulas_exactly": true,
   "reuse_decision_contract_exactly": true,
   "reuse_policy_exactly": true,
@@ -42,5 +42,6 @@
   "no_backfill": true,
   "shares_gate_counts_with_ai_v1_1": false,
   "public_exposure_enabled": false,
-  "broker_execution_enabled": false
+  "broker_execution_enabled": false,
+  "review_gates_path": "config/ai_v1_2_review_gates.json"
 }

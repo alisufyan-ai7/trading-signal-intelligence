@@ -43,5 +43,8 @@
   "shares_gate_counts_with_ai_v1_1": false,
   "public_exposure_enabled": false,
   "broker_execution_enabled": false,
-  "review_gates_path": "config/ai_v1_2_review_gates.json"
+  "review_gates_path": "config/ai_v1_2_review_gates.json",
+  "scheduler_target_minute": 3,
+  "scheduler_cadence": "hourly_near_completed_h1_boundary",
+  "scheduler_parallel_offset_from_ai_v1_1_minutes": 1
 }

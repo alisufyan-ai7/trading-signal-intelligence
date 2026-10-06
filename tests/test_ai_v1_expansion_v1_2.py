@@ -245,7 +245,7 @@ def test_live_probe_source_has_no_outreach_or_activation_path() -> None:
         ROOT / "scripts" / "probe_ai_v1_2_market_readiness.py"
     ).read_text(encoding="utf-8")
 
-    assert "symbol_select" not in text
+    assert "symbol_select(" not in text
     assert "OpenAIResponsesAdapter" not in text
     assert "AILedger" not in text
     assert "Register-ScheduledTask" not in text

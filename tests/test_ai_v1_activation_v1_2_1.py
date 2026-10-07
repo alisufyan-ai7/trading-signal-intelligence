@@ -160,6 +160,7 @@ def test_v1_2_1_artifact_bundle_is_complete() -> None:
         "runtime_verifier_source_v1_2_1",
         "preactivation_verifier_script_v1_2_1",
         "activation_readiness_verifier_script_v1_2_1",
+        "package_verifier_script_v1_2_1",
         "progress_report_script_v1_2_1",
         "readiness_probe_script_v1_2_1",
         "activation_preview_script_v1_2_1",

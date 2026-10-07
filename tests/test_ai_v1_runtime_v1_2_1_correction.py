@@ -340,3 +340,35 @@ def test_corrected_activation_guard_hash_reaches_inference_record(
     inference = ledger.records(record_type="INFERENCE")[0]
     assert inference["payload"]["runtime_version"] == "AI-v1.2.1"
     assert inference["payload"]["guardrails_sha256"] == "b" * 64
+
+
+def test_successor_probe_is_read_only_and_has_no_activation_path() -> None:
+    text = (
+        ROOT / "scripts" / "probe_ai_v1_2_1_market_readiness.py"
+    ).read_text(encoding="utf-8")
+
+    assert "symbol_select(" not in text
+    assert "OpenAIResponsesAdapter" not in text
+    assert "AILedger" not in text
+    assert "Register-ScheduledTask" not in text
+    assert "activate_ai" not in text
+
+
+def test_frozen_predecessor_file_hashes_match_p2_evidence() -> None:
+    payload = json.loads(
+        (
+            ROOT
+            / "research"
+            / "forward"
+            / "AI-v1.2-P2-fail-closed-2026-10-06T220043Z.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert payload["markets"]["EURUSD"]["ledger_file_sha256_after"] == (
+        "f2fef91f7b2b5b77853d1618a0c8fa8de03133a392c4fa620450ea3cea211322"
+    )
+    assert payload["markets"]["XAGUSD"]["ledger_file_sha256_after"] == (
+        "5813067c4d19f53aa98ca992b75798b3a447083ed0fc0c97131adece2c0b24e4"
+    )
+    assert payload["markets"]["USOIL"]["ledger_file_sha256_after"] == (
+        "a5cfa5bc29b30b5607673c8da336d28f357b2cb7ffeb09933af3a21a00a0e8ca"
+    )

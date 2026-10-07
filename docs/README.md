@@ -11,3 +11,5 @@
 - `project-memory-policy.md` — project context isolation rule
 - `working-agreement.md` — how future project work should be maintained
 - `current-status.md` — concise current state
+
+- `vowsig-durable-ip-backup-and-recovery-plan-v0.1.md` — durable backup/recovery architecture for VowSig code, ledgers, future training datasets and model artifacts

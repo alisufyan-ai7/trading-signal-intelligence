@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "launch_target": "SignalProof AI Research Beta",
+  "launch_target": "VowSig Research Beta",
   "target_window": "3-5 days",
   "production_data_policy": {
     "primary_source": "exness_mt5_demo",

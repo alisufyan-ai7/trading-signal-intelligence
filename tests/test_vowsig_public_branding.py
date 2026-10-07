@@ -47,6 +47,29 @@ def test_public_cloud_metadata_uses_vowsig_without_secret_rename() -> None:
     assert 'os.getenv("SIGNALPROOF_FEEDBACK_OWNER_TOKEN")' in text
 
 
+def test_snapshot_generation_path_uses_vowsig_product_brand() -> None:
+    local_app = (
+        ROOT
+        / "src"
+        / "trading_signal_intelligence"
+        / "product"
+        / "app.py"
+    ).read_text(encoding="utf-8")
+    launch_config = (
+        ROOT / "config" / "launch_universe.json"
+    ).read_text(encoding="utf-8")
+
+    assert 'title="VowSig Research Beta"' in local_app
+    assert '"product": "VowSig Research Beta"' in local_app
+    assert "filename=vowsig-feedback.csv" in local_app
+    assert '"launch_target": "VowSig Research Beta"' in launch_config
+    assert "SignalProof AI Research Beta" not in local_app
+    assert "SignalProof AI Research Beta" not in launch_config
+
+    # Existing secret names remain operational compatibility identifiers.
+    assert 'os.getenv("SIGNALPROOF_FEEDBACK_OWNER_TOKEN")' in local_app
+
+
 def test_cloud_durability_default_is_canonical_vowsig_domain() -> None:
     assert DEFAULT_BASE_URL == "https://vowsig.com"
 

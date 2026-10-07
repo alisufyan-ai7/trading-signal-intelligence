@@ -13,16 +13,16 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="VowSig" />
   <meta property="og:title" content="VowSig — Research Beta" />
-  <meta property="og:description" content="Find the trade. See the risk. Verify the record." />
+  <meta property="og:description" content="See the setup. See the risk. Verify the record." />
   <meta property="og:url" content="https://vowsig.com/" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="VowSig — Research Beta" />
-  <meta name="twitter:description" content="Find the trade. See the risk. Verify the record." />
+  <meta name="twitter:description" content="See the setup. See the risk. Verify the record." />
   <meta name="robots" content="index,follow,max-image-preview:large" />
   <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"WebSite","name":"VowSig","url":"https://vowsig.com/","description":"AI-assisted trading intelligence with explicit risk context, forward-validation evidence, and immutable shadow records."}
   </script>
-  <link rel="stylesheet" href="/static/styles.css?v=20261002-2" />
+  <link rel="stylesheet" href="/static/styles.css?v=20261008-consistency-1" />
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -38,26 +38,30 @@
     <header class="hero">
       <div>
         <span class="eyebrow">VOWSIG • RESEARCH BETA</span>
-        <h1>Find the trade. See the risk. Verify the record.</h1>
-        <p class="lede">Two evidence streams are shown separately: the frozen S02 benchmark and VowSig AI shadow intelligence. The active AI runtime is live in forward validation, with no broker execution.</p>
+        <h1>See the setup. See the risk. Verify the record.</h1>
+        <p class="lede">VowSig keeps three public views distinct: core AI shadow intelligence, expansion AI validation progress, and the frozen S02 benchmark. All remain research-only; broker execution is disabled.</p>
+        <div class="hero-actions" aria-label="Homepage shortcuts">
+          <a class="button-link primary" href="#ai-intelligence">See AI evidence</a>
+          <a class="button-link" href="/evidence/">How the evidence works</a>
+        </div>
       </div>
       <div class="status-card" role="status" aria-live="polite">
         <span class="dot"></span>
         <div>
           <strong id="health-label">Checking system…</strong>
-          <small id="health-detail">Loading live market status</small>
+          <small id="health-detail">Loading current snapshot status</small>
         </div>
       </div>
     </header>
 
 
-    <section class="section ai-section">
+    <section id="ai-intelligence" class="section ai-section">
       <div class="section-head">
         <div>
           <span class="eyebrow">AI SHADOW INTELLIGENCE</span>
           <h2>What VowSig is seeing</h2>
         </div>
-        <p>Live, immutable shadow evidence from XAU/USD, NASDAQ 100 and DOW 30. Raw confidence is an uncalibrated model score—not a probability of profit.</p>
+        <p>Core AI-v1.1 shadow evidence from XAU/USD, NASDAQ 100 and DOW 30. Raw confidence is an uncalibrated model score—not a probability of profit.</p>
       </div>
 
       <div id="ai-status" class="ai-status" aria-live="polite">
@@ -68,7 +72,7 @@
 
       <div class="subhead">
         <div>
-          <span class="eyebrow">MARKET HEALTH</span>
+          <span class="eyebrow">CORE AI COLLECTION</span>
           <h3>Forward collection by market</h3>
         </div>
       </div>
@@ -76,10 +80,10 @@
 
       <div class="subhead">
         <div>
-          <span class="eyebrow">RECENT AI DECISIONS</span>
+          <span class="eyebrow">CORE AI DECISIONS</span>
           <h3>Decision summaries</h3>
         </div>
-        <p>Customer-safe rationale summaries only. Hidden chain-of-thought and raw feature snapshots are never published.</p>
+        <p>Published rationale summaries only. Private provider payloads and raw feature snapshots are never published.</p>
       </div>
       <div id="ai-decisions" class="ai-decision-list">
         <div class="empty">Loading recent AI decisions…</div>
@@ -88,7 +92,7 @@
       <div class="subhead">
         <div>
           <span class="eyebrow">SHADOW SIGNAL RECORD</span>
-          <h3>VowSig signals and outcomes</h3>
+          <h3>Core AI-v1.1 signals and outcomes</h3>
         </div>
         <p>Shadow-only research records. No broker orders are placed by VowSig.</p>
       </div>
@@ -103,20 +107,20 @@
           <span class="eyebrow">SHADOW VALIDATION PROGRAMS</span>
           <h2>Evidence progress across AI lineages</h2>
         </div>
-        <p>Validation programs are rendered from a generic public schema so new market groups can be added without hard-coding new gate names into the website. Research-only programs do not expose entry, stop, target or alert details.</p>
+        <p>Each AI lineage keeps its own evidence thresholds and market set. Research-only programs expose validation progress without publishing entry, stop, target or alert details.</p>
       </div>
       <div id="validation-programs" class="validation-programs" aria-live="polite">
         <div class="empty">Loading validation programs…</div>
       </div>
     </section>
 
-    <section class="section">
+    <section id="s02-benchmark" class="section">
       <div class="section-head">
         <div>
-          <span class="eyebrow">LIVE SIGNAL UNIVERSE</span>
-          <h2>Markets we scan</h2>
+          <span class="eyebrow">S02 BENCHMARK • FORWARD</span>
+          <h2>S02 benchmark markets</h2>
         </div>
-        <p>Each market carries its own evidence label. Historical strength is not presented as a guarantee.</p>
+        <p>This frozen benchmark feed is separate from VowSig AI shadow intelligence. Each market carries its own evidence label; historical strength is not a guarantee.</p>
       </div>
       <div id="live-grid" class="grid"></div>
     </section>
@@ -124,10 +128,10 @@
     <section class="section">
       <div class="section-head">
         <div>
-          <span class="eyebrow">EVIDENCE</span>
-          <h2>Historical record, separated from forward results</h2>
+          <span class="eyebrow">S02 BENCHMARK • HISTORICAL EVIDENCE</span>
+          <h2>S02 historical record</h2>
         </div>
-        <p>Backtests remain historical research. Forward records begin only after each immutable activation.</p>
+        <p>S02 backtests remain historical research and are kept separate from S02 forward results and from both AI validation lineages.</p>
       </div>
       <div id="evidence-grid" class="grid evidence-grid"></div>
     </section>
@@ -135,10 +139,10 @@
     <section class="section">
       <div class="section-head">
         <div>
-          <span class="eyebrow">IMMUTABLE FORWARD RECORD</span>
-          <h2>Recent issued signals</h2>
+          <span class="eyebrow">S02 BENCHMARK • IMMUTABLE FORWARD RECORD</span>
+          <h2>Recent S02 benchmark signals</h2>
         </div>
-        <p>Every forward signal will appear here with its issued time, risk levels, lifecycle and immutable record hash.</p>
+        <p>Every S02 forward signal appears here with its issued time, risk levels, lifecycle and immutable record hash.</p>
       </div>
       <div id="signal-history" class="signal-history">
         <div class="empty">Loading forward records…</div>
@@ -148,10 +152,10 @@
     <section class="section">
       <div class="section-head">
         <div>
-          <span class="eyebrow">RESEARCH COVERAGE</span>
-          <h2>Markets under observation</h2>
+          <span class="eyebrow">S02 BENCHMARK • TRANSFER RESEARCH</span>
+          <h2>S02 transfer-research markets</h2>
         </div>
-        <p>Visible for transparency, but not promoted as equally validated live signal markets.</p>
+        <p>These labels describe S02 transfer evidence only. EUR/USD, XAG/USD and WTI also appear separately in AI-v1.2.1 expansion validation; the two evidence programs are not pooled.</p>
       </div>
       <div id="research-grid" class="grid compact"></div>
     </section>
@@ -297,7 +301,7 @@
 
     <section class="disclosure">
       <strong>Research beta.</strong>
-      The S02 benchmark and VowSig AI shadow records are separate evidence streams. The active AI runtime is in shadow validation only and does not place broker orders. No signal is a guaranteed return or personalized investment advice.
+      Core AI shadow evidence, expansion AI validation and the frozen S02 benchmark are separate evidence streams. AI runtimes remain shadow-only and do not place broker orders. No signal is a guaranteed return or personalized investment advice.
       Historical results and live forward results must be evaluated separately.
     </section>
 
@@ -313,6 +317,6 @@
       </div>
     </footer>
   </main>
-  <script defer src="/static/app.js?v=20261007-multilineage-1"></script>
+  <script defer src="/static/app.js?v=20261008-consistency-1"></script>
 </body>
 </html>

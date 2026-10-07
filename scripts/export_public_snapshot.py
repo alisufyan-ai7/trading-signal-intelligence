@@ -6,7 +6,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from trading_signal_intelligence.ai_v1.active_observability import v1_1_state
-from trading_signal_intelligence.product.ai_insights import build_public_ai_insights
+from trading_signal_intelligence.product.ai_insights import (
+    build_public_ai_insights,
+    build_public_validation_programs,
+)
 from trading_signal_intelligence.product.app import ROOT, health
 from trading_signal_intelligence.product.catalog import market_statuses
 from trading_signal_intelligence.product.evidence import evidence_summary
@@ -65,6 +68,8 @@ def main() -> None:
             "hidden_reasoning_included": False,
         }
 
+    validation_programs = build_public_validation_programs(ROOT)
+
     payload = {
         "schema_version": 1,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -72,6 +77,8 @@ def main() -> None:
         "evidence": evidence_summary(),
         "markets": live_payload,
         "ai_v1": ai_v1,
+        "validation_programs_schema_version": 1,
+        "validation_programs": validation_programs,
         "raw_market_data_included": False,
     }
 
@@ -84,6 +91,7 @@ def main() -> None:
         "live_signal_markets": payload["health"]["live_signal_markets"],
         "ai_runtime_version": ai_v1.get("runtime_version"),
         "ai_v1_status": ai_v1.get("status"),
+        "validation_program_count": len(validation_programs),
         "raw_market_data_included": False,
     }, indent=2))
 

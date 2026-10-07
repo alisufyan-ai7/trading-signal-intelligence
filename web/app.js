@@ -13,6 +13,9 @@ const marketNames = {
   XAUUSD: "XAU/USD",
   USTEC: "NASDAQ 100",
   US30: "DOW 30",
+  EURUSD: "EUR/USD",
+  XAGUSD: "XAG/USD",
+  USOIL: "WTI",
 };
 
 const esc = (value) => String(value ?? "")
@@ -123,7 +126,6 @@ function aiUnavailable(ai) {
 function renderAi(ai) {
   const statusHost = document.querySelector("#ai-status");
   const overviewHost = document.querySelector("#ai-overview");
-  const gatesHost = document.querySelector("#ai-gates");
   const marketHost = document.querySelector("#ai-market-grid");
   const decisionsHost = document.querySelector("#ai-decisions");
   const signalsHost = document.querySelector("#ai-shadow-signals");
@@ -136,7 +138,6 @@ function renderAi(ai) {
       </div>
     `;
     overviewHost.innerHTML = "";
-    gatesHost.innerHTML = "";
     marketHost.innerHTML = "";
     decisionsHost.innerHTML = '<div class="empty">No AI decision snapshot available yet.</div>';
     signalsHost.innerHTML = '<div class="empty">No AI shadow-signal snapshot available yet.</div>';
@@ -185,30 +186,6 @@ function renderAi(ai) {
       <strong>${esc(value)}</strong>
     </div>
   `).join("");
-
-  gatesHost.innerHTML = ["A1", "A2", "A3"].map(name => {
-    const gate = ai.gates?.[name];
-    if (!gate) return "";
-    const inf = gate.valid_inferences;
-    const trades = gate.completed_shadow_trades;
-    const infPct = Math.min(100, 100 * Number(inf.current || 0) / Number(inf.required || 1));
-    const tradePct = Math.min(100, 100 * Number(trades.current || 0) / Number(trades.required || 1));
-    return `
-      <article class="card gate-card">
-        <div class="gate-title">
-          <span class="meta">${esc(name)}</span>
-          <span class="badge ${gate.eligible ? "" : "warn"}">${gate.eligible ? "ELIGIBLE" : "COLLECTING"}</span>
-        </div>
-        <div class="gate-line"><span>Valid inferences</span><strong>${esc(inf.current)}/${esc(inf.required)}</strong></div>
-        <div class="progress"><i style="width:${infPct}%"></i></div>
-        <div class="gate-line"><span>Completed trades</span><strong>${esc(trades.current)}/${esc(trades.required)}</strong></div>
-        <div class="progress"><i style="width:${tradePct}%"></i></div>
-        <small>${gate.minimum_calendar_days
-          ? `Minimum ${esc(gate.minimum_calendar_days)} days • ${esc(gate.calendar_days_remaining)} days remaining`
-          : "Operational-audit threshold only"}</small>
-      </article>
-    `;
-  }).join("");
 
   marketHost.innerHTML = (ai.markets || []).map(m => `
     <article class="card ai-market-card">
@@ -285,6 +262,127 @@ function renderAi(ai) {
 }
 
 
+function validationRequirementRow(requirement) {
+  const current = Number(requirement.current || 0);
+  const required = Math.max(0, Number(requirement.required || 0));
+  const pct = required > 0 ? Math.min(100, 100 * current / required) : 100;
+  const detail = requirement.kind === "calendar"
+    ? `${current}/${required} days • ${Number(requirement.remaining || 0)} days remaining`
+    : `${current}/${required}`;
+  return `
+    <div class="gate-line">
+      <span>${esc(requirement.label || requirement.metric)}</span>
+      <strong>${esc(detail)}</strong>
+    </div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+  `;
+}
+
+function validationGateCard(gate) {
+  const requirements = (gate.requirements || [])
+    .map(validationRequirementRow)
+    .join("");
+  return `
+    <article class="card gate-card">
+      <div class="gate-title">
+        <span class="meta">${esc(gate.gate_id)}</span>
+        <span class="badge ${gate.eligible ? "" : "warn"}">
+          ${gate.eligible ? "ELIGIBLE" : "COLLECTING"}
+        </span>
+      </div>
+      ${requirements}
+    </article>
+  `;
+}
+
+function validationMarketCard(market) {
+  return `
+    <article class="card ai-market-card">
+      <div class="meta">
+        ${esc(market.source_symbol)} •
+        ${market.ledger_valid ? "LEDGER PASS" : "LEDGER FAIL"}
+      </div>
+      <h3>${esc(market.canonical_symbol || market.source_symbol)}</h3>
+      <div class="metric-row">
+        <div><span>Inferences</span><strong>${esc(market.valid_inferences)}</strong></div>
+        <div><span>Completed</span><strong>${esc(market.completed_shadow_trades)}</strong></div>
+        <div><span>Open signals</span><strong>${esc(market.open_signals)}</strong></div>
+        <div><span>Errors</span><strong>${esc(market.errors)}</strong></div>
+      </div>
+      <div class="state">
+        NO_TRADE ${esc(market.no_trade)} •
+        Rejected ${esc(market.rejected_inferences)} •
+        Missed ${esc(market.missed_inferences)} •
+        latest ${esc(fmtTime(market.latest_recorded_at_utc))}
+      </div>
+    </article>
+  `;
+}
+
+function renderValidationPrograms(payload) {
+  const host = document.querySelector("#validation-programs");
+  if (!host) return;
+
+  const programs = payload?.programs || [];
+  if (!programs.length) {
+    host.innerHTML = `
+      <div class="empty">
+        <strong>No validation-program snapshot is available yet.</strong>
+        <span>The existing AI Insights feed remains separate.</span>
+      </div>
+    `;
+    return;
+  }
+
+  host.innerHTML = programs.map(program => {
+    const totals = program.totals || {};
+    const exposure = program.public_signal_exposure
+      ? "PUBLIC SHADOW SIGNALS"
+      : "RESEARCH PROGRESS ONLY";
+    const exposureClass = program.public_signal_exposure ? "badge" : "badge warn";
+    const gates = (program.gates || []).map(validationGateCard).join("");
+    const markets = (program.markets || []).map(validationMarketCard).join("");
+    const exposureNotice = program.public_signal_exposure
+      ? "This program also has separately governed public shadow-signal visibility."
+      : "Only validation progress is public. Entry, stop, target and alert details are not exposed for this program.";
+
+    return `
+      <section class="validation-program">
+        <div class="validation-program-head">
+          <div>
+            <span class="eyebrow">${esc(program.runtime_version)} • ${esc(program.mode)}</span>
+            <h3>${esc(program.title)}</h3>
+          </div>
+          <span class="${exposureClass}">${exposure}</span>
+        </div>
+        <p class="ai-notice">${esc(exposureNotice)}</p>
+        <div class="ai-overview">
+          <div class="mini-metric"><span>Valid inferences</span><strong>${esc(totals.valid_inferences || 0)}</strong></div>
+          <div class="mini-metric"><span>Completed trades</span><strong>${esc(totals.completed_shadow_trades || 0)}</strong></div>
+          <div class="mini-metric"><span>Open signals</span><strong>${esc(totals.open_shadow_signals || 0)}</strong></div>
+          <div class="mini-metric"><span>Errors</span><strong>${esc(totals.errors || 0)}</strong></div>
+        </div>
+        <div class="subhead">
+          <div>
+            <span class="eyebrow">VALIDATION GATES</span>
+            <h3>Evidence thresholds</h3>
+          </div>
+          <p>Gate names and requirements are supplied by the validation program, not hard-coded in the website.</p>
+        </div>
+        <div class="grid ai-gates">${gates}</div>
+        <div class="subhead">
+          <div>
+            <span class="eyebrow">PROGRAM MARKETS</span>
+            <h3>Collection by market</h3>
+          </div>
+        </div>
+        <div class="grid">${markets}</div>
+      </section>
+    `;
+  }).join("");
+}
+
+
 function setupFeedbackForm() {
   const form = document.querySelector("#feedback-form");
   if (!form) return;
@@ -355,11 +453,21 @@ async function boot() {
       health: { healthy: false },
     }));
 
-  const [healthRes, marketsRes, signalsRes, ai] = await Promise.all([
+  const validationRequest = fetch("/api/validation/programs")
+    .then(res => res.ok ? res.json() : Promise.reject(new Error(`Validation endpoint HTTP ${res.status}`)))
+    .catch(err => ({
+      schema_version: 1,
+      programs: [],
+      snapshot_pending: true,
+      error: String(err),
+    }));
+
+  const [healthRes, marketsRes, signalsRes, ai, validation] = await Promise.all([
     fetch("/api/health"),
     fetch("/api/markets"),
     fetch("/api/signals"),
     aiRequest,
+    validationRequest,
   ]);
   const health = await healthRes.json();
   const markets = await marketsRes.json();
@@ -389,6 +497,7 @@ async function boot() {
   const research = markets.filter(m => m.product_status === "research_monitoring");
 
   renderAi(ai);
+  renderValidationPrograms(validation);
   document.querySelector("#live-grid").innerHTML = live.map(m => card(m, true)).join("");
   document.querySelector("#evidence-grid").innerHTML = live.map(evidenceCard).join("");
   document.querySelector("#research-grid").innerHTML = research.map(m => card(m, false)).join("");

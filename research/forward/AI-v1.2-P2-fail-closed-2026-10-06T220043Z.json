@@ -1,0 +1,74 @@
+{
+  "evidence_kind": "AI-v1.2-P2-fail-closed-v0.1",
+  "classification": "FAIL_CLOSED_RUNTIME_WIRING_DEFECT",
+  "runtime_version": "AI-v1.2",
+  "decision_protocol_version": "AI-v1.0",
+  "activation_timestamp_utc": "2026-10-06T20:06:33.495178+00:00",
+  "activation_anchor": "research/forward/AI-v1.2-expansion-activation-2026-10-06T200633Z.json",
+  "activation_anchor_commit": "db0d0d2e0a23e961a0e5b27aedb04f697a3f47e9",
+  "production_commit_at_p2": "87e5c2da395658763c947a979b35a2fb30fb9e11",
+  "p2_boundary_utc": "2026-10-06T22:00:00+00:00",
+  "p2_started_utc": "2026-10-06T22:00:05.3545177Z",
+  "overall_exit_code": 2,
+  "markets": {
+    "EURUSD": {
+      "result": "RUNTIME_FAILURE_BEFORE_INFERENCE",
+      "error": "KeyError: 'guardrails_sha256'",
+      "records_after": 1,
+      "ledger_head_record_hash": "1728384603b0dab062ac2defccecb437f77c3a65c661b4ee096c04ad499c691e",
+      "ledger_file_sha256_after": "f2fef91f7b2b5b77853d1618a0c8fa8de03133a392c4fa620450ea3cea211322",
+      "valid_inferences": 0,
+      "provider_decision_recorded": false
+    },
+    "XAGUSD": {
+      "result": "MISSED_INFERENCE",
+      "reason": "no_current_h1_tick",
+      "records_after": 2,
+      "ledger_head_record_hash": "0d6249e3214448769226b4b7d7733c8af6f3bfa4b25a52cfc3972d851e6e1989",
+      "ledger_file_sha256_after": "5813067c4d19f53aa98ca992b75798b3a447083ed0fc0c97131adece2c0b24e4",
+      "valid_inferences": 0,
+      "provider_decision_recorded": false
+    },
+    "USOIL": {
+      "result": "RUNTIME_FAILURE_BEFORE_INFERENCE",
+      "error": "KeyError: 'guardrails_sha256'",
+      "records_after": 1,
+      "ledger_head_record_hash": "dbac6f8c6071d24c004327db8142c55cc6de97eb273da8ad9380026761762a93",
+      "ledger_file_sha256_after": "a5cfa5bc29b30b5607673c8da336d28f357b2cb7ffeb09933af3a21a00a0e8ca",
+      "valid_inferences": 0,
+      "provider_decision_recorded": false
+    }
+  },
+  "aggregate_after": {
+    "valid_inferences": 0,
+    "completed_shadow_trades": 0,
+    "signals": 0,
+    "errors": 0,
+    "missed_inferences": 1,
+    "processing_miss_count_excluding_no_current_h1_tick": 0
+  },
+  "integrity": {
+    "ai_v1_2_runtime_verifier_pass": true,
+    "ai_v1_1_ledger_byte_identity_during_p2": true,
+    "ai_v1_1_scheduler_static_during_p2": true,
+    "ai_v1_2_scheduler_absent": true,
+    "public_exposure_disabled": true,
+    "broker_execution_disabled": true,
+    "production_git_integrity_pass": true
+  },
+  "root_cause": {
+    "class": "activation_payload_field_name_mismatch",
+    "runtime_lookup": "guardrails_sha256",
+    "frozen_activation_payload_field": "expansion_guardrails_sha256",
+    "decision_semantics_changed": false,
+    "provider_inference_successfully_recorded": false
+  },
+  "governance": {
+    "retry_ai_v1_2_forbidden": true,
+    "preserve_ai_v1_2_ledgers": true,
+    "preserve_ai_v1_2_anchor": true,
+    "backfill_forbidden": true,
+    "successor_required": true,
+    "recommended_successor": "AI-v1.2.1"
+  }
+}

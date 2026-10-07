@@ -126,7 +126,7 @@ def test_v1_2_1_configs_preserve_decision_semantics() -> None:
     assert new_gates["markets"] == old_gates["markets"]
 
 
-def test_v1_2_1_preactivation_is_side_effect_free_and_valid() -> None:
+def test_v1_2_1_preactivation_is_side_effect_free_and_fails_closed_after_activation() -> None:
     before = {
         symbol: (ROOT / relative).exists()
         for symbol, relative in DATABASE_PATHS.items()
@@ -138,7 +138,7 @@ def test_v1_2_1_preactivation_is_side_effect_free_and_valid() -> None:
     }
 
     assert before == after
-    assert report["preactivation_check"] == "PASS"
+    assert report["preactivation_check"] == "FAIL"
     assert report["runtime_version"] == "AI-v1.2.1"
     assert report["decision_protocol_version"] == "AI-v1.0"
     assert report["predecessor_runtime_version"] == "AI-v1.2"
@@ -154,7 +154,12 @@ def test_v1_2_1_preactivation_is_side_effect_free_and_valid() -> None:
     assert report["calendar_carry_forward"] is False
     assert report["backfill_prior_missed"] is False
     assert not any(report["successor_ledger_paths_exist"].values())
-    assert report["successor_activation_anchors"] == []
+    assert [
+        Path(value).as_posix()
+        for value in report["successor_activation_anchors"]
+    ] == [
+        "research/forward/AI-v1.2.1-expansion-activation-2026-10-07T093543Z.json"
+    ]
     assert report["provider_call_made"] is False
     assert report["mt5_call_made"] is False
     assert report["ledger_write_performed"] is False

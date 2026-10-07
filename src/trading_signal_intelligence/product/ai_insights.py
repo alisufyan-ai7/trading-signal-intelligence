@@ -391,7 +391,7 @@ def _gate_requirements(gate: dict[str, Any]) -> list[dict[str, Any]]:
         requirements.append(
             {
                 "metric": "calendar_days",
-                "label": "Calendar age",
+                "label": "Minimum calendar age",
                 "kind": "calendar",
                 "current": max(0, minimum_days - remaining),
                 "required": minimum_days,

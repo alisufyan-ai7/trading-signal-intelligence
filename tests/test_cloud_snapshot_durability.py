@@ -11,8 +11,11 @@ from scripts.verify_cloud_snapshot_durability import main
 GOOD_HEALTH = {
     "ok": True,
     "launch_ready": True,
+    "product": "VowSig Research Beta",
     "snapshot_pending": False,
     "snapshot_generated_at_utc": "2026-09-28T19:45:56+00:00",
+    "snapshot_freshness": "fresh",
+    "snapshot_age_seconds": 35,
 }
 
 GOOD_AI = {
@@ -131,6 +134,8 @@ def test_durability_verifier_passes_good_public_contract(
         "market-expansion-1",
     ]
     assert payload["broker_execution_disabled"] is True
+    assert payload["snapshot_freshness"] == "fresh"
+    assert payload["snapshot_age_seconds"] == 35
     assert payload["raw_market_data_included"] is False
 
 
@@ -146,6 +151,21 @@ def test_durability_verifier_fails_snapshot_pending(monkeypatch) -> None:
     monkeypatch.setattr("sys.argv", ["verify_cloud_snapshot_durability.py"])
 
     with pytest.raises(SystemExit, match="launch-ready|pending"):
+        main()
+
+
+def test_durability_verifier_fails_stale_snapshot(monkeypatch) -> None:
+    stale = dict(GOOD_HEALTH)
+    stale["snapshot_freshness"] = "stale"
+    stale["snapshot_age_seconds"] = 10_000
+
+    monkeypatch.setattr(
+        "urllib.request.urlopen",
+        _urlopen_factory(stale, GOOD_AI, [{"id": i} for i in range(9)]),
+    )
+    monkeypatch.setattr("sys.argv", ["verify_cloud_snapshot_durability.py"])
+
+    with pytest.raises(SystemExit, match="not fresh"):
         main()
 
 

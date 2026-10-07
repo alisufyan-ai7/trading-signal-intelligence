@@ -44,7 +44,7 @@ Frozen P2 ledger SHA-256:
 
 `-PlanOnly` executes all post-P2 preconditions and prints the exact planned scheduler definition but performs no task registration.
 
-This mode is required for VPS verification before P3 publication/installation.
+This mode is required for VPS verification before P3 publication/installation. For an unpublished candidate in a detached worktree, `-ActiveRepoRoot <production-repo>` may be supplied only together with `-PlanOnly`; mutation mode explicitly rejects that bridge.
 
 ## P3 installation and closure
 

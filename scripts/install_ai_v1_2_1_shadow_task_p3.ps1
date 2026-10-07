@@ -26,6 +26,7 @@ else {
     (Resolve-Path $ActiveRepoRoot).Path
 }
 
+$runnerSource = Join-Path $scriptRepoRoot "scripts\run_ai_v1_2_1_shadow_task_post_p2.cmd"
 $runner = Join-Path $repoRoot "scripts\run_ai_v1_2_1_shadow_task_post_p2.cmd"
 $boundRunner = Join-Path $repoRoot "scripts\run_ai_v1_2_1_shadow_task.cmd"
 $python = Join-Path $repoRoot ".venv\Scripts\python.exe"
@@ -65,7 +66,7 @@ function Get-Sha256 {
     ).Hash.ToLowerInvariant()
 }
 
-foreach ($required in @($runner, $boundRunner, $python, $verifier, $reporter, $legacyInstaller)) {
+foreach ($required in @($runnerSource, $boundRunner, $python, $verifier, $reporter, $legacyInstaller)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
         throw "Required scheduler artifact missing: $required"
     }
@@ -79,7 +80,7 @@ if ((Get-Sha256 -Path $boundRunner) -ne $ExpectedBoundTaskRunnerSha256) {
     throw "Activation-bound task runner changed. Refuse P3 installation."
 }
 
-if ((Get-Sha256 -Path $runner) -ne $ExpectedPostP2TaskRunnerSha256) {
+if ((Get-Sha256 -Path $runnerSource) -ne $ExpectedPostP2TaskRunnerSha256) {
     throw "Post-P2 task runner hash mismatch. Refuse P3 installation."
 }
 
@@ -207,6 +208,10 @@ $plan = [pscustomobject]@{
 if ($PlanOnly) {
     $plan | ConvertTo-Json -Depth 6
     exit 0
+}
+
+if (-not (Test-Path -LiteralPath $runner -PathType Leaf)) {
+    throw "Published P3 task runner missing from production repository."
 }
 
 $action = New-ScheduledTaskAction -Execute "cmd.exe" -Argument ('/c "' + $runner + '"') -WorkingDirectory $repoRoot

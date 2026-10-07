@@ -67,6 +67,9 @@ EXPANSION_ARTIFACT_PATHS = {
     "correction_plan_v0_1": (
         "docs/ai-v1.2.1-runtime-correction-v0.1.md"
     ),
+    "activation_plan_v0_1": (
+        "docs/ai-v1.2.1-expansion-activation-plan-v0.1.md"
+    ),
     "instrument_registry": "config/instruments.json",
     "activation_schema_v1_2_1": "config/ai_v1_2_1_activation_schema.json",
     "activation_anchor_schema_v1_2_1": "config/ai_v1_2_1_anchor_schema.json",

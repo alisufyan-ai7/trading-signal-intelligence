@@ -619,6 +619,16 @@ def build_activation_anchor_preview_v1_2_1(
         "decision_protocol_version": DECISION_PROTOCOL_VERSION,
         "activated_at_utc": activated.isoformat(),
         "repository_commit_sha": git_commit_sha(repo_root),
+        "predecessor_runtime_version": PREDECESSOR_RUNTIME_VERSION,
+        "predecessor_activation_anchor": PREDECESSOR_ACTIVATION_ANCHOR,
+        "predecessor_activation_anchor_sha256": file_sha256(
+            repo_root / PREDECESSOR_ACTIVATION_ANCHOR
+        ),
+        "predecessor_failure_evidence_sha256": file_sha256(
+            repo_root / PREDECESSOR_FAILURE_EVIDENCE
+        ),
+        "predecessor_evidence_carry_forward": False,
+        "calendar_carry_forward": False,
         "parallel_to_runtime_version": PARALLEL_TO_RUNTIME_VERSION,
         "parallel_runtime_anchor": PARALLEL_RUNTIME_ANCHOR,
         "parallel_runtime_anchor_sha256": file_sha256(
@@ -684,6 +694,16 @@ def build_activation_anchor_document_v1_2_1(
         "status": "ACTIVE_PARALLEL_SHADOW",
         "activated_at_utc": activated.isoformat(),
         "repository_commit_sha": git_commit_sha(repo_root),
+        "predecessor_runtime_version": PREDECESSOR_RUNTIME_VERSION,
+        "predecessor_activation_anchor": PREDECESSOR_ACTIVATION_ANCHOR,
+        "predecessor_activation_anchor_sha256": file_sha256(
+            repo_root / PREDECESSOR_ACTIVATION_ANCHOR
+        ),
+        "predecessor_failure_evidence_sha256": file_sha256(
+            repo_root / PREDECESSOR_FAILURE_EVIDENCE
+        ),
+        "predecessor_evidence_carry_forward": False,
+        "calendar_carry_forward": False,
         "parallel_to_runtime_version": PARALLEL_TO_RUNTIME_VERSION,
         "parallel_runtime_anchor": PARALLEL_RUNTIME_ANCHOR,
         "parallel_runtime_anchor_sha256": file_sha256(
@@ -713,6 +733,12 @@ def validate_activation_anchor_document_v1_2_1(
         "status",
         "activated_at_utc",
         "repository_commit_sha",
+        "predecessor_runtime_version",
+        "predecessor_activation_anchor",
+        "predecessor_activation_anchor_sha256",
+        "predecessor_failure_evidence_sha256",
+        "predecessor_evidence_carry_forward",
+        "calendar_carry_forward",
         "parallel_to_runtime_version",
         "parallel_runtime_anchor",
         "parallel_runtime_anchor_sha256",
@@ -732,6 +758,16 @@ def validate_activation_anchor_document_v1_2_1(
         raise ActivationV121Error("aggregate decision protocol mismatch")
     if anchor["status"] != "ACTIVE_PARALLEL_SHADOW":
         raise ActivationV121Error("aggregate anchor status mismatch")
+    if anchor["predecessor_runtime_version"] != PREDECESSOR_RUNTIME_VERSION:
+        raise ActivationV121Error("aggregate predecessor runtime mismatch")
+    if anchor["predecessor_activation_anchor"] != PREDECESSOR_ACTIVATION_ANCHOR:
+        raise ActivationV121Error("aggregate predecessor anchor mismatch")
+    if anchor["predecessor_evidence_carry_forward"] is not False:
+        raise ActivationV121Error(
+            "aggregate predecessor evidence carry-forward forbidden"
+        )
+    if anchor["calendar_carry_forward"] is not False:
+        raise ActivationV121Error("aggregate calendar carry-forward forbidden")
     if anchor["parallel_to_runtime_version"] != PARALLEL_TO_RUNTIME_VERSION:
         raise ActivationV121Error("aggregate parallel runtime mismatch")
     if anchor["parallel_runtime_anchor"] != PARALLEL_RUNTIME_ANCHOR:
@@ -748,6 +784,14 @@ def validate_activation_anchor_document_v1_2_1(
         raise ActivationV121Error("broker execution must remain disabled")
     if not _COMMIT_RE.fullmatch(str(anchor["repository_commit_sha"])):
         raise ActivationV121Error("aggregate repository SHA invalid")
+    if not _SHA256_RE.fullmatch(
+        str(anchor["predecessor_activation_anchor_sha256"])
+    ):
+        raise ActivationV121Error("predecessor activation anchor SHA invalid")
+    if not _SHA256_RE.fullmatch(
+        str(anchor["predecessor_failure_evidence_sha256"])
+    ):
+        raise ActivationV121Error("predecessor failure evidence SHA invalid")
     if not _SHA256_RE.fullmatch(
         str(anchor["parallel_runtime_anchor_sha256"])
     ):

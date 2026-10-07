@@ -30,9 +30,9 @@ ROOT = Path(__file__).resolve().parents[3]
 WEB = ROOT / "web"
 
 app = FastAPI(
-    title="SignalProof AI Research Beta",
+    title="VowSig Research Beta",
     version="0.5.0",
-    description="SignalProof AI research beta; current public feed remains the frozen S02 benchmark.",
+    description="VowSig research beta; the frozen S02 benchmark remains a separate public evidence stream.",
 )
 
 app.mount("/static", StaticFiles(directory=WEB), name="static")
@@ -67,7 +67,7 @@ def health() -> dict:
     return {
         "ok": not ledger_errors,
         "launch_ready": not ledger_errors and len(ready_collectors) == len(live),
-        "product": "SignalProof AI Research Beta",
+        "product": "VowSig Research Beta",
         "launch_mode": "research_beta",
         "live_signal_markets": len(live),
         "ready_collectors": ready_collectors,
@@ -219,7 +219,7 @@ def owner_feedback_export(
             media_type="text/csv",
             headers={
                 "Content-Disposition": (
-                    "attachment; filename=signalproof-feedback.csv"
+                    "attachment; filename=vowsig-feedback.csv"
                 )
             },
         )

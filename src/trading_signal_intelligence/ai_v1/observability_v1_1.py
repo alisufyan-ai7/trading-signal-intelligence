@@ -36,7 +36,7 @@ TASK_NAME = "SignalProof AI-v1.1 Shadow Scan"
 PUBLIC_SURFACE_CORRECTION_KIND = "AI-v1.1-public-surface-v0.1"
 PUBLIC_SURFACE_CORRECTION_KIND_V2 = "AI-v1.1-public-surface-v0.2"
 PUBLIC_SURFACE_CORRECTION_GLOB = "AI-v1.1-public-surface-correction-*.json"
-PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS = frozenset(
+PUBLIC_SURFACE_V2_CORRECTABLE_ARTIFACTS = frozenset(
     {
         "observability_source_v1_1",
         "product_publish_task_runner_script",
@@ -46,7 +46,20 @@ PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS = frozenset(
         "ai_ui_index",
     }
 )
+# Backward-compatible alias retained for v0.2 tests/importers.
+PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS = PUBLIC_SURFACE_V2_CORRECTABLE_ARTIFACTS
 PUBLIC_SURFACE_V2_SCHEMA_VERSION = 2
+
+PUBLIC_SURFACE_CORRECTION_KIND_V3 = "AI-v1.1-public-surface-v0.3"
+PUBLIC_SURFACE_V3_SCHEMA_VERSION = 3
+PUBLIC_SURFACE_V3_CORRECTABLE_ARTIFACTS = frozenset(
+    {
+        *PUBLIC_SURFACE_V2_CORRECTABLE_ARTIFACTS,
+        "ai_insights_source",
+        "public_snapshot_export_script",
+        "public_snapshot_push_script",
+    }
+)
 PUBLIC_SURFACE_WEB_ROOT = "web"
 
 
@@ -159,6 +172,8 @@ def _validate_public_surface_base(
     payload: dict[str, Any],
     *,
     exact_override_set: bool,
+    allowed_artifacts: frozenset[str] = PUBLIC_SURFACE_V2_CORRECTABLE_ARTIFACTS,
+    override_set_reason: str = "public_surface_v2_override_set_mismatch",
 ) -> dict[str, Any]:
     if payload.get("runtime_version") != RUNTIME_VERSION:
         return {
@@ -229,22 +244,18 @@ def _validate_public_surface_base(
 
     names = set(overrides)
     if exact_override_set:
-        if names != set(PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS):
+        if names != set(allowed_artifacts):
             return {
                 "valid": False,
-                "reason": "public_surface_v2_override_set_mismatch",
-                "expected_artifacts": sorted(
-                    PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS
-                ),
+                "reason": override_set_reason,
+                "expected_artifacts": sorted(allowed_artifacts),
                 "actual_artifacts": sorted(names),
             }
-    elif not names.issubset(PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS):
+    elif not names.issubset(allowed_artifacts):
         return {
             "valid": False,
             "reason": "public_surface_override_outside_allowlist",
-            "unexpected_artifacts": sorted(
-                names - PUBLIC_SURFACE_CORRECTABLE_ARTIFACTS
-            ),
+            "unexpected_artifacts": sorted(names - allowed_artifacts),
         }
 
     for name, value in overrides.items():
@@ -361,6 +372,99 @@ def _validate_public_surface_v2(
     }
 
 
+def _validate_public_surface_v3(
+    repo_root: Path,
+    anchor: dict[str, Any],
+    path: Path,
+    payload: dict[str, Any],
+    *,
+    expected_sequence: int,
+    predecessor_path: Path,
+) -> dict[str, Any]:
+    if payload.get("correction_schema_version") != PUBLIC_SURFACE_V3_SCHEMA_VERSION:
+        return {
+            "valid": False,
+            "reason": "public_surface_v3_schema_version_mismatch",
+        }
+    if payload.get("sequence_number") != expected_sequence:
+        return {
+            "valid": False,
+            "reason": "public_surface_v3_sequence_mismatch",
+            "expected_sequence": expected_sequence,
+            "actual_sequence": payload.get("sequence_number"),
+        }
+
+    expected_predecessor = predecessor_path.relative_to(repo_root).as_posix()
+    if payload.get("supersedes_correction") != expected_predecessor:
+        return {
+            "valid": False,
+            "reason": "public_surface_v3_predecessor_path_mismatch",
+        }
+    if payload.get("supersedes_correction_sha256") != _file_sha256(
+        predecessor_path
+    ):
+        return {
+            "valid": False,
+            "reason": "public_surface_v3_predecessor_hash_mismatch",
+        }
+
+    base = _validate_public_surface_base(
+        repo_root,
+        anchor,
+        path,
+        payload,
+        exact_override_set=True,
+        allowed_artifacts=PUBLIC_SURFACE_V3_CORRECTABLE_ARTIFACTS,
+        override_set_reason="public_surface_v3_override_set_mismatch",
+    )
+    if base.get("valid") is not True:
+        return base
+
+    web_hashes = payload.get("tracked_web_artifact_hashes")
+    if not isinstance(web_hashes, dict) or not web_hashes:
+        return {
+            "valid": False,
+            "reason": "public_surface_v3_web_manifest_missing",
+        }
+
+    for relative, digest in web_hashes.items():
+        if (
+            not isinstance(relative, str)
+            or not relative.startswith(f"{PUBLIC_SURFACE_WEB_ROOT}/")
+            or relative.startswith("/")
+            or ".." in Path(relative).parts
+        ):
+            return {
+                "valid": False,
+                "reason": "public_surface_v3_web_path_invalid",
+                "path": str(relative),
+            }
+        if not _is_sha256(digest):
+            return {
+                "valid": False,
+                "reason": "public_surface_v3_web_hash_invalid",
+                "path": relative,
+            }
+
+    overrides = base["artifact_hash_overrides"]
+    for artifact_name in ("ai_ui_index", "ai_ui_script"):
+        relative = V11_ARTIFACT_PATHS[artifact_name]
+        if web_hashes.get(relative) != overrides.get(artifact_name):
+            return {
+                "valid": False,
+                "reason": "public_surface_v3_web_override_mismatch",
+                "artifact": artifact_name,
+                "path": relative,
+            }
+
+    return {
+        "valid": True,
+        "artifact_hash_overrides": overrides,
+        "tracked_web_artifact_hashes": dict(web_hashes),
+        "upstream": base["upstream"],
+    }
+
+
 def _public_surface_correction(
     repo_root: Path,
     anchor: dict[str, Any],
@@ -411,6 +515,11 @@ def _public_surface_correction(
         for path, payload in loaded.items()
         if payload.get("correction_kind") == PUBLIC_SURFACE_CORRECTION_KIND_V2
     ]
+    v3_paths = [
+        path
+        for path, payload in loaded.items()
+        if payload.get("correction_kind") == PUBLIC_SURFACE_CORRECTION_KIND_V3
+    ]
     unexpected = sorted(
         str(path.relative_to(repo_root))
         for path, payload in loaded.items()
@@ -418,6 +527,7 @@ def _public_surface_correction(
         not in {
             PUBLIC_SURFACE_CORRECTION_KIND,
             PUBLIC_SURFACE_CORRECTION_KIND_V2,
+            PUBLIC_SURFACE_CORRECTION_KIND_V3,
         }
     )
     if unexpected:
@@ -460,7 +570,8 @@ def _public_surface_correction(
     current = legacy
     current_sequence = 1
     chain_paths = [legacy_path.relative_to(repo_root).as_posix()]
-    remaining = set(v2_paths)
+    remaining = set(v2_paths + v3_paths)
+    current_schema = 1
 
     while remaining:
         current_rel = current_path.relative_to(repo_root).as_posix()
@@ -495,14 +606,42 @@ def _public_surface_correction(
 
         successor = successors[0]
         successor_payload = loaded[successor]
-        validated = _validate_public_surface_v2(
-            repo_root,
-            anchor,
-            successor,
-            successor_payload,
-            expected_sequence=current_sequence + 1,
-            predecessor_path=current_path,
-        )
+        successor_kind = successor_payload.get("correction_kind")
+
+        if successor_kind == PUBLIC_SURFACE_CORRECTION_KIND_V2:
+            if current_schema > PUBLIC_SURFACE_V2_SCHEMA_VERSION:
+                return {
+                    "present": True,
+                    "valid": False,
+                    "reason": "public_surface_schema_regression",
+                    "artifact_hash_overrides": {},
+                }
+            validated = _validate_public_surface_v2(
+                repo_root,
+                anchor,
+                successor,
+                successor_payload,
+                expected_sequence=current_sequence + 1,
+                predecessor_path=current_path,
+            )
+            next_schema = PUBLIC_SURFACE_V2_SCHEMA_VERSION
+        elif successor_kind == PUBLIC_SURFACE_CORRECTION_KIND_V3:
+            validated = _validate_public_surface_v3(
+                repo_root,
+                anchor,
+                successor,
+                successor_payload,
+                expected_sequence=current_sequence + 1,
+                predecessor_path=current_path,
+            )
+            next_schema = PUBLIC_SURFACE_V3_SCHEMA_VERSION
+        else:
+            return {
+                "present": True,
+                "valid": False,
+                "reason": "unexpected_public_surface_correction_kind",
+                "artifact_hash_overrides": {},
+            }
         if validated.get("valid") is not True:
             return {
                 "present": True,
@@ -517,6 +656,7 @@ def _public_surface_correction(
         current_payload = successor_payload
         current = validated
         current_sequence += 1
+        current_schema = next_schema
         chain_paths.append(successor.relative_to(repo_root).as_posix())
 
     return {

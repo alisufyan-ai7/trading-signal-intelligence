@@ -38,3 +38,5 @@ jobs:
             tests/test_public_snapshot_push_guard.py \
             tests/test_vowsig_multilineage_public_observability.py \
             tests/test_vowsig_public_branding.py
+      - name: Full AI-v1 regression family
+        run: python -m pytest -q tests/test_ai_v1*.py

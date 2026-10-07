@@ -54,7 +54,10 @@ def test_v1_2_preactivation_report_fails_closed_after_activation_anchor() -> Non
         "equivalent_except_status_and_shadow_market_allowlist"
     ] is True
     assert report["review_gates"]["valid"] is True
-    assert report["expansion_activation_anchors"] == [
+    assert [
+        Path(value).as_posix()
+        for value in report["expansion_activation_anchors"]
+    ] == [
         "research/forward/AI-v1.2-expansion-activation-2026-10-06T200633Z.json"
     ]
     assert report["provider_call_made"] is False

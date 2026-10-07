@@ -1,0 +1,303 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vowsig.com/schemas/public-validation-program-v1.json",
+  "title": "VowSig Public Validation Program v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "program_id",
+    "title",
+    "runtime_version",
+    "decision_protocol_version",
+    "mode",
+    "status",
+    "public_research_observability",
+    "public_signal_exposure",
+    "signal_details_included",
+    "health",
+    "totals",
+    "gates",
+    "markets",
+    "raw_market_data_included",
+    "raw_feature_snapshots_included",
+    "provider_request_metadata_included",
+    "hidden_reasoning_included"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "program_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "decision_protocol_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "mode": {
+      "const": "SHADOW_ONLY"
+    },
+    "status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "public_research_observability": {
+      "const": true
+    },
+    "public_signal_exposure": {
+      "type": "boolean"
+    },
+    "signal_details_included": {
+      "const": false
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "healthy",
+        "ledgers_valid",
+        "scheduler_healthy",
+        "broker_execution_disabled"
+      ],
+      "properties": {
+        "healthy": {
+          "type": "boolean"
+        },
+        "ledgers_valid": {
+          "type": "boolean"
+        },
+        "scheduler_healthy": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "broker_execution_disabled": {
+          "const": true
+        }
+      }
+    },
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "valid_inferences",
+        "completed_shadow_trades",
+        "open_shadow_signals",
+        "signals",
+        "no_trade",
+        "rejected_inferences",
+        "missed_inferences",
+        "errors"
+      ],
+      "properties": {
+        "valid_inferences": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "completed_shadow_trades": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "open_shadow_signals": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "signals": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "no_trade": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "rejected_inferences": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missed_inferences": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "errors": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "gate_id",
+          "eligible",
+          "requirements"
+        ],
+        "properties": {
+          "gate_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "requirements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "metric",
+                "label",
+                "kind",
+                "current",
+                "required",
+                "met"
+              ],
+              "properties": {
+                "metric": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "kind": {
+                  "enum": [
+                    "count",
+                    "calendar"
+                  ]
+                },
+                "current": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "required": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "remaining": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "met": {
+                  "type": "boolean"
+                },
+                "eligible_at_utc": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "markets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source_symbol",
+          "canonical_symbol",
+          "ledger_valid",
+          "activation_anchor_match",
+          "valid_inferences",
+          "completed_shadow_trades",
+          "signals",
+          "open_signals",
+          "no_trade",
+          "rejected_inferences",
+          "missed_inferences",
+          "errors",
+          "latest_recorded_at_utc"
+        ],
+        "properties": {
+          "source_symbol": {
+            "type": "string",
+            "minLength": 1
+          },
+          "canonical_symbol": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ledger_valid": {
+            "type": "boolean"
+          },
+          "activation_anchor_match": {
+            "type": "boolean"
+          },
+          "valid_inferences": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "completed_shadow_trades": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "signals": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "open_signals": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "no_trade": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rejected_inferences": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "missed_inferences": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "errors": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "latest_recorded_at_utc": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "raw_market_data_included": {
+      "const": false
+    },
+    "raw_feature_snapshots_included": {
+      "const": false
+    },
+    "provider_request_metadata_included": {
+      "const": false
+    },
+    "hidden_reasoning_included": {
+      "const": false
+    }
+  }
+}

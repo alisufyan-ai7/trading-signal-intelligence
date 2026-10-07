@@ -1,0 +1,120 @@
+{
+  "evidence_kind": "AI-v1.2.1-expansion-correction-readiness-v0.1",
+  "status": "PASS",
+  "mode": "READ_ONLY",
+  "runtime_version": "AI-v1.2.1",
+  "decision_protocol_version": "AI-v1.0",
+  "predecessor_runtime_version": "AI-v1.2",
+  "observed_at_utc": "2026-10-07T09:00:10.464172+00:00",
+  "correction_commit": "68f5b0dfc49707724a940180efbe430924659a48",
+  "active_production_commit": "87e5c2da395658763c947a979b35a2fb30fb9e11",
+  "markets": {
+    "EURUSD": {
+      "source_symbol": "EURUSD",
+      "canonical_symbol": "EUR/USD",
+      "asset_class": "forex",
+      "readiness": "READY",
+      "synchronization_status": "READY",
+      "synchronization_ready": true,
+      "synchronization_attempts": 1,
+      "synchronization_waited_seconds": 0.25,
+      "saw_current_hour_tick": true,
+      "h1_rows": 500,
+      "h4_rows": 200,
+      "feature_snapshot_built": true,
+      "feature_snapshot_sha256": "f0231d9920414dfe513e34e029b89c3feb8513a140132bca68e64f8cd19b78d8",
+      "feature_schema_version": "AI-v1.0",
+      "source_bar_open_utc": "2026-10-07T08:00:00Z",
+      "source_bar_close_utc": "2026-10-07T09:00:00Z",
+      "data_age_seconds": 10.464172,
+      "quality_flags": []
+    },
+    "XAGUSD": {
+      "source_symbol": "XAGUSD",
+      "canonical_symbol": "XAG/USD",
+      "asset_class": "metal",
+      "readiness": "READY",
+      "synchronization_status": "READY",
+      "synchronization_ready": true,
+      "synchronization_attempts": 2,
+      "synchronization_waited_seconds": 1.1410000000032596,
+      "saw_current_hour_tick": true,
+      "h1_rows": 500,
+      "h4_rows": 200,
+      "feature_snapshot_built": true,
+      "feature_snapshot_sha256": "e1306ee36f11e3e1532eb4e32135fbf0c064572e630dc6b4cba7e1cc018aa7d5",
+      "feature_schema_version": "AI-v1.0",
+      "source_bar_open_utc": "2026-10-07T08:00:00Z",
+      "source_bar_close_utc": "2026-10-07T09:00:00Z",
+      "data_age_seconds": 10.464172,
+      "quality_flags": []
+    },
+    "USOIL": {
+      "source_symbol": "USOIL",
+      "canonical_symbol": "WTI",
+      "asset_class": "energy",
+      "readiness": "READY",
+      "synchronization_status": "READY",
+      "synchronization_ready": true,
+      "synchronization_attempts": 2,
+      "synchronization_waited_seconds": 1.0939999999973224,
+      "saw_current_hour_tick": true,
+      "h1_rows": 500,
+      "h4_rows": 200,
+      "feature_snapshot_built": true,
+      "feature_snapshot_sha256": "f4577a77e358a3a0b6eca12223933c1f7110e47a8a3115c2fcf34cb817a3b103",
+      "feature_schema_version": "AI-v1.0",
+      "source_bar_open_utc": "2026-10-07T08:00:00Z",
+      "source_bar_close_utc": "2026-10-07T09:00:00Z",
+      "data_age_seconds": 10.464172,
+      "quality_flags": []
+    }
+  },
+  "active_ai_v1_1_ledger_hashes_before": {
+    "XAUUSD": "3431f12f944469d116db424e3fa778bab08681a53beacd66bd8792d64a08a694",
+    "USTEC": "73670c39bfa08bc516c91d0beee5a5f253b53f4af94f38f08e035ccfb398275d",
+    "US30": "e3dafd6b106058662b92e24ab50beb4e4c2799cf05845bc67cc36e0b2b33504d"
+  },
+  "active_ai_v1_1_ledger_hashes_after": {
+    "XAUUSD": "3431f12f944469d116db424e3fa778bab08681a53beacd66bd8792d64a08a694",
+    "USTEC": "73670c39bfa08bc516c91d0beee5a5f253b53f4af94f38f08e035ccfb398275d",
+    "US30": "e3dafd6b106058662b92e24ab50beb4e4c2799cf05845bc67cc36e0b2b33504d"
+  },
+  "active_ai_v1_1_ledger_byte_identity": true,
+  "failed_ai_v1_2_ledger_hashes_expected": {
+    "EURUSD": "f2fef91f7b2b5b77853d1618a0c8fa8de03133a392c4fa620450ea3cea211322",
+    "XAGUSD": "5813067c4d19f53aa98ca992b75798b3a447083ed0fc0c97131adece2c0b24e4",
+    "USOIL": "a5cfa5bc29b30b5607673c8da336d28f357b2cb7ffeb09933af3a21a00a0e8ca"
+  },
+  "failed_ai_v1_2_ledger_hashes_before": {
+    "EURUSD": "f2fef91f7b2b5b77853d1618a0c8fa8de03133a392c4fa620450ea3cea211322",
+    "XAGUSD": "5813067c4d19f53aa98ca992b75798b3a447083ed0fc0c97131adece2c0b24e4",
+    "USOIL": "a5cfa5bc29b30b5607673c8da336d28f357b2cb7ffeb09933af3a21a00a0e8ca"
+  },
+  "failed_ai_v1_2_ledger_hashes_after": {
+    "EURUSD": "f2fef91f7b2b5b77853d1618a0c8fa8de03133a392c4fa620450ea3cea211322",
+    "XAGUSD": "5813067c4d19f53aa98ca992b75798b3a447083ed0fc0c97131adece2c0b24e4",
+    "USOIL": "a5cfa5bc29b30b5607673c8da336d28f357b2cb7ffeb09933af3a21a00a0e8ca"
+  },
+  "failed_ai_v1_2_ledger_byte_identity": true,
+  "successor_ledger_presence_before": {
+    "EURUSD": false,
+    "XAGUSD": false,
+    "USOIL": false
+  },
+  "successor_ledger_presence_after": {
+    "EURUSD": false,
+    "XAGUSD": false,
+    "USOIL": false
+  },
+  "successor_ledgers_absent": true,
+  "active_production_worktree_unchanged": true,
+  "ai_v1_1_scheduler_static_during_probe": true,
+  "provider_call_made": false,
+  "ledger_write_performed": false,
+  "activation_performed": false,
+  "scheduler_changed": false,
+  "public_exposure_changed": false,
+  "broker_execution_enabled": false,
+  "readiness_check": "PASS"
+}

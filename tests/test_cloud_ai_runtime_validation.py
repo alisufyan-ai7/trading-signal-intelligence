@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import copy
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from fastapi import HTTPException
 
 from trading_signal_intelligence.product.cloud_app import (
+    SNAPSHOT_DELAYED_AFTER_SECONDS,
+    SNAPSHOT_STALE_AFTER_SECONDS,
+    _snapshot_freshness,
     _validate_snapshot,
     _with_public_miss_metrics,
 )
@@ -132,3 +136,38 @@ def test_public_miss_metrics_bound_no_tick_to_raw_missed_count() -> None:
     assert result["totals"]["processing_miss_count"] == 0
     assert result["totals"]["processing_miss_denominator"] == 10
     assert result["totals"]["processing_miss_rate"] == 0.0
+
+
+def test_snapshot_freshness_classifies_fresh_delayed_and_stale() -> None:
+    now = datetime(2026, 10, 8, 0, 0, tzinfo=timezone.utc)
+
+    fresh = _snapshot_freshness(
+        (now - timedelta(seconds=SNAPSHOT_DELAYED_AFTER_SECONDS - 1)).isoformat(),
+        now=now,
+    )
+    delayed = _snapshot_freshness(
+        (now - timedelta(seconds=SNAPSHOT_DELAYED_AFTER_SECONDS)).isoformat(),
+        now=now,
+    )
+    stale = _snapshot_freshness(
+        (now - timedelta(seconds=SNAPSHOT_STALE_AFTER_SECONDS)).isoformat(),
+        now=now,
+    )
+
+    assert fresh["snapshot_freshness"] == "fresh"
+    assert delayed["snapshot_freshness"] == "delayed"
+    assert stale["snapshot_freshness"] == "stale"
+    assert fresh["snapshot_age_seconds"] == SNAPSHOT_DELAYED_AFTER_SECONDS - 1
+    assert delayed["snapshot_age_seconds"] == SNAPSHOT_DELAYED_AFTER_SECONDS
+    assert stale["snapshot_age_seconds"] == SNAPSHOT_STALE_AFTER_SECONDS
+
+
+def test_snapshot_freshness_handles_invalid_timestamp_without_false_freshness() -> None:
+    assert _snapshot_freshness(None) == {
+        "snapshot_age_seconds": None,
+        "snapshot_freshness": "unknown",
+    }
+    assert _snapshot_freshness("not-a-time") == {
+        "snapshot_age_seconds": None,
+        "snapshot_freshness": "unknown",
+    }

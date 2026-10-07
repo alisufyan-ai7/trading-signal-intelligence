@@ -1,6 +1,7 @@
 param(
     [string]$TaskName = "VowSig AI-v1.2.1 Expansion Shadow Scan",
     [string]$ParallelTaskName = "SignalProof AI-v1.1 Shadow Scan",
+    [string]$ActiveRepoRoot = "",
     [switch]$PlanOnly,
     [switch]$ConfirmP2Passed
 )
@@ -12,7 +13,19 @@ if (-not $PlanOnly -and -not $ConfirmP2Passed) {
     throw "Refusing scheduler installation. Use -PlanOnly for a no-mutation proof, or -ConfirmP2Passed only after explicit owner P3 approval."
 }
 
-$repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$scriptRepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+
+if (-not $PlanOnly -and -not [string]::IsNullOrWhiteSpace($ActiveRepoRoot)) {
+    throw "-ActiveRepoRoot is permitted only with -PlanOnly. Installation must run from the published production repository."
+}
+
+$repoRoot = if ([string]::IsNullOrWhiteSpace($ActiveRepoRoot)) {
+    $scriptRepoRoot
+}
+else {
+    (Resolve-Path $ActiveRepoRoot).Path
+}
+
 $runner = Join-Path $repoRoot "scripts\run_ai_v1_2_1_shadow_task.cmd"
 $python = Join-Path $repoRoot ".venv\Scripts\python.exe"
 $verifier = Join-Path $repoRoot "scripts\verify_ai_v1_2_1_runtime.py"
@@ -170,6 +183,8 @@ $plan = [pscustomobject]@{
     NextRunTime = $nextRun
     Runner = $runner
     WorkingDirectory = $repoRoot
+    InstallerSourceRoot = $scriptRepoRoot
+    ActiveRuntimeRoot = $repoRoot
     P2ValidInferences = [int]$report.totals.valid_inferences
     P2Signals = [int]$report.totals.signals
     P2NoTrade = [int]$report.totals.no_trade

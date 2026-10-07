@@ -49,6 +49,61 @@ def _validate_snapshot_for_push(payload: dict) -> None:
             "incomplete/invalid AI-v1.1 transition."
         )
 
+    programs = payload.get("validation_programs")
+    if programs is None:
+        return
+    if payload.get("validation_programs_schema_version") != 1:
+        raise SystemExit("Unsupported validation-program schema")
+    if not isinstance(programs, list):
+        raise SystemExit("Validation programs must be a list")
+
+    seen: set[str] = set()
+    for program in programs:
+        if not isinstance(program, dict):
+            raise SystemExit("Validation program must be an object")
+        program_id = program.get("program_id")
+        if not isinstance(program_id, str) or not program_id.strip():
+            raise SystemExit("Validation program ID missing")
+        if program_id in seen:
+            raise SystemExit("Duplicate validation program ID")
+        seen.add(program_id)
+
+        if program.get("mode") != "SHADOW_ONLY":
+            raise SystemExit("Validation program must remain shadow-only")
+        if program.get("public_research_observability") is not True:
+            raise SystemExit("Validation program observability flag missing")
+        if program.get("signal_details_included") is not False:
+            raise SystemExit("Validation program signal details are forbidden")
+
+        health = program.get("health")
+        if (
+            not isinstance(health, dict)
+            or health.get("broker_execution_disabled") is not True
+        ):
+            raise SystemExit("Validation program broker boundary failed")
+
+        for key in (
+            "raw_market_data_included",
+            "raw_feature_snapshots_included",
+            "provider_request_metadata_included",
+            "hidden_reasoning_included",
+        ):
+            if program.get(key) is not False:
+                raise SystemExit(f"Unsafe validation-program field: {key}")
+
+        if program.get("public_signal_exposure") is False:
+            for forbidden in (
+                "recent_decisions",
+                "shadow_signals",
+                "signal_records",
+                "alerts",
+            ):
+                if forbidden in program:
+                    raise SystemExit(
+                        "Research-only validation program contains "
+                        f"forbidden signal field: {forbidden}"
+                    )
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(

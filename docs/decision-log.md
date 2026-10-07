@@ -541,3 +541,26 @@ After the replacement activation is committed and anchored, any decision-affecti
 **Issue #9 remains required for:** real user terminology, comprehension problems, market/alert preferences, trust/value findings, willingness-to-pay evidence, and the Phase 8B content/conversion expansion.
 
 **Safety boundary:** This roadmap change does not modify AI-v1.1, the AI-v1.0 decision protocol, S02, immutable ledgers, validation thresholds, broker execution, or trading behavior. No website mutation is authorized until the Phase 8A baseline and implementation plan are reviewed.
+
+
+## 2026-10-08 — D040: Adopt a multi-provider durable IP backup architecture
+
+**Decision:** Adopt the documented target architecture in `docs/vowsig-durable-ip-backup-and-recovery-plan-v0.1.md` for future implementation.
+
+The intended durable hierarchy is:
+
+1. Windows VPS as the live operational database host;
+2. AWS S3 with versioning, encryption and Object Lock as the primary immutable backup vault;
+3. Backblaze B2 as an independent second-provider disaster-recovery copy;
+4. private GitHub for source, methodology, governance, activation/checkpoint hashes and selected manifests rather than bulk SQLite storage;
+5. future S3/B2 storage for immutable training-dataset versions and proprietary model checkpoints.
+
+**Reason:** VowSig's growing append-only evidence ledgers contain the market-state/AI-decision/outcome history that may become a core proprietary training asset. GitHub currently preserves code and cryptographic anchors, while live SQLite data is intentionally ignored by Git. A ledger hash proves identity but cannot reconstruct a destroyed database.
+
+**Backup integrity rule:** Live SQLite databases must be copied through the SQLite online backup mechanism, then pass `PRAGMA integrity_check`, application ledger-chain verification and SHA-256/manifest generation before being treated as valid backups.
+
+**Security rule:** Routine VPS backup credentials must be least privilege and unable to erase immutable history. Backup/restore credentials, provider accounts and secrets must remain separated.
+
+**Recovery rule:** No automatic destructive restore into production. Restore first into an isolated location, verify hashes/database integrity/ledger chain, and require explicit owner authorization before replacing any live evidence database.
+
+**Status:** Architecture/documentation decision only. No AWS/B2 resources, credentials, scheduled backup jobs, database mutations, restores, purchases or production changes are authorized or implemented by this decision.

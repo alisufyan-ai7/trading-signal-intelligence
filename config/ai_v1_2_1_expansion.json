@@ -1,0 +1,54 @@
+{
+  "runtime_version": "AI-v1.2.1",
+  "decision_protocol_version": "AI-v1.0",
+  "status": "pre_activation_correction",
+  "source_name": "exness_mt5_demo",
+  "markets": [
+    {
+      "source_symbol": "EURUSD",
+      "canonical_symbol": "EUR/USD",
+      "asset_class": "forex",
+      "digits": 5
+    },
+    {
+      "source_symbol": "XAGUSD",
+      "canonical_symbol": "XAG/USD",
+      "asset_class": "metal",
+      "digits": 3
+    },
+    {
+      "source_symbol": "USOIL",
+      "canonical_symbol": "WTI",
+      "asset_class": "energy",
+      "digits": 3
+    }
+  ],
+  "h1_bars": 500,
+  "h4_bars": 200,
+  "sync_max_wait_seconds": 30,
+  "sync_poll_interval_seconds": 1,
+  "feature_schema_path": "config/ai_v1_2_feature_schema.json",
+  "base_feature_schema_path": "config/ai_v1_feature_schema.json",
+  "policy_path": "config/ai_v1_policy.txt",
+  "decision_schema_path": "config/ai_v1_decision_schema.json",
+  "provider_response_schema_path": "config/ai_v1_openai_response_schema.json",
+  "provider_config_path": "config/ai_v1_provider.json",
+  "guardrails_path": "config/ai_v1_2_1_guardrails.json",
+  "reuse_feature_formulas_exactly": true,
+  "reuse_decision_contract_exactly": true,
+  "reuse_policy_exactly": true,
+  "reuse_guard_numeric_semantics_exactly": true,
+  "feature_schema_change_scope": "source_symbol_allowlist_and_schema_metadata_only",
+  "no_backfill": true,
+  "shares_gate_counts_with_ai_v1_1": false,
+  "public_exposure_enabled": false,
+  "broker_execution_enabled": false,
+  "review_gates_path": "config/ai_v1_2_1_review_gates.json",
+  "scheduler_target_minute": 3,
+  "scheduler_cadence": "hourly_near_completed_h1_boundary",
+  "scheduler_parallel_offset_from_ai_v1_1_minutes": 1,
+  "predecessor_runtime_version": "AI-v1.2",
+  "predecessor_failure_evidence_path": "research/forward/AI-v1.2-P2-fail-closed-2026-10-06T220043Z.json",
+  "predecessor_evidence_carry_forward": false,
+  "calendar_carry_forward": false
+}

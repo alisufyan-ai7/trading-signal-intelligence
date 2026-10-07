@@ -1,0 +1,40 @@
+{
+  "runtime_version": "AI-v1.2.1",
+  "decision_protocol_version": "AI-v1.0",
+  "status": "frozen_pre_activation_correction",
+  "scope": "parallel_market_expansion",
+  "markets": [
+    "EURUSD",
+    "XAGUSD",
+    "USOIL"
+  ],
+  "gates": {
+    "X1": {
+      "purpose": "operational_audit_only",
+      "valid_inferences": 100,
+      "completed_shadow_trades": 20,
+      "minimum_calendar_days": 0
+    },
+    "X2": {
+      "purpose": "interim_expansion_economic_review",
+      "valid_inferences": 500,
+      "completed_shadow_trades": 50,
+      "minimum_calendar_days": 60
+    },
+    "X3": {
+      "purpose": "first_expansion_publishability_graduation_decision",
+      "valid_inferences": 1000,
+      "completed_shadow_trades": 100,
+      "minimum_calendar_days": 120
+    }
+  },
+  "eligibility_rule": "all_thresholds_for_gate_must_be_met",
+  "per_market_reporting_required": true,
+  "per_market_minimum_is_not_an_eligibility_gate": true,
+  "weak_or_low_activity_market_may_not_be_hidden_or_dropped_post_activation": true,
+  "gate_results_do_not_authorize_broker_execution": true,
+  "gate_results_do_not_modify_ai_v1_1": true,
+  "predecessor_runtime_version": "AI-v1.2",
+  "gate_counts_carry_forward": false,
+  "calendar_carry_forward": false
+}

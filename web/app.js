@@ -42,15 +42,30 @@ function fmtTime(value) {
   return Number.isNaN(d.getTime()) ? String(value) : d.toLocaleString();
 }
 
+function renderExpandableRows(rows, renderRow, initialCount, noun) {
+  const visible = rows.slice(0, initialCount).map(renderRow).join("");
+  const remaining = rows.slice(initialCount);
+  if (!remaining.length) return visible;
+  return `
+    ${visible}
+    <details class="evidence-more">
+      <summary>Show ${remaining.length} older ${esc(noun)}</summary>
+      <div class="evidence-more-list">
+        ${remaining.map(renderRow).join("")}
+      </div>
+    </details>
+  `;
+}
+
 function card(market, live) {
   const forward = market.forward;
   const state = live
     ? (forward?.state === "active_signal"
-      ? "Active setup in forward ledger"
+      ? "Active setup in S02 forward ledger"
       : forward?.state === "scanning"
-      ? "Scanning • no active setup"
-      : "Forward collector not activated yet")
-    : "Research monitoring";
+      ? "S02 scanning • no active setup"
+      : "S02 forward collector not activated yet")
+    : "S02 transfer research";
 
   const badgeClass = live ? "badge" : "badge warn";
   return `
@@ -96,8 +111,8 @@ function renderSignals(payload) {
   if (!rows.length) {
     host.innerHTML = `
       <div class="empty">
-        <strong>No forward signals issued yet.</strong>
-        <span>The collectors are live. The first qualifying setup will appear here automatically.</span>
+        <strong>No S02 benchmark forward signals issued yet.</strong>
+        <span>The S02 collectors are live. The first qualifying S02 setup will appear here automatically.</span>
       </div>
     `;
     return;
@@ -205,7 +220,7 @@ function renderAi(ai) {
   if (!decisions.length) {
     decisionsHost.innerHTML = '<div class="empty">No valid AI inferences have been recorded yet.</div>';
   } else {
-    decisionsHost.innerHTML = decisions.map(d => {
+    const renderDecision = d => {
       const decisionClass = String(d.decision || "").toLowerCase().replace("_", "-");
       const factors = (d.supporting_factors || []).map(x => `<span class="factor good">${esc(x)}</span>`).join("");
       const risks = (d.risk_factors || []).map(x => `<span class="factor risk">${esc(x)}</span>`).join("");
@@ -231,7 +246,13 @@ function renderAi(ai) {
           </div>
         </article>
       `;
-    }).join("");
+    };
+    decisionsHost.innerHTML = renderExpandableRows(
+      decisions,
+      renderDecision,
+      5,
+      "AI decisions",
+    );
   }
 
   const shadowSignals = ai.shadow_signals || [];
@@ -243,21 +264,27 @@ function renderAi(ai) {
       </div>
     `;
   } else {
-    signalsHost.innerHTML = shadowSignals.map(s => `
+    const renderShadowSignal = row => `
       <article class="signal-row ai-signal-row">
         <div>
-          <span class="meta">${esc(marketNames[s.source_symbol] || s.source_symbol)} • ${esc(s.direction)}</span>
-          <strong>${esc(s.status.toUpperCase())}</strong>
+          <span class="meta">${esc(marketNames[row.source_symbol] || row.source_symbol)} • ${esc(row.direction)}</span>
+          <strong>${esc(row.status.toUpperCase())}</strong>
         </div>
-        <div><span>Entry</span><strong>${esc(s.entry)}</strong></div>
-        <div><span>Stop</span><strong>${esc(s.stop)}</strong></div>
-        <div><span>TP1</span><strong>${esc(s.tp1)}</strong></div>
-        <div><span>TP2</span><strong>${esc(s.tp2)}</strong></div>
-        <div><span>Confidence</span><strong>${esc(s.raw_confidence)} / 100</strong></div>
-        <div><span>Result</span><strong>${s.net_r == null ? "Open" : fmtR(s.net_r)}</strong></div>
-        <div class="hash"><span>Record</span><code>${esc(s.record_hash)}</code></div>
+        <div><span>Entry</span><strong>${esc(row.entry)}</strong></div>
+        <div><span>Stop</span><strong>${esc(row.stop)}</strong></div>
+        <div><span>TP1</span><strong>${esc(row.tp1)}</strong></div>
+        <div><span>TP2</span><strong>${esc(row.tp2)}</strong></div>
+        <div><span>Confidence</span><strong>${esc(row.raw_confidence)} / 100</strong></div>
+        <div><span>Result</span><strong>${row.net_r == null ? "Open" : fmtR(row.net_r)}</strong></div>
+        <div class="hash"><span>Record</span><code>${esc(row.record_hash)}</code></div>
       </article>
-    `).join("");
+    `;
+    signalsHost.innerHTML = renderExpandableRows(
+      shadowSignals,
+      renderShadowSignal,
+      5,
+      "shadow signals",
+    );
   }
 }
 
@@ -337,14 +364,20 @@ function renderValidationPrograms(payload) {
   host.innerHTML = programs.map(program => {
     const totals = program.totals || {};
     const exposure = program.public_signal_exposure
-      ? "PUBLIC SHADOW SIGNALS"
-      : "RESEARCH PROGRESS ONLY";
+      ? "PUBLIC SHADOW FEED"
+      : "VALIDATION PROGRESS ONLY";
     const exposureClass = program.public_signal_exposure ? "badge" : "badge warn";
     const gates = (program.gates || []).map(validationGateCard).join("");
     const markets = (program.markets || []).map(validationMarketCard).join("");
+    const healthNotice = program.health?.healthy
+      ? "Current collection is healthy."
+      : "Current collection requires attention.";
     const exposureNotice = program.public_signal_exposure
-      ? "This program also has separately governed public shadow-signal visibility."
-      : "Only validation progress is public. Entry, stop, target and alert details are not exposed for this program.";
+      ? `This lineage has a separately governed public shadow-signal feed. ${healthNotice}`
+      : `This lineage publishes aggregate validation progress only; entry, stop, target and alert details remain private during validation. ${healthNotice}`;
+    const openMetricLabel = program.public_signal_exposure
+      ? "Open shadow signals"
+      : "Active shadow records";
 
     return `
       <section class="validation-program">
@@ -359,15 +392,15 @@ function renderValidationPrograms(payload) {
         <div class="ai-overview">
           <div class="mini-metric"><span>Valid inferences</span><strong>${esc(totals.valid_inferences || 0)}</strong></div>
           <div class="mini-metric"><span>Completed trades</span><strong>${esc(totals.completed_shadow_trades || 0)}</strong></div>
-          <div class="mini-metric"><span>Open signals</span><strong>${esc(totals.open_shadow_signals || 0)}</strong></div>
-          <div class="mini-metric"><span>Errors</span><strong>${esc(totals.errors || 0)}</strong></div>
+          <div class="mini-metric"><span>${esc(openMetricLabel)}</span><strong>${esc(totals.open_shadow_signals || 0)}</strong></div>
+          <div class="mini-metric"><span>Recorded errors</span><strong>${esc(totals.errors || 0)}</strong></div>
         </div>
         <div class="subhead">
           <div>
             <span class="eyebrow">VALIDATION GATES</span>
             <h3>Evidence thresholds</h3>
           </div>
-          <p>Gate names and requirements are supplied by the validation program, not hard-coded in the website.</p>
+          <p>Each gate reflects the published evidence requirements for that lineage.</p>
         </div>
         <div class="grid ai-gates">${gates}</div>
         <div class="subhead">
@@ -477,19 +510,41 @@ async function boot() {
   const detail = document.querySelector("#health-detail");
   const dot = document.querySelector(".dot");
 
+  const snapshotTime = fmtTime(health.snapshot_generated_at_utc);
+  const collectorDetail =
+    `${health.ready_collector_count}/${health.live_signal_markets} S02 collectors active`;
+  const snapshotDetail = health.snapshot_generated_at_utc
+    ? `snapshot ${snapshotTime}`
+    : "snapshot time unavailable";
+
   if (!health.ok) {
-    label.textContent = "Attention required";
-    detail.textContent = `Ledger error: ${health.ledger_errors.join(", ") || "unknown"}`;
+    label.textContent = "S02 benchmark attention required";
+    detail.textContent =
+      `Ledger error: ${(health.ledger_errors || []).join(", ") || "unknown"} • ${snapshotDetail}`;
+    dot.classList.add("warn");
+  } else if (health.snapshot_pending) {
+    label.textContent = "Public snapshot unavailable";
+    detail.textContent = collectorDetail;
+    dot.classList.add("warn");
+  } else if (health.snapshot_freshness === "stale") {
+    label.textContent = "Public data stale";
+    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
+    dot.classList.add("warn");
+  } else if (health.snapshot_freshness === "delayed") {
+    label.textContent = "Public data delayed";
+    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
+    dot.classList.add("warn");
+  } else if (health.snapshot_freshness !== "fresh") {
+    label.textContent = "Snapshot age unavailable";
+    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
     dot.classList.add("warn");
   } else if (!health.launch_ready) {
-    label.textContent = "Launch setup incomplete";
-    detail.textContent =
-      `${health.ready_collector_count}/${health.live_signal_markets} live collectors active`;
+    label.textContent = "S02 benchmark setup incomplete";
+    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
     dot.classList.add("warn");
   } else {
-    label.textContent = "Systems operational";
-    detail.textContent =
-      `${health.ready_collector_count}/${health.live_signal_markets} live collectors active`;
+    label.textContent = "S02 benchmark collectors operational";
+    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
     dot.classList.remove("warn");
   }
 

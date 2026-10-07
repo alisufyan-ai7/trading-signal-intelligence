@@ -1,0 +1,315 @@
+from __future__ import annotations
+
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+import pytest
+
+from trading_signal_intelligence.ai_v1.activation_v1_2_1 import (
+    ActivationV121Error,
+    DECISION_PROTOCOL_VERSION,
+    EXPANSION_ARTIFACT_PATHS,
+    PARALLEL_RUNTIME_ANCHOR,
+    PREDECESSOR_ACTIVATION_ANCHOR,
+    PREDECESSOR_RUNTIME_VERSION,
+    RUNTIME_VERSION,
+    build_activation_anchor_document_v1_2_1,
+    build_activation_anchor_preview_v1_2_1,
+    build_activation_payload_v1_2_1,
+    preactivation_report_v1_2_1,
+    validate_activation_anchor_document_v1_2_1,
+    validate_activation_payload_v1_2_1,
+)
+from trading_signal_intelligence.ai_v1.shadow_runtime_v1_2_1 import (
+    DATABASE_PATHS,
+    MARKETS,
+)
+
+
+ROOT = Path(__file__).resolve().parents[1]
+UTC = timezone.utc
+
+
+def test_v1_2_1_activation_readiness_passes_without_successor_state() -> None:
+    before = {
+        market: (ROOT / relative).exists()
+        for market, relative in DATABASE_PATHS.items()
+    }
+    report = preactivation_report_v1_2_1(ROOT)
+    after = {
+        market: (ROOT / relative).exists()
+        for market, relative in DATABASE_PATHS.items()
+    }
+
+    assert before == after
+    assert report["preactivation_check"] == "PASS"
+    assert report["runtime_version"] == "AI-v1.2.1"
+    assert report["decision_protocol_version"] == "AI-v1.0"
+    assert report["predecessor_runtime_version"] == "AI-v1.2"
+    assert report["predecessor_activation_anchor"] == PREDECESSOR_ACTIVATION_ANCHOR
+    assert report["predecessor_evidence_carry_forward"] is False
+    assert report["calendar_carry_forward"] is False
+    assert report["parallel_to_runtime_version"] == "AI-v1.1"
+    assert report["parallel_runtime_anchor"] == PARALLEL_RUNTIME_ANCHOR
+    assert report["frozen_decision_artifacts_match_upstream"] is True
+    assert report["readiness_evidence"]["status"] == "PASS"
+    assert not any(report["expansion_ledger_paths_exist"].values())
+    assert report["expansion_activation_anchors"] == []
+    assert report["provider_call_made"] is False
+    assert report["mt5_call_made"] is False
+    assert report["ledger_write_performed"] is False
+    assert report["activation_performed"] is False
+    assert report["scheduler_changed"] is False
+    assert report["public_exposure_changed"] is False
+    assert report["broker_execution_enabled"] is False
+
+
+def test_v1_2_1_activation_payload_binds_predecessor_and_restarts_evidence() -> None:
+    payload = build_activation_payload_v1_2_1(
+        repo_root=ROOT,
+        market="EURUSD",
+        activated_at_utc=datetime(2026, 10, 7, 10, 0, tzinfo=UTC),
+    )
+
+    assert payload["runtime_version"] == RUNTIME_VERSION
+    assert payload["decision_protocol_version"] == DECISION_PROTOCOL_VERSION
+    assert payload["predecessor_runtime_version"] == PREDECESSOR_RUNTIME_VERSION
+    assert payload["predecessor_activation_anchor"] == PREDECESSOR_ACTIVATION_ANCHOR
+    assert len(payload["predecessor_activation_anchor_sha256"]) == 64
+    assert len(payload["predecessor_failure_evidence_sha256"]) == 64
+    assert payload["predecessor_evidence_carry_forward"] is False
+    assert payload["calendar_carry_forward"] is False
+    assert payload["parallel_to_runtime_version"] == "AI-v1.1"
+    assert payload["gate_counts_carry_forward"] is False
+    assert payload["backfill_prior_missed"] is False
+    assert payload["provider"] == "openai"
+    assert payload["model_id"] == "gpt-5.4-2026-03-05"
+    assert payload["sync_max_wait_seconds"] == 30.0
+    assert payload["sync_poll_interval_seconds"] == 1.0
+    assert payload["public_exposure_enabled"] is False
+    assert payload["broker_execution_enabled"] is False
+    assert len(payload["activation_bundle_sha256"]) == 64
+    assert len(payload["readiness_evidence_sha256"]) == 64
+
+
+def test_v1_2_1_activation_validation_rejects_boundary_changes() -> None:
+    payload = build_activation_payload_v1_2_1(
+        repo_root=ROOT,
+        market="XAGUSD",
+        activated_at_utc=datetime(2026, 10, 7, 10, 0, tzinfo=UTC),
+    )
+
+    predecessor = dict(payload)
+    predecessor["predecessor_runtime_version"] = "AI-v1.2.0"
+    with pytest.raises(ActivationV121Error):
+        validate_activation_payload_v1_2_1(predecessor)
+
+    evidence_carry = dict(payload)
+    evidence_carry["predecessor_evidence_carry_forward"] = True
+    with pytest.raises(ActivationV121Error):
+        validate_activation_payload_v1_2_1(evidence_carry)
+
+    calendar_carry = dict(payload)
+    calendar_carry["calendar_carry_forward"] = True
+    with pytest.raises(ActivationV121Error):
+        validate_activation_payload_v1_2_1(calendar_carry)
+
+    gate_carry = dict(payload)
+    gate_carry["gate_counts_carry_forward"] = True
+    with pytest.raises(ActivationV121Error):
+        validate_activation_payload_v1_2_1(gate_carry)
+
+    backfill = dict(payload)
+    backfill["backfill_prior_missed"] = True
+    with pytest.raises(ActivationV121Error):
+        validate_activation_payload_v1_2_1(backfill)
+
+    public = dict(payload)
+    public["public_exposure_enabled"] = True
+    with pytest.raises(ActivationV121Error):
+        validate_activation_payload_v1_2_1(public)
+
+    broker = dict(payload)
+    broker["broker_execution_enabled"] = True
+    with pytest.raises(ActivationV121Error):
+        validate_activation_payload_v1_2_1(broker)
+
+
+def test_v1_2_1_artifact_bundle_is_complete() -> None:
+    required = {
+        "readiness_evidence",
+        "predecessor_failure_evidence",
+        "predecessor_activation_anchor",
+        "preregistration_exp_2026_016",
+        "correction_plan_v0_1",
+        "activation_plan_v0_1",
+        "instrument_registry",
+        "activation_schema_v1_2_1",
+        "activation_anchor_schema_v1_2_1",
+        "expansion_config",
+        "expansion_feature_schema",
+        "expansion_guardrails",
+        "review_gates",
+        "expansion_compatibility_source",
+        "readiness_source",
+        "engine_source_v1_2_1",
+        "shadow_runtime_source_v1_2_1",
+        "activation_builder_source_v1_2_1",
+        "observability_source_v1_2_1",
+        "runtime_verifier_source_v1_2_1",
+        "preactivation_verifier_script_v1_2_1",
+        "activation_readiness_verifier_script_v1_2_1",
+        "progress_report_script_v1_2_1",
+        "readiness_probe_script_v1_2_1",
+        "activation_preview_script_v1_2_1",
+        "activation_execution_script_v1_2_1",
+        "live_runner_script_v1_2_1",
+        "runtime_verifier_script_v1_2_1",
+        "task_runner_script_v1_2_1",
+        "task_installer_script_v1_2_1",
+        "rates_sync_source_v1_1",
+        "mt5_rates_adapter_source_v1_1",
+        "mt5_connector_source",
+    }
+    assert set(EXPANSION_ARTIFACT_PATHS) == required
+    for relative in EXPANSION_ARTIFACT_PATHS.values():
+        assert (ROOT / relative).is_file()
+
+
+def test_v1_2_1_activation_preview_is_side_effect_free() -> None:
+    before = {
+        market: (ROOT / relative).exists()
+        for market, relative in DATABASE_PATHS.items()
+    }
+    preview = build_activation_anchor_preview_v1_2_1(
+        repo_root=ROOT,
+        activated_at_utc=datetime(2026, 10, 7, 10, 0, tzinfo=UTC),
+    )
+    after = {
+        market: (ROOT / relative).exists()
+        for market, relative in DATABASE_PATHS.items()
+    }
+
+    assert before == after
+    assert preview["anchor_preview_only"] is True
+    assert preview["runtime_version"] == "AI-v1.2.1"
+    assert preview["decision_protocol_version"] == "AI-v1.0"
+    assert preview["predecessor_runtime_version"] == "AI-v1.2"
+    assert preview["predecessor_evidence_carry_forward"] is False
+    assert preview["calendar_carry_forward"] is False
+    assert preview["parallel_to_runtime_version"] == "AI-v1.1"
+    assert preview["gate_counts_carry_forward"] is False
+    assert preview["backfill_prior_missed"] is False
+    assert preview["provider_call_made"] is False
+    assert preview["public_exposure_enabled"] is False
+    assert preview["broker_execution_enabled"] is False
+    assert preview["ledger_records_created"] == 0
+    assert preview["activation_anchor_written"] is False
+    assert preview["scheduler_changed"] is False
+    assert set(preview["market_payloads"]) == set(MARKETS)
+
+
+def test_v1_2_1_aggregate_anchor_builder_is_pure_and_valid() -> None:
+    activated = datetime(2026, 10, 7, 10, 0, tzinfo=UTC)
+    payloads = {
+        market: build_activation_payload_v1_2_1(
+            repo_root=ROOT,
+            market=market,
+            activated_at_utc=activated,
+        )
+        for market in MARKETS
+    }
+    records = {
+        market: {
+            "record_type": "ACTIVATION",
+            "record_hash": (str(index) * 64)[:64],
+            "payload": payload,
+        }
+        for index, (market, payload) in enumerate(payloads.items(), start=1)
+    }
+
+    before = {
+        market: (ROOT / relative).exists()
+        for market, relative in DATABASE_PATHS.items()
+    }
+    anchor = build_activation_anchor_document_v1_2_1(
+        repo_root=ROOT,
+        activated_at_utc=activated,
+        activation_records=records,
+    )
+    after = {
+        market: (ROOT / relative).exists()
+        for market, relative in DATABASE_PATHS.items()
+    }
+
+    assert before == after
+    assert anchor["status"] == "ACTIVE_PARALLEL_SHADOW"
+    assert anchor["runtime_version"] == "AI-v1.2.1"
+    assert anchor["decision_protocol_version"] == "AI-v1.0"
+    assert anchor["predecessor_runtime_version"] == "AI-v1.2"
+    assert anchor["predecessor_evidence_carry_forward"] is False
+    assert anchor["calendar_carry_forward"] is False
+    assert anchor["parallel_to_runtime_version"] == "AI-v1.1"
+    assert anchor["gate_counts_carry_forward"] is False
+    assert anchor["backfill_prior_missed"] is False
+    assert anchor["provider_call_made"] is False
+    assert anchor["public_exposure_enabled"] is False
+    assert anchor["broker_execution_enabled"] is False
+    assert set(anchor["markets"]) == set(MARKETS)
+    validate_activation_anchor_document_v1_2_1(anchor)
+
+
+def test_v1_2_1_schemas_bind_predecessor_and_disable_carry_forward() -> None:
+    activation = json.loads(
+        (ROOT / "config" / "ai_v1_2_1_activation_schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    anchor = json.loads(
+        (ROOT / "config" / "ai_v1_2_1_anchor_schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    for payload in (activation, anchor):
+        required = set(payload["required"])
+        assert "predecessor_runtime_version" in required
+        assert "predecessor_activation_anchor" in required
+        assert "predecessor_activation_anchor_sha256" in required
+        assert "predecessor_failure_evidence_sha256" in required
+        assert "predecessor_evidence_carry_forward" in required
+        assert "calendar_carry_forward" in required
+        assert payload["properties"]["predecessor_runtime_version"]["const"] == "AI-v1.2"
+        assert payload["properties"]["predecessor_evidence_carry_forward"]["const"] is False
+        assert payload["properties"]["calendar_carry_forward"]["const"] is False
+
+
+def test_v1_2_1_activation_script_has_no_provider_or_mt5_path() -> None:
+    text = (ROOT / "scripts" / "activate_ai_v1_2_1.py").read_text(
+        encoding="utf-8"
+    )
+    assert "OpenAIResponsesAdapter" not in text
+    assert "MT5Connector" not in text
+    assert "run_ai_v1_2_1_live" not in text
+    assert "Register-ScheduledTask" not in text
+    assert "ACTIVATE-AI-V1.2.1-LEDGERS" in text
+
+
+def test_v1_2_1_live_runner_verifies_activation_before_side_effects() -> None:
+    text = (ROOT / "scripts" / "run_ai_v1_2_1_live.py").read_text(
+        encoding="utf-8"
+    )
+    verify_pos = text.index("verify_active_runtime_v1_2_1(")
+    env_pos = text.index("load_project_env(")
+    provider_pos = text.index("OpenAIResponsesAdapter.from_environment(")
+    connector_pos = text.index("MT5Connector(")
+    assert verify_pos < env_pos < provider_pos < connector_pos
+    assert 'load_json("config/ai_v1_2_1_guardrails.json")' in text
+
+
+def test_v1_2_1_anchor_files_are_binary_preserved_on_windows() -> None:
+    attrs = (ROOT / ".gitattributes").read_text(encoding="utf-8")
+    assert (
+        "research/forward/AI-v1.2.1-expansion-activation-*.json -text"
+        in attrs
+    )

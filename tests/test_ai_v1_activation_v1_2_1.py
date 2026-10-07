@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UTC = timezone.utc
 
 
-def test_v1_2_1_activation_readiness_passes_without_successor_state() -> None:
+def test_v1_2_1_preactivation_fails_closed_after_activation() -> None:
     before = {
         market: (ROOT / relative).exists()
         for market, relative in DATABASE_PATHS.items()
@@ -43,7 +43,7 @@ def test_v1_2_1_activation_readiness_passes_without_successor_state() -> None:
     }
 
     assert before == after
-    assert report["preactivation_check"] == "PASS"
+    assert report["preactivation_check"] == "FAIL"
     assert report["runtime_version"] == "AI-v1.2.1"
     assert report["decision_protocol_version"] == "AI-v1.0"
     assert report["predecessor_runtime_version"] == "AI-v1.2"
@@ -55,7 +55,12 @@ def test_v1_2_1_activation_readiness_passes_without_successor_state() -> None:
     assert report["frozen_decision_artifacts_match_upstream"] is True
     assert report["readiness_evidence"]["status"] == "PASS"
     assert not any(report["expansion_ledger_paths_exist"].values())
-    assert report["expansion_activation_anchors"] == []
+    assert [
+        Path(value).as_posix()
+        for value in report["expansion_activation_anchors"]
+    ] == [
+        "research/forward/AI-v1.2.1-expansion-activation-2026-10-07T093543Z.json"
+    ]
     assert report["provider_call_made"] is False
     assert report["mt5_call_made"] is False
     assert report["ledger_write_performed"] is False

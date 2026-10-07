@@ -349,3 +349,250 @@ def build_public_ai_insights(
         "provider_request_metadata_included": False,
         "hidden_reasoning_included": False,
     }
+
+
+CORE_MARKET_LABELS = {
+    "XAUUSD": "XAU/USD",
+    "USTEC": "NASDAQ 100",
+    "US30": "DOW 30",
+}
+
+EXPANSION_MARKET_LABELS = {
+    "EURUSD": "EUR/USD",
+    "XAGUSD": "XAG/USD",
+    "USOIL": "WTI",
+}
+
+
+def _gate_requirements(gate: dict[str, Any]) -> list[dict[str, Any]]:
+    requirements: list[dict[str, Any]] = []
+
+    for metric, label in (
+        ("valid_inferences", "Valid inferences"),
+        ("completed_shadow_trades", "Completed shadow trades"),
+    ):
+        value = gate.get(metric)
+        if not isinstance(value, dict):
+            continue
+        requirements.append(
+            {
+                "metric": metric,
+                "label": label,
+                "kind": "count",
+                "current": int(value.get("current", 0)),
+                "required": int(value.get("required", 0)),
+                "met": bool(value.get("met")),
+            }
+        )
+
+    minimum_days = int(gate.get("minimum_calendar_days", 0) or 0)
+    if minimum_days > 0:
+        remaining = max(0, int(gate.get("calendar_days_remaining", 0) or 0))
+        requirements.append(
+            {
+                "metric": "calendar_days",
+                "label": "Calendar age",
+                "kind": "calendar",
+                "current": max(0, minimum_days - remaining),
+                "required": minimum_days,
+                "remaining": remaining,
+                "met": bool(gate.get("calendar_requirement_met")),
+                "eligible_at_utc": gate.get("calendar_eligible_at_utc"),
+            }
+        )
+
+    return requirements
+
+
+def build_public_validation_program(
+    report: dict[str, Any],
+    *,
+    program_id: str,
+    title: str,
+    market_labels: dict[str, str],
+    public_signal_exposure: bool,
+) -> dict[str, Any]:
+    """Build a generic, sanitized public shadow-validation progress payload."""
+
+    health = report.get("health") or {}
+    if health.get("broker_execution_disabled") is not True:
+        raise ObservabilityError(
+            f"{program_id} broker execution boundary is not disabled"
+        )
+    if (
+        public_signal_exposure is False
+        and health.get("public_exposure_disabled") is not True
+    ):
+        raise ObservabilityError(
+            f"{program_id} research-only public exposure boundary is not disabled"
+        )
+
+    gates = []
+    for gate_id, gate in (report.get("gates") or {}).items():
+        gates.append(
+            {
+                "gate_id": str(gate_id),
+                "eligible": bool(gate.get("eligible")),
+                "requirements": _gate_requirements(gate),
+            }
+        )
+
+    market_rows = []
+    for symbol, market in (report.get("markets") or {}).items():
+        counts = market.get("counts_by_type") or {}
+        performance = market.get("performance_observational_only") or {}
+        verification = market.get("ledger_verification") or {}
+        market_rows.append(
+            {
+                "source_symbol": str(symbol),
+                "canonical_symbol": market_labels.get(str(symbol), str(symbol)),
+                "ledger_valid": verification.get("valid") is True,
+                "activation_anchor_match": (
+                    market.get("activation_anchor_match") is True
+                ),
+                "valid_inferences": int(market.get("valid_inferences", 0) or 0),
+                "completed_shadow_trades": int(
+                    performance.get("completed_trades", 0) or 0
+                ),
+                "signals": int(counts.get("SIGNAL", 0) or 0),
+                "open_signals": int(market.get("open_signals", 0) or 0),
+                "no_trade": int(counts.get("NO_TRADE", 0) or 0),
+                "rejected_inferences": int(
+                    counts.get("REJECTED_INFERENCE", 0) or 0
+                ),
+                "missed_inferences": int(
+                    market.get("missed_inferences", 0) or 0
+                ),
+                "errors": int(market.get("errors", 0) or 0),
+                "latest_recorded_at_utc": market.get("latest_recorded_at_utc"),
+            }
+        )
+
+    totals = report.get("totals") or {}
+    return {
+        "schema_version": 1,
+        "program_id": program_id,
+        "title": title,
+        "runtime_version": report.get("runtime_version"),
+        "decision_protocol_version": report.get(
+            "decision_protocol_version",
+            report.get("protocol_version"),
+        ),
+        "mode": "SHADOW_ONLY",
+        "status": "collecting",
+        "public_research_observability": True,
+        "public_signal_exposure": bool(public_signal_exposure),
+        "signal_details_included": False,
+        "health": {
+            "healthy": health.get("healthy") is True,
+            "ledgers_valid": health.get("ledgers_valid") is True,
+            "scheduler_healthy": health.get("scheduler_healthy"),
+            "broker_execution_disabled": True,
+        },
+        "totals": {
+            "valid_inferences": int(totals.get("valid_inferences", 0) or 0),
+            "completed_shadow_trades": int(
+                totals.get("completed_shadow_trades", 0) or 0
+            ),
+            "open_shadow_signals": int(
+                totals.get("open_shadow_signals", 0) or 0
+            ),
+            "signals": int(totals.get("signals", 0) or 0),
+            "no_trade": int(totals.get("no_trade", 0) or 0),
+            "rejected_inferences": int(
+                totals.get("rejected_inferences", 0) or 0
+            ),
+            "missed_inferences": int(
+                totals.get("missed_inferences", 0) or 0
+            ),
+            "errors": int(totals.get("errors", 0) or 0),
+        },
+        "gates": gates,
+        "markets": market_rows,
+        "raw_market_data_included": False,
+        "raw_feature_snapshots_included": False,
+        "provider_request_metadata_included": False,
+        "hidden_reasoning_included": False,
+    }
+
+
+def _v1_2_1_state(repo_root: Path) -> dict[str, Any]:
+    from trading_signal_intelligence.ai_v1.shadow_runtime_v1_2_1 import (
+        DATABASE_PATHS as V121_DATABASE_PATHS,
+        MARKETS as V121_MARKETS,
+    )
+
+    anchors = sorted(
+        (repo_root / "research" / "forward").glob(
+            "AI-v1.2.1-expansion-activation-*.json"
+        )
+    )
+    ledgers = {
+        symbol: (repo_root / V121_DATABASE_PATHS[symbol]).exists()
+        for symbol in V121_MARKETS
+    }
+    return {
+        "anchors": [str(path.relative_to(repo_root)) for path in anchors],
+        "ledgers": ledgers,
+        "any_state": bool(anchors) or any(ledgers.values()),
+        "complete_shape": len(anchors) == 1 and all(ledgers.values()),
+    }
+
+
+def build_public_validation_programs(
+    repo_root: Path,
+    *,
+    include_scheduler: bool = True,
+    verify_upstream: bool = True,
+) -> list[dict[str, Any]]:
+    """Build the scalable list of public shadow-validation programs.
+
+    The UI consumes this list generically. Adding a future separately governed
+    lineage should require registering one additional program builder rather
+    than adding gate names or market symbols to the browser code.
+    """
+
+    root = repo_root.resolve()
+    core_report = build_active_report(
+        root,
+        include_scheduler=include_scheduler,
+        verify_upstream=verify_upstream,
+    )
+    programs = [
+        build_public_validation_program(
+            core_report,
+            program_id="core-ai-shadow",
+            title="Core AI Shadow Validation",
+            market_labels=CORE_MARKET_LABELS,
+            public_signal_exposure=True,
+        )
+    ]
+
+    expansion_state = _v1_2_1_state(root)
+    if expansion_state["any_state"]:
+        if not expansion_state["complete_shape"]:
+            raise ObservabilityError(
+                "partial AI-v1.2.1 expansion state detected; "
+                "refuse incomplete public observability"
+            )
+
+        from trading_signal_intelligence.ai_v1.observability_v1_2_1 import (
+            build_report_v1_2_1,
+        )
+
+        expansion_report = build_report_v1_2_1(
+            root,
+            include_scheduler=include_scheduler,
+            verify_upstream=verify_upstream,
+        )
+        programs.append(
+            build_public_validation_program(
+                expansion_report,
+                program_id="market-expansion-1",
+                title="Expansion Shadow Validation",
+                market_labels=EXPANSION_MARKET_LABELS,
+                public_signal_exposure=False,
+            )
+        )
+
+    return programs

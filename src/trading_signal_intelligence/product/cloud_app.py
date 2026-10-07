@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import secrets
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -27,6 +28,57 @@ load_dotenv()
 
 ROOT = Path(__file__).resolve().parents[3]
 WEB = ROOT / "web"
+
+SNAPSHOT_DELAYED_AFTER_SECONDS = 90 * 60
+SNAPSHOT_STALE_AFTER_SECONDS = 150 * 60
+
+
+def _snapshot_freshness(
+    generated_at_utc: object,
+    *,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    if not isinstance(generated_at_utc, str) or not generated_at_utc.strip():
+        return {
+            "snapshot_age_seconds": None,
+            "snapshot_freshness": "unknown",
+        }
+
+    try:
+        generated = datetime.fromisoformat(
+            generated_at_utc.strip().replace("Z", "+00:00")
+        )
+    except ValueError:
+        return {
+            "snapshot_age_seconds": None,
+            "snapshot_freshness": "unknown",
+        }
+
+    if generated.tzinfo is None:
+        return {
+            "snapshot_age_seconds": None,
+            "snapshot_freshness": "unknown",
+        }
+
+    observed_at = now or datetime.now(timezone.utc)
+    if observed_at.tzinfo is None:
+        raise ValueError("freshness reference time must be timezone-aware")
+
+    age_seconds = max(
+        0,
+        int((observed_at.astimezone(timezone.utc) - generated.astimezone(timezone.utc)).total_seconds()),
+    )
+    if age_seconds >= SNAPSHOT_STALE_AFTER_SECONDS:
+        state = "stale"
+    elif age_seconds >= SNAPSHOT_DELAYED_AFTER_SECONDS:
+        state = "delayed"
+    else:
+        state = "fresh"
+
+    return {
+        "snapshot_age_seconds": age_seconds,
+        "snapshot_freshness": state,
+    }
 
 
 def _snapshot_path() -> Path:
@@ -410,11 +462,18 @@ def health() -> dict:
             "ready_collectors": [],
             "pending_collectors": ["XAUUSD", "USTEC", "US30"],
             "ledger_errors": [],
+            "snapshot_generated_at_utc": None,
+            "snapshot_age_seconds": None,
+            "snapshot_freshness": "missing",
             "snapshot_pending": True,
         }
+
+    generated_at_utc = snapshot.get("generated_at_utc")
     return snapshot["health"] | {
-        "snapshot_generated_at_utc": snapshot.get("generated_at_utc"),
+        "product": "VowSig Research Beta",
+        "snapshot_generated_at_utc": generated_at_utc,
         "snapshot_pending": False,
+        **_snapshot_freshness(generated_at_utc),
     }
 
 

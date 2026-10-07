@@ -1,0 +1,40 @@
+name: multilineage-observability-ci
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  focused:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: python -m pip install -e ".[app,dev]"
+      - name: Python syntax
+        run: |
+          python -m compileall -q \
+            src/trading_signal_intelligence/ai_v1/observability_v1_1.py \
+            src/trading_signal_intelligence/product/ai_insights.py \
+            src/trading_signal_intelligence/product/cloud_app.py \
+            scripts/create_vowsig_public_surface_correction_v0_3.py \
+            scripts/export_public_snapshot.py \
+            scripts/push_public_snapshot.py \
+            scripts/verify_cloud_snapshot_durability.py
+      - name: Browser syntax
+        run: node --check web/app.js
+      - name: Focused tests
+        run: |
+          python -m pytest -q \
+            tests/test_ai_v1_public_surface_correction.py \
+            tests/test_ai_v1_public_surface_correction_v0_2.py \
+            tests/test_ai_v1_public_surface_correction_v0_3.py \
+            tests/test_product_ai_insights.py \
+            tests/test_cloud_snapshot_durability.py \
+            tests/test_public_snapshot_push_guard.py \
+            tests/test_vowsig_multilineage_public_observability.py \
+            tests/test_vowsig_public_branding.py

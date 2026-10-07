@@ -58,7 +58,7 @@ def main() -> None:
 
     markets_request = urllib.request.Request(
         f"{base}/api/markets",
-        headers={"User-Agent": "SignalProof-Durability-Check/1.0"},
+        headers={"User-Agent": "VowSig-Durability-Check/1.0"},
         method="GET",
     )
     try:
@@ -73,6 +73,19 @@ def main() -> None:
     _require(
         health.get("snapshot_pending") is False,
         "Cloud snapshot is pending/missing",
+    )
+    _require(
+        health.get("product") == "VowSig Research Beta",
+        "Wrong public product brand",
+    )
+    _require(
+        health.get("snapshot_freshness") == "fresh",
+        f"Cloud snapshot is not fresh: {health.get('snapshot_freshness')!r}",
+    )
+    snapshot_age_seconds = health.get("snapshot_age_seconds")
+    _require(
+        isinstance(snapshot_age_seconds, int) and snapshot_age_seconds >= 0,
+        "Cloud snapshot age is missing/invalid",
     )
     _require(ai.get("protocol_version") == "AI-v1.0", "Wrong AI protocol")
     _require(
@@ -187,6 +200,8 @@ def main() -> None:
         "cloud_snapshot_durability_check": "PASS",
         "base_url": base,
         "snapshot_generated_at_utc": health.get("snapshot_generated_at_utc"),
+        "snapshot_freshness": health.get("snapshot_freshness"),
+        "snapshot_age_seconds": snapshot_age_seconds,
         "market_count": len(markets),
         "validation_program_count": len(programs),
         "validation_program_ids": sorted(by_id),

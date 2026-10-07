@@ -54,6 +54,7 @@ def main() -> None:
     base = args.base_url.rstrip("/")
     health = _get_json(f"{base}/api/health")
     ai = _get_json(f"{base}/api/ai/insights")
+    validation = _get_json(f"{base}/api/validation/programs")
 
     markets_request = urllib.request.Request(
         f"{base}/api/markets",
@@ -116,12 +117,79 @@ def main() -> None:
 
     _require(len(markets) == 9, f"Expected 9 markets, got {len(markets)}")
 
+    _require(
+        validation.get("schema_version") == 1,
+        "Wrong validation-program schema",
+    )
+    programs = validation.get("programs")
+    _require(
+        isinstance(programs, list),
+        "Validation programs endpoint must return a list",
+    )
+    by_id = {
+        row.get("program_id"): row
+        for row in programs
+        if isinstance(row, dict)
+    }
+    _require(
+        "core-ai-shadow" in by_id,
+        "Core AI validation program missing",
+    )
+    _require(
+        "market-expansion-1" in by_id,
+        "Expansion validation program missing",
+    )
+
+    for program_id, program in by_id.items():
+        _require(
+            program.get("mode") == "SHADOW_ONLY",
+            f"{program_id} is not shadow-only",
+        )
+        _require(
+            program.get("public_research_observability") is True,
+            f"{program_id} observability flag missing",
+        )
+        _require(
+            program.get("signal_details_included") is False,
+            f"{program_id} exposes signal details",
+        )
+        program_health = program.get("health") or {}
+        _require(
+            program_health.get("broker_execution_disabled") is True,
+            f"{program_id} broker boundary failed",
+        )
+
+    core = by_id["core-ai-shadow"]
+    _require(
+        {row.get("gate_id") for row in core.get("gates", [])}
+        == {"A1", "A2", "A3"},
+        "Core A1/A2/A3 gate set mismatch",
+    )
+
+    expansion = by_id["market-expansion-1"]
+    _require(
+        expansion.get("public_signal_exposure") is False,
+        "Expansion signal exposure must remain disabled",
+    )
+    _require(
+        {row.get("gate_id") for row in expansion.get("gates", [])}
+        == {"X1", "X2", "X3"},
+        "Expansion X1/X2/X3 gate set mismatch",
+    )
+    _require(
+        {row.get("source_symbol") for row in expansion.get("markets", [])}
+        == {"EURUSD", "XAGUSD", "USOIL"},
+        "Expansion market set mismatch",
+    )
+
     totals = ai.get("totals") or {}
     result = {
         "cloud_snapshot_durability_check": "PASS",
         "base_url": base,
         "snapshot_generated_at_utc": health.get("snapshot_generated_at_utc"),
         "market_count": len(markets),
+        "validation_program_count": len(programs),
+        "validation_program_ids": sorted(by_id),
         "ai_runtime_version": runtime_version,
         "ai_protocol": ai.get("protocol_version"),
         "ai_decision_protocol": ai.get("decision_protocol_version"),

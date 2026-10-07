@@ -120,3 +120,12 @@ def test_p3_installer_refuses_overwrite_and_requires_parallel_health() -> None:
     assert "Parallel AI-v1.1 task must exist" in text
     assert "Parallel AI-v1.1 task last result must be 0" in text
     assert "-ActiveRepoRoot is permitted only with -PlanOnly" in text
+
+
+def test_p3_plan_only_reads_candidate_runner_but_plans_production_target() -> None:
+    text = P3_INSTALLER.read_text(encoding="utf-8")
+
+    assert "$runnerSource = Join-Path $scriptRepoRoot" in text
+    assert "$runner = Join-Path $repoRoot" in text
+    assert "Get-Sha256 -Path $runnerSource" in text
+    assert "Published P3 task runner missing from production repository." in text

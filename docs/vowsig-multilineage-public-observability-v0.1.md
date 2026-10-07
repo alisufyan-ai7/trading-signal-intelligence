@@ -30,6 +30,8 @@ No entry, stop, target, rationale, confidence, signal record, or alert payload i
 
 The public snapshot gains validation_programs_schema_version = 1 and validation_programs = [...].
 
+Machine-readable program schema: `config/public_validation_program_schema_v1.json`.
+
 Each program contains a stable program_id, title, runtime/protocol versions, SHADOW_ONLY mode, research/signal visibility flags, normalized health, sanitized aggregate counts, generic gate requirements, per-market collection status, and explicit false raw/private-data flags.
 
 Gate names are data, not frontend code. Each gate is rendered from a requirements list. v0.1 supports count and calendar-age requirements, so future lineages can use different gate IDs without changing the browser renderer.

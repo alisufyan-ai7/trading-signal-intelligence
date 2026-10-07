@@ -596,3 +596,36 @@ h2 { font-size: 28px; margin: 8px 0 0; }
     transition-duration: .01ms !important;
   }
 }
+
+
+.validation-programs {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.validation-program {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.25rem;
+  background: var(--panel);
+}
+
+.validation-program + .validation-program {
+  margin-top: 0.25rem;
+}
+
+.validation-program-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.validation-program-head h3 {
+  margin: 0.35rem 0 0;
+}
+
+.validation-program .subhead {
+  margin-top: 1.25rem;
+}

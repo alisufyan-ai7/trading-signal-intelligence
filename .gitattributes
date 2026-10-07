@@ -3,3 +3,4 @@ research/forward/AI-v1.0-retired-*.json text eol=lf
 research/forward/AI-v1.1-activation-*.json -text
 research/forward/AI-v1.1-public-surface-correction-*.json -text
 research/forward/AI-v1.2-expansion-activation-*.json -text
+research/forward/AI-v1.2.1-expansion-activation-*.json -text

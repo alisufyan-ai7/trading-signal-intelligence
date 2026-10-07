@@ -70,7 +70,7 @@ def test_expansion_feature_schema_changes_only_allowlist_and_metadata() -> None:
     ]
 
 
-def test_expansion_static_preactivation_report_is_side_effect_free() -> None:
+def test_expansion_static_preactivation_report_fails_closed_after_activation() -> None:
     before = {
         symbol: (ROOT / relative).exists()
         for symbol, relative in DATABASE_PATHS.items()
@@ -84,7 +84,7 @@ def test_expansion_static_preactivation_report_is_side_effect_free() -> None:
     }
 
     assert before == after
-    assert report["preactivation_check"] == "PASS"
+    assert report["preactivation_check"] == "FAIL"
     assert report["runtime_version"] == "AI-v1.2"
     assert report["decision_protocol_version"] == "AI-v1.0"
     assert report["frozen_ai_v1_0_decision_lineage_match"] is True
@@ -94,8 +94,9 @@ def test_expansion_static_preactivation_report_is_side_effect_free() -> None:
     assert report["guard_numeric_semantics_change"] is False
     assert report["market_allowlist_change"] is True
     assert report["market_allowlist_change_is_version_isolated"] is True
-    assert not any(report["expansion_ledger_paths_exist"].values())
-    assert report["expansion_activation_anchors"] == []
+    assert report["expansion_activation_anchors"] == [
+        "research/forward/AI-v1.2-expansion-activation-2026-10-06T200633Z.json"
+    ]
     assert report["provider_call_made"] is False
     assert report["mt5_call_made"] is False
     assert report["ledger_write_performed"] is False

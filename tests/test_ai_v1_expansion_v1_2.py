@@ -94,7 +94,10 @@ def test_expansion_static_preactivation_report_fails_closed_after_activation() -
     assert report["guard_numeric_semantics_change"] is False
     assert report["market_allowlist_change"] is True
     assert report["market_allowlist_change_is_version_isolated"] is True
-    assert report["expansion_activation_anchors"] == [
+    assert [
+        Path(value).as_posix()
+        for value in report["expansion_activation_anchors"]
+    ] == [
         "research/forward/AI-v1.2-expansion-activation-2026-10-06T200633Z.json"
     ]
     assert report["provider_call_made"] is False

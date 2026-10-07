@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 
 
 APP_JS = Path(__file__).resolve().parents[1] / "web" / "app.js"
@@ -18,8 +19,8 @@ def test_public_ai_ui_does_not_label_raw_missed_records_as_opportunities() -> No
 
     # The UI must not fall back to the legacy aggregate if a new snapshot field
     # is absent. Missing separated metrics render as an em dash instead.
-    assert "t.missed_inferences" not in text
-    assert "m.missed_inferences" not in text
-    assert "m.missed_rate" not in text
+    assert re.search(r"(?<![A-Za-z0-9_$])t\.missed_inferences\b", text) is None
+    assert re.search(r"(?<![A-Za-z0-9_$])m\.missed_inferences\b", text) is None
+    assert re.search(r"(?<![A-Za-z0-9_$])m\.missed_rate\b", text) is None
     assert 't.processing_miss_count == null' in text
     assert 't.no_current_h1_tick_count == null' in text

@@ -68,15 +68,6 @@
 
       <div class="subhead">
         <div>
-          <span class="eyebrow">VALIDATION GATES</span>
-          <h3>A1 / A2 / A3 progress</h3>
-        </div>
-        <p>These are preregistered evidence thresholds. Early results do not change the frozen AI decision protocol.</p>
-      </div>
-      <div id="ai-gates" class="grid ai-gates"></div>
-
-      <div class="subhead">
-        <div>
           <span class="eyebrow">MARKET HEALTH</span>
           <h3>Forward collection by market</h3>
         </div>
@@ -103,6 +94,19 @@
       </div>
       <div id="ai-shadow-signals" class="signal-history">
         <div class="empty">Loading AI shadow signals…</div>
+      </div>
+    </section>
+
+    <section class="section validation-programs-section">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">SHADOW VALIDATION PROGRAMS</span>
+          <h2>Evidence progress across AI lineages</h2>
+        </div>
+        <p>Validation programs are rendered from a generic public schema so new market groups can be added without hard-coding new gate names into the website. Research-only programs do not expose entry, stop, target or alert details.</p>
+      </div>
+      <div id="validation-programs" class="validation-programs" aria-live="polite">
+        <div class="empty">Loading validation programs…</div>
       </div>
     </section>
 
@@ -309,6 +313,6 @@
       </div>
     </footer>
   </main>
-  <script defer src="/static/app.js?v=20260930-1"></script>
+  <script defer src="/static/app.js?v=20261007-multilineage-1"></script>
 </body>
 </html>

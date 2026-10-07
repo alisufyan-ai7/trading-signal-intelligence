@@ -183,3 +183,160 @@ def test_p2_failure_metadata_is_frozen_and_requires_successor() -> None:
     )
     assert payload["governance"]["retry_ai_v1_2_forbidden"] is True
     assert payload["governance"]["successor_required"] is True
+
+
+def _candle(
+    *,
+    symbol: str,
+    canonical: str,
+    timeframe: str,
+    timestamp,
+    index: int,
+    closed: bool,
+):
+    from decimal import Decimal
+    from trading_signal_intelligence.models import Candle
+
+    base = Decimal("100") + Decimal(index) / Decimal("100")
+    return Candle(
+        source="exness_mt5_demo",
+        source_symbol=symbol,
+        symbol=canonical,
+        timeframe=timeframe,
+        timestamp_utc=timestamp,
+        open=base,
+        high=base + Decimal("0.30"),
+        low=base - Decimal("0.30"),
+        close=base + Decimal("0.05"),
+        volume=Decimal(100 + (index % 17)),
+        volume_kind="tick_volume",
+        spread=Decimal("6"),
+        is_closed=closed,
+    )
+
+
+class NoTradeAdapterV121:
+    provider = "test"
+    model_id = "test-model"
+    parameters = {"temperature": 0}
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def infer(self, **kwargs):
+        self.calls += 1
+        return (
+            {
+                "protocol_version": "AI-v1.0",
+                "decision": "NO_TRADE",
+                "raw_confidence": 50,
+                "regime": "UNCLEAR",
+                "stop_atr": None,
+                "tp1_r": None,
+                "tp2_r": None,
+                "rationale": "correction plumbing test",
+                "supporting_factors": [],
+                "risk_factors": ["test"],
+            },
+            {"request_id": "test-v121"},
+        )
+
+
+def test_corrected_activation_guard_hash_reaches_inference_record(
+    tmp_path: Path,
+) -> None:
+    from datetime import datetime, timedelta, timezone
+
+    from trading_signal_intelligence.ai_v1.ledger import AILedger
+    from trading_signal_intelligence.ai_v1.shadow_runtime_v1_2_1 import (
+        MarketSpecV121,
+        run_market_cycle_v1_2_1,
+    )
+
+    utc = timezone.utc
+    activated = datetime(2026, 10, 7, 0, 0, tzinfo=utc)
+    now = datetime(2026, 10, 7, 1, 0, 30, tzinfo=utc)
+    current_h1 = datetime(2026, 10, 7, 1, 0, tzinfo=utc)
+    current_h4 = datetime(2026, 10, 7, 0, 0, tzinfo=utc)
+
+    h1 = [
+        _candle(
+            symbol="EURUSD",
+            canonical="EUR/USD",
+            timeframe="H1",
+            timestamp=current_h1 - timedelta(hours=499 - index),
+            index=index,
+            closed=index != 499,
+        )
+        for index in range(500)
+    ]
+    h4 = [
+        _candle(
+            symbol="EURUSD",
+            canonical="EUR/USD",
+            timeframe="H4",
+            timestamp=current_h4 - timedelta(hours=4 * (199 - index)),
+            index=index,
+            closed=index != 199,
+        )
+        for index in range(200)
+    ]
+
+    ledger = AILedger(tmp_path / "ai_v1_2_1_eurusd.sqlite")
+    ledger.append(
+        record_type="ACTIVATION",
+        entity_id="AI-v1.2.1:EURUSD:ACTIVATION",
+        effective_at_utc=activated,
+        recorded_at_utc=activated,
+        payload={
+            "runtime_version": "AI-v1.2.1",
+            "decision_protocol_version": "AI-v1.0",
+            "parallel_to_runtime_version": "AI-v1.1",
+            "activated_at_utc": activated.isoformat(),
+            "policy_sha256": "a" * 64,
+            "expansion_guardrails_sha256": "b" * 64,
+            "public_exposure_enabled": False,
+            "broker_execution_enabled": False,
+        },
+    )
+
+    guardrails = json.loads(
+        (ROOT / "config" / "ai_v1_2_1_guardrails.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    decision_schema = json.loads(
+        (ROOT / "config" / "ai_v1_decision_schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    adapter = NoTradeAdapterV121()
+    market = MarketSpecV121(
+        source_symbol="EURUSD",
+        canonical_symbol="EUR/USD",
+        point_size=0.00001,
+        database_path=tmp_path / "ai_v1_2_1_eurusd.sqlite",
+    )
+
+    result = run_market_cycle_v1_2_1(
+        ledger=ledger,
+        market=market,
+        h1_all=h1,
+        h4_all=h4,
+        adapter=adapter,
+        policy_text="frozen policy",
+        decision_schema=decision_schema,
+        guardrails=guardrails,
+        now_utc=now,
+    )
+
+    assert result["provider_error_seen"] is False
+    assert adapter.calls == 1
+    counts = ledger.counts_by_type()
+    assert counts["ACTIVATION"] == 1
+    assert counts["INFERENCE"] == 1
+    assert counts["NO_TRADE"] == 1
+
+    inference = ledger.records(record_type="INFERENCE")[0]
+    assert inference["payload"]["runtime_version"] == "AI-v1.2.1"
+    assert inference["payload"]["guardrails_sha256"] == "b" * 64

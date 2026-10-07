@@ -100,3 +100,12 @@ def test_post_p2_installer_refuses_overwrite_and_requires_parallel_health() -> N
     assert "Parallel AI-v1.1 task must exist" in text
     assert "Parallel AI-v1.1 task last result must be 0" in text
     assert "-ConfirmP2Passed" in text
+
+
+def test_active_repo_root_bridge_is_plan_only() -> None:
+    text = POST_P2_INSTALLER.read_text(encoding="utf-8")
+
+    assert "[string]$ActiveRepoRoot" in text
+    assert "-ActiveRepoRoot is permitted only with -PlanOnly" in text
+    assert "InstallerSourceRoot = $scriptRepoRoot" in text
+    assert "ActiveRuntimeRoot = $repoRoot" in text

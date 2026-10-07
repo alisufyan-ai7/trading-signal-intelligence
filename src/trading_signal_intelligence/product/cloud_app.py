@@ -46,6 +46,119 @@ def _load_snapshot() -> dict[str, Any] | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _validate_validation_programs(payload: dict[str, Any]) -> None:
+    programs = payload.get("validation_programs")
+    if programs is None:
+        return
+    if payload.get("validation_programs_schema_version") != 1:
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported validation-program schema",
+        )
+    if not isinstance(programs, list):
+        raise HTTPException(
+            status_code=400,
+            detail="Validation programs must be a list",
+        )
+
+    seen: set[str] = set()
+    for program in programs:
+        if not isinstance(program, dict):
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program must be an object",
+            )
+        if program.get("schema_version") != 1:
+            raise HTTPException(
+                status_code=400,
+                detail="Unsupported validation program",
+            )
+        program_id = program.get("program_id")
+        if not isinstance(program_id, str) or not program_id.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program ID missing",
+            )
+        if program_id in seen:
+            raise HTTPException(
+                status_code=400,
+                detail="Duplicate validation program ID",
+            )
+        seen.add(program_id)
+
+        if program.get("mode") != "SHADOW_ONLY":
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program must remain shadow-only",
+            )
+        if program.get("public_research_observability") is not True:
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program observability flag missing",
+            )
+        if not isinstance(program.get("public_signal_exposure"), bool):
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program signal-exposure flag missing",
+            )
+        if program.get("signal_details_included") is not False:
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program signal details are forbidden",
+            )
+
+        health = program.get("health")
+        if not isinstance(health, dict):
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program health missing",
+            )
+        if health.get("broker_execution_disabled") is not True:
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program broker boundary failed",
+            )
+
+        for key in (
+            "raw_market_data_included",
+            "raw_feature_snapshots_included",
+            "provider_request_metadata_included",
+            "hidden_reasoning_included",
+        ):
+            if program.get(key) is not False:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Unsafe validation-program field: {key}",
+                )
+
+        if not isinstance(program.get("gates"), list):
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program gates missing",
+            )
+        if not isinstance(program.get("markets"), list):
+            raise HTTPException(
+                status_code=400,
+                detail="Validation program markets missing",
+            )
+
+        if program.get("public_signal_exposure") is False:
+            for forbidden in (
+                "recent_decisions",
+                "shadow_signals",
+                "signal_records",
+                "alerts",
+            ):
+                if forbidden in program:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=(
+                            "Research-only validation program contains "
+                            f"forbidden signal field: {forbidden}"
+                        ),
+                    )
+
+
 def _validate_snapshot(payload: dict[str, Any]) -> None:
     if payload.get("schema_version") != 1:
         raise HTTPException(status_code=400, detail="Unsupported snapshot schema")
@@ -105,6 +218,8 @@ def _validate_snapshot(payload: dict[str, Any]) -> None:
                     detail=f"Unsafe AI-v1 snapshot field: {key}",
                 )
 
+
+    _validate_validation_programs(payload)
 
 def _market_rows(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
     evidence = snapshot.get("evidence", {}).get("markets", {})
@@ -387,6 +502,26 @@ def ai_insights() -> dict:
         "provider_request_metadata_included": False,
         "hidden_reasoning_included": False,
     }))
+
+
+@app.get("/api/validation/programs")
+def validation_programs() -> dict:
+    snapshot = _load_snapshot()
+    if snapshot is None:
+        return {
+            "schema_version": 1,
+            "programs": [],
+            "snapshot_pending": True,
+        }
+    return {
+        "schema_version": snapshot.get(
+            "validation_programs_schema_version",
+            1,
+        ),
+        "programs": snapshot.get("validation_programs", []),
+        "snapshot_pending": False,
+        "generated_at_utc": snapshot.get("generated_at_utc"),
+    }
 
 
 @app.get("/api/signals")

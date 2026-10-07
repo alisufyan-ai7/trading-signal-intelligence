@@ -137,6 +137,7 @@ def test_generic_validation_program_exposes_progress_not_signal_details() -> Non
     assert metrics["valid_inferences"]["required"] == 500
     assert metrics["completed_shadow_trades"]["required"] == 50
     assert metrics["calendar_days"]["required"] == 60
+    assert metrics["calendar_days"]["label"] == "Minimum calendar age"
 
     serialized = repr(payload)
     for forbidden in (

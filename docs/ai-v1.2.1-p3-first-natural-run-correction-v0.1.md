@@ -76,6 +76,8 @@ It preserves all post-P2 preconditions from the published correction and also:
 - keeps the task hourly at minute :03;
 - keeps broker execution disabled and public exposure disabled.
 
+Before publication, detached `-PlanOnly -ActiveRepoRoot <production>` verification hashes the new runner from the candidate worktree while planning its eventual production path. Mutation mode still rejects an external active-root bridge and therefore can only run from the published production repository.
+
 Expected Windows CRLF SHA-256 of the new P3-safe runner:
 
 `aa4a1dbab8d85c90aaac3fd72a8b3dccfc62d99df080eeea9462c96024451454`

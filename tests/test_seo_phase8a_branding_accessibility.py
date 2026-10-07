@@ -142,7 +142,7 @@ def test_content_pages_use_semantic_breadcrumb_navigation() -> None:
 
 def test_dashboard_javascript_is_deferred() -> None:
     text = (WEB / "index.html").read_text(encoding="utf-8")
-    assert '<script defer src="/static/app.js?v=20260930-1"></script>' in text
+    assert '<script defer src="/static/app.js?v=20261008-consistency-1"></script>' in text
 
 
 def test_favicon_assets_are_square_and_expected_sizes() -> None:

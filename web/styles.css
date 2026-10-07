@@ -629,3 +629,64 @@ h2 { font-size: 28px; margin: 8px 0 0; }
 .validation-program .subhead {
   margin-top: 1.25rem;
 }
+
+
+/* Homepage product-consistency v0.1 */
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.button-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--text);
+  background: rgba(17,27,45,.72);
+  text-decoration: none;
+  font-weight: 750;
+}
+.button-link.primary {
+  color: #09111f;
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.evidence-more {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(9,17,31,.28);
+}
+.evidence-more summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 750;
+}
+.evidence-more-list {
+  display: grid;
+  gap: 12px;
+  padding: 0 12px 12px;
+}
+.evidence-more-list .ai-decision-row,
+.evidence-more-list .signal-row {
+  background: rgba(17,27,45,.52);
+}
+
+@media (max-width: 520px) {
+  .hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .button-link {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

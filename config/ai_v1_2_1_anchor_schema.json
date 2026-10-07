@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vowsig.local/schemas/ai-v1.2.1-expansion-anchor.json",
+  "title": "VowSig AI-v1.2.1 expansion correction activation anchor",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runtime_version",
+    "decision_protocol_version",
+    "status",
+    "activated_at_utc",
+    "repository_commit_sha",
+    "predecessor_runtime_version",
+    "predecessor_activation_anchor",
+    "predecessor_activation_anchor_sha256",
+    "predecessor_failure_evidence_sha256",
+    "predecessor_evidence_carry_forward",
+    "calendar_carry_forward",
+    "parallel_to_runtime_version",
+    "parallel_runtime_anchor",
+    "parallel_runtime_anchor_sha256",
+    "gate_counts_carry_forward",
+    "backfill_prior_missed",
+    "provider_call_made",
+    "public_exposure_enabled",
+    "broker_execution_enabled",
+    "artifact_hashes",
+    "markets"
+  ],
+  "properties": {
+    "runtime_version": {
+      "const": "AI-v1.2.1"
+    },
+    "decision_protocol_version": {
+      "const": "AI-v1.0"
+    },
+    "status": {
+      "const": "ACTIVE_PARALLEL_SHADOW"
+    },
+    "activated_at_utc": {
+      "type": "string"
+    },
+    "repository_commit_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "parallel_to_runtime_version": {
+      "const": "AI-v1.1"
+    },
+    "parallel_runtime_anchor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parallel_runtime_anchor_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "gate_counts_carry_forward": {
+      "const": false
+    },
+    "backfill_prior_missed": {
+      "const": false
+    },
+    "provider_call_made": {
+      "const": false
+    },
+    "public_exposure_enabled": {
+      "const": false
+    },
+    "broker_execution_enabled": {
+      "const": false
+    },
+    "artifact_hashes": {
+      "type": "object"
+    },
+    "markets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "EURUSD",
+        "XAGUSD",
+        "USOIL"
+      ],
+      "properties": {
+        "EURUSD": {
+          "type": "object"
+        },
+        "XAGUSD": {
+          "type": "object"
+        },
+        "USOIL": {
+          "type": "object"
+        }
+      }
+    },
+    "predecessor_runtime_version": {
+      "const": "AI-v1.2"
+    },
+    "predecessor_activation_anchor": {
+      "type": "string",
+      "minLength": 1
+    },
+    "predecessor_activation_anchor_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "predecessor_failure_evidence_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "predecessor_evidence_carry_forward": {
+      "const": false
+    },
+    "calendar_carry_forward": {
+      "const": false
+    }
+  }
+}

@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UTC = timezone.utc
 
 
-def test_v1_2_preactivation_report_passes_without_live_expansion_state() -> None:
+def test_v1_2_preactivation_report_fails_closed_after_activation_anchor() -> None:
     before = {
         market: (ROOT / relative).exists()
         for market, relative in DATABASE_PATHS.items()
@@ -41,7 +41,7 @@ def test_v1_2_preactivation_report_passes_without_live_expansion_state() -> None
     }
 
     assert before == after
-    assert report["preactivation_check"] == "PASS"
+    assert report["preactivation_check"] == "FAIL"
     assert report["runtime_version"] == "AI-v1.2"
     assert report["decision_protocol_version"] == "AI-v1.0"
     assert report["parallel_to_runtime_version"] == "AI-v1.1"
@@ -54,8 +54,9 @@ def test_v1_2_preactivation_report_passes_without_live_expansion_state() -> None
         "equivalent_except_status_and_shadow_market_allowlist"
     ] is True
     assert report["review_gates"]["valid"] is True
-    assert not any(report["expansion_ledger_paths_exist"].values())
-    assert report["expansion_activation_anchors"] == []
+    assert report["expansion_activation_anchors"] == [
+        "research/forward/AI-v1.2-expansion-activation-2026-10-06T200633Z.json"
+    ]
     assert report["provider_call_made"] is False
     assert report["mt5_call_made"] is False
     assert report["ledger_write_performed"] is False

@@ -662,3 +662,27 @@ where:
 
 **Status:** The numeric cost-policy-definition blocker is closed prospectively. Runtime integration, deterministic guard/lifecycle tests, K2 package publication, K3 activation, K4 first performance-bearing cycle, K5 scheduling, public crypto exposure and broker/exchange execution remain unapproved.
 
+## 2026-10-08 — D043: Integrate the frozen AI-v1.3 crypto cost policy through an isolated guard/signal/lifecycle path
+
+**Authorization:** Owner explicitly approved `APPROVE AI-v1.3 OFFLINE COST INTEGRATION`.
+
+**Decision:** Implement the frozen EXP-2026-018 cost policy through AI-v1.3-specific modules rather than changing the active AI-v1.1 / AI-v1.2.1 cost semantics.
+
+Implemented isolated components:
+
+- `crypto_cost_v1_3.py` — validates the frozen policy and computes fee + spread + slippage cost;
+- `crypto_guardrails_v1_3.py` — applies the frozen 0.15R cost guard;
+- `crypto_engine_v1_3.py` — validates execution context before provider use and freezes cost provenance into the crypto inference record;
+- `crypto_signals_v1_3.py` — carries the exact frozen cost breakdown into the crypto SIGNAL;
+- existing deterministic `evaluate_signal()` — reused unchanged to allocate the already-frozen total cost pro rata across partial/final exits.
+
+**Isolation rule:** No active AI-v1.1, AI-v1.2.1 or S02 runtime/cost function was changed to adopt the crypto formula.
+
+**Fail-closed rule:** Invalid/stale Binance execution context is rejected before a provider call in the AI-v1.3 engine path.
+
+**Evidence:** Exact cost-integration candidate `b5a81bb076c7e1b189a23082ba4c9ffdb2cd98b7` passed 20 focused crypto tests, 271 full regression tests and Ruff on all changed Python surfaces in disposable Windows verification run `37853582251`.
+
+**Safety:** The verification made no live Binance call, no OpenAI call, no crypto ledger, no scheduler mutation and no broker action.
+
+**Status:** The cost-policy runtime-integration blocker is closed. This does not authorize K2 package publication, K3 activation, K4 first performance-bearing cycle, K5 unattended scheduling, public actionable crypto signals or broker/exchange execution.
+

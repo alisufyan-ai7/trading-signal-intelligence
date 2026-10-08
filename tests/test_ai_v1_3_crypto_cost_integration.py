@@ -30,7 +30,6 @@ from trading_signal_intelligence.ai_v1.ledger import AILedger
 from trading_signal_intelligence.ai_v1.signals import evaluate_signal
 from trading_signal_intelligence.models import Candle
 
-
 ROOT = Path(__file__).resolve().parents[1]
 COST_POLICY_PATH = ROOT / "config" / "ai_v1_3_crypto_cost_policy.json"
 

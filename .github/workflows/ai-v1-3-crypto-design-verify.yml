@@ -54,10 +54,18 @@ jobs:
         run: |
           python -m pytest -q
 
-      - name: Ruff changed Python surface
+      - name: Show exact Ruff auto-fix for changed Python surface
         shell: pwsh
         run: |
-          python -m ruff check tests/test_ai_v1_3_crypto_expansion_design.py
+          python -m ruff check tests/test_ai_v1_3_crypto_expansion_design.py --fix
+          Write-Host "----- BEGIN RUFF FIX DIFF -----"
+          git diff -- tests/test_ai_v1_3_crypto_expansion_design.py
+          Write-Host "----- END RUFF FIX DIFF -----"
+          if (git diff --quiet -- tests/test_ai_v1_3_crypto_expansion_design.py) {
+            Write-Host "RUFF_CHANGED_SURFACE=PASS"
+          } else {
+            throw "Ruff auto-fix diff shown above"
+          }
 
       - name: Safety summary
         shell: pwsh

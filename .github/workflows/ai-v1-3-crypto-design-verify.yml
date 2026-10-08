@@ -44,20 +44,14 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[mt5,research,app,dev]"
 
-      - name: Focused crypto K1 tests
+      - name: Exact Ruff import-fix diagnostic
         shell: pwsh
         run: |
-          python -m pytest -q tests/test_ai_v1_3_crypto_expansion_design.py tests/test_ai_v1_3_crypto_readiness.py
-
-      - name: Full regression suite
-        shell: pwsh
-        run: |
-          python -m pytest -q
-
-      - name: Ruff changed Python surface
-        shell: pwsh
-        run: |
-          python -m ruff check src/trading_signal_intelligence/connectors/binance.py src/trading_signal_intelligence/ai_v1/crypto_readiness_v1_3.py scripts/probe_ai_v1_3_crypto_readiness.py tests/test_ai_v1_3_crypto_expansion_design.py tests/test_ai_v1_3_crypto_readiness.py
+          python -m ruff check src/trading_signal_intelligence/connectors/binance.py src/trading_signal_intelligence/ai_v1/crypto_readiness_v1_3.py scripts/probe_ai_v1_3_crypto_readiness.py --fix
+          Write-Host "----- BEGIN RUFF IMPORT DIFF -----"
+          git diff -- src/trading_signal_intelligence/connectors/binance.py src/trading_signal_intelligence/ai_v1/crypto_readiness_v1_3.py scripts/probe_ai_v1_3_crypto_readiness.py
+          Write-Host "----- END RUFF IMPORT DIFF -----"
+          throw "Diagnostic run only"
 
       - name: Safety summary
         shell: pwsh

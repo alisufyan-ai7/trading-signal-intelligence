@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 CONFIG = ROOT / "config" / "ai_v1_3_crypto_expansion.json"

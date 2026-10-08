@@ -17,7 +17,6 @@ from trading_signal_intelligence.ai_v1.crypto_readiness_v1_3 import (
 )
 from trading_signal_intelligence.connectors.binance import BinanceSpotConnector
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 CRYPTO_CONFIG = ROOT / "config" / "ai_v1_3_crypto_expansion.json"

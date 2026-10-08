@@ -14,7 +14,6 @@ from trading_signal_intelligence.ai_v1.features import (
 from trading_signal_intelligence.connectors.binance import BinanceSpotConnector
 from trading_signal_intelligence.models import Candle, Quote
 
-
 RUNTIME_VERSION = "AI-v1.3"
 DECISION_PROTOCOL_VERSION = "AI-v1.0"
 SOURCE_NAME = "binance_spot"

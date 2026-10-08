@@ -22,7 +22,7 @@
   <script type="application/ld+json">
     {"@context":"https://schema.org","@type":"WebSite","name":"VowSig","url":"https://vowsig.com/","description":"AI-assisted trading intelligence with explicit risk context, forward-validation evidence, and immutable shadow records."}
   </script>
-  <link rel="stylesheet" href="/static/styles.css?v=20261008-consistency-1" />
+  <link rel="stylesheet" href="/static/styles.css?v=20261008-ai-first-1" />
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -37,12 +37,12 @@
   <main id="main-content" tabindex="-1" class="shell">
     <header class="hero">
       <div>
-        <span class="eyebrow">VOWSIG • RESEARCH BETA</span>
-        <h1>See the setup. See the risk. Verify the record.</h1>
-        <p class="lede">VowSig keeps three public views distinct: core AI shadow intelligence, expansion AI validation progress, and the frozen S02 benchmark. All remain research-only; broker execution is disabled.</p>
+        <span class="eyebrow">VOWSIG • AI RESEARCH BETA</span>
+        <h1>AI market intelligence, validated in the open.</h1>
+        <p class="lede">VowSig is an AI-first research beta. Core AI-v1.1 publishes shadow decisions and outcomes, while AI-v1.2.1 expands validation to new markets. A frozen S02 rules-based strategy remains underneath as an independent benchmark—not as the product.</p>
         <div class="hero-actions" aria-label="Homepage shortcuts">
-          <a class="button-link primary" href="#ai-intelligence">See AI evidence</a>
-          <a class="button-link" href="/evidence/">How the evidence works</a>
+          <a class="button-link primary" href="#ai-intelligence">See AI intelligence</a>
+          <a class="button-link" href="#validation-programs-section">How validation works</a>
         </div>
       </div>
       <div class="status-card" role="status" aria-live="polite">
@@ -101,7 +101,7 @@
       </div>
     </section>
 
-    <section class="section validation-programs-section">
+    <section id="validation-programs-section" class="section validation-programs-section">
       <div class="section-head">
         <div>
           <span class="eyebrow">SHADOW VALIDATION PROGRAMS</span>
@@ -114,50 +114,75 @@
       </div>
     </section>
 
-    <section id="s02-benchmark" class="section">
+    <section id="s02-benchmark" class="section benchmark-section">
       <div class="section-head">
         <div>
-          <span class="eyebrow">S02 BENCHMARK • FORWARD</span>
-          <h2>S02 benchmark markets</h2>
+          <span class="eyebrow">INDEPENDENT CONTROL • S02</span>
+          <h2>A fixed benchmark for testing whether AI adds value</h2>
         </div>
-        <p>This frozen benchmark feed is separate from VowSig AI shadow intelligence. Each market carries its own evidence label; historical strength is not a guarantee.</p>
+        <p>S02 is a frozen deterministic strategy running beside VowSig AI. It does not drive, train or inform AI decisions; it exists as an independent control so AI performance can be judged against a transparent rules-based baseline.</p>
       </div>
-      <div id="live-grid" class="grid"></div>
-    </section>
 
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">S02 BENCHMARK • HISTORICAL EVIDENCE</span>
-          <h2>S02 historical record</h2>
-        </div>
-        <p>S02 backtests remain historical research and are kept separate from S02 forward results and from both AI validation lineages.</p>
+      <div class="benchmark-principles" aria-label="Why VowSig keeps the S02 benchmark">
+        <article class="benchmark-principle">
+          <span>01</span>
+          <strong>Fixed control</strong>
+          <p>S02 rules stay frozen while forward evidence accumulates, preventing the benchmark from moving to flatter the AI.</p>
+        </article>
+        <article class="benchmark-principle">
+          <span>02</span>
+          <strong>Independent from AI</strong>
+          <p>S02 signals, positions and results are not inputs to the AI decision process and are never pooled into AI validation gates.</p>
+        </article>
+        <article class="benchmark-principle">
+          <span>03</span>
+          <strong>Supporting evidence</strong>
+          <p>The customer product is VowSig AI. S02 remains visible so anyone can inspect the non-AI baseline used for comparison.</p>
+        </article>
       </div>
-      <div id="evidence-grid" class="grid evidence-grid"></div>
-    </section>
 
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">S02 BENCHMARK • IMMUTABLE FORWARD RECORD</span>
-          <h2>Recent S02 benchmark signals</h2>
-        </div>
-        <p>Every S02 forward signal appears here with its issued time, risk levels, lifecycle and immutable record hash.</p>
-      </div>
-      <div id="signal-history" class="signal-history">
-        <div class="empty">Loading forward records…</div>
-      </div>
-    </section>
+      <details class="benchmark-details">
+        <summary>Explore the S02 benchmark evidence</summary>
+        <div class="benchmark-details-body">
+          <div class="subhead">
+            <div>
+              <span class="eyebrow">S02 • FORWARD</span>
+              <h3>Forward benchmark markets</h3>
+            </div>
+            <p>Primary XAU/USD plus secondary NASDAQ 100 and DOW 30 collectors. These are deterministic benchmark records, not VowSig AI signals.</p>
+          </div>
+          <div id="live-grid" class="grid"></div>
 
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <span class="eyebrow">S02 BENCHMARK • TRANSFER RESEARCH</span>
-          <h2>S02 transfer-research markets</h2>
+          <div class="subhead">
+            <div>
+              <span class="eyebrow">S02 • HISTORICAL EVIDENCE</span>
+              <h3>Historical benchmark record</h3>
+            </div>
+            <p>Historical research remains separate from live forward evidence and from both AI validation lineages.</p>
+          </div>
+          <div id="evidence-grid" class="grid evidence-grid"></div>
+
+          <div class="subhead">
+            <div>
+              <span class="eyebrow">S02 • IMMUTABLE FORWARD RECORD</span>
+              <h3>Recent benchmark signals</h3>
+            </div>
+            <p>Forward S02 signals retain issued time, risk levels, lifecycle and immutable record hashes for auditability.</p>
+          </div>
+          <div id="signal-history" class="signal-history">
+            <div class="empty">Loading benchmark records…</div>
+          </div>
+
+          <div class="subhead">
+            <div>
+              <span class="eyebrow">S02 • TRANSFER RESEARCH</span>
+              <h3>Transfer-research markets</h3>
+            </div>
+            <p>EUR/USD, XAG/USD and WTI also appear separately in AI-v1.2.1 expansion validation. S02 transfer evidence and AI expansion evidence are never pooled.</p>
+          </div>
+          <div id="research-grid" class="grid compact"></div>
         </div>
-        <p>These labels describe S02 transfer evidence only. EUR/USD, XAG/USD and WTI also appear separately in AI-v1.2.1 expansion validation; the two evidence programs are not pooled.</p>
-      </div>
-      <div id="research-grid" class="grid compact"></div>
+      </details>
     </section>
 
 
@@ -301,8 +326,8 @@
 
     <section class="disclosure">
       <strong>Research beta.</strong>
-      Core AI shadow evidence, expansion AI validation and the frozen S02 benchmark are separate evidence streams. AI runtimes remain shadow-only and do not place broker orders. No signal is a guaranteed return or personalized investment advice.
-      Historical results and live forward results must be evaluated separately.
+      VowSig AI is the product surface. Core AI shadow evidence and expansion AI validation remain separate lineages; S02 is a separate deterministic control used only as supporting benchmark evidence. AI runtimes remain shadow-only and do not place broker orders. No signal is a guaranteed return or personalized investment advice.
+      Historical results, forward results and benchmark comparisons must be evaluated separately.
     </section>
 
     <footer class="site-footer">
@@ -317,6 +342,6 @@
       </div>
     </footer>
   </main>
-  <script defer src="/static/app.js?v=20261008-consistency-1"></script>
+  <script defer src="/static/app.js?v=20261008-ai-first-1"></script>
 </body>
 </html>

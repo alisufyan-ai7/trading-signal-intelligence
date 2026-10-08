@@ -17,13 +17,13 @@ jobs:
       - name: Checkout exact PR 41 candidate
         uses: actions/checkout@v4
         with:
-          ref: bd933380980a0ebbef8f806e898c4fcea97ffb03
+          ref: 680d30c17fb10a7e3e2963100f0046983331cc2d
           fetch-depth: 1
 
       - name: Verify exact candidate identity
         shell: pwsh
         run: |
-          $Expected = "bd933380980a0ebbef8f806e898c4fcea97ffb03"
+          $Expected = "680d30c17fb10a7e3e2963100f0046983331cc2d"
           $Actual = (git rev-parse HEAD).Trim()
           Write-Host "EXPECTED_CANDIDATE=$Expected"
           Write-Host "ACTUAL_CANDIDATE=$Actual"
@@ -54,18 +54,10 @@ jobs:
         run: |
           python -m pytest -q
 
-      - name: Show exact Ruff auto-fix for changed Python surface
+      - name: Ruff changed Python surface
         shell: pwsh
         run: |
-          python -m ruff check tests/test_ai_v1_3_crypto_expansion_design.py --fix
-          Write-Host "----- BEGIN RUFF FIX DIFF -----"
-          git diff -- tests/test_ai_v1_3_crypto_expansion_design.py
-          Write-Host "----- END RUFF FIX DIFF -----"
-          if (git diff --quiet -- tests/test_ai_v1_3_crypto_expansion_design.py) {
-            Write-Host "RUFF_CHANGED_SURFACE=PASS"
-          } else {
-            throw "Ruff auto-fix diff shown above"
-          }
+          python -m ruff check tests/test_ai_v1_3_crypto_expansion_design.py
 
       - name: Safety summary
         shell: pwsh

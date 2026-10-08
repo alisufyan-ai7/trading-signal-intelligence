@@ -2,7 +2,11 @@
   "policy_version": "AI-v1.3-crypto-cost-v0.1",
   "status": "frozen_preactivation",
   "scope": "crypto_shadow_research_cost_proxy",
-  "markets": ["BTCUSDT", "ETHUSDT", "SOLUSDT"],
+  "markets": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT"
+  ],
   "execution_venue_reference": "binance_spot",
   "broker_execution_authority": false,
   "fee_policy": {
@@ -37,12 +41,12 @@
   "source_research_observed_utc_date": "2026-10-08",
   "spread_policy": {
     "source": "prospective_binance_top_of_book",
-    "round_trip_crossing_spread_multiplier": 1.0,
+    "round_trip_crossing_spread_multiplier": 1,
     "description": "One full observed bid/ask spread represents the static round-trip crossing-cost proxy."
   },
   "slippage_policy": {
     "source": "preregistered_research_assumption_not_binance",
-    "buffer_multiplier_of_entry_spread": 1.0,
+    "buffer_multiplier_of_entry_spread": 1,
     "description": "Add one additional full observed entry spread as a conservative size-agnostic slippage buffer because no order size/impact model is admitted."
   },
   "static_round_trip_cost_rule": {
@@ -75,10 +79,12 @@
   },
   "activation_constraints": {
     "numeric_cost_policy_frozen": true,
-    "runtime_integration_still_required": true,
-    "offline_tests_still_required": true,
+    "runtime_integration_still_required": false,
+    "offline_tests_still_required": false,
     "owner_approval_for_package_publication_still_required": true,
     "owner_approval_for_activation_still_required": true,
-    "broker_execution_enabled": false
+    "broker_execution_enabled": false,
+    "runtime_cost_integration_verified": true,
+    "k2_package_publication_still_required": true
   }
 }

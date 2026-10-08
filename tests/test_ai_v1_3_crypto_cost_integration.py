@@ -125,7 +125,7 @@ def snapshot(
 def execution_context(
     *,
     symbol: str = "ETHUSDT",
-    midpoint: Decimal = Decimal("1000"),
+    midpoint: Decimal = Decimal(1000),
     spread: Decimal = Decimal("0.01"),
     observed_at: datetime | None = None,
 ) -> CryptoExecutionContext:

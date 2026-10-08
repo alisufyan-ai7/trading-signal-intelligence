@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, replace
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from itertools import pairwise
 from typing import Any
 
 from trading_signal_intelligence.ai_v1.features import (
@@ -44,7 +45,7 @@ class CryptoMarketReadinessInput:
 def _utc(value: datetime) -> datetime:
     if value.tzinfo is None:
         raise CryptoReadinessError("timestamp must be timezone-aware")
-    return value.astimezone(timezone.utc)
+    return value.astimezone(UTC)
 
 
 def _closed_sorted_unique(
@@ -66,7 +67,7 @@ def _closed_sorted_unique(
 
 def _gap_count(candles: list[Candle], *, expected_seconds: int) -> int:
     count = 0
-    for left, right in zip(candles, candles[1:]):
+    for left, right in pairwise(candles):
         delta = (right.timestamp_utc - left.timestamp_utc).total_seconds()
         if delta != expected_seconds:
             count += 1
@@ -193,11 +194,10 @@ def evaluate_market_readiness(
         )
 
     latest_h1 = h1[-1]
-    source_bar_close_utc = _utc(latest_h1.timestamp_utc).replace(
-        microsecond=0
+    source_bar_close_utc = (
+        _utc(latest_h1.timestamp_utc).replace(microsecond=0)
+        + timedelta(hours=1)
     )
-    source_bar_close_utc = source_bar_close_utc.replace(tzinfo=timezone.utc)
-    source_bar_close_utc = source_bar_close_utc + timedelta(hours=1)
     data_age_seconds = (batch_frozen_at_utc - source_bar_close_utc).total_seconds()
     if data_age_seconds < 0 or data_age_seconds > max_data_age_seconds:
         raise CryptoReadinessError(
@@ -256,7 +256,7 @@ def evaluate_market_readiness(
             f"{market.source_symbol}: H4 volume semantics are not base_asset_volume"
         )
 
-    midpoint = (market.quote.bid + market.quote.ask) / Decimal("2")
+    midpoint = (market.quote.bid + market.quote.ask) / Decimal(2)
     return {
         "source_symbol": market.source_symbol,
         "canonical_symbol": market.canonical_symbol,

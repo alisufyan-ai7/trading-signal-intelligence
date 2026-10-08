@@ -4,13 +4,14 @@ import argparse
 import hashlib
 import json
 import subprocess
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from trading_signal_intelligence.ai_v1.crypto_readiness_v1_3 import (
     CANONICAL_SYMBOLS,
     MARKETS,
+    CryptoReadinessError,
     collect_market_input,
     evaluate_batch_readiness,
 )
@@ -183,7 +184,7 @@ def main() -> None:
     inputs = {}
     collection_errors: dict[str, str] = {}
 
-    scan_started_utc = datetime.now(timezone.utc)
+    scan_started_utc = datetime.now(UTC)
 
     for symbol in MARKETS:
         try:
@@ -194,10 +195,10 @@ def main() -> None:
                 h1_count=int(config["h1_bars"]),
                 h4_count=int(config["h4_bars"]),
             )
-        except Exception as exc:  # fail-closed evidence, no retry/backfill
+        except (OSError, ValueError, KeyError, json.JSONDecodeError) as exc:
             collection_errors[symbol] = f"{type(exc).__name__}: {exc}"
 
-    batch_frozen_at_utc = datetime.now(timezone.utc)
+    batch_frozen_at_utc = datetime.now(UTC)
 
     batch_report = None
     evaluation_error = None
@@ -209,7 +210,7 @@ def main() -> None:
                 h1_required=int(config["h1_bars"]),
                 h4_required=int(config["h4_bars"]),
             )
-        except Exception as exc:
+        except CryptoReadinessError as exc:
             evaluation_error = f"{type(exc).__name__}: {exc}"
 
     ledgers_after = governed_ledger_hashes(active_repo_root)

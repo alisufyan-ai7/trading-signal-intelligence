@@ -51,7 +51,7 @@ def append_crypto_signal_from_approved_inference(
 
     cost = payload.get("crypto_cost_breakdown")
     if not isinstance(cost, dict):
-        raise RuntimeError("approved crypto inference lacks frozen cost breakdown")
+        raise TypeError("approved crypto inference lacks frozen cost breakdown")
     if cost.get("passes_cost_guard") is not True:
         raise RuntimeError("crypto cost breakdown did not pass the frozen cost guard")
 
@@ -61,11 +61,11 @@ def append_crypto_signal_from_approved_inference(
 
     execution_context = payload.get("crypto_execution_context")
     if not isinstance(execution_context, dict):
-        raise RuntimeError("approved crypto inference lacks execution-context provenance")
+        raise TypeError("approved crypto inference lacks execution-context provenance")
 
     feature = payload["feature_snapshot"]
     expected_entry = datetime.fromisoformat(
-        str(feature["source_bar_close_utc"]).replace("Z", "+00:00")
+        str(feature["source_bar_close_utc"])
     ).astimezone(UTC)
     actual_entry = _utc(entry_bar.timestamp_utc)
     if actual_entry != expected_entry:

@@ -82,6 +82,20 @@
       }
     },
     {
+      "canonical": "ETH/USDT",
+      "asset_class": "crypto",
+      "sources": {
+        "binance_spot": {"symbol": "ETHUSDT", "status": "primary"}
+      }
+    },
+    {
+      "canonical": "SOL/USDT",
+      "asset_class": "crypto",
+      "sources": {
+        "binance_spot": {"symbol": "SOLUSDT", "status": "primary"}
+      }
+    },
+    {
       "canonical": "BTC/USD",
       "asset_class": "crypto",
       "sources": {

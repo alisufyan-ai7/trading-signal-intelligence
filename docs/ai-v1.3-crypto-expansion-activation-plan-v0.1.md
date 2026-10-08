@@ -351,7 +351,11 @@ Completed:
 - offline verification;
 - K1 live read-only Binance readiness;
 - official Binance fee research;
-- prospective numeric crypto research cost-policy freeze.
+- prospective numeric crypto research cost-policy freeze;
+- offline deterministic crypto cost calculator;
+- offline AI-v1.3 cost-aware guard/inference/signal integration;
+- deterministic pro-rata lifecycle cost integration verification;
+- focused/full-regression/Ruff verification of the cost integration.
 
 Not authorized:
 
@@ -363,5 +367,7 @@ Not authorized:
 - K7 actionable public crypto signals;
 - K8 broker/exchange execution.
 
-The next technical task is offline integration/testing of the frozen crypto cost
-policy. Crossing into K2 still requires separate owner approval.
+The cost-policy integration task is complete. The remaining AI-v1.3 package
+components outside this cost path must still be completed and verified before
+K2 can be considered ready. Crossing into K2 package publication still requires
+separate owner approval.

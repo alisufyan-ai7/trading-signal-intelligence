@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from urllib.parse import urlencode
 from urllib.request import urlopen
@@ -60,7 +60,7 @@ class BinanceSpotConnector:
         with urlopen(url, timeout=20) as response:  # nosec B310: fixed configured HTTPS API base
             payload = json.loads(response.read().decode("utf-8"))
 
-        now_ms = int(datetime.now(tz=timezone.utc).timestamp() * 1000)
+        now_ms = int(datetime.now(tz=UTC).timestamp() * 1000)
         candles: list[Candle] = []
         for row in payload:
             open_time_ms = int(row[0])
@@ -71,7 +71,7 @@ class BinanceSpotConnector:
                     source_symbol=source_symbol.upper(),
                     symbol=canonical_symbol,
                     timeframe=timeframe.upper(),
-                    timestamp_utc=datetime.fromtimestamp(open_time_ms / 1000, tz=timezone.utc),
+                    timestamp_utc=datetime.fromtimestamp(open_time_ms / 1000, tz=UTC),
                     open=Decimal(row[1]),
                     high=Decimal(row[2]),
                     low=Decimal(row[3]),
@@ -102,7 +102,7 @@ class BinanceSpotConnector:
         with urlopen(url, timeout=20) as response:  # nosec B310: fixed configured HTTPS API base
             payload = json.loads(response.read().decode("utf-8"))
 
-        observed_at_utc = datetime.now(tz=timezone.utc)
+        observed_at_utc = datetime.now(tz=UTC)
         bid = Decimal(str(payload["bidPrice"]))
         ask = Decimal(str(payload["askPrice"]))
         if bid <= 0 or ask <= 0:

@@ -40,12 +40,16 @@
     "mt5_spread_substitution_forbidden": true
   },
   "execution_cost_profile": {
-    "status": "calibration_required_before_activation",
+    "status": "frozen_preactivation_policy_runtime_integration_required",
     "top_of_book_spread_required": true,
-    "fee_rate_per_side": null,
-    "slippage_buffer_rule": null,
-    "all_in_round_trip_cost_rule": null,
-    "activation_blocked_until_numeric_cost_policy_frozen": true
+    "cost_policy_path": "config/ai_v1_3_crypto_cost_policy.json",
+    "fee_rate_per_side": 0.001,
+    "slippage_buffer_rule": "one_additional_entry_spread",
+    "all_in_round_trip_cost_rule": "0.002 * reference_midpoint + 2.0 * reference_spread",
+    "max_round_trip_cost_r": 0.15,
+    "numeric_cost_policy_frozen": true,
+    "activation_blocked_until_numeric_cost_policy_frozen": false,
+    "activation_blocked_until_runtime_cost_integration_verified": true
   },
   "provider_profile": {
     "provider_config_path": "config/ai_v1_provider.json",
@@ -81,7 +85,7 @@
     "estimated_increment_one_crypto_market_usd_30d": 8.34,
     "estimated_increment_three_crypto_markets_usd_30d": 25.01,
     "estimated_total_six_existing_plus_three_crypto_usd_30d": 61.69,
-    "planning_budget_six_existing_plus_three_crypto_usd_30d": 75.0,
+    "planning_budget_six_existing_plus_three_crypto_usd_30d": 75,
     "cost_estimate_is_not_a_research_gate": true
   },
   "activation_authority": false

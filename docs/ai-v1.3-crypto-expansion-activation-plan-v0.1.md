@@ -1,6 +1,6 @@
 # AI-v1.3 crypto expansion activation plan v0.1
 
-_Status: DESIGN ONLY / NO AUTHORITY TO ACTIVATE — 2026-10-08_
+_Status: PREACTIVATION / K1 PASS / COST POLICY FROZEN / NO AUTHORITY TO ACTIVATE — 2026-10-08 UTC_
 
 Tracker: Issue #40
 
@@ -125,7 +125,7 @@ Do not prepare an activation payload that reports READY until all are true:
 2. crypto feature semantics are frozen;
 3. Binance top-of-book adapter is implemented/tested;
 4. numeric fee/slippage/all-in cost policy is frozen;
-5. cost guard/lifecycle allocation is implemented/tested;
+5. the frozen cost policy is implemented in the crypto runtime and guard/lifecycle allocation is tested;
 6. static preactivation verification passes;
 7. full regression passes;
 8. owner-approved live read-only readiness passes for BTC/ETH/SOL;
@@ -162,11 +162,10 @@ Not allowed:
 
 ### K1 — live read-only readiness
 
-Future explicit token:
+Status: **COMPLETED PASS** on the owner VPS using the explicit token
+`AI_V1_3_CRYPTO_READINESS`.
 
-`AI_V1_3_CRYPTO_READINESS`
-
-May authorize only:
+K1 authorized only:
 
 - public Binance H1/H4 reads;
 - public Binance top-of-book reads;
@@ -346,8 +345,23 @@ No automatic destructive database restore is authorized.
 
 ## 11. Current state
 
-This document defines future commands/tokens only.
+Completed:
 
-No K1/K2/K3/K4/K5/K6/K7/K8 authority has been granted.
+- K0 design/preregistration;
+- offline verification;
+- K1 live read-only Binance readiness;
+- official Binance fee research;
+- prospective numeric crypto research cost-policy freeze.
 
-Current owner authorization stops at K0 design/preregistration work.
+Not authorized:
+
+- K2 package publication;
+- K3 activation-only;
+- K4 first performance-bearing cycle;
+- K5 unattended scheduler installation;
+- K6 public crypto research observability;
+- K7 actionable public crypto signals;
+- K8 broker/exchange execution.
+
+The next technical task is offline integration/testing of the frozen crypto cost
+policy. Crossing into K2 still requires separate owner approval.

@@ -151,10 +151,7 @@ def process_crypto_inference_cycle(
         raise RuntimeError(f"AI-v1.3 crypto cycle already processed: {entity_id}")
 
     source_close = datetime.fromisoformat(
-        str(feature_snapshot.payload["source_bar_close_utc"]).replace(
-            "Z",
-            "+00:00",
-        )
+        str(feature_snapshot.payload["source_bar_close_utc"])
     )
     age_seconds = float(feature_snapshot.payload["data_age_seconds"])
     max_age = float(guardrails["max_data_age_seconds"])
@@ -223,7 +220,8 @@ def process_crypto_inference_cycle(
             policy_text=policy_text,
             decision_schema=decision_schema,
         )
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
+        # Provider/adaptor boundary must fail closed for any provider exception.
         error_record = ledger.append(
             record_type="ERROR",
             entity_id=entity_id,

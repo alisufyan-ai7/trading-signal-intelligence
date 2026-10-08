@@ -17,13 +17,13 @@ jobs:
       - name: Checkout exact PR 41 candidate
         uses: actions/checkout@v4
         with:
-          ref: 8efb2e20402414a893b5526b94be62a864905513
+          ref: 5dcf7a75a77aeca138682dfcca34eaf7579e052a
           fetch-depth: 1
 
       - name: Verify exact candidate identity
         shell: pwsh
         run: |
-          $Expected = "8efb2e20402414a893b5526b94be62a864905513"
+          $Expected = "5dcf7a75a77aeca138682dfcca34eaf7579e052a"
           $Actual = (git rev-parse HEAD).Trim()
           Write-Host "EXPECTED_CANDIDATE=$Expected"
           Write-Host "ACTUAL_CANDIDATE=$Actual"
@@ -44,7 +44,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[mt5,research,app,dev]"
 
-      - name: Focused crypto K1 tests
+      - name: Focused crypto K1 + cost-policy tests
         shell: pwsh
         run: |
           python -m pytest -q tests/test_ai_v1_3_crypto_expansion_design.py tests/test_ai_v1_3_crypto_readiness.py

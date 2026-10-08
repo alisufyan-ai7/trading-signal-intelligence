@@ -207,7 +207,8 @@ def test_phase8a_copy_preserves_evidence_boundaries() -> None:
     assert "SHADOW_ONLY" in combined
     assert "broker execution remains disabled" in combined
     assert (
-        "Historical results and live forward results must be evaluated separately."
+        "Historical results, forward results and benchmark comparisons "
+        "must be evaluated separately."
         in combined
     )
     assert "AI-v1.1" in combined

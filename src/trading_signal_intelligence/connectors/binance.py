@@ -6,7 +6,7 @@ from decimal import Decimal
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
-from trading_signal_intelligence.models import Candle
+from trading_signal_intelligence.models import Candle, Quote
 
 
 _INTERVALS = {
@@ -83,3 +83,39 @@ class BinanceSpotConnector:
                 )
             )
         return candles
+
+    def book_ticker(
+        self,
+        source_symbol: str,
+        canonical_symbol: str,
+    ) -> Quote:
+        """Read the current public Binance Spot best bid / best ask.
+
+        The public book-ticker response does not carry an exchange timestamp, so
+        the quote timestamp records the local UTC time immediately after the
+        HTTPS response is read. This method performs no authentication and has no
+        trading side effect.
+        """
+
+        params = {"symbol": source_symbol.upper()}
+        url = f"{self.base_url}/api/v3/ticker/bookTicker?{urlencode(params)}"
+        with urlopen(url, timeout=20) as response:  # nosec B310: fixed configured HTTPS API base
+            payload = json.loads(response.read().decode("utf-8"))
+
+        observed_at_utc = datetime.now(tz=timezone.utc)
+        bid = Decimal(str(payload["bidPrice"]))
+        ask = Decimal(str(payload["askPrice"]))
+        if bid <= 0 or ask <= 0:
+            raise ValueError("Binance best bid/ask must be positive")
+        if ask < bid:
+            raise ValueError("Binance best ask must be greater than or equal to best bid")
+
+        return Quote(
+            source=self.source_name,
+            source_symbol=source_symbol.upper(),
+            symbol=canonical_symbol,
+            timestamp_utc=observed_at_utc,
+            bid=bid,
+            ask=ask,
+            last=None,
+        )

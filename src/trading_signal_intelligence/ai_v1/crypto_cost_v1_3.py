@@ -118,7 +118,7 @@ def validate_crypto_cost_policy(policy: dict[str, Any]) -> None:
     spread = policy.get("spread_policy") or {}
     if spread.get("source") != "prospective_binance_top_of_book":
         raise CryptoCostPolicyError("spread source must remain Binance top-of-book")
-    if Decimal(str(spread.get("round_trip_crossing_spread_multiplier"))) != Decimal("1"):
+    if Decimal(str(spread.get("round_trip_crossing_spread_multiplier"))) != Decimal(1):
         raise CryptoCostPolicyError("spread crossing multiplier must remain 1.0")
 
     slippage = policy.get("slippage_policy") or {}

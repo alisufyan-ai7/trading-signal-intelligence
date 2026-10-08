@@ -511,40 +511,46 @@ async function boot() {
   const dot = document.querySelector(".dot");
 
   const snapshotTime = fmtTime(health.snapshot_generated_at_utc);
-  const collectorDetail =
-    `${health.ready_collector_count}/${health.live_signal_markets} S02 collectors active`;
   const snapshotDetail = health.snapshot_generated_at_utc
     ? `snapshot ${snapshotTime}`
     : "snapshot time unavailable";
+  const aiRuntime = ai?.runtime_version || "VowSig AI";
+  const aiHealthy = ai?.health?.healthy === true;
+  const aiTotals = ai?.totals || {};
+  const aiDetail =
+    `${aiRuntime} core • ${Number(aiTotals.valid_inferences || 0)} valid inferences • ` +
+    `${Number(aiTotals.completed_shadow_trades || 0)} completed shadow trades`;
+  const benchmarkDetail =
+    `${health.ready_collector_count}/${health.live_signal_markets} benchmark collectors active`;
 
-  if (!health.ok) {
-    label.textContent = "S02 benchmark attention required";
-    detail.textContent =
-      `Ledger error: ${(health.ledger_errors || []).join(", ") || "unknown"} • ${snapshotDetail}`;
-    dot.classList.add("warn");
-  } else if (health.snapshot_pending) {
-    label.textContent = "Public snapshot unavailable";
-    detail.textContent = collectorDetail;
+  if (health.snapshot_pending) {
+    label.textContent = "Public AI snapshot unavailable";
+    detail.textContent = benchmarkDetail;
     dot.classList.add("warn");
   } else if (health.snapshot_freshness === "stale") {
-    label.textContent = "Public data stale";
-    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
+    label.textContent = "Public AI data stale";
+    detail.textContent = `${aiDetail} • ${snapshotDetail}`;
     dot.classList.add("warn");
   } else if (health.snapshot_freshness === "delayed") {
-    label.textContent = "Public data delayed";
-    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
+    label.textContent = "Public AI data delayed";
+    detail.textContent = `${aiDetail} • ${snapshotDetail}`;
     dot.classList.add("warn");
   } else if (health.snapshot_freshness !== "fresh") {
-    label.textContent = "Snapshot age unavailable";
-    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
+    label.textContent = "AI snapshot age unavailable";
+    detail.textContent = `${aiDetail} • ${snapshotDetail}`;
     dot.classList.add("warn");
-  } else if (!health.launch_ready) {
-    label.textContent = "S02 benchmark setup incomplete";
-    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
+  } else if (!aiHealthy) {
+    label.textContent = "AI shadow validation attention required";
+    detail.textContent =
+      `${aiRuntime} • ${ai?.customer_notice || "AI evidence unavailable"} • ${snapshotDetail}`;
+    dot.classList.add("warn");
+  } else if (!health.ok || !health.launch_ready) {
+    label.textContent = "AI shadow validation operational";
+    detail.textContent = `${aiDetail} • benchmark evidence needs attention • ${snapshotDetail}`;
     dot.classList.add("warn");
   } else {
-    label.textContent = "S02 benchmark collectors operational";
-    detail.textContent = `${collectorDetail} • ${snapshotDetail}`;
+    label.textContent = "AI shadow validation operational";
+    detail.textContent = `${aiDetail} • ${snapshotDetail}`;
     dot.classList.remove("warn");
   }
 

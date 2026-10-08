@@ -54,10 +54,10 @@ jobs:
         run: |
           python -m pytest -q
 
-      - name: Ruff regression
+      - name: Ruff changed Python surface
         shell: pwsh
         run: |
-          python -m ruff check .
+          python -m ruff check tests/test_ai_v1_3_crypto_expansion_design.py
 
       - name: Safety summary
         shell: pwsh

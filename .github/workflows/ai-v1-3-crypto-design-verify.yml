@@ -17,13 +17,13 @@ jobs:
       - name: Checkout exact PR 41 candidate
         uses: actions/checkout@v4
         with:
-          ref: ccde20a012284e4a3b6c4d81542f59abbcafc904
+          ref: 8efb2e20402414a893b5526b94be62a864905513
           fetch-depth: 1
 
       - name: Verify exact candidate identity
         shell: pwsh
         run: |
-          $Expected = "ccde20a012284e4a3b6c4d81542f59abbcafc904"
+          $Expected = "8efb2e20402414a893b5526b94be62a864905513"
           $Actual = (git rev-parse HEAD).Trim()
           Write-Host "EXPECTED_CANDIDATE=$Expected"
           Write-Host "ACTUAL_CANDIDATE=$Actual"
@@ -44,14 +44,20 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[mt5,research,app,dev]"
 
-      - name: Exact Ruff import-fix diagnostic
+      - name: Focused crypto K1 tests
         shell: pwsh
         run: |
-          python -m ruff check src/trading_signal_intelligence/connectors/binance.py src/trading_signal_intelligence/ai_v1/crypto_readiness_v1_3.py scripts/probe_ai_v1_3_crypto_readiness.py --fix
-          Write-Host "----- BEGIN RUFF IMPORT DIFF -----"
-          git diff -- src/trading_signal_intelligence/connectors/binance.py src/trading_signal_intelligence/ai_v1/crypto_readiness_v1_3.py scripts/probe_ai_v1_3_crypto_readiness.py
-          Write-Host "----- END RUFF IMPORT DIFF -----"
-          throw "Diagnostic run only"
+          python -m pytest -q tests/test_ai_v1_3_crypto_expansion_design.py tests/test_ai_v1_3_crypto_readiness.py
+
+      - name: Full regression suite
+        shell: pwsh
+        run: |
+          python -m pytest -q
+
+      - name: Ruff changed Python surface
+        shell: pwsh
+        run: |
+          python -m ruff check src/trading_signal_intelligence/connectors/binance.py src/trading_signal_intelligence/ai_v1/crypto_readiness_v1_3.py scripts/probe_ai_v1_3_crypto_readiness.py tests/test_ai_v1_3_crypto_expansion_design.py tests/test_ai_v1_3_crypto_readiness.py
 
       - name: Safety summary
         shell: pwsh

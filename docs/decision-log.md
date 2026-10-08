@@ -622,3 +622,43 @@ Per-market and weekday/weekend reporting are mandatory. Gate results do not auth
 
 **Approval boundary:** Current authorization is design/preregistration only. No Binance live/readiness call, OpenAI call, crypto ledger, activation anchor, scheduler change, public crypto signal or broker action is authorized by D041.
 
+## 2026-10-08 — D042: Freeze the AI-v1.3 crypto research transaction-cost proxy before any performance-bearing inference
+
+**Evidence:** Owner-authorized K1 live read-only Binance readiness passed for BTCUSDT, ETHUSDT and SOLUSDT. Official Binance Spot fee material was then researched before activation.
+
+**Official fee baseline:** Binance's current Spot fee table lists the Regular User standard maker/taker rate as 0.100% / 0.100%. Binance separately offers account-dependent BNB/VIP discounts and may run temporary promotions.
+
+**Decision:** AI-v1.3 will not rely on favorable account status or temporary promotions. Freeze a conservative research fee assumption of:
+
+- Regular User;
+- taker entry;
+- taker exit;
+- 0.100% per side;
+- no BNB discount;
+- no VIP discount;
+- no pair-promotion discount.
+
+Canonical policy:
+
+`config/ai_v1_3_crypto_cost_policy.json`
+
+Canonical research record:
+
+`research/experiments/EXP-2026-018-ai-v1.3-crypto-cost-policy.md`
+
+**Frozen static round-trip research cost:**
+
+`0.002 * reference_midpoint + 2.0 * reference_spread`
+
+where:
+
+- one observed spread is the round-trip bid/ask crossing proxy;
+- one additional observed spread is a preregistered conservative slippage buffer;
+- the extra spread is a protocol-owned research assumption, not a Binance factual claim.
+
+**Cost guard:** Carry forward `max_round_trip_cost_r = 0.15` from AI-v1 without tuning it against crypto outcomes. Directional proposals above that cost threshold are rejected with `cost_too_high`.
+
+**SELL semantics:** A SELL shadow result does not imply that Binance Spot naked short execution is authorized or available. Borrow interest and futures funding are not modeled. Any executable short venue requires separate execution governance.
+
+**Status:** The numeric cost-policy-definition blocker is closed prospectively. Runtime integration, deterministic guard/lifecycle tests, K2 package publication, K3 activation, K4 first performance-bearing cycle, K5 scheduling, public crypto exposure and broker/exchange execution remain unapproved.
+

@@ -63,7 +63,7 @@ def test_crypto_feature_design_does_not_silently_reuse_mt5_spread_semantics() ->
 
     assert (
         cost["status"]
-        == "frozen_preactivation_policy_runtime_integration_required"
+        == "frozen_preactivation_runtime_cost_integration_verified"
     )
     assert cost["top_of_book_spread_required"] is True
     assert (
@@ -79,7 +79,8 @@ def test_crypto_feature_design_does_not_silently_reuse_mt5_spread_semantics() ->
     assert cost["max_round_trip_cost_r"] == 0.15
     assert cost["numeric_cost_policy_frozen"] is True
     assert cost["activation_blocked_until_numeric_cost_policy_frozen"] is False
-    assert cost["activation_blocked_until_runtime_cost_integration_verified"] is True
+    assert cost["activation_blocked_until_runtime_cost_integration_verified"] is False
+    assert cost["activation_blocked_until_k2_package_publication"] is True
 
 
 def test_crypto_planned_ledgers_are_new_and_isolated() -> None:
@@ -241,7 +242,10 @@ def test_crypto_cost_policy_is_frozen_conservative_and_non_promotional() -> None
 
     activation = policy["activation_constraints"]
     assert activation["numeric_cost_policy_frozen"] is True
-    assert activation["runtime_integration_still_required"] is True
+    assert activation["runtime_integration_still_required"] is False
+    assert activation["runtime_cost_integration_verified"] is True
+    assert activation["offline_tests_still_required"] is False
+    assert activation["k2_package_publication_still_required"] is True
     assert activation["owner_approval_for_package_publication_still_required"] is True
     assert activation["owner_approval_for_activation_still_required"] is True
     assert activation["broker_execution_enabled"] is False

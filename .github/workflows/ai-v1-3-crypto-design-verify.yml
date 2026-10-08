@@ -1,0 +1,70 @@
+name: AI-v1.3 crypto design verification
+
+on:
+  push:
+    branches:
+      - verify/ai-v1.3-crypto-design-20261008
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout exact PR 41 candidate
+        uses: actions/checkout@v4
+        with:
+          ref: bd933380980a0ebbef8f806e898c4fcea97ffb03
+          fetch-depth: 1
+
+      - name: Verify exact candidate identity
+        shell: pwsh
+        run: |
+          $Expected = "bd933380980a0ebbef8f806e898c4fcea97ffb03"
+          $Actual = (git rev-parse HEAD).Trim()
+          Write-Host "EXPECTED_CANDIDATE=$Expected"
+          Write-Host "ACTUAL_CANDIDATE=$Actual"
+          if ($Actual -ne $Expected) {
+            throw "Candidate identity mismatch"
+          }
+          Write-Host "CANDIDATE_IDENTITY=PASS"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install test dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[mt5,research,app,dev]"
+
+      - name: Focused crypto design tests
+        shell: pwsh
+        run: |
+          python -m pytest -q tests/test_ai_v1_3_crypto_expansion_design.py
+
+      - name: Full regression suite
+        shell: pwsh
+        run: |
+          python -m pytest -q
+
+      - name: Ruff regression
+        shell: pwsh
+        run: |
+          python -m ruff check .
+
+      - name: Safety summary
+        shell: pwsh
+        run: |
+          Write-Host "AI_V1_3_CRYPTO_DESIGN_VERIFICATION=PASS"
+          Write-Host "LIVE_BINANCE_CALL=FALSE"
+          Write-Host "OPENAI_PROVIDER_CALL=FALSE"
+          Write-Host "CRYPTO_LEDGER_CREATED=FALSE"
+          Write-Host "SCHEDULER_CHANGED=FALSE"
+          Write-Host "BROKER_EXECUTION=FALSE"

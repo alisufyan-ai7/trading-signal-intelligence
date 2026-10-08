@@ -8,7 +8,6 @@ from urllib.request import urlopen
 
 from trading_signal_intelligence.models import Candle, Quote
 
-
 _INTERVALS = {
     "M1": "1m",
     "M5": "5m",

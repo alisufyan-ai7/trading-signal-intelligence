@@ -6,6 +6,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 CONFIG = ROOT / "config" / "ai_v1_3_crypto_expansion.json"
+COST_POLICY = ROOT / "config" / "ai_v1_3_crypto_cost_policy.json"
 GATES = ROOT / "config" / "ai_v1_3_crypto_review_gates.json"
 REGISTRY = ROOT / "config" / "instruments.json"
 
@@ -60,12 +61,25 @@ def test_crypto_feature_design_does_not_silently_reuse_mt5_spread_semantics() ->
     assert feature["zero_spread_substitution_forbidden"] is True
     assert feature["mt5_spread_substitution_forbidden"] is True
 
-    assert cost["status"] == "calibration_required_before_activation"
+    assert (
+        cost["status"]
+        == "frozen_preactivation_policy_runtime_integration_required"
+    )
     assert cost["top_of_book_spread_required"] is True
-    assert cost["fee_rate_per_side"] is None
-    assert cost["slippage_buffer_rule"] is None
-    assert cost["all_in_round_trip_cost_rule"] is None
-    assert cost["activation_blocked_until_numeric_cost_policy_frozen"] is True
+    assert (
+        cost["cost_policy_path"]
+        == "config/ai_v1_3_crypto_cost_policy.json"
+    )
+    assert cost["fee_rate_per_side"] == 0.001
+    assert cost["slippage_buffer_rule"] == "one_additional_entry_spread"
+    assert (
+        cost["all_in_round_trip_cost_rule"]
+        == "0.002 * reference_midpoint + 2.0 * reference_spread"
+    )
+    assert cost["max_round_trip_cost_r"] == 0.15
+    assert cost["numeric_cost_policy_frozen"] is True
+    assert cost["activation_blocked_until_numeric_cost_policy_frozen"] is False
+    assert cost["activation_blocked_until_runtime_cost_integration_verified"] is True
 
 
 def test_crypto_planned_ledgers_are_new_and_isolated() -> None:
@@ -166,3 +180,69 @@ def test_crypto_cost_checkpoint_matches_owner_vps_planning_evidence() -> None:
     assert cost["estimated_total_six_existing_plus_three_crypto_usd_30d"] == 61.69
     assert cost["planning_budget_six_existing_plus_three_crypto_usd_30d"] == 75.0
     assert cost["cost_estimate_is_not_a_research_gate"] is True
+
+def test_crypto_cost_policy_is_frozen_conservative_and_non_promotional() -> None:
+    policy = _load(COST_POLICY)
+
+    assert policy["policy_version"] == "AI-v1.3-crypto-cost-v0.1"
+    assert policy["status"] == "frozen_preactivation"
+    assert policy["scope"] == "crypto_shadow_research_cost_proxy"
+    assert policy["markets"] == list(MARKETS)
+    assert policy["execution_venue_reference"] == "binance_spot"
+    assert policy["broker_execution_authority"] is False
+
+    fee = policy["fee_policy"]
+    assert fee["account_tier_assumption"] == "regular_user"
+    assert fee["liquidity_role_assumption_entry"] == "taker"
+    assert fee["liquidity_role_assumption_exit"] == "taker"
+    assert fee["fee_rate_per_side_fraction"] == 0.001
+    assert fee["fee_rate_per_side_percent"] == 0.1
+    assert fee["round_trip_fee_fraction_using_entry_midpoint_proxy"] == 0.002
+    assert fee["bnb_discount_assumed"] is False
+    assert fee["vip_discount_assumed"] is False
+    assert fee["pair_promotion_discount_assumed"] is False
+
+    spread = policy["spread_policy"]
+    assert spread["source"] == "prospective_binance_top_of_book"
+    assert spread["round_trip_crossing_spread_multiplier"] == 1.0
+
+    slippage = policy["slippage_policy"]
+    assert slippage["source"] == "preregistered_research_assumption_not_binance"
+    assert slippage["buffer_multiplier_of_entry_spread"] == 1.0
+
+    rule = policy["static_round_trip_cost_rule"]
+    assert (
+        rule["formula"]
+        == "2 * fee_rate_per_side * reference_midpoint + (1.0 + 1.0) * reference_spread"
+    )
+    assert (
+        rule["expanded_formula"]
+        == "0.002 * reference_midpoint + 2.0 * reference_spread"
+    )
+    assert rule["cost_is_frozen_at_signal_creation"] is True
+    assert rule["cost_is_allocated_pro_rata_across_partial_and_final_exits"] is True
+
+    guard = policy["guard_policy"]
+    assert guard["max_round_trip_cost_r"] == 0.15
+    assert (
+        guard["threshold_origin"]
+        == "carry_forward_existing_AI-v1_guardrail_without_crypto_outcome_tuning"
+    )
+    assert guard["reject_reason"] == "cost_too_high"
+
+    direction = policy["direction_semantics"]
+    assert direction["buy_and_sell_use_same_shadow_cost_proxy"] is True
+    assert direction["sell_is_not_a_claim_of_binance_spot_short_execution"] is True
+    assert direction["borrow_interest_included"] is False
+    assert direction["funding_included"] is False
+
+    promo = policy["promotion_policy"]
+    assert promo["temporary_zero_fee_or_discounted_pair_promotions_reduce_research_cost"] is False
+
+    activation = policy["activation_constraints"]
+    assert activation["numeric_cost_policy_frozen"] is True
+    assert activation["runtime_integration_still_required"] is True
+    assert activation["owner_approval_for_package_publication_still_required"] is True
+    assert activation["owner_approval_for_activation_still_required"] is True
+    assert activation["broker_execution_enabled"] is False
+

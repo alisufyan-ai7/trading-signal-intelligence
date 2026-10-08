@@ -564,3 +564,61 @@ The intended durable hierarchy is:
 **Recovery rule:** No automatic destructive restore into production. Restore first into an isolated location, verify hashes/database integrity/ledger chain, and require explicit owner authorization before replacing any live evidence database.
 
 **Status:** Architecture/documentation decision only. No AWS/B2 resources, credentials, scheduled backup jobs, database mutations, restores, purchases or production changes are authorized or implemented by this decision.
+
+## 2026-10-08 — D041: Preregister an isolated BTC/ETH/SOL crypto AI expansion before any live crypto inference
+
+**Decision:** Create a separately versioned prospective crypto AI lineage for BTCUSDT, ETHUSDT and SOLUSDT under Issue #40.
+
+Working runtime/evidence identity:
+
+`AI-v1.3`
+
+Working validation-program identity:
+
+`crypto-expansion-1`
+
+Decision protocol intent remains `AI-v1.0`, with the exact dated OpenAI model/provider profile reused unless a preactivation incompatibility is proven.
+
+**Why separate:** The existing AI-v1.2 preregistration explicitly excluded crypto because its source/session/volume/cost semantics differ. Binance Spot is 24/7, its kline volume is base-asset volume rather than MT5 tick volume, and the current Binance kline adapter has no spread field while AI-v1 requires finite spread/cost context.
+
+**Frozen initial universe:**
+
+- BTCUSDT -> BTC/USDT
+- ETHUSDT -> ETH/USDT
+- SOLUSDT -> SOL/USDT
+
+No post-activation market substitution is allowed because of weak performance or low activity.
+
+**Primary source intent:** Binance Spot H1/H4 completed klines. Exness crypto CFDs are comparison-only where instrument identity is explicitly compatible; they may not replace the primary Binance source or enter crypto gate counts.
+
+**Feature/cost boundary:** Price/ATR/EMA/RSI/structure/volatility formulas are intended to remain unchanged, but crypto receives a separately versioned feature profile because:
+
+- `volume_z_20` uses Binance base-asset volume;
+- spread must come from a prospective Binance top-of-book observation;
+- zero-spread or unrelated MT5-spread substitution is forbidden;
+- exact fee/slippage/all-in round-trip cost arithmetic must be numerically frozen before activation.
+
+The numeric crypto cost policy is intentionally still a hard preactivation blocker.
+
+**Planned evidence isolation:**
+
+- `data/ai_v1_3_btcusdt.sqlite`
+- `data/ai_v1_3_ethusdt.sqlite`
+- `data/ai_v1_3_solusdt.sqlite`
+
+No backfill. No count/calendar pooling with AI-v1.1, AI-v1.2.1 or S02.
+
+**Frozen review gates:**
+
+- C1: >=100 valid inferences and >=20 completed shadow trades; operational audit only.
+- C2: >=500 valid inferences, >=50 completed trades and >=60 calendar days.
+- C3: >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
+
+Per-market and weekday/weekend reporting are mandatory. Gate results do not authorize public actionable signals or broker execution.
+
+**Working scheduler design:** hourly near UTC minute 04, with all three causally available crypto snapshots frozen as one batch before provider calls. The existing <=300-second data-age intent remains; if readiness cannot satisfy it, scheduling/batching must be corrected before activation rather than relaxing freshness after performance evidence.
+
+**API cost planning checkpoint:** Owner-VPS read-only usage analysis on 2026-10-08 measured approximately USD 0.011578 per successful inference across 456 usage-bearing AI calls. At 720 H1 opportunities per 24/7 crypto market per 30 days, the three-market crypto cohort is estimated at about USD 25.01/month incremental, taking the current six-market + three-crypto model estimate to about USD 61.69/month. USD 75/month is the planning budget with headroom. Cost is not a research gate.
+
+**Approval boundary:** Current authorization is design/preregistration only. No Binance live/readiness call, OpenAI call, crypto ledger, activation anchor, scheduler change, public crypto signal or broker action is authorized by D041.
+

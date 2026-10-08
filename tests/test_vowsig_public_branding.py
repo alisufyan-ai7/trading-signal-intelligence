@@ -12,7 +12,7 @@ def test_public_html_uses_vowsig_as_canonical_brand() -> None:
     text = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
 
     assert "<title>VowSig — Research Beta</title>" in text
-    assert "VOWSIG • RESEARCH BETA" in text
+    assert "VOWSIG • AI RESEARCH BETA" in text
     assert 'rel="canonical" href="https://vowsig.com/"' in text
     assert 'property="og:site_name" content="VowSig"' in text
     assert 'property="og:url" content="https://vowsig.com/"' in text

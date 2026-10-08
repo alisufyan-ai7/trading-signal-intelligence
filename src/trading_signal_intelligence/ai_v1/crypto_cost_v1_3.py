@@ -123,7 +123,7 @@ def validate_crypto_cost_policy(policy: dict[str, Any]) -> None:
     slippage = policy.get("slippage_policy") or {}
     if slippage.get("source") != "preregistered_research_assumption_not_binance":
         raise CryptoCostPolicyError("slippage source annotation mismatch")
-    if Decimal(str(slippage.get("buffer_multiplier_of_entry_spread"))) != Decimal("1"):
+    if Decimal(str(slippage.get("buffer_multiplier_of_entry_spread"))) != Decimal(1):
         raise CryptoCostPolicyError("slippage spread multiplier must remain 1.0")
 
     guard = policy.get("guard_policy") or {}

@@ -40,7 +40,7 @@
     "mt5_spread_substitution_forbidden": true
   },
   "execution_cost_profile": {
-    "status": "frozen_preactivation_policy_runtime_integration_required",
+    "status": "frozen_preactivation_runtime_cost_integration_verified",
     "top_of_book_spread_required": true,
     "cost_policy_path": "config/ai_v1_3_crypto_cost_policy.json",
     "fee_rate_per_side": 0.001,
@@ -49,7 +49,8 @@
     "max_round_trip_cost_r": 0.15,
     "numeric_cost_policy_frozen": true,
     "activation_blocked_until_numeric_cost_policy_frozen": false,
-    "activation_blocked_until_runtime_cost_integration_verified": true
+    "activation_blocked_until_runtime_cost_integration_verified": false,
+    "activation_blocked_until_k2_package_publication": true
   },
   "provider_profile": {
     "provider_config_path": "config/ai_v1_provider.json",

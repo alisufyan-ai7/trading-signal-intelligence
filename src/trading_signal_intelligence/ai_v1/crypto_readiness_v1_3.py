@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass, replace
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from typing import Any
 
@@ -197,7 +197,7 @@ def evaluate_market_readiness(
         microsecond=0
     )
     source_bar_close_utc = source_bar_close_utc.replace(tzinfo=timezone.utc)
-    source_bar_close_utc = source_bar_close_utc + __import__("datetime").timedelta(hours=1)
+    source_bar_close_utc = source_bar_close_utc + timedelta(hours=1)
     data_age_seconds = (batch_frozen_at_utc - source_bar_close_utc).total_seconds()
     if data_age_seconds < 0 or data_age_seconds > max_data_age_seconds:
         raise CryptoReadinessError(

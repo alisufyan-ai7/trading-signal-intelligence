@@ -20,5 +20,7 @@ Canonical index:
 | EXP-2026-012 | S02 new-market transfer protocol + result |
 | EXP-2026-013 | S02 immutable forward-test ledger protocol |
 | EXP-2026-014 | S02 forward evaluation gates |
+| EXP-2026-017 | AI-v1.3 BTC/ETH/SOL crypto expansion preregistration |
+| EXP-2026-018 | AI-v1.3 crypto execution-cost policy |
 
 See `research/README.md` for the broader research policy.

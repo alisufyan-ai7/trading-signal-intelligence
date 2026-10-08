@@ -1,6 +1,6 @@
 # AI-v1.3 crypto expansion compatibility plan v0.1
 
-_Status: DESIGN / PREACTIVATION / READINESS NOT AUTHORIZED — 2026-10-08_
+_Status: PREACTIVATION / K1 LIVE READINESS PASS / COST POLICY FROZEN — 2026-10-08 UTC_
 
 Tracker: Issue #40
 
@@ -146,15 +146,32 @@ At minimum it must define:
 - conversion to R;
 - maximum acceptable round-trip cost-R guard.
 
-The current design intentionally does not invent numeric fee/slippage values.
+The numeric research cost policy is now frozen in:
 
-The future profile should expose a deterministic function conceptually equivalent
-to:
+`config/ai_v1_3_crypto_cost_policy.json`
 
-`all_in_cost = spread_component + fee_component + slippage_component`
+and documented in:
 
-The exact arithmetic, price reference and one-way/two-way treatment must be
-frozen before the first provider inference.
+`research/experiments/EXP-2026-018-ai-v1.3-crypto-cost-policy.md`
+
+Frozen standard fee assumption:
+
+- Binance Spot Regular User;
+- taker entry and taker exit;
+- 0.100% fee per side;
+- no BNB discount;
+- no VIP discount;
+- no pair promotion.
+
+Frozen static cost formula:
+
+`all_in_cost_price = 0.002 * reference_midpoint + 2.0 * reference_spread`
+
+where one spread is the round-trip crossing proxy and one additional spread is a
+preregistered conservative slippage buffer.
+
+The slippage buffer is a protocol-owned research assumption, not a Binance fee
+or Binance factual claim.
 
 ## Feature snapshot timing
 
@@ -263,12 +280,17 @@ The design is not activation-ready until all of these are closed prospectively:
 1. canonical ETHUSDT/SOLUSDT registry mappings;
 2. crypto feature schema;
 3. top-of-book adapter;
-4. numeric fee/slippage/all-in cost policy;
-5. cost guard semantics;
-6. offline compatibility tests;
-7. exact implementation package;
-8. owner-approved live read-only readiness;
-9. activation preview/anchor package.
+4. runtime integration of the frozen numeric fee/spread/slippage cost policy;
+5. deterministic cost guard/lifecycle allocation tests;
+6. exact implementation package;
+7. activation preview/anchor package.
+
+Already closed prospectively:
+
+- canonical BTC/ETH/SOL Binance mappings;
+- Binance top-of-book read-only adapter;
+- K1 live read-only readiness;
+- numeric fee/spread/slippage/all-in research cost policy.
 
 ## Safety boundary
 

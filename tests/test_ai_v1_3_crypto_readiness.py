@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from typing import Self
 
 import pytest
 
@@ -23,7 +24,7 @@ class _FakeResponse:
     def __init__(self, payload: object) -> None:
         self._payload = json.dumps(payload).encode("utf-8")
 
-    def __enter__(self) -> "_FakeResponse":
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *args: object) -> None:
@@ -41,7 +42,7 @@ def _candle(
     timestamp: datetime,
     index: int,
 ) -> Candle:
-    base = Decimal("100") + Decimal(index) * Decimal("0.10")
+    base = Decimal(100) + Decimal(index) * Decimal("0.10")
     wiggle = Decimal((index % 7) - 3) * Decimal("0.01")
     close = base + wiggle
     return Candle(
@@ -54,7 +55,7 @@ def _candle(
         high=max(base, close) + Decimal("0.25"),
         low=min(base, close) - Decimal("0.25"),
         close=close,
-        volume=Decimal("1000") + Decimal(index % 13),
+        volume=Decimal(1000) + Decimal(index % 13),
         volume_kind="base_asset_volume",
         spread=None,
         is_closed=True,
@@ -165,8 +166,8 @@ def test_binance_book_ticker_rejects_crossed_book(
 
 
 def test_crypto_market_readiness_builds_feature_from_top_of_book_spread() -> None:
-    latest_open = datetime(2026, 10, 8, 20, 0, tzinfo=timezone.utc)
-    batch_time = datetime(2026, 10, 8, 21, 1, tzinfo=timezone.utc)
+    latest_open = datetime(2026, 10, 8, 20, 0, tzinfo=UTC)
+    batch_time = datetime(2026, 10, 8, 21, 1, tzinfo=UTC)
 
     result = evaluate_market_readiness(
         _market_input("BTCUSDT", latest_h1_open=latest_open),
@@ -197,8 +198,8 @@ def test_crypto_market_readiness_builds_feature_from_top_of_book_spread() -> Non
 
 
 def test_crypto_batch_requires_common_h1_close_and_preserves_blocker() -> None:
-    latest_open = datetime(2026, 10, 8, 20, 0, tzinfo=timezone.utc)
-    batch_time = datetime(2026, 10, 8, 21, 1, tzinfo=timezone.utc)
+    latest_open = datetime(2026, 10, 8, 20, 0, tzinfo=UTC)
+    batch_time = datetime(2026, 10, 8, 21, 1, tzinfo=UTC)
     inputs = {
         symbol: _market_input(symbol, latest_h1_open=latest_open)
         for symbol in MARKETS
@@ -223,8 +224,8 @@ def test_crypto_batch_requires_common_h1_close_and_preserves_blocker() -> None:
 
 
 def test_crypto_readiness_fails_closed_when_latest_h1_is_stale() -> None:
-    latest_open = datetime(2026, 10, 8, 20, 0, tzinfo=timezone.utc)
-    stale_batch_time = datetime(2026, 10, 8, 21, 6, tzinfo=timezone.utc)
+    latest_open = datetime(2026, 10, 8, 20, 0, tzinfo=UTC)
+    stale_batch_time = datetime(2026, 10, 8, 21, 6, tzinfo=UTC)
 
     with pytest.raises(CryptoReadinessError, match="outside 0..300"):
         evaluate_market_readiness(

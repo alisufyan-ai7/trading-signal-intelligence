@@ -24,7 +24,6 @@ from trading_signal_intelligence.ai_v1.inference import (
 )
 from trading_signal_intelligence.ai_v1.ledger import AILedger
 
-
 RUNTIME_VERSION = "AI-v1.3"
 DECISION_PROTOCOL_VERSION = "AI-v1.0"
 

@@ -9,7 +9,6 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
-
 POLICY_VERSION = "AI-v1.3-crypto-cost-v0.1"
 ALLOWED_MARKETS = ("BTCUSDT", "ETHUSDT", "SOLUSDT")
 

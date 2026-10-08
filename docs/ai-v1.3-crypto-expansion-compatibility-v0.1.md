@@ -277,20 +277,22 @@ The future implementation must mechanically reject:
 
 The design is not activation-ready until all of these are closed prospectively:
 
-1. canonical ETHUSDT/SOLUSDT registry mappings;
-2. crypto feature schema;
-3. top-of-book adapter;
-4. runtime integration of the frozen numeric fee/spread/slippage cost policy;
-5. deterministic cost guard/lifecycle allocation tests;
-6. exact implementation package;
-7. activation preview/anchor package.
+1. complete the remaining AI-v1.3 runtime/package components outside the now-verified cost path;
+2. bind the exact cost/runtime artifacts into the future activation package;
+3. complete activation preview/anchor tooling and verification;
+4. obtain separate owner authority for K2 package publication.
 
 Already closed prospectively:
 
 - canonical BTC/ETH/SOL Binance mappings;
 - Binance top-of-book read-only adapter;
 - K1 live read-only readiness;
-- numeric fee/spread/slippage/all-in research cost policy.
+- numeric fee/spread/slippage/all-in research cost policy;
+- deterministic crypto cost calculator;
+- crypto cost-aware publication guard;
+- frozen cost provenance in INFERENCE and SIGNAL records;
+- pro-rata lifecycle cost allocation through the existing deterministic evaluator;
+- focused and full-regression offline verification of the cost integration.
 
 ## Safety boundary
 

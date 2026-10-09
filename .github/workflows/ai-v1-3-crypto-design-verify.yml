@@ -17,13 +17,13 @@ jobs:
       - name: Checkout exact PR 41 candidate
         uses: actions/checkout@v4
         with:
-          ref: c07da481de2e96bb1032d3525f92ade5eecc2bcf
+          ref: 3e90d63dc49b2a5358f3a6cfec0d328c7ca852f8
           fetch-depth: 1
 
       - name: Verify exact candidate identity
         shell: pwsh
         run: |
-          $Expected = "c07da481de2e96bb1032d3525f92ade5eecc2bcf"
+          $Expected = "3e90d63dc49b2a5358f3a6cfec0d328c7ca852f8"
           $Actual = (git rev-parse HEAD).Trim()
           Write-Host "EXPECTED_CANDIDATE=$Expected"
           Write-Host "ACTUAL_CANDIDATE=$Actual"
@@ -44,14 +44,36 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[mt5,research,app,dev]"
 
-      - name: Exact Ruff safe-fix diagnostic
+      - name: Focused crypto runtime-package tests
         shell: pwsh
         run: |
-          python -m ruff check src/trading_signal_intelligence/connectors/binance.py src/trading_signal_intelligence/ai_v1/crypto_readiness_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_cost_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_guardrails_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_engine_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_signals_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_activation_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_runtime_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_observability_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_runtime_verifier_v1_3.py scripts/probe_ai_v1_3_crypto_readiness.py scripts/run_ai_v1_3_crypto_live.py scripts/preview_ai_v1_3_crypto_activation.py scripts/verify_ai_v1_3_crypto_pre_activation.py scripts/verify_ai_v1_3_crypto_runtime.py scripts/report_ai_v1_3_crypto_progress.py scripts/activate_ai_v1_3_crypto.py tests/test_ai_v1_3_crypto_expansion_design.py tests/test_ai_v1_3_crypto_readiness.py tests/test_ai_v1_3_crypto_cost_integration.py tests/test_ai_v1_3_crypto_runtime_package.py --fix
-          Write-Host "----- BEGIN RUFF SAFE-FIX DIFF -----"
-          git diff -- src/trading_signal_intelligence scripts tests/test_ai_v1_3_crypto_runtime_package.py
-          Write-Host "----- END RUFF SAFE-FIX DIFF -----"
-          throw "Diagnostic run only"
+          python -m pytest -q tests/test_ai_v1_3_crypto_expansion_design.py tests/test_ai_v1_3_crypto_readiness.py tests/test_ai_v1_3_crypto_cost_integration.py tests/test_ai_v1_3_crypto_runtime_package.py
+
+      - name: Full regression suite
+        shell: pwsh
+        run: |
+          python -m pytest -q
+
+      - name: Ruff changed Python surface
+        shell: pwsh
+        run: |
+          python -m ruff check src/trading_signal_intelligence/connectors/binance.py src/trading_signal_intelligence/ai_v1/crypto_readiness_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_cost_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_guardrails_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_engine_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_signals_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_activation_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_runtime_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_observability_v1_3.py src/trading_signal_intelligence/ai_v1/crypto_runtime_verifier_v1_3.py scripts/probe_ai_v1_3_crypto_readiness.py scripts/run_ai_v1_3_crypto_live.py scripts/preview_ai_v1_3_crypto_activation.py scripts/verify_ai_v1_3_crypto_pre_activation.py scripts/verify_ai_v1_3_crypto_runtime.py scripts/report_ai_v1_3_crypto_progress.py scripts/activate_ai_v1_3_crypto.py tests/test_ai_v1_3_crypto_expansion_design.py tests/test_ai_v1_3_crypto_readiness.py tests/test_ai_v1_3_crypto_cost_integration.py tests/test_ai_v1_3_crypto_runtime_package.py
+
+      - name: Parse guarded PowerShell installer without executing it
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            "scripts/install_ai_v1_3_crypto_shadow_task.ps1",
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -ne 0) {
+            $errors | Format-List | Out-String | Write-Host
+            throw "PowerShell installer parse failed"
+          }
+          Write-Host "POWERSHELL_INSTALLER_PARSE=PASS"
 
       - name: Safety summary
         shell: pwsh

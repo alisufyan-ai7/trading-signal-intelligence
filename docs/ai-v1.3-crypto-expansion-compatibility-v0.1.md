@@ -1,6 +1,6 @@
 # AI-v1.3 crypto expansion compatibility plan v0.1
 
-_Status: PREACTIVATION / K1 LIVE READINESS PASS / COST POLICY FROZEN — 2026-10-08 UTC_
+_Status: PREACTIVATION PACKAGE COMPLETE / OFFLINE VERIFIED / K2 NOT AUTHORIZED — 2026-10-09 UTC_
 
 Tracker: Issue #40
 
@@ -275,14 +275,16 @@ The future implementation must mechanically reject:
 
 ## Current blockers
 
-The design is not activation-ready until all of these are closed prospectively:
+The offline implementation package is complete and verified. Remaining governance
+boundaries are intentionally external to package construction:
 
-1. complete the remaining AI-v1.3 runtime/package components outside the now-verified cost path;
-2. bind the exact cost/runtime artifacts into the future activation package;
-3. complete activation preview/anchor tooling and verification;
-4. obtain separate owner authority for K2 package publication.
+1. obtain separate owner authority for K2 package publication;
+2. after K2, obtain separate K3 authority before creating activation ledgers/anchor;
+3. after committed activation-only verification, obtain separate K4 authority
+   before the first performance-bearing Binance/OpenAI decision batch;
+4. install no scheduler before separate K5 authority.
 
-Already closed prospectively:
+Closed prospectively:
 
 - canonical BTC/ETH/SOL Binance mappings;
 - Binance top-of-book read-only adapter;
@@ -292,7 +294,15 @@ Already closed prospectively:
 - crypto cost-aware publication guard;
 - frozen cost provenance in INFERENCE and SIGNAL records;
 - pro-rata lifecycle cost allocation through the existing deterministic evaluator;
-- focused and full-regression offline verification of the cost integration.
+- focused and full-regression offline verification of the cost integration;
+- crypto feature schema and runtime wrapper;
+- all-three-market batch-freeze validation before provider construction;
+- isolated AI-v1.3 runtime/ledger definitions;
+- activation payload/preview/anchor/executor tooling in a non-executed state;
+- runtime verifier and activation-only verification path;
+- C1/C2/C3 read-only observability with per-market and weekday/weekend reporting;
+- dedicated task runner and guarded installer in a non-installed state;
+- full runtime-package regression, lint, and PowerShell parse verification.
 
 ## Safety boundary
 

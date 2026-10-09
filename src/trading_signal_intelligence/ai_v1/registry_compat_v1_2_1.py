@@ -57,6 +57,10 @@ def load_registry_compatibility_manifest(repo_root: Path) -> dict[str, Any]:
         "AI-v1.2.1-expansion-activation-2026-10-07T093543Z.json"
     ):
         raise RegistryCompatibilityV121Error("activation anchor mismatch")
+    if manifest.get("frozen_registry_hash_basis") != "windows_worktree_crlf":
+        raise RegistryCompatibilityV121Error(
+            "frozen registry hash basis mismatch"
+        )
 
     rules = manifest.get("rules")
     if not isinstance(rules, dict):
@@ -104,6 +108,17 @@ def _git_file_bytes(
         raise RegistryCompatibilityV121Error(
             "unable to read frozen registry from Git history"
         ) from exc
+
+
+def _windows_worktree_bytes_from_git_blob(payload: bytes) -> bytes:
+    try:
+        text = payload.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise RegistryCompatibilityV121Error(
+            "frozen registry Git blob is not UTF-8"
+        ) from exc
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    return normalized.replace("\n", "\r\n").encode("utf-8")
 
 
 def _parse_json_bytes(payload: bytes, *, label: str) -> dict[str, Any]:
@@ -245,10 +260,15 @@ def verify_registry_compatibility_v1_2_1(
         commit=str(manifest["frozen_registry_git_commit"]),
         relative_path=relative,
     )
-    observed_frozen_hash = hashlib.sha256(frozen_bytes).hexdigest()
+    frozen_worktree_bytes = _windows_worktree_bytes_from_git_blob(
+        frozen_bytes
+    )
+    observed_frozen_hash = hashlib.sha256(
+        frozen_worktree_bytes
+    ).hexdigest()
     if observed_frozen_hash != frozen_hash:
         raise RegistryCompatibilityV121Error(
-            "Git-history frozen registry hash mismatch"
+            "Git-history frozen registry Windows-worktree hash mismatch"
         )
 
     current_path = repo_root / relative

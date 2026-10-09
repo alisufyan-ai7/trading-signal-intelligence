@@ -1,0 +1,64 @@
+{
+  "correction_version": "AI-v1.2.1-registry-compat-v0.1",
+  "status": "offline_candidate",
+  "runtime_version": "AI-v1.2.1",
+  "decision_protocol_version": "AI-v1.0",
+  "activation_anchor": "research/forward/AI-v1.2.1-expansion-activation-2026-10-07T093543Z.json",
+  "frozen_registry_git_commit": "4056a0a762135bfd37725474d41dc49d0a116eaa",
+  "frozen_registry_path": "config/instruments.json",
+  "frozen_registry_sha256": "b92b80d18f422ba012b991ca8ba5a538f9212ee2823813d29754f24a804491ca",
+  "approved_expanded_registry_sha256": "f2f3d993fdd171ac43edd5234e18cfbea3eb7cf8da5dc2e6e6d4529613cd1681",
+  "allowed_additions": [
+    {
+      "canonical": "ETH/USDT",
+      "asset_class": "crypto",
+      "sources": {
+        "binance_spot": {
+          "symbol": "ETHUSDT",
+          "status": "primary"
+        }
+      }
+    },
+    {
+      "canonical": "SOL/USDT",
+      "asset_class": "crypto",
+      "sources": {
+        "binance_spot": {
+          "symbol": "SOLUSDT",
+          "status": "primary"
+        }
+      }
+    }
+  ],
+  "protected_ai_v1_2_1_markets": {
+    "EURUSD": {
+      "canonical": "EUR/USD",
+      "source": "exness_mt5_demo",
+      "symbol": "EURUSD"
+    },
+    "XAGUSD": {
+      "canonical": "XAG/USD",
+      "source": "exness_mt5_demo",
+      "symbol": "XAGUSD"
+    },
+    "USOIL": {
+      "canonical": "WTI",
+      "source": "exness_mt5_demo",
+      "symbol": "USOIL"
+    }
+  },
+  "rules": {
+    "all_preexisting_registry_entries_must_be_byte_semantically_equal": true,
+    "top_level_schema_and_notes_must_be_unchanged": true,
+    "only_exact_allowed_additions_may_be_new": true,
+    "all_other_frozen_artifacts_must_match_activation_anchor_exactly": true,
+    "activation_anchor_rewrite_allowed": false,
+    "decision_logic_change_allowed": false,
+    "ledger_mutation_allowed": false,
+    "scheduler_mutation_allowed": false,
+    "provider_call_allowed": false,
+    "mt5_call_allowed": false,
+    "public_exposure_change_allowed": false,
+    "broker_execution_change_allowed": false
+  }
+}

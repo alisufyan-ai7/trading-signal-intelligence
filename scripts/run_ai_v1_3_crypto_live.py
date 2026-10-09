@@ -38,7 +38,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def load_json(path: str) -> dict[str, Any]:
     payload = json.loads((ROOT / path).read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
-        raise RuntimeError(f"JSON root must be object: {path}")
+        raise TypeError(f"JSON root must be object: {path}")
     return payload
 
 

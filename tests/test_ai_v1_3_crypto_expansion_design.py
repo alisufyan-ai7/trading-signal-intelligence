@@ -23,7 +23,7 @@ def test_crypto_expansion_design_is_strictly_preactivation() -> None:
     assert payload["runtime_version"] == "AI-v1.3"
     assert payload["decision_protocol_version"] == "AI-v1.0"
     assert payload["program_id"] == "crypto-expansion-1"
-    assert payload["status"] == "design_only_preactivation"
+    assert payload["status"] == "package_complete_preactivation"
     assert payload["primary_source_name"] == "binance_spot"
 
     observed = tuple(
@@ -44,6 +44,23 @@ def test_crypto_expansion_design_is_strictly_preactivation() -> None:
     assert payload["public_research_observability_initially_enabled"] is False
     assert payload["broker_execution_enabled"] is False
     assert payload["activation_authority"] is False
+
+    package = payload["offline_runtime_package"]
+    assert package["status"] == "complete_verified"
+    assert package["batch_orchestration_complete"] is True
+    assert package["all_market_freeze_before_provider_calls"] is True
+    assert package["crypto_feature_schema_complete"] is True
+    assert package["top_of_book_integration_complete"] is True
+    assert package["isolated_runtime_and_ledger_definitions_complete"] is True
+    assert package["activation_builder_and_preview_complete"] is True
+    assert package["activation_executor_prepared_not_run"] is True
+    assert package["runtime_verifier_complete"] is True
+    assert package["c1_c2_c3_observability_complete"] is True
+    assert package["weekday_weekend_observability_complete"] is True
+    assert package["scheduler_runner_prepared_not_installed"] is True
+    assert package["scheduler_installer_prepared_not_run"] is True
+    assert package["activation_authority"] is False
+    assert package["k2_package_publication_required"] is True
 
 
 def test_crypto_feature_design_does_not_silently_reuse_mt5_spread_semantics() -> None:

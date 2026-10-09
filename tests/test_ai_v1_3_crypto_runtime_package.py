@@ -150,6 +150,21 @@ def test_crypto_package_preactivation_is_exact_and_nonactivating() -> None:
     assert not any(report["crypto_ledger_paths_exist"].values())
     assert report["crypto_activation_anchors"] == []
     assert set(report["artifact_hashes"]) == set(ARTIFACT_PATHS)
+    for required_artifact in (
+        "compatibility_plan",
+        "activation_plan",
+        "ai_ledger_source",
+        "lifecycle_evaluator_source",
+        "provider_neutral_inference_source",
+        "openai_adapter_source",
+        "preactivation_verify_script",
+    ):
+        assert required_artifact in report["artifact_hashes"]
+
+    provider = report["provider_identity"]
+    assert provider["provider"] == "openai"
+    assert provider["model_id"] == "gpt-5.4-2026-03-05"
+    assert len(provider["model_parameter_fingerprint"]) == 64
 
 
 def test_crypto_market_specs_are_separate_binance_usdt_markets() -> None:
@@ -256,6 +271,9 @@ def test_activation_preview_has_no_side_effect_authority() -> None:
         )
         assert payload["market"] == symbol
         assert payload["canonical_symbol"] == CANONICAL_SYMBOLS[symbol]
+        assert payload["provider"] == "openai"
+        assert payload["model_id"] == "gpt-5.4-2026-03-05"
+        assert len(payload["model_parameter_fingerprint"]) == 64
         assert payload["provider_call_made_at_activation"] is False
         assert payload["binance_call_made_at_activation"] is False
         assert payload["public_signal_exposure_enabled"] is False

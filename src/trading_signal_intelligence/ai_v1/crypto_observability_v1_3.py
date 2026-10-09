@@ -28,7 +28,6 @@ from trading_signal_intelligence.ai_v1.observability import (
     verify_records,
 )
 
-
 REPORT_VERSION = "AI-v1.3-Crypto-Observability-v0.1"
 TASK_NAME = "VowSig AI-v1.3 Crypto Shadow Scan"
 

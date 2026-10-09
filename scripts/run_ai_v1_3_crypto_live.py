@@ -32,7 +32,6 @@ from trading_signal_intelligence.ai_v1.openai_responses import (
 )
 from trading_signal_intelligence.connectors.binance import BinanceSpotConnector
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

@@ -19,6 +19,10 @@ $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $runner = Join-Path $repoRoot "scripts\run_ai_v1_3_crypto_shadow_task.cmd"
 $python = Join-Path $repoRoot ".venv\Scripts\python.exe"
 $verifier = Join-Path $repoRoot "scripts\verify_ai_v1_3_crypto_runtime.py"
+$legacyInstaller = Join-Path $repoRoot "scripts\install_ai_v1_3_crypto_shadow_task.ps1"
+$k4Marker = Join-Path $env:ProgramData "VowSig\K4FirstCycle\FIRST_CYCLE_ATTEMPTED.json"
+$expectedLegacySha256 = "6db18223f3d8576ae4cd6b2cba1d8c0e2d32cdc8142445e7f652aece9f52c5ce"
+$expectedK4AnchorSha256 = "561b1a532d196dcdbf852f39561798e40e8e297a5022a9f3155d2038bb5b150e"
 
 if (-not (Test-Path $runner)) { throw "Task runner not found: $runner" }
 if (-not (Test-Path $python)) { throw "Python venv executable not found: $python" }

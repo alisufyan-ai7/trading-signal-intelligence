@@ -1,6 +1,6 @@
 # AI-v1.3 crypto expansion activation plan v0.1
 
-_Status: PREACTIVATION / K1 PASS / COST POLICY FROZEN / NO AUTHORITY TO ACTIVATE — 2026-10-08 UTC_
+_Status: PREACTIVATION PACKAGE COMPLETE / K2 NOT AUTHORIZED / NO AUTHORITY TO ACTIVATE — 2026-10-09 UTC_
 
 Tracker: Issue #40
 
@@ -355,7 +355,15 @@ Completed:
 - offline deterministic crypto cost calculator;
 - offline AI-v1.3 cost-aware guard/inference/signal integration;
 - deterministic pro-rata lifecycle cost integration verification;
-- focused/full-regression/Ruff verification of the cost integration.
+- focused/full-regression/Ruff verification of the cost integration;
+- complete isolated BTC/ETH/SOL runtime orchestration;
+- all-three-market batch freeze before provider construction/calls;
+- crypto feature schema and fresh top-of-book runtime integration;
+- activation preview/builder/executor tooling in a non-executed state;
+- activation-only/runtime verification tooling;
+- read-only C1/C2/C3 observability with mandatory per-market and weekday/weekend reporting;
+- dedicated hourly-:04 task runner and guarded installer in a non-installed state;
+- full offline runtime-package verification, including PowerShell parse validation.
 
 Not authorized:
 
@@ -367,7 +375,8 @@ Not authorized:
 - K7 actionable public crypto signals;
 - K8 broker/exchange execution.
 
-The cost-policy integration task is complete. The remaining AI-v1.3 package
-components outside this cost path must still be completed and verified before
-K2 can be considered ready. Crossing into K2 package publication still requires
-separate owner approval.
+The complete offline AI-v1.3 runtime package is now prepared and verified.
+K2 is the next governance boundary. Crossing into K2 package publication still
+requires the explicit owner token documented above. K2 itself does not authorize
+ledger creation, Binance/OpenAI performance calls, scheduler installation,
+public signal exposure, or broker/exchange execution.

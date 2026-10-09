@@ -8,7 +8,6 @@ from trading_signal_intelligence.ai_v1.crypto_runtime_verifier_v1_3 import (
     verify_active_runtime_v1_3,
 )
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

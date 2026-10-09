@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import json
+from collections.abc import Iterable
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 from itertools import pairwise
-from typing import Any, Iterable
+from pathlib import Path
+from typing import Any
 
 from trading_signal_intelligence.ai_v1.crypto_activation_v1_3 import (
-    DATABASE_PATHS,
     DECISION_PROTOCOL_VERSION,
     MARKETS,
     RUNTIME_VERSION,
@@ -35,7 +34,6 @@ from trading_signal_intelligence.ai_v1.inference import ReasoningModelAdapter
 from trading_signal_intelligence.ai_v1.ledger import AILedger
 from trading_signal_intelligence.ai_v1.signals import evaluate_signal
 from trading_signal_intelligence.models import Candle
-
 
 H1_BARS = 500
 H4_BARS = 200

@@ -9,7 +9,6 @@ from trading_signal_intelligence.ai_v1.crypto_activation_v1_3 import (
     preactivation_report_v1_3,
 )
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

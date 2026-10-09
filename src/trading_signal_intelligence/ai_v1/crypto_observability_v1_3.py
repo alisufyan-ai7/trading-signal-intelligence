@@ -10,6 +10,7 @@ from typing import Any
 
 from trading_signal_intelligence.ai_v1.crypto_activation_v1_3 import (
     ARTIFACT_PATHS,
+    DATABASE_PATHS,
     DECISION_PROTOCOL_VERSION,
     MARKETS,
     PROGRAM_ID,
@@ -17,7 +18,6 @@ from trading_signal_intelligence.ai_v1.crypto_activation_v1_3 import (
     validate_activation_anchor_document_v1_3,
     validate_review_gates,
 )
-from trading_signal_intelligence.ai_v1.crypto_runtime_v1_3 import DATABASE_PATHS
 from trading_signal_intelligence.ai_v1.observability import (
     ObservabilityError,
     _counts,

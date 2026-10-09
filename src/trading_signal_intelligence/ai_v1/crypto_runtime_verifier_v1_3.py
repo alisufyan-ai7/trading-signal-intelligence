@@ -10,7 +10,6 @@ from trading_signal_intelligence.ai_v1.runtime_verifier_v1_2_1 import (
     verify_active_runtime_v1_2_1,
 )
 
-
 PERFORMANCE_TYPES = {
     "INFERENCE",
     "NO_TRADE",

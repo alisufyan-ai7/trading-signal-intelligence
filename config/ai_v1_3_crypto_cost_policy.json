@@ -1,0 +1,90 @@
+{
+  "policy_version": "AI-v1.3-crypto-cost-v0.1",
+  "status": "frozen_preactivation",
+  "scope": "crypto_shadow_research_cost_proxy",
+  "markets": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT"
+  ],
+  "execution_venue_reference": "binance_spot",
+  "broker_execution_authority": false,
+  "fee_policy": {
+    "account_tier_assumption": "regular_user",
+    "liquidity_role_assumption_entry": "taker",
+    "liquidity_role_assumption_exit": "taker",
+    "fee_rate_per_side_fraction": 0.001,
+    "fee_rate_per_side_percent": 0.1,
+    "round_trip_fee_fraction_using_entry_midpoint_proxy": 0.002,
+    "bnb_discount_assumed": false,
+    "vip_discount_assumed": false,
+    "pair_promotion_discount_assumed": false,
+    "reason": "Use the standard non-discounted Regular User rate so research does not depend on account status, BNB holdings, maker fills, or temporary promotions."
+  },
+  "official_binance_sources": [
+    {
+      "title": "Spot Trading Fee Rate | Binance",
+      "url": "https://www.binance.com/en/fee/trading",
+      "claim_used": "Regular User standard Spot maker/taker rate is 0.100% / 0.100%; BNB-discount column is 0.07500% / 0.07500%."
+    },
+    {
+      "title": "How to Calculate Binance Spot Trading Fees?",
+      "url": "https://www.binance.com/en/support/faq/detail/e85d6e703b874674840122196b89780a",
+      "claim_used": "Binance's Regular User example applies a 0.1% Spot trading fee; promotions and BNB discounts may alter actual charged fees."
+    },
+    {
+      "title": "How to Use BNB to Pay for Fees and Earn 25% Discount?",
+      "url": "https://www.binance.com/en/support/faq/detail/115000583311",
+      "claim_used": "The BNB discount is optional and requires BNB plus the fee-deduction setting; this research policy does not assume it."
+    }
+  ],
+  "source_research_observed_utc_date": "2026-10-08",
+  "spread_policy": {
+    "source": "prospective_binance_top_of_book",
+    "round_trip_crossing_spread_multiplier": 1,
+    "description": "One full observed bid/ask spread represents the static round-trip crossing-cost proxy."
+  },
+  "slippage_policy": {
+    "source": "preregistered_research_assumption_not_binance",
+    "buffer_multiplier_of_entry_spread": 1,
+    "description": "Add one additional full observed entry spread as a conservative size-agnostic slippage buffer because no order size/impact model is admitted."
+  },
+  "static_round_trip_cost_rule": {
+    "reference_midpoint": "prospective_top_of_book_midpoint",
+    "reference_spread": "prospective_top_of_book_spread_price",
+    "formula": "2 * fee_rate_per_side * reference_midpoint + (1.0 + 1.0) * reference_spread",
+    "expanded_formula": "0.002 * reference_midpoint + 2.0 * reference_spread",
+    "fee_component_formula": "0.002 * reference_midpoint",
+    "spread_crossing_component_formula": "1.0 * reference_spread",
+    "slippage_buffer_component_formula": "1.0 * reference_spread",
+    "cost_is_frozen_at_signal_creation": true,
+    "cost_is_allocated_pro_rata_across_partial_and_final_exits": true
+  },
+  "guard_policy": {
+    "max_round_trip_cost_r": 0.15,
+    "threshold_origin": "carry_forward_existing_AI-v1_guardrail_without_crypto_outcome_tuning",
+    "formula": "static_round_trip_cost_price / risk_price",
+    "reject_reason": "cost_too_high"
+  },
+  "direction_semantics": {
+    "buy_and_sell_use_same_shadow_cost_proxy": true,
+    "sell_is_not_a_claim_of_binance_spot_short_execution": true,
+    "borrow_interest_included": false,
+    "funding_included": false,
+    "reason": "AI-v1.3 remains shadow-only; this policy is a directional research friction proxy, not an executable margin/futures cost schedule."
+  },
+  "promotion_policy": {
+    "temporary_zero_fee_or_discounted_pair_promotions_reduce_research_cost": false,
+    "reason": "Do not improve research results by relying on temporary promotions."
+  },
+  "activation_constraints": {
+    "numeric_cost_policy_frozen": true,
+    "runtime_integration_still_required": false,
+    "offline_tests_still_required": false,
+    "owner_approval_for_package_publication_still_required": true,
+    "owner_approval_for_activation_still_required": true,
+    "broker_execution_enabled": false,
+    "runtime_cost_integration_verified": true,
+    "k2_package_publication_still_required": true
+  }
+}

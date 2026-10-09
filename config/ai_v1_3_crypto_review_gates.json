@@ -1,0 +1,41 @@
+{
+  "runtime_version": "AI-v1.3",
+  "decision_protocol_version": "AI-v1.0",
+  "program_id": "crypto-expansion-1",
+  "status": "frozen_design_preactivation",
+  "scope": "parallel_crypto_expansion",
+  "markets": ["BTCUSDT", "ETHUSDT", "SOLUSDT"],
+  "gates": {
+    "C1": {
+      "purpose": "operational_audit_only",
+      "valid_inferences": 100,
+      "completed_shadow_trades": 20,
+      "minimum_calendar_days": 0
+    },
+    "C2": {
+      "purpose": "interim_crypto_economic_review",
+      "valid_inferences": 500,
+      "completed_shadow_trades": 50,
+      "minimum_calendar_days": 60
+    },
+    "C3": {
+      "purpose": "first_crypto_publishability_graduation_decision",
+      "valid_inferences": 1000,
+      "completed_shadow_trades": 100,
+      "minimum_calendar_days": 120
+    }
+  },
+  "eligibility_rule": "all_thresholds_for_gate_must_be_met",
+  "per_market_reporting_required": true,
+  "weekday_weekend_reporting_required": true,
+  "per_market_minimum_is_not_an_eligibility_gate": true,
+  "weekend_minimum_is_not_an_eligibility_gate": true,
+  "weak_or_low_activity_market_may_not_be_hidden_or_dropped_post_activation": true,
+  "no_post_activation_market_substitution": true,
+  "no_parameter_tuning_from_pre_gate_outcomes": true,
+  "gate_counts_may_not_pool_with_ai_v1_1": true,
+  "gate_counts_may_not_pool_with_ai_v1_2_1": true,
+  "calendar_may_not_carry_forward_from_other_lineages": true,
+  "gate_results_do_not_authorize_public_signal_exposure": true,
+  "gate_results_do_not_authorize_broker_execution": true
+}

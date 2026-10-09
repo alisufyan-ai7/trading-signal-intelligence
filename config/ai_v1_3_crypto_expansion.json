@@ -1,0 +1,110 @@
+{
+  "runtime_version": "AI-v1.3",
+  "decision_protocol_version": "AI-v1.0",
+  "program_id": "crypto-expansion-1",
+  "status": "package_complete_preactivation",
+  "scope": "parallel_crypto_expansion",
+  "primary_source_name": "binance_spot",
+  "markets": [
+    {
+      "source_symbol": "BTCUSDT",
+      "canonical_symbol": "BTC/USDT",
+      "asset_class": "crypto"
+    },
+    {
+      "source_symbol": "ETHUSDT",
+      "canonical_symbol": "ETH/USDT",
+      "asset_class": "crypto"
+    },
+    {
+      "source_symbol": "SOLUSDT",
+      "canonical_symbol": "SOL/USDT",
+      "asset_class": "crypto"
+    }
+  ],
+  "decision_cadence": "each_completed_h1_bar_24x7",
+  "h1_bars": 500,
+  "h4_bars": 200,
+  "max_data_age_seconds": 300,
+  "scheduler_target_minute": 4,
+  "snapshot_batch_freeze_before_provider_calls": true,
+  "feature_profile": {
+    "working_feature_schema_version": "AI-crypto-v1.0",
+    "reuse_price_return_atr_ema_rsi_structure_volatility_formulas": true,
+    "volume_field_semantics": "binance_base_asset_volume",
+    "session_bucket_semantics": "descriptive_fixed_utc_bucket_only",
+    "utc_day_of_week_retained": true,
+    "spread_semantics_change_required": true,
+    "spread_source": "prospective_binance_top_of_book",
+    "zero_spread_substitution_forbidden": true,
+    "mt5_spread_substitution_forbidden": true
+  },
+  "execution_cost_profile": {
+    "status": "frozen_preactivation_runtime_cost_integration_verified",
+    "top_of_book_spread_required": true,
+    "cost_policy_path": "config/ai_v1_3_crypto_cost_policy.json",
+    "fee_rate_per_side": 0.001,
+    "slippage_buffer_rule": "one_additional_entry_spread",
+    "all_in_round_trip_cost_rule": "0.002 * reference_midpoint + 2.0 * reference_spread",
+    "max_round_trip_cost_r": 0.15,
+    "numeric_cost_policy_frozen": true,
+    "activation_blocked_until_numeric_cost_policy_frozen": false,
+    "activation_blocked_until_runtime_cost_integration_verified": false,
+    "activation_blocked_until_k2_package_publication": true
+  },
+  "provider_profile": {
+    "provider_config_path": "config/ai_v1_provider.json",
+    "reuse_exact_dated_model_and_provider_parameters_intent": true,
+    "policy_path": "config/ai_v1_policy.txt",
+    "decision_schema_path": "config/ai_v1_decision_schema.json",
+    "provider_response_schema_path": "config/ai_v1_openai_response_schema.json"
+  },
+  "planned_ledgers": {
+    "BTCUSDT": "data/ai_v1_3_btcusdt.sqlite",
+    "ETHUSDT": "data/ai_v1_3_ethusdt.sqlite",
+    "SOLUSDT": "data/ai_v1_3_solusdt.sqlite"
+  },
+  "entity_id_prefix": "AI-v1.3:",
+  "no_backfill": true,
+  "shares_gate_counts_with_ai_v1_1": false,
+  "shares_gate_counts_with_ai_v1_2_1": false,
+  "calendar_carry_forward": false,
+  "public_signal_exposure_enabled": false,
+  "public_research_observability_initially_enabled": false,
+  "broker_execution_enabled": false,
+  "review_gates_path": "config/ai_v1_3_crypto_review_gates.json",
+  "secondary_comparison": {
+    "btc_exness_mt5_comparison_allowed_for_read_only_sanity_check": true,
+    "comparison_feed_may_replace_primary_source": false,
+    "cross_source_evidence_may_be_pooled_into_crypto_gate_counts": false
+  },
+  "api_cost_planning_checkpoint": {
+    "observed_at_utc_date": "2026-10-08",
+    "usage_bearing_inferences": 456,
+    "observed_average_cost_per_inference_usd": 0.011578,
+    "assumed_24x7_h1_calls_per_crypto_market_30d": 720,
+    "estimated_increment_one_crypto_market_usd_30d": 8.34,
+    "estimated_increment_three_crypto_markets_usd_30d": 25.01,
+    "estimated_total_six_existing_plus_three_crypto_usd_30d": 61.69,
+    "planning_budget_six_existing_plus_three_crypto_usd_30d": 75,
+    "cost_estimate_is_not_a_research_gate": true
+  },
+  "activation_authority": false,
+  "offline_runtime_package": {
+    "status": "complete_verified",
+    "batch_orchestration_complete": true,
+    "all_market_freeze_before_provider_calls": true,
+    "crypto_feature_schema_complete": true,
+    "top_of_book_integration_complete": true,
+    "isolated_runtime_and_ledger_definitions_complete": true,
+    "activation_builder_and_preview_complete": true,
+    "activation_executor_prepared_not_run": true,
+    "runtime_verifier_complete": true,
+    "c1_c2_c3_observability_complete": true,
+    "weekday_weekend_observability_complete": true,
+    "scheduler_runner_prepared_not_installed": true,
+    "scheduler_installer_prepared_not_run": true,
+    "activation_authority": false,
+    "k2_package_publication_required": true
+  }
+}

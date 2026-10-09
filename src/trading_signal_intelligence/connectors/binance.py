@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
-from trading_signal_intelligence.models import Candle
-
+from trading_signal_intelligence.models import Candle, Quote
 
 _INTERVALS = {
     "M1": "1m",
@@ -60,7 +59,7 @@ class BinanceSpotConnector:
         with urlopen(url, timeout=20) as response:  # nosec B310: fixed configured HTTPS API base
             payload = json.loads(response.read().decode("utf-8"))
 
-        now_ms = int(datetime.now(tz=timezone.utc).timestamp() * 1000)
+        now_ms = int(datetime.now(tz=UTC).timestamp() * 1000)
         candles: list[Candle] = []
         for row in payload:
             open_time_ms = int(row[0])
@@ -71,7 +70,7 @@ class BinanceSpotConnector:
                     source_symbol=source_symbol.upper(),
                     symbol=canonical_symbol,
                     timeframe=timeframe.upper(),
-                    timestamp_utc=datetime.fromtimestamp(open_time_ms / 1000, tz=timezone.utc),
+                    timestamp_utc=datetime.fromtimestamp(open_time_ms / 1000, tz=UTC),
                     open=Decimal(row[1]),
                     high=Decimal(row[2]),
                     low=Decimal(row[3]),
@@ -83,3 +82,39 @@ class BinanceSpotConnector:
                 )
             )
         return candles
+
+    def book_ticker(
+        self,
+        source_symbol: str,
+        canonical_symbol: str,
+    ) -> Quote:
+        """Read the current public Binance Spot best bid / best ask.
+
+        The public book-ticker response does not carry an exchange timestamp, so
+        the quote timestamp records the local UTC time immediately after the
+        HTTPS response is read. This method performs no authentication and has no
+        trading side effect.
+        """
+
+        params = {"symbol": source_symbol.upper()}
+        url = f"{self.base_url}/api/v3/ticker/bookTicker?{urlencode(params)}"
+        with urlopen(url, timeout=20) as response:  # nosec B310: fixed configured HTTPS API base
+            payload = json.loads(response.read().decode("utf-8"))
+
+        observed_at_utc = datetime.now(tz=UTC)
+        bid = Decimal(str(payload["bidPrice"]))
+        ask = Decimal(str(payload["askPrice"]))
+        if bid <= 0 or ask <= 0:
+            raise ValueError("Binance best bid/ask must be positive")
+        if ask < bid:
+            raise ValueError("Binance best ask must be greater than or equal to best bid")
+
+        return Quote(
+            source=self.source_name,
+            source_symbol=source_symbol.upper(),
+            symbol=canonical_symbol,
+            timestamp_utc=observed_at_utc,
+            bid=bid,
+            ask=ask,
+            last=None,
+        )

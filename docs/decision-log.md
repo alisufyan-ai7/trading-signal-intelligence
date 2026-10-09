@@ -564,3 +564,151 @@ The intended durable hierarchy is:
 **Recovery rule:** No automatic destructive restore into production. Restore first into an isolated location, verify hashes/database integrity/ledger chain, and require explicit owner authorization before replacing any live evidence database.
 
 **Status:** Architecture/documentation decision only. No AWS/B2 resources, credentials, scheduled backup jobs, database mutations, restores, purchases or production changes are authorized or implemented by this decision.
+
+## 2026-10-08 — D041: Preregister an isolated BTC/ETH/SOL crypto AI expansion before any live crypto inference
+
+**Decision:** Create a separately versioned prospective crypto AI lineage for BTCUSDT, ETHUSDT and SOLUSDT under Issue #40.
+
+Working runtime/evidence identity:
+
+`AI-v1.3`
+
+Working validation-program identity:
+
+`crypto-expansion-1`
+
+Decision protocol intent remains `AI-v1.0`, with the exact dated OpenAI model/provider profile reused unless a preactivation incompatibility is proven.
+
+**Why separate:** The existing AI-v1.2 preregistration explicitly excluded crypto because its source/session/volume/cost semantics differ. Binance Spot is 24/7, its kline volume is base-asset volume rather than MT5 tick volume, and the current Binance kline adapter has no spread field while AI-v1 requires finite spread/cost context.
+
+**Frozen initial universe:**
+
+- BTCUSDT -> BTC/USDT
+- ETHUSDT -> ETH/USDT
+- SOLUSDT -> SOL/USDT
+
+No post-activation market substitution is allowed because of weak performance or low activity.
+
+**Primary source intent:** Binance Spot H1/H4 completed klines. Exness crypto CFDs are comparison-only where instrument identity is explicitly compatible; they may not replace the primary Binance source or enter crypto gate counts.
+
+**Feature/cost boundary:** Price/ATR/EMA/RSI/structure/volatility formulas are intended to remain unchanged, but crypto receives a separately versioned feature profile because:
+
+- `volume_z_20` uses Binance base-asset volume;
+- spread must come from a prospective Binance top-of-book observation;
+- zero-spread or unrelated MT5-spread substitution is forbidden;
+- exact fee/slippage/all-in round-trip cost arithmetic must be numerically frozen before activation.
+
+The numeric crypto cost policy is intentionally still a hard preactivation blocker.
+
+**Planned evidence isolation:**
+
+- `data/ai_v1_3_btcusdt.sqlite`
+- `data/ai_v1_3_ethusdt.sqlite`
+- `data/ai_v1_3_solusdt.sqlite`
+
+No backfill. No count/calendar pooling with AI-v1.1, AI-v1.2.1 or S02.
+
+**Frozen review gates:**
+
+- C1: >=100 valid inferences and >=20 completed shadow trades; operational audit only.
+- C2: >=500 valid inferences, >=50 completed trades and >=60 calendar days.
+- C3: >=1,000 valid inferences, >=100 completed trades and >=120 calendar days.
+
+Per-market and weekday/weekend reporting are mandatory. Gate results do not authorize public actionable signals or broker execution.
+
+**Working scheduler design:** hourly near UTC minute 04, with all three causally available crypto snapshots frozen as one batch before provider calls. The existing <=300-second data-age intent remains; if readiness cannot satisfy it, scheduling/batching must be corrected before activation rather than relaxing freshness after performance evidence.
+
+**API cost planning checkpoint:** Owner-VPS read-only usage analysis on 2026-10-08 measured approximately USD 0.011578 per successful inference across 456 usage-bearing AI calls. At 720 H1 opportunities per 24/7 crypto market per 30 days, the three-market crypto cohort is estimated at about USD 25.01/month incremental, taking the current six-market + three-crypto model estimate to about USD 61.69/month. USD 75/month is the planning budget with headroom. Cost is not a research gate.
+
+**Approval boundary:** Current authorization is design/preregistration only. No Binance live/readiness call, OpenAI call, crypto ledger, activation anchor, scheduler change, public crypto signal or broker action is authorized by D041.
+
+## 2026-10-08 — D042: Freeze the AI-v1.3 crypto research transaction-cost proxy before any performance-bearing inference
+
+**Evidence:** Owner-authorized K1 live read-only Binance readiness passed for BTCUSDT, ETHUSDT and SOLUSDT. Official Binance Spot fee material was then researched before activation.
+
+**Official fee baseline:** Binance's current Spot fee table lists the Regular User standard maker/taker rate as 0.100% / 0.100%. Binance separately offers account-dependent BNB/VIP discounts and may run temporary promotions.
+
+**Decision:** AI-v1.3 will not rely on favorable account status or temporary promotions. Freeze a conservative research fee assumption of:
+
+- Regular User;
+- taker entry;
+- taker exit;
+- 0.100% per side;
+- no BNB discount;
+- no VIP discount;
+- no pair-promotion discount.
+
+Canonical policy:
+
+`config/ai_v1_3_crypto_cost_policy.json`
+
+Canonical research record:
+
+`research/experiments/EXP-2026-018-ai-v1.3-crypto-cost-policy.md`
+
+**Frozen static round-trip research cost:**
+
+`0.002 * reference_midpoint + 2.0 * reference_spread`
+
+where:
+
+- one observed spread is the round-trip bid/ask crossing proxy;
+- one additional observed spread is a preregistered conservative slippage buffer;
+- the extra spread is a protocol-owned research assumption, not a Binance factual claim.
+
+**Cost guard:** Carry forward `max_round_trip_cost_r = 0.15` from AI-v1 without tuning it against crypto outcomes. Directional proposals above that cost threshold are rejected with `cost_too_high`.
+
+**SELL semantics:** A SELL shadow result does not imply that Binance Spot naked short execution is authorized or available. Borrow interest and futures funding are not modeled. Any executable short venue requires separate execution governance.
+
+**Status:** The numeric cost-policy-definition blocker is closed prospectively. Runtime integration, deterministic guard/lifecycle tests, K2 package publication, K3 activation, K4 first performance-bearing cycle, K5 scheduling, public crypto exposure and broker/exchange execution remain unapproved.
+
+## 2026-10-08 — D043: Integrate the frozen AI-v1.3 crypto cost policy through an isolated guard/signal/lifecycle path
+
+**Authorization:** Owner explicitly approved `APPROVE AI-v1.3 OFFLINE COST INTEGRATION`.
+
+**Decision:** Implement the frozen EXP-2026-018 cost policy through AI-v1.3-specific modules rather than changing the active AI-v1.1 / AI-v1.2.1 cost semantics.
+
+Implemented isolated components:
+
+- `crypto_cost_v1_3.py` — validates the frozen policy and computes fee + spread + slippage cost;
+- `crypto_guardrails_v1_3.py` — applies the frozen 0.15R cost guard;
+- `crypto_engine_v1_3.py` — validates execution context before provider use and freezes cost provenance into the crypto inference record;
+- `crypto_signals_v1_3.py` — carries the exact frozen cost breakdown into the crypto SIGNAL;
+- existing deterministic `evaluate_signal()` — reused unchanged to allocate the already-frozen total cost pro rata across partial/final exits.
+
+**Isolation rule:** No active AI-v1.1, AI-v1.2.1 or S02 runtime/cost function was changed to adopt the crypto formula.
+
+**Fail-closed rule:** Invalid/stale Binance execution context is rejected before a provider call in the AI-v1.3 engine path.
+
+**Evidence:** Exact cost-integration candidate `b5a81bb076c7e1b189a23082ba4c9ffdb2cd98b7` passed 20 focused crypto tests, 271 full regression tests and Ruff on all changed Python surfaces in disposable Windows verification run `37853582251`.
+
+**Safety:** The verification made no live Binance call, no OpenAI call, no crypto ledger, no scheduler mutation and no broker action.
+
+**Status:** The cost-policy runtime-integration blocker is closed. This does not authorize K2 package publication, K3 activation, K4 first performance-bearing cycle, K5 unattended scheduling, public actionable crypto signals or broker/exchange execution.
+
+## 2026-10-09 — D044: Complete the AI-v1.3 crypto runtime package offline and stop at K2
+
+**Authorization:** Owner explicitly approved `APPROVE AI-v1.3 OFFLINE RUNTIME PACKAGE COMPLETION`.
+
+**Decision:** Complete the remaining AI-v1.3 BTCUSDT / ETHUSDT / SOLUSDT package on the isolated branch without publishing, activating, creating ledgers, calling Binance/OpenAI, installing a scheduler, exposing public crypto signals or enabling broker/exchange execution.
+
+The completed offline package includes:
+
+- dedicated `AI-crypto-v1.0` feature schema;
+- frozen AI-v1.3 crypto guardrails;
+- all-three-market H1/H4 + top-of-book batch-freeze validation before provider construction;
+- isolated AI-v1.3 runtime and ledger-path definitions;
+- activation payload, preview, aggregate anchor and guarded activation executor tooling;
+- activation-only and ongoing runtime verification;
+- independent verification of the existing AI-v1.1 / AI-v1.2.1 parallel lineages;
+- read-only C1/C2/C3 observability with mandatory per-market and weekday/weekend reporting;
+- dedicated hourly UTC-minute-04 runner and guarded Windows task installer, prepared but not installed.
+
+**Fail-closed batch rule:** Any missing/stale/non-contiguous BTC/ETH/SOL input, invalid top-of-book context, volume-semantic mismatch or common-H1-close mismatch prevents provider construction/calls for the crypto batch.
+
+**Verification evidence:** Candidate `6ee4f67bcdcdc3893641c6d06446d5c1350985bc` passed 28 focused crypto tests, 279 full repository tests, Ruff on all changed Python surfaces, and PowerShell parser validation of the guarded installer in disposable Windows workflow run `37912205072`.
+
+**Safety:** The verification made no live Binance call, no OpenAI call, no crypto ledger, no activation anchor, no scheduler mutation and no broker/exchange action.
+
+**Status:** The offline runtime-package construction blocker is closed. K2 package publication is the next boundary and remains separately owner-gated. K3 activation, K4 first performance-bearing cycle, K5 scheduler installation, public actionable signals and broker/exchange execution remain unapproved.
+

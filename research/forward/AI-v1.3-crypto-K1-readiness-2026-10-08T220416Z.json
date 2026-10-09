@@ -1,0 +1,64 @@
+{
+  "evidence_version": "AI-v1.3-crypto-K1-live-readiness-v0.1",
+  "status": "PASS",
+  "authorized_token": "AI_V1_3_CRYPTO_READINESS",
+  "runtime_version": "AI-v1.3",
+  "decision_protocol_version": "AI-v1.0",
+  "program_id": "crypto-expansion-1",
+  "source": "binance_spot",
+  "owner_vps": true,
+  "wake_utc": "2026-10-08T22:04:05.5671064Z",
+  "probe_started_utc": "2026-10-08T22:04:14.051474Z",
+  "batch_frozen_at_utc": "2026-10-08T22:04:16.723272Z",
+  "common_source_bar_close_utc": "2026-10-08T22:00:00Z",
+  "completed_h1_age_seconds": 256.723272,
+  "markets": {
+    "BTCUSDT": {
+      "canonical_symbol": "BTC/USDT",
+      "readiness": "READY",
+      "closed_h1_bars": 500,
+      "closed_h4_bars": 200,
+      "h1_interval_gaps": 0,
+      "h4_interval_gaps": 0,
+      "saturday_h1_present": true,
+      "sunday_h1_present": true,
+      "observed_spread_price": 0.01
+    },
+    "ETHUSDT": {
+      "canonical_symbol": "ETH/USDT",
+      "readiness": "READY",
+      "closed_h1_bars": 500,
+      "closed_h4_bars": 200,
+      "h1_interval_gaps": 0,
+      "h4_interval_gaps": 0,
+      "saturday_h1_present": true,
+      "sunday_h1_present": true,
+      "observed_spread_price": 0.01
+    },
+    "SOLUSDT": {
+      "canonical_symbol": "SOL/USDT",
+      "readiness": "READY",
+      "closed_h1_bars": 500,
+      "closed_h4_bars": 200,
+      "h1_interval_gaps": 0,
+      "h4_interval_gaps": 0,
+      "saturday_h1_present": true,
+      "sunday_h1_present": true,
+      "observed_spread_price": 0.01
+    }
+  },
+  "safety": {
+    "governed_existing_ledgers_byte_identical_before_after": true,
+    "planned_crypto_ledgers_absent_before_after": true,
+    "crypto_activation_anchor_absent_before_after": true,
+    "production_head_unchanged": true,
+    "production_tracked_worktree_clean": true,
+    "probe_tracked_worktree_unchanged": true,
+    "scheduler_definitions_unchanged": true,
+    "openai_provider_call_made": false,
+    "ledger_write_performed": false,
+    "public_crypto_signal_exposure_changed": false,
+    "broker_execution_enabled": false
+  },
+  "note": "Durable transcription of the owner-VPS K1 output recorded after the successful read-only probe. It does not authorize activation."
+}

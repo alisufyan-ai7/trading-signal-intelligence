@@ -686,3 +686,29 @@ Implemented isolated components:
 
 **Status:** The cost-policy runtime-integration blocker is closed. This does not authorize K2 package publication, K3 activation, K4 first performance-bearing cycle, K5 unattended scheduling, public actionable crypto signals or broker/exchange execution.
 
+## 2026-10-09 — D044: Complete the AI-v1.3 crypto runtime package offline and stop at K2
+
+**Authorization:** Owner explicitly approved `APPROVE AI-v1.3 OFFLINE RUNTIME PACKAGE COMPLETION`.
+
+**Decision:** Complete the remaining AI-v1.3 BTCUSDT / ETHUSDT / SOLUSDT package on the isolated branch without publishing, activating, creating ledgers, calling Binance/OpenAI, installing a scheduler, exposing public crypto signals or enabling broker/exchange execution.
+
+The completed offline package includes:
+
+- dedicated `AI-crypto-v1.0` feature schema;
+- frozen AI-v1.3 crypto guardrails;
+- all-three-market H1/H4 + top-of-book batch-freeze validation before provider construction;
+- isolated AI-v1.3 runtime and ledger-path definitions;
+- activation payload, preview, aggregate anchor and guarded activation executor tooling;
+- activation-only and ongoing runtime verification;
+- independent verification of the existing AI-v1.1 / AI-v1.2.1 parallel lineages;
+- read-only C1/C2/C3 observability with mandatory per-market and weekday/weekend reporting;
+- dedicated hourly UTC-minute-04 runner and guarded Windows task installer, prepared but not installed.
+
+**Fail-closed batch rule:** Any missing/stale/non-contiguous BTC/ETH/SOL input, invalid top-of-book context, volume-semantic mismatch or common-H1-close mismatch prevents provider construction/calls for the crypto batch.
+
+**Verification evidence:** Candidate `6ee4f67bcdcdc3893641c6d06446d5c1350985bc` passed 28 focused crypto tests, 279 full repository tests, Ruff on all changed Python surfaces, and PowerShell parser validation of the guarded installer in disposable Windows workflow run `37912205072`.
+
+**Safety:** The verification made no live Binance call, no OpenAI call, no crypto ledger, no activation anchor, no scheduler mutation and no broker/exchange action.
+
+**Status:** The offline runtime-package construction blocker is closed. K2 package publication is the next boundary and remains separately owner-gated. K3 activation, K4 first performance-bearing cycle, K5 scheduler installation, public actionable signals and broker/exchange execution remain unapproved.
+

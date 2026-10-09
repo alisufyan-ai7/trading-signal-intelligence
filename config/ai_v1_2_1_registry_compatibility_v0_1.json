@@ -60,5 +60,6 @@
     "mt5_call_allowed": false,
     "public_exposure_change_allowed": false,
     "broker_execution_change_allowed": false
-  }
+  },
+  "frozen_registry_hash_basis": "windows_worktree_crlf"
 }

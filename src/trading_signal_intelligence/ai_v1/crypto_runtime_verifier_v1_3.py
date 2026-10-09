@@ -6,8 +6,8 @@ from typing import Any
 from trading_signal_intelligence.ai_v1.crypto_observability_v1_3 import (
     build_report_v1_3,
 )
-from trading_signal_intelligence.ai_v1.runtime_verifier_v1_2_1 import (
-    verify_active_runtime_v1_2_1,
+from trading_signal_intelligence.ai_v1.runtime_verifier_registry_compat_v1_2_1 import (
+    verify_active_runtime_registry_compat_v1_2_1,
 )
 
 PERFORMANCE_TYPES = {
@@ -33,7 +33,7 @@ def verify_active_runtime_v1_3(
     include_scheduler: bool = False,
     verify_upstream: bool = True,
 ) -> dict[str, Any]:
-    parallel = verify_active_runtime_v1_2_1(
+    parallel = verify_active_runtime_registry_compat_v1_2_1(
         repo_root,
         require_activation_only=False,
         include_scheduler=False,

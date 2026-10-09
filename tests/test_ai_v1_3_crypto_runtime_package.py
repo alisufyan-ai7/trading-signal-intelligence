@@ -31,7 +31,6 @@ from trading_signal_intelligence.ai_v1.crypto_runtime_verifier_v1_3 import (
 )
 from trading_signal_intelligence.models import Candle
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

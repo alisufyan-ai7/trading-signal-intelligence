@@ -1,3 +1,4 @@
+# ruff: noqa: I001, TRY004, UP017, BLE001
 from __future__ import annotations
 
 import argparse

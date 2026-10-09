@@ -66,7 +66,7 @@ def _load_anchor(path: Path) -> dict[str, Any]:
         raise ObservabilityError("AI-v1.3 activation anchor root must be object")
     try:
         validate_activation_anchor_document_v1_3(anchor)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         raise ObservabilityError(f"invalid AI-v1.3 activation anchor: {path}") from exc
     return anchor
 

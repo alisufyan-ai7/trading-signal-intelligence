@@ -19,6 +19,8 @@ from trading_signal_intelligence.ai_v1.crypto_cost_v1_3 import (
     canonical_policy_sha256,
     load_crypto_cost_policy,
 )
+from trading_signal_intelligence.ai_v1.features import canonical_json
+from trading_signal_intelligence.ai_v1.inference import parameter_fingerprint
 
 RUNTIME_VERSION = "AI-v1.3"
 DECISION_PROTOCOL_VERSION = "AI-v1.0"
@@ -86,8 +88,25 @@ ARTIFACT_PATHS = {
         "research/experiments/"
         "EXP-2026-018-ai-v1.3-crypto-cost-policy.md"
     ),
+    "compatibility_plan": "docs/ai-v1.3-crypto-expansion-compatibility-v0.1.md",
+    "activation_plan": "docs/ai-v1.3-crypto-expansion-activation-plan-v0.1.md",
     "feature_source": (
         "src/trading_signal_intelligence/ai_v1/features.py"
+    ),
+    "decision_contract_source": (
+        "src/trading_signal_intelligence/ai_v1/contract.py"
+    ),
+    "provider_neutral_inference_source": (
+        "src/trading_signal_intelligence/ai_v1/inference.py"
+    ),
+    "openai_adapter_source": (
+        "src/trading_signal_intelligence/ai_v1/openai_responses.py"
+    ),
+    "ai_ledger_source": (
+        "src/trading_signal_intelligence/ai_v1/ledger.py"
+    ),
+    "lifecycle_evaluator_source": (
+        "src/trading_signal_intelligence/ai_v1/signals.py"
     ),
     "binance_connector_source": (
         "src/trading_signal_intelligence/connectors/binance.py"
@@ -121,6 +140,7 @@ ARTIFACT_PATHS = {
     ),
     "run_live_script": "scripts/run_ai_v1_3_crypto_live.py",
     "activation_preview_script": "scripts/preview_ai_v1_3_crypto_activation.py",
+    "preactivation_verify_script": "scripts/verify_ai_v1_3_crypto_pre_activation.py",
     "activation_script": "scripts/activate_ai_v1_3_crypto.py",
     "runtime_verify_script": "scripts/verify_ai_v1_3_crypto_runtime.py",
     "progress_report_script": "scripts/report_ai_v1_3_crypto_progress.py",
@@ -137,6 +157,48 @@ def _load_json(path: Path) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise CryptoPackageV13Error(f"JSON root must be object: {path}")
     return payload
+
+
+def provider_identity_v1_3(repo_root: Path) -> dict[str, str]:
+    provider_config = _load_json(repo_root / "config" / "ai_v1_provider.json")
+    provider_schema = _load_json(
+        repo_root / "config" / "ai_v1_openai_response_schema.json"
+    )
+    provider = str(provider_config.get("provider") or "")
+    model_id = str(provider_config.get("model_id") or "")
+    if provider != "openai":
+        raise CryptoPackageV13Error("provider must remain openai")
+    if model_id != "gpt-5.4-2026-03-05":
+        raise CryptoPackageV13Error("model_id mismatch")
+
+    schema_sha256 = hashlib.sha256(
+        canonical_json(provider_schema).encode("utf-8")
+    ).hexdigest()
+    parameters = {
+        "api": provider_config["api"],
+        "endpoint": provider_config["endpoint"],
+        "reasoning_effort": provider_config["reasoning_effort"],
+        "service_tier": provider_config["service_tier"],
+        "store": provider_config["store"],
+        "truncation": provider_config["truncation"],
+        "max_output_tokens": provider_config["max_output_tokens"],
+        "tools": provider_config["tools"],
+        "temperature": provider_config["temperature"],
+        "top_p": provider_config["top_p"],
+        "conversation": provider_config["conversation"],
+        "previous_response_id": provider_config["previous_response_id"],
+        "structured_output_name": provider_config["structured_output_name"],
+        "provider_response_schema_sha256": schema_sha256,
+    }
+    return {
+        "provider": provider,
+        "model_id": model_id,
+        "model_parameter_fingerprint": parameter_fingerprint(
+            provider=provider,
+            model_id=model_id,
+            parameters=parameters,
+        ),
+    }
 
 
 def load_crypto_config(repo_root: Path) -> dict[str, Any]:
@@ -381,6 +443,7 @@ def preactivation_report_v1_3(repo_root: Path) -> dict[str, Any]:
     k1 = validate_k1_evidence(repo_root)
     cost_policy = load_crypto_cost_policy(repo_root / COST_POLICY)
     cost_policy_hash = canonical_policy_sha256(cost_policy)
+    provider_identity = provider_identity_v1_3(repo_root)
     lineage = verify_frozen_decision_lineage(repo_root)
     core_anchor = _load_anchor_safety(repo_root, CORE_ANCHOR)
     expansion_anchor = _load_anchor_safety(repo_root, EXPANSION_ANCHOR)
@@ -423,6 +486,7 @@ def preactivation_report_v1_3(repo_root: Path) -> dict[str, Any]:
         "review_gates": gates,
         "k1_readiness": k1,
         "cost_policy_sha256": cost_policy_hash,
+        "provider_identity": provider_identity,
         "frozen_ai_v1_0_decision_lineage_match": lineage["match"],
         "parallel_core_anchor": CORE_ANCHOR,
         "parallel_core_anchor_sha256": file_sha256(repo_root / CORE_ANCHOR),
@@ -474,6 +538,11 @@ def build_activation_payload_v1_3(
         "review_gates_sha256": file_sha256(repo_root / REVIEW_GATES),
         "expansion_config_sha256": file_sha256(repo_root / EXPANSION_CONFIG),
         "k1_readiness_sha256": report["k1_readiness"]["sha256"],
+        "provider": report["provider_identity"]["provider"],
+        "model_id": report["provider_identity"]["model_id"],
+        "model_parameter_fingerprint": report["provider_identity"][
+            "model_parameter_fingerprint"
+        ],
         "provider_config_sha256": file_sha256(
             repo_root / "config/ai_v1_provider.json"
         ),
@@ -522,6 +591,10 @@ def validate_activation_payload_v1_3(payload: dict[str, Any]) -> None:
         "review_gates_sha256",
         "expansion_config_sha256",
         "k1_readiness_sha256",
+        "provider",
+        "model_id",
+        "model_parameter_fingerprint",
+        "model_parameter_fingerprint",
         "provider_config_sha256",
         "policy_sha256",
         "decision_schema_sha256",
@@ -553,6 +626,10 @@ def validate_activation_payload_v1_3(payload: dict[str, Any]) -> None:
         raise CryptoPackageV13Error("activation source mismatch")
     if payload["feature_schema_version"] != "AI-crypto-v1.0":
         raise CryptoPackageV13Error("activation feature schema mismatch")
+    if payload["provider"] != "openai":
+        raise CryptoPackageV13Error("activation provider mismatch")
+    if payload["model_id"] != "gpt-5.4-2026-03-05":
+        raise CryptoPackageV13Error("activation model mismatch")
     if payload["no_backfill"] is not True:
         raise CryptoPackageV13Error("activation no_backfill must be true")
     if payload["gate_counts_carry_forward"] is not False:

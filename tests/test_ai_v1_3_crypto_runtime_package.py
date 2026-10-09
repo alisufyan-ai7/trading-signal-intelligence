@@ -353,7 +353,7 @@ def test_runtime_verifier_contract_with_synthetic_reports(
 
     monkeypatch.setattr(
         module,
-        "verify_active_runtime_v1_2_1",
+        "verify_active_runtime_registry_compat_v1_2_1",
         lambda *args, **kwargs: parallel,
     )
     monkeypatch.setattr(

@@ -46,6 +46,9 @@ K1_EVIDENCE = (
     "research/forward/AI-v1.3-crypto-K1-readiness-2026-10-08T220416Z.json"
 )
 CORE_ANCHOR = "research/forward/AI-v1.1-activation-2026-09-30T114412Z.json"
+EXPANSION_ANCHOR = (
+    "research/forward/AI-v1.2.1-expansion-activation-2026-10-07T093543Z.json"
+)
 
 _COMMIT_RE = re.compile(r"^[0-9a-f]{40}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -74,6 +77,8 @@ ARTIFACT_PATHS = {
     "decision_schema": "config/ai_v1_decision_schema.json",
     "policy": "config/ai_v1_policy.txt",
     "k1_readiness_evidence": K1_EVIDENCE,
+    "parallel_core_anchor": CORE_ANCHOR,
+    "parallel_expansion_anchor": EXPANSION_ANCHOR,
     "preregistration": (
         "research/experiments/"
         "EXP-2026-017-ai-v1.3-crypto-expansion-preregistration.md"
@@ -354,6 +359,7 @@ def preactivation_report_v1_3(repo_root: Path) -> dict[str, Any]:
     cost_policy_hash = canonical_policy_sha256(cost_policy)
     lineage = verify_frozen_decision_lineage(repo_root)
     core_anchor = _load_anchor_safety(repo_root, CORE_ANCHOR)
+    expansion_anchor = _load_anchor_safety(repo_root, EXPANSION_ANCHOR)
 
     ledgers = {
         symbol: specs[symbol].database_path.exists() for symbol in MARKETS
@@ -369,6 +375,8 @@ def preactivation_report_v1_3(repo_root: Path) -> dict[str, Any]:
     ready = (
         lineage["match"]
         and core_anchor.get("broker_execution_enabled") is False
+        and expansion_anchor.get("broker_execution_enabled") is False
+        and expansion_anchor.get("runtime_version") == "AI-v1.2.1"
         and not any(ledgers.values())
         and not anchors
         and config.get("activation_authority") is False
@@ -394,6 +402,10 @@ def preactivation_report_v1_3(repo_root: Path) -> dict[str, Any]:
         "frozen_ai_v1_0_decision_lineage_match": lineage["match"],
         "parallel_core_anchor": CORE_ANCHOR,
         "parallel_core_anchor_sha256": file_sha256(repo_root / CORE_ANCHOR),
+        "parallel_expansion_anchor": EXPANSION_ANCHOR,
+        "parallel_expansion_anchor_sha256": file_sha256(
+            repo_root / EXPANSION_ANCHOR
+        ),
         "artifact_hashes": artifact_hashes_now,
         "crypto_ledger_paths_exist": ledgers,
         "crypto_activation_anchors": anchors,

@@ -14,7 +14,6 @@ from trading_signal_intelligence.ai_v1.observability_v1_2_1 import (
     verify_expansion_artifacts_v1_2_1,
 )
 
-
 MANIFEST_PATH = "config/ai_v1_2_1_registry_compatibility_v0_1.json"
 INSTRUMENT_REGISTRY_ARTIFACT = "instrument_registry"
 

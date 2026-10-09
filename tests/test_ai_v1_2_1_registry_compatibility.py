@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -18,7 +19,6 @@ from trading_signal_intelligence.ai_v1.registry_compat_v1_2_1 import (
     verify_expansion_artifacts_registry_compat_v1_2_1,
     verify_registry_compatibility_v1_2_1,
 )
-
 
 ROOT = Path(__file__).resolve().parents[1]
 ANCHOR = (
@@ -45,8 +45,6 @@ def _anchor() -> dict:
 
 
 def _old_registry() -> dict:
-    import subprocess
-
     raw = subprocess.check_output(
         [
             "git",

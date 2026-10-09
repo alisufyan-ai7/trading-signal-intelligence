@@ -2,7 +2,7 @@
   "runtime_version": "AI-v1.3",
   "decision_protocol_version": "AI-v1.0",
   "program_id": "crypto-expansion-1",
-  "status": "design_only_preactivation",
+  "status": "package_complete_preactivation",
   "scope": "parallel_crypto_expansion",
   "primary_source_name": "binance_spot",
   "markets": [
@@ -89,5 +89,22 @@
     "planning_budget_six_existing_plus_three_crypto_usd_30d": 75,
     "cost_estimate_is_not_a_research_gate": true
   },
-  "activation_authority": false
+  "activation_authority": false,
+  "offline_runtime_package": {
+    "status": "complete_verified",
+    "batch_orchestration_complete": true,
+    "all_market_freeze_before_provider_calls": true,
+    "crypto_feature_schema_complete": true,
+    "top_of_book_integration_complete": true,
+    "isolated_runtime_and_ledger_definitions_complete": true,
+    "activation_builder_and_preview_complete": true,
+    "activation_executor_prepared_not_run": true,
+    "runtime_verifier_complete": true,
+    "c1_c2_c3_observability_complete": true,
+    "weekday_weekend_observability_complete": true,
+    "scheduler_runner_prepared_not_installed": true,
+    "scheduler_installer_prepared_not_run": true,
+    "activation_authority": false,
+    "k2_package_publication_required": true
+  }
 }

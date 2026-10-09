@@ -48,3 +48,19 @@ def test_post_k4_evidence_and_frozen_crypto_gate_guards():
         'K5_FROZEN_K3_ARTIFACTS=UNCHANGED',
     ):
         assert fragment in source
+
+def test_post_k4_evidence_paths_initialized_before_use():
+    source = SUCCESSOR.read_text(encoding="utf-8")
+    definitions = {
+        "$legacyInstaller": 'Join-Path $repoRoot "scripts\\install_ai_v1_3_crypto_shadow_task.ps1"',
+        "$k4Marker": 'Join-Path $env:ProgramData "VowSig\\K4FirstCycle\\FIRST_CYCLE_ATTEMPTED.json"',
+        "$expectedLegacySha256": '"6db18223f3d8576ae4cd6b2cba1d8c0e2d32cdc8142445e7f652aece9f52c5ce"',
+        "$expectedK4AnchorSha256": '"561b1a532d196dcdbf852f39561798e40e8e297a5022a9f3155d2038bb5b150e"',
+    }
+    for variable, expected_expression in definitions.items():
+        assignment = f"{variable} = {expected_expression}"
+        assert source.count(assignment) == 1, variable
+        # Variable reads must not precede assignment.
+        assert source.index(assignment) < source.index(
+            "if (-not (Test-Path -LiteralPath $legacyInstaller"
+        )

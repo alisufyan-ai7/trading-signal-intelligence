@@ -15,8 +15,8 @@ from trading_signal_intelligence.ai_v1.crypto_activation_v1_3 import (
     preactivation_report_v1_3,
 )
 from trading_signal_intelligence.ai_v1.ledger import AILedger
-from trading_signal_intelligence.ai_v1.runtime_verifier_v1_2_1 import (
-    verify_active_runtime_v1_2_1,
+from trading_signal_intelligence.ai_v1.runtime_verifier_registry_compat_v1_2_1 import (
+    verify_active_runtime_registry_compat_v1_2_1,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,7 +41,7 @@ def main() -> None:
     if preactivation["preactivation_check"] != "PASS":
         raise SystemExit("AI-v1.3 crypto preactivation check is not PASS")
 
-    parallel = verify_active_runtime_v1_2_1(
+    parallel = verify_active_runtime_registry_compat_v1_2_1(
         ROOT,
         require_activation_only=False,
         include_scheduler=True,

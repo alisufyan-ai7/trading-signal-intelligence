@@ -424,6 +424,9 @@ def test_registry_compatible_live_runner_changes_only_verifier_hook() -> None:
         ROOT / "scripts" / "run_ai_v1_2_1_live_registry_compat.py"
     ).read_text(encoding="utf-8")
 
+    corrected = corrected.removeprefix(
+        "# ruff: noqa: I001, TRY004, UP017, BLE001\n"
+    )
     normalized = corrected.replace(
         "runtime_verifier_registry_compat_v1_2_1",
         "runtime_verifier_v1_2_1",

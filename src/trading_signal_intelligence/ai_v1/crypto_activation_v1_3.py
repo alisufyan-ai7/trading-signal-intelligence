@@ -20,7 +20,6 @@ from trading_signal_intelligence.ai_v1.crypto_cost_v1_3 import (
     load_crypto_cost_policy,
 )
 
-
 RUNTIME_VERSION = "AI-v1.3"
 DECISION_PROTOCOL_VERSION = "AI-v1.0"
 PROGRAM_ID = "crypto-expansion-1"

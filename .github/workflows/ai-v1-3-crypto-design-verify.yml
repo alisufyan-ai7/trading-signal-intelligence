@@ -17,13 +17,13 @@ jobs:
       - name: Checkout exact PR 41 candidate
         uses: actions/checkout@v4
         with:
-          ref: 3e90d63dc49b2a5358f3a6cfec0d328c7ca852f8
+          ref: 6ee4f67bcdcdc3893641c6d06446d5c1350985bc
           fetch-depth: 1
 
       - name: Verify exact candidate identity
         shell: pwsh
         run: |
-          $Expected = "3e90d63dc49b2a5358f3a6cfec0d328c7ca852f8"
+          $Expected = "6ee4f67bcdcdc3893641c6d06446d5c1350985bc"
           $Actual = (git rev-parse HEAD).Trim()
           Write-Host "EXPECTED_CANDIDATE=$Expected"
           Write-Host "ACTUAL_CANDIDATE=$Actual"

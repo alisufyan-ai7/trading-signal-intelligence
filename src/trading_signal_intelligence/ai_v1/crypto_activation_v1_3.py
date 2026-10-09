@@ -147,6 +147,8 @@ def load_crypto_config(repo_root: Path) -> dict[str, Any]:
         raise CryptoPackageV13Error("crypto decision protocol mismatch")
     if config.get("program_id") != PROGRAM_ID:
         raise CryptoPackageV13Error("crypto program_id mismatch")
+    if config.get("status") != "package_complete_preactivation":
+        raise CryptoPackageV13Error("crypto package status mismatch")
     if config.get("primary_source_name") != SOURCE_NAME:
         raise CryptoPackageV13Error("crypto source mismatch")
     if config.get("no_backfill") is not True:
@@ -161,6 +163,29 @@ def load_crypto_config(repo_root: Path) -> dict[str, Any]:
         raise CryptoPackageV13Error("crypto scheduler minute must remain 4")
     if config.get("snapshot_batch_freeze_before_provider_calls") is not True:
         raise CryptoPackageV13Error("batch freeze before provider calls is mandatory")
+
+    package = config.get("offline_runtime_package") or {}
+    required_complete = (
+        "batch_orchestration_complete",
+        "all_market_freeze_before_provider_calls",
+        "crypto_feature_schema_complete",
+        "top_of_book_integration_complete",
+        "isolated_runtime_and_ledger_definitions_complete",
+        "activation_builder_and_preview_complete",
+        "activation_executor_prepared_not_run",
+        "runtime_verifier_complete",
+        "c1_c2_c3_observability_complete",
+        "weekday_weekend_observability_complete",
+        "scheduler_runner_prepared_not_installed",
+        "scheduler_installer_prepared_not_run",
+        "k2_package_publication_required",
+    )
+    if package.get("status") != "complete_verified":
+        raise CryptoPackageV13Error("offline runtime package is not verified complete")
+    if any(package.get(key) is not True for key in required_complete):
+        raise CryptoPackageV13Error("offline runtime package completion invariant failed")
+    if package.get("activation_authority") is not False:
+        raise CryptoPackageV13Error("offline package must not grant activation authority")
 
     listed = config.get("markets")
     if not isinstance(listed, list):

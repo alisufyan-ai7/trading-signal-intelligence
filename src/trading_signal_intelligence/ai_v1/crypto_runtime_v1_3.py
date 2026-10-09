@@ -4,6 +4,7 @@ import json
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from itertools import pairwise
 from typing import Any, Iterable
 
 from trading_signal_intelligence.ai_v1.crypto_activation_v1_3 import (
@@ -15,7 +16,9 @@ from trading_signal_intelligence.ai_v1.crypto_activation_v1_3 import (
     validate_activation_payload_v1_3,
 )
 from trading_signal_intelligence.ai_v1.crypto_cost_v1_3 import (
+    CryptoCostPolicyError,
     CryptoExecutionContext,
+    validate_execution_context,
 )
 from trading_signal_intelligence.ai_v1.crypto_engine_v1_3 import (
     process_crypto_inference_cycle,
@@ -243,6 +246,107 @@ def _append_missed(
             "broker_execution_enabled": False,
         },
     )
+
+
+def validate_batch_freeze_v1_3(
+    inputs: dict[
+        str,
+        tuple[list[Candle], list[Candle], CryptoExecutionContext],
+    ],
+    *,
+    batch_frozen_at_utc: datetime,
+    max_data_age_seconds: float = 300.0,
+) -> dict[str, Any]:
+    if batch_frozen_at_utc.tzinfo is None:
+        raise CryptoRuntimeV13Error("batch freeze timestamp must be timezone-aware")
+    frozen = batch_frozen_at_utc.astimezone(UTC)
+    if set(inputs) != set(MARKETS):
+        raise CryptoRuntimeV13Error("crypto batch market set mismatch")
+
+    closes: dict[str, datetime] = {}
+    report: dict[str, Any] = {}
+    for symbol in MARKETS:
+        h1_all, h4_all, context = inputs[symbol]
+        h1 = sorted(
+            [
+                bar
+                for bar in h1_all
+                if bar.is_closed and bar.timeframe.upper() == "H1"
+            ],
+            key=lambda bar: bar.timestamp_utc,
+        )
+        h4 = sorted(
+            [
+                bar
+                for bar in h4_all
+                if bar.is_closed and bar.timeframe.upper() == "H4"
+            ],
+            key=lambda bar: bar.timestamp_utc,
+        )
+        if len(h1) < H1_BARS:
+            raise CryptoRuntimeV13Error(
+                f"{symbol} requires at least {H1_BARS} closed H1 bars"
+            )
+        if len(h4) < H4_BARS:
+            raise CryptoRuntimeV13Error(
+                f"{symbol} requires at least {H4_BARS} closed H4 bars"
+            )
+        h1 = h1[-H1_BARS:]
+        h4 = h4[-H4_BARS:]
+
+        for left, right in pairwise(h1):
+            if (right.timestamp_utc - left.timestamp_utc).total_seconds() != 3600:
+                raise CryptoRuntimeV13Error(f"{symbol} H1 continuity failure")
+        for left, right in pairwise(h4):
+            if (right.timestamp_utc - left.timestamp_utc).total_seconds() != 14400:
+                raise CryptoRuntimeV13Error(f"{symbol} H4 continuity failure")
+        if any(bar.volume_kind != "base_asset_volume" for bar in h1 + h4):
+            raise CryptoRuntimeV13Error(
+                f"{symbol} volume semantics must remain base_asset_volume"
+            )
+
+        latest_close = h1[-1].timestamp_utc.astimezone(UTC) + timedelta(hours=1)
+        age = (frozen - latest_close).total_seconds()
+        if age < 0 or age > max_data_age_seconds:
+            raise CryptoRuntimeV13Error(
+                f"{symbol} completed H1 age {age:.6f}s outside "
+                f"0..{max_data_age_seconds}"
+            )
+        try:
+            validate_execution_context(
+                context,
+                source_symbol=symbol,
+                now_utc=frozen,
+                max_age_seconds=max_data_age_seconds,
+            )
+        except CryptoCostPolicyError as exc:
+            raise CryptoRuntimeV13Error(
+                f"{symbol} execution context invalid: {exc}"
+            ) from exc
+
+        closes[symbol] = latest_close
+        report[symbol] = {
+            "closed_h1_bars": len(h1),
+            "closed_h4_bars": len(h4),
+            "latest_h1_close_utc": latest_close.isoformat(),
+            "data_age_seconds": age,
+            "quote_observed_at_utc": context.observed_at_utc.astimezone(UTC).isoformat(),
+            "spread_price": float(context.spread_price),
+        }
+
+    unique_closes = {value for value in closes.values()}
+    if len(unique_closes) != 1:
+        raise CryptoRuntimeV13Error(
+            "crypto batch does not share one completed H1 close"
+        )
+
+    return {
+        "runtime_version": RUNTIME_VERSION,
+        "batch_frozen_at_utc": frozen.isoformat(),
+        "common_source_bar_close_utc": next(iter(unique_closes)).isoformat(),
+        "markets": report,
+        "batch_ready_before_provider_calls": True,
+    }
 
 
 def run_market_cycle_v1_3(

@@ -5,6 +5,8 @@ REM DORMANT review-only successor. Never install without separate owner approval
 REM Python requires VOWSIG_GUARDED_PUBLISH_ENABLED=1, absent by default.
 
 cd /d "%~dp0.."
+REM Fail closed BEFORE any logs, notifications, network or filesystem writes.
+if not "%VOWSIG_GUARDED_PUBLISH_ENABLED%"=="1" exit /b 31
 set "PY=%CD%\.venv\Scripts\python.exe"
 set "LOGDIR=%CD%\data\forward-task-logs"
 set "LOG=%LOGDIR%\product_publish_guarded_v0_1.log"

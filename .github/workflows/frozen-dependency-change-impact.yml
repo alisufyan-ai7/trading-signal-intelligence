@@ -1,0 +1,45 @@
+name: Frozen Dependency Change Impact
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, ready_for_review]
+
+# Read-only Git context. No secrets, packages or trading-related calls.
+permissions:
+  contents: read
+
+jobs:
+  frozen-dependency-change-impact:
+    name: frozen-dependency-change-impact
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out TRUSTED base SHA (never execute PR head files)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch candidate PR commit as Git objects only
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "+refs/pull/${PR_NUMBER}/head:refs/remotes/proposed-pr-head"
+          observed="$(git rev-parse refs/remotes/proposed-pr-head)"
+          test "$observed" = "$EXPECTED_HEAD_SHA"
+
+      - name: Detect frozen dependency impact from trusted base
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B scripts/check_frozen_dependency_impact.py \
+            --repo . --base "$BASE_SHA" --head "$HEAD_SHA"

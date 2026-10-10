@@ -244,6 +244,11 @@ def test_public_program_builder_registers_crypto_only_with_complete_state(
     monkeypatch.setattr(ai_insights, "_v1_2_1_state", lambda root: {
         "any_state": False, "complete_shape": False
     })
+    # The complete-state report in this test is mocked; source pinning is
+    # covered independently against the real reviewed adapter bytes.
+    monkeypatch.setattr(
+        ai_insights, "_verify_crypto_validation_adapter_source", lambda root: None
+    )
 
     # No crypto state: preserve existing core lineage only.
     monkeypatch.setattr(crypto_validation, "crypto_activation_state", lambda root: {
@@ -294,3 +299,16 @@ def test_public_crypto_research_does_not_change_k3_runtime_sources():
     assert "public_signal_exposure=False" in adapter
     assert "crypto_activation_state(root)" in builder
     assert "build_crypto_public_validation_program" in builder
+
+
+def test_crypto_public_adapter_byte_integrity_guard(tmp_path):
+    root = Path(__file__).resolve().parents[1]
+    ai_insights._verify_crypto_validation_adapter_source(root)
+
+    relative = Path("src/trading_signal_intelligence/product/crypto_validation.py")
+    tampered = tmp_path / relative
+    tampered.parent.mkdir(parents=True, exist_ok=True)
+    tampered.write_bytes((root / relative).read_bytes() + b"\n# mutation\n")
+
+    with pytest.raises(ObservabilityError, match="source integrity mismatch"):
+        ai_insights._verify_crypto_validation_adapter_source(tmp_path)

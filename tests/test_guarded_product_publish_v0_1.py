@@ -354,3 +354,67 @@ def test_archived_history_is_exclusive_and_cannot_be_overwritten(tmp_path):
     with pytest.raises(guard.PublicationHeld, match="collision"):
         guard._pending_archive(tmp_path, snapshot, raw)
     assert first.read_bytes() == before
+
+
+def test_independent_exporter_builds_new_core_expansion_without_crypto(monkeypatch, tmp_path):
+    """No K5 gate, no old public snapshot and no crypto report builder."""
+    script = ROOT / "scripts/export_guarded_core_expansion_v0_2.py"
+    spec = importlib.util.spec_from_file_location("guarded_core_export_v0_2", script)
+    assert spec and spec.loader
+    export = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(export)
+
+    def status_rows():
+        return [{
+            "source_symbol": "EURUSD", "canonical_symbol": "EUR/USD",
+            "asset_class": "forex", "product_status": "live_signal_market",
+            "evidence_status": "verified", "forward": {
+                "state": "live", "ledger_valid": True,
+            },
+        }]
+    monkeypatch.setattr(export, "market_statuses", status_rows)
+    monkeypatch.setattr(export, "public_signal_history", lambda market, limit: [])
+    monkeypatch.setattr(export, "operational_event_counts", lambda market: {})
+    monkeypatch.setattr(export, "health", lambda: {"live_signal_markets": 9})
+    monkeypatch.setattr(export, "evidence_summary", lambda: {"markets": {}})
+    monkeypatch.setattr(export, "build_public_ai_insights",
+                        lambda root: {"publish_allowed": True, "protocol_version": "AI-v1.0"})
+    monkeypatch.setattr(export, "v1_1_state", lambda root: {"any_state": True})
+    programs = _candidate()["validation_programs"][:2]
+    monkeypatch.setattr(export, "build_core_expansion_programs", lambda root: programs)
+    snapshot = export.build_core_expansion_snapshot(tmp_path)
+    assert [p["program_id"] for p in snapshot["validation_programs"]] == [
+        "core-ai-shadow", "market-expansion-1"
+    ]
+    assert snapshot["markets"][0]["signals"] == []
+    assert snapshot["markets"][0]["operational_event_counts"] == {}
+    assert snapshot["raw_market_data_included"] is False
+    assert isinstance(snapshot["generated_at_utc"], str)
+
+
+def test_unsafe_nested_private_crypto_field_rejected(monkeypatch):
+    _no_network_validators(monkeypatch)
+    payload = _candidate()
+    payload["validation_programs"][2]["status"] = "collecting"
+    payload["validation_programs"][2]["markets"][0]["entry_price"] = 199.50
+    with pytest.raises(guard.PublicationHeld, match="private"):
+        guard.validate_candidate(payload, NOW)
+
+
+def test_core_expansion_fallback_not_allowed_if_base_unhealthy(monkeypatch):
+    _no_network_validators(monkeypatch)
+    payload = _candidate()
+    payload["validation_programs"].pop()
+    payload["validation_programs"][0]["health"]["healthy"] = False
+    with pytest.raises(guard.PublicationHeld, match="unhealthy"):
+        guard.validate_candidate(payload, NOW)
+
+
+def test_archival_filename_matches_exact_accepted_receipt(tmp_path):
+    (tmp_path / "data").mkdir()
+    payload = _candidate()
+    raw = json.dumps(payload).encode("utf-8")
+    archive, receipt = guard._pending_archive(tmp_path, payload, raw)
+    guard._accept_archive(archive, receipt, raw)
+    assert guard.ARCHIVE_RE.fullmatch(receipt.name) is not None
+    assert archive.read_bytes() == raw

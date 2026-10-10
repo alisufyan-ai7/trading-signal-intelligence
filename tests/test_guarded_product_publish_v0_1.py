@@ -141,7 +141,9 @@ def test_public_contract_rejects_unsafe_crypto(monkeypatch, defect):
 
 def test_failed_export_does_not_push_old_snapshot(monkeypatch, tmp_path):
     calls = []
-    (tmp_path / "public_snapshot.json").write_text("OLD-SNAPSHOT")
+    data = tmp_path / "data"
+    data.mkdir()
+    (data / "public_snapshot.json").write_text("OLD-SNAPSHOT")
     monkeypatch.setattr(guard, "probe_k5", lambda: _task())
     monkeypatch.setattr(guard, "validate_k5_finished", lambda *_: None)
     monkeypatch.setattr(guard, "crypto_fingerprints", lambda _: {"BTCUSDT": "digest"})
@@ -152,10 +154,12 @@ def test_failed_export_does_not_push_old_snapshot(monkeypatch, tmp_path):
     with pytest.raises(guard.PublicationHeld, match="export failure"):
         guard.publish_locked(tmp_path)
     assert calls == ["export_public_snapshot.py"]
-    assert (tmp_path / "public_snapshot.json").read_text() == "OLD-SNAPSHOT"
+    assert (data / "public_snapshot.json").read_text() == "OLD-SNAPSHOT"
 
 
 def test_crypto_ledger_change_blocks_push(monkeypatch, tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
     calls = []
     monkeypatch.setattr(guard, "probe_k5", lambda: _task())
     monkeypatch.setattr(guard, "validate_k5_finished", lambda *_: None)
@@ -171,7 +175,7 @@ def test_crypto_ledger_change_blocks_push(monkeypatch, tmp_path):
     with pytest.raises(guard.PublicationHeld, match="ledger changed"):
         guard.publish_locked(tmp_path)
     assert calls == ["export_public_snapshot.py"]
-    assert not (tmp_path / "public_snapshot.json").exists()
+    assert not (data / "public_snapshot.json").exists()
 
 
 def test_disabled_by_default_without_cutover(tmp_path, monkeypatch):
@@ -192,7 +196,9 @@ def test_dormant_wrapper_runs_alerts_independently():
 
 
 def test_failed_cloud_push_preserves_previous_local_snapshot(monkeypatch, tmp_path):
-    old = tmp_path / "public_snapshot.json"
+    data = tmp_path / "data"
+    data.mkdir()
+    old = data / "public_snapshot.json"
     old.write_text("IMMUTABLE-OLD-SNAPSHOT", encoding="utf-8")
     calls = []
     monkeypatch.setattr(guard, "probe_k5", lambda: _task())
@@ -215,6 +221,8 @@ def test_failed_cloud_push_preserves_previous_local_snapshot(monkeypatch, tmp_pa
 
 
 def test_successful_mock_push_atomically_updates_local_snapshot(monkeypatch, tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
     calls = []
     monkeypatch.setattr(guard, "probe_k5", lambda: _task())
     monkeypatch.setattr(guard, "validate_k5_finished", lambda *_: None)
@@ -227,4 +235,4 @@ def test_successful_mock_push_atomically_updates_local_snapshot(monkeypatch, tmp
     monkeypatch.setattr(guard, "run_checked", mock_run)
     guard.publish_locked(tmp_path)
     assert calls == ["export_public_snapshot.py", "push_public_snapshot.py"]
-    assert json.loads((tmp_path / "public_snapshot.json").read_text(encoding="utf-8"))["validation_programs"][2]["program_id"] == "crypto-expansion-1"
+    assert json.loads((data / "public_snapshot.json").read_text(encoding="utf-8"))["validation_programs"][2]["program_id"] == "crypto-expansion-1"

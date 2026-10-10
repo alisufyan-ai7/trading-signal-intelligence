@@ -32,7 +32,18 @@ def _active_lines(path: Path) -> str:
 def test_original_k3_runner_stays_byte_for_byte_frozen() -> None:
     anchor = json.loads(ANCHOR.read_text(encoding="utf-8"))
     assert anchor["artifact_hashes"]["task_runner"] == FROZEN_RUNNER_SHA256
-    assert hashlib.sha256(FROZEN_RUNNER.read_bytes()).hexdigest() == FROZEN_RUNNER_SHA256
+    raw = FROZEN_RUNNER.read_bytes()
+    # The K3 anchor fixed the Windows working-tree CRLF bytes; Git's stored
+    # text blob is LF. Check BOTH immutable representations so that an
+    # isolated Linux review and native Windows checkout reach the same verdict.
+    normalized_lf = raw.replace(b"\r\n", b"\n")
+    assert b"\r" not in normalized_lf
+    assert raw in (normalized_lf, normalized_lf.replace(b"\n", b"\r\n"))
+    assert hashlib.sha256(normalized_lf).hexdigest() == (
+        "acac9ce651021783fb46f570bdd1b22172c558129da7a3315f2887fbfabedceb"
+    )
+    windows_crlf = normalized_lf.replace(b"\n", b"\r\n")
+    assert hashlib.sha256(windows_crlf).hexdigest() == FROZEN_RUNNER_SHA256
 
 
 def test_k5_successor_uses_same_windows_scheduler_runner_conventions() -> None:

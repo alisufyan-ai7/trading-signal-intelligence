@@ -35,6 +35,7 @@ ADDITIONS = [
         "sources": {"binance_spot": {"symbol": "SOLUSDT", "status": "primary"}},
     },
 ]
+PUBLIC_TITLE = "Expansion Shadow Validation — operational compatibility (historical registry mismatch preserved)"
 REQUIRED_HEALTH = (
     "ledgers_valid",
     "activation_anchor_upstream_valid",
@@ -162,19 +163,18 @@ def build_compatibility_qualified_program(
 
     if report.get("health", {}).get("healthy") is True:
         raise CompatibilityRejected("legacy healthy report does not need compatibility")
-    attestation = prove_expansion_compatibility(root, report)
-
-    # Report remains untouched; prepare distinct public-operational health.
+    # The separate proof is required before the new public-operational
+    # report is built. Do not surface extra fields: the immutable public
+    # validation-program schema has additionalProperties=false, including
+    # inside "health". The historical failure remains in the source report,
+    # not silently marked as PASS.
+    prove_expansion_compatibility(root, report)
     separate = copy.deepcopy(report)
     separate["health"]["healthy"] = True
-    program = build_public_validation_program(
+    return build_public_validation_program(
         separate,
         program_id="market-expansion-1",
-        title="Expansion Shadow Validation — registry compatibility attested",
+        title=PUBLIC_TITLE,
         market_labels=EXPANSION_MARKET_LABELS,
         public_signal_exposure=False,
     )
-    program["registry_compatibility"] = attestation
-    program["health"]["historic_activation_artifacts_valid"] = False
-    program["health"]["operational_compatibility_valid"] = True
-    return program

@@ -34,6 +34,7 @@ LINEAGES = (
 GOVERNANCE_FILES = frozenset((
     "scripts/check_frozen_dependency_impact.py",
     ".github/workflows/frozen-dependency-change-impact.yml",
+    ".github/CODEOWNERS",
 ))
 GOVERNANCE_PATTERN = re.compile(
     r"^research/forward/AI-v[^/]*-(?:activation|public-surface-correction)[^/]*\.json$"

@@ -549,10 +549,10 @@ _CRYPTO_VALIDATION_ADAPTER_GIT_BLOB = "65e4d992784e7c4156dde703047c331eda51c2cf"
 def _verify_crypto_validation_adapter_source(repo_root: Path) -> None:
     relative = Path("src/trading_signal_intelligence/product/crypto_validation.py")
     try:
-        raw = (repo_root / relative).read_bytes().replace(b"\\r\\n", b"\\n")
+        raw = (repo_root / relative).read_bytes().replace(b"\r\n", b"\n")
     except OSError as exc:
         raise ObservabilityError("crypto public adapter file unavailable") from exc
-    header = f"blob {len(raw)}\\0".encode("ascii")
+    header = f"blob {len(raw)}\0".encode("ascii")
     actual_blob = hashlib.sha1(header + raw).hexdigest()
     if actual_blob != _CRYPTO_VALIDATION_ADAPTER_GIT_BLOB:
         raise ObservabilityError("crypto public adapter source integrity mismatch")

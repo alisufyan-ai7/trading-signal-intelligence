@@ -36,7 +36,7 @@ GOVERNANCE_FILES = frozenset((
     ".github/workflows/frozen-dependency-change-impact.yml",
 ))
 GOVERNANCE_PATTERN = re.compile(
-    r"^research/forward/AI-v[^/]*-(?:activation|public-surface-correction)[^/]*\\.json$"
+    r"^research/forward/AI-v[^/]*-(?:activation|public-surface-correction)[^/]*\.json$"
 )
 HEX_SHA = re.compile(r"^[0-9a-f]{64}$")
 

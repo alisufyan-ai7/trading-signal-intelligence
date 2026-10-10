@@ -151,33 +151,17 @@ def validate_candidate(payload: dict[str, Any], now: datetime) -> None:
         if not isinstance(state, dict) or state.get("healthy") is not True:
             raise PublicationHeld("validation lineage unhealthy: " + program_id)
 
+    # Public schema version 1 has additionalProperties=False.
+    # The historic mismatch remains in the original report and the
+    # distinct signed-off operational title, not ad hoc JSON fields.
     expansion = by_id["market-expansion-1"]
-    if "registry_compatibility" in expansion:
-        from trading_signal_intelligence.product.expansion_registry_compat_v0_1 import (
-            ADDITION_COMMIT, CURRENT_CRLF_SHA256, EXPECTED_ARTIFACT_COUNT,
-            HISTORIC_CRLF_SHA256,
-        )
-        proof = expansion["registry_compatibility"]
-        expansion_health = expansion.get("health") or {}
-        if (not isinstance(proof, dict)
-            or set(proof) != {
-                "schema_version", "status", "historic_activation_artifacts_valid",
-                "historic_registry_sha256", "current_registry_sha256",
-                "additive_git_commit", "added_symbols",
-                "unchanged_frozen_artifacts_verified",
-            }
-            or proof.get("schema_version") != 1
-            or proof.get("status") != "prospective_exact_registry_compatibility"
-            or proof.get("historic_activation_artifacts_valid") is not False
-            or proof.get("historic_registry_sha256") != HISTORIC_CRLF_SHA256
-            or proof.get("current_registry_sha256") != CURRENT_CRLF_SHA256
-            or proof.get("additive_git_commit") != ADDITION_COMMIT
-            or proof.get("added_symbols") != ["ETHUSDT", "SOLUSDT"]
-            or proof.get("unchanged_frozen_artifacts_verified") !=
-               EXPECTED_ARTIFACT_COUNT - 1
-            or expansion_health.get("historic_activation_artifacts_valid") is not False
-            or expansion_health.get("operational_compatibility_valid") is not True):
-            raise PublicationHeld("expansion registry compatibility certificate invalid")
+    if ("registry_compatibility" in expansion
+        or any(key not in {
+            "healthy", "ledgers_valid", "scheduler_healthy",
+            "broker_execution_disabled"
+        } for key in expansion.get("health", {}))):
+        raise PublicationHeld("expansion public schema must remain frozen")
+
 
     if "crypto-expansion-1" in by_id:
         crypto = by_id["crypto-expansion-1"]
@@ -319,6 +303,29 @@ def _last_accepted_crypto(root: Path, now: datetime) -> dict[str, Any] | None:
     return None
 
 
+def _verify_current_expansion_claim(root: Path, payload: dict[str, Any]) -> None:
+    """Reattest declared exceptional public health before sending any HTTP POST."""
+    from trading_signal_intelligence.product.expansion_registry_compat_v0_1 import (
+        PUBLIC_TITLE,
+        prove_expansion_compatibility,
+    )
+
+    by_id = {row["program_id"]: row for row in payload["validation_programs"]}
+    expansion = by_id["market-expansion-1"]
+    if expansion.get("title") != PUBLIC_TITLE:
+        return  # ordinary healthy expansion uses the unmodified original builder
+    from trading_signal_intelligence.ai_v1.observability_v1_2_1 import (
+        build_report_v1_2_1,
+    )
+    try:
+        original = build_report_v1_2_1(
+            root, include_scheduler=True, verify_upstream=True,
+        )
+        prove_expansion_compatibility(root, original)
+    except Exception as exc:
+        raise PublicationHeld("expansion registry proof changed before upload") from exc
+
+
 def run_checked(argv: list[str], root: Path, *, timeout: int) -> None:
     try:
         subprocess.run(argv, cwd=root, check=True, timeout=timeout)
@@ -404,6 +411,7 @@ def publish_locked(root: Path) -> None:
         if staged.read_bytes() != raw:
             raise PublicationHeld("staged bytes changed before upload")
         validate_candidate(payload, datetime.now(timezone.utc))
+        _verify_current_expansion_claim(root, payload)
         archive, receipt = _pending_archive(root, payload, raw)
         if staged.read_bytes() != raw or archive.read_bytes() != raw:
             raise PublicationHeld("staged or archived bytes changed before upload")

@@ -316,7 +316,10 @@ def publish_locked(root: Path) -> None:
         validate_k5_finished(before, datetime.now(timezone.utc))
         ledger_before = crypto_fingerprints(root)
         crypto_ready = True
-    except PublicationHeld:
+    except Exception:
+        # Any crypto-only inability to prove completion is a crypto hold;
+        # it must not prevent independently verified core/expansion updates.
+        # Crypto must never be exposed on this path.
         # Crypto hold is NOT authority to suppress independent core/expansion.
         crypto_ready = False
 

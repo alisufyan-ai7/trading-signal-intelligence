@@ -595,4 +595,27 @@ def build_public_validation_programs(
             )
         )
 
+    # Add only a prospectively activated, independently verified crypto
+    # lineage. Never allow partial crypto state or private signal payloads.
+    from trading_signal_intelligence.ai_v1.observability import ObservabilityError
+    from trading_signal_intelligence.product.crypto_validation import (
+        build_crypto_public_validation_program,
+        crypto_activation_state,
+    )
+
+    crypto_state = crypto_activation_state(root)
+    if crypto_state["any_state"]:
+        if not crypto_state["complete_shape"]:
+            raise ObservabilityError(
+                "partial AI-v1.3 crypto state detected; "
+                "refuse incomplete public observability"
+            )
+        programs.append(
+            build_crypto_public_validation_program(
+                root,
+                include_scheduler=include_scheduler,
+                verify_upstream=verify_upstream,
+            )
+        )
+
     return programs

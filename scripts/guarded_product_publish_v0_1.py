@@ -172,7 +172,8 @@ def validate_candidate(payload: dict[str, Any], now: datetime) -> None:
                 or health.get("healthy") is not False
                 or health.get("scheduler_healthy") is not False):
                 raise PublicationHeld("unlabeled or implausible delayed crypto data")
-        elif (crypto.get("data_freshness") not in (None, "current")
+        elif (crypto.get("status") != "collecting"
+              or crypto.get("data_freshness") not in (None, "current")
               or any(health.get(key) is not True for key in (
                   "healthy", "ledgers_valid", "scheduler_healthy",
                   "broker_execution_disabled",
@@ -353,7 +354,12 @@ def publish_locked(root: Path) -> None:
             raw, payload = _staged_snapshot(staged, datetime.now(timezone.utc))
             if {p["program_id"] for p in payload["validation_programs"]} != BASE_PROGRAMS:
                 raise PublicationHeld("core/expansion fallback is not independent")
-            cached_crypto = _last_accepted_crypto(root, datetime.now(timezone.utc))
+            try:
+                cached_crypto = _last_accepted_crypto(root, datetime.now(timezone.utc))
+            except PublicationHeld:
+                # Corrupted or unverifiable crypto cache must not block fresh
+                # independently verified core/expansion publication.
+                cached_crypto = None
             if cached_crypto is not None:
                 # New global generated_at_utc reflects fresh core/expansion only.
                 # Cached crypto is prominently DELAYED with its original timestamp.

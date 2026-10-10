@@ -96,9 +96,20 @@ def test_exact_additive_current_crlf_attested_and_historic_failure_preserved(mon
     public = compat.build_compatibility_qualified_program(tmp_path, evidence)
     assert public["program_id"] == "market-expansion-1"
     assert public["health"]["healthy"] is True  # prospective product health only
-    assert public["health"]["historic_activation_artifacts_valid"] is False
-    assert public["health"]["operational_compatibility_valid"] is True
-    assert public["registry_compatibility"] == proof
+    assert public["title"] == compat.PUBLIC_TITLE
+    assert "historical registry mismatch" in public["title"]
+    assert "registry_compatibility" not in public
+    assert set(public["health"]) == {
+        "healthy", "ledgers_valid", "scheduler_healthy",
+        "broker_execution_disabled",
+    }
+    # Public schema v1 explicitly forbids arbitrary new fields.
+    schema = json.loads((Path(__file__).resolve().parents[1]
+                         / "config/public_validation_program_schema_v1.json").read_text())
+    assert schema["additionalProperties"] is False
+    assert schema["properties"]["health"]["additionalProperties"] is False
+    assert set(public).issubset(schema["properties"])
+    assert set(schema["required"]).issubset(public)
     assert evidence == before             # immutable historic report untouched
     assert evidence["health"]["healthy"] is False
 

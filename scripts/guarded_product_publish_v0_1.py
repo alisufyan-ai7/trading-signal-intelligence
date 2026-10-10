@@ -23,6 +23,10 @@ HISTORY_NAME = "guarded-snapshot-history-v0.2"
 ARCHIVE_RE = re.compile(r"^snapshot-(\d{8}T\d{6}Z)-([0-9a-f]{64})\.json\.accepted$")
 MAX_K5_AGE_SECONDS = 900
 MAX_SNAPSHOT_AGE_SECONDS = 120
+# No K5 writer-side lock is deployed or verified. Keep all current and delayed
+# public crypto aggregates OFF. A future prospective shared-writer coordination
+# protocol and separately authorized review must replace this fail-closed gate.
+CRYPTO_WRITER_INTERLOCK_READY = False
 CONFIRM = "RUN-GUARDED-PUBLISH-V0.1"
 
 
@@ -346,17 +350,27 @@ def _staged_snapshot(staged: Path, now: datetime) -> tuple[bytes, dict[str, Any]
 def publish_locked(root: Path) -> None:
     """Publish fresh core/expansion even if the separately gated crypto cycle is incomplete."""
     data = root / "data"
-    try:
-        before = probe_k5()
-        validate_k5_finished(before, datetime.now(timezone.utc))
-        ledger_before = crypto_fingerprints(root)
-        crypto_ready = True
-    except Exception:
-        # Any crypto-only inability to prove completion is a crypto hold;
+    crypto_ready = False
+    if CRYPTO_WRITER_INTERLOCK_READY:
+        try:
+            before = probe_k5()
+            validate_k5_finished(before, datetime.now(timezone.utc))
+            ledger_before = crypto_fingerprints(root)
+            crypto_ready = True
+        except Exception:
+            crypto_ready = False
+
+    if not crypto_ready:
+        # Without independently verified writer-side coordination, crypto
+        # remains absent (not current, not DELAYED). Publish only separately
+        # verified fresh core/expansion; no K5 task probing is necessary.
+        pass
+
+    # Existing future-only crypto path remains dormant. Any crypto-only
+    # inability to prove completion is a crypto hold;
         # it must not prevent independently verified core/expansion updates.
         # Crypto must never be exposed on this path.
         # Crypto hold is NOT authority to suppress independent core/expansion.
-        crypto_ready = False
 
     with tempfile.TemporaryDirectory(prefix="guarded-publish-", dir=data) as tmp:
         staging_dir = Path(tmp)
@@ -394,12 +408,15 @@ def publish_locked(root: Path) -> None:
             raw, payload = _staged_snapshot(staged, datetime.now(timezone.utc))
             if {p["program_id"] for p in payload["validation_programs"]} != BASE_PROGRAMS:
                 raise PublicationHeld("core/expansion fallback is not independent")
-            try:
-                cached_crypto = _last_accepted_crypto(root, datetime.now(timezone.utc))
-            except Exception:
-                # Corrupted or unverifiable crypto cache must not block fresh
-                # independently verified core/expansion publication.
-                cached_crypto = None
+            cached_crypto = None
+            if CRYPTO_WRITER_INTERLOCK_READY:
+                try:
+                    cached_crypto = _last_accepted_crypto(root, datetime.now(timezone.utc))
+                except Exception:
+                    # Corrupted/unverifiable crypto history cannot block healthy
+                    # current core/expansion. Without the writer-side interlock,
+                    # cached crypto is never attached under ANY circumstances.
+                    cached_crypto = None
             if cached_crypto is not None:
                 # New global generated_at_utc reflects fresh core/expansion only.
                 # Cached crypto is prominently DELAYED with its original timestamp.

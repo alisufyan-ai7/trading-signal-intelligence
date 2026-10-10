@@ -139,6 +139,10 @@ def test_public_contract_rejects_unsafe_crypto(monkeypatch, defect):
 
 
 def test_failed_export_does_not_push_old_snapshot(monkeypatch, tmp_path):
+    # Deliberately exercise the FUTURE crypto branch under an offline-only
+    # simulated interlock. Production has no K5 writer interlock and fails closed.
+    monkeypatch.setattr(guard, "CRYPTO_WRITER_INTERLOCK_READY", True)
+    monkeypatch.setattr(guard, "require_crypto_writer_interlock", lambda _: None)
     calls = []
     data = tmp_path / "data"
     data.mkdir()
@@ -157,6 +161,10 @@ def test_failed_export_does_not_push_old_snapshot(monkeypatch, tmp_path):
 
 
 def test_crypto_ledger_change_falls_back_to_fresh_core_expansion(monkeypatch, tmp_path):
+    # Deliberately exercise the FUTURE crypto branch under an offline-only
+    # simulated interlock. Production has no K5 writer interlock and fails closed.
+    monkeypatch.setattr(guard, "CRYPTO_WRITER_INTERLOCK_READY", True)
+    monkeypatch.setattr(guard, "require_crypto_writer_interlock", lambda _: None)
     data = tmp_path / "data"
     data.mkdir()
     calls = []
@@ -208,6 +216,10 @@ def test_dormant_wrapper_runs_alerts_independently():
 
 
 def test_failed_cloud_push_preserves_previous_local_snapshot(monkeypatch, tmp_path):
+    # Deliberately exercise the FUTURE crypto branch under an offline-only
+    # simulated interlock. Production has no K5 writer interlock and fails closed.
+    monkeypatch.setattr(guard, "CRYPTO_WRITER_INTERLOCK_READY", True)
+    monkeypatch.setattr(guard, "require_crypto_writer_interlock", lambda _: None)
     data = tmp_path / "data"
     data.mkdir()
     old = data / "public_snapshot.json"
@@ -233,6 +245,10 @@ def test_failed_cloud_push_preserves_previous_local_snapshot(monkeypatch, tmp_pa
 
 
 def test_successful_mock_push_atomically_updates_local_snapshot(monkeypatch, tmp_path):
+    # Deliberately exercise the FUTURE crypto branch under an offline-only
+    # simulated interlock. Production has no K5 writer interlock and fails closed.
+    monkeypatch.setattr(guard, "CRYPTO_WRITER_INTERLOCK_READY", True)
+    monkeypatch.setattr(guard, "require_crypto_writer_interlock", lambda _: None)
     data = tmp_path / "data"
     data.mkdir()
     calls = []
@@ -424,3 +440,53 @@ def test_safe_two_program_fallback_is_explicitly_allowed(monkeypatch):
     data["validation_programs"].pop()
     guard.validate_candidate(data, NOW)
     assert {p["program_id"] for p in data["validation_programs"]} == guard.BASE_PROGRAMS
+
+
+def test_uncoordinated_default_never_uses_crypto_or_old_crypto_archive(monkeypatch, tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    calls = []
+    # Any attempt to inspect K5 must fail: safe base-only must not need it.
+    monkeypatch.setattr(guard, "probe_k5", lambda: pytest.fail("K5 probed without interlock"))
+    monkeypatch.setattr(guard, "crypto_fingerprints",
+                        lambda _: pytest.fail("crypto ledgers accessed without interlock"))
+    monkeypatch.setattr(guard, "_last_accepted_crypto",
+                        lambda *_: pytest.fail("old crypto cache attached without interlock"))
+    monkeypatch.setattr(guard, "validate_candidate", lambda *_: None)
+
+    def offline_run(argv, root, *, timeout):
+        name = Path(argv[2]).name
+        calls.append(name)
+        if name == "export_guarded_core_expansion_v0_2.py":
+            row = _candidate()
+            row["validation_programs"].pop()
+            Path(argv[-1]).write_text(json.dumps(row), encoding="utf-8")
+        elif name == "push_public_snapshot.py":
+            assert json.loads(Path(argv[-1]).read_text())["validation_programs"][-1][
+                "program_id"
+            ] == "market-expansion-1"
+
+    monkeypatch.setattr(guard, "run_checked", offline_run)
+    guard.publish_locked(tmp_path)
+    assert calls == ["export_guarded_core_expansion_v0_2.py", "push_public_snapshot.py"]
+    assert {
+        p["program_id"] for p in json.loads(
+            (data / "public_snapshot.json").read_text(encoding="utf-8")
+        )["validation_programs"]
+    } == guard.BASE_PROGRAMS
+
+
+def test_accidental_crypto_flag_flip_fails_closed_even_before_k5(monkeypatch, tmp_path):
+    (tmp_path / "data").mkdir()
+    monkeypatch.setattr(guard, "CRYPTO_WRITER_INTERLOCK_READY", True)
+    monkeypatch.setattr(guard, "probe_k5", lambda: pytest.fail("K5 should not be probed"))
+    with pytest.raises(guard.PublicationHeld, match="not implemented"):
+        guard.publish_locked(tmp_path)
+    assert not (tmp_path / "data" / "public_snapshot.json").exists()
+    assert not (tmp_path / "data" / guard.HISTORY_NAME).exists()
+
+
+def test_writer_interlock_absent_is_the_released_default():
+    assert guard.CRYPTO_WRITER_INTERLOCK_READY is False
+    with pytest.raises(guard.PublicationHeld, match="not implemented"):
+        guard.require_crypto_writer_interlock(ROOT)

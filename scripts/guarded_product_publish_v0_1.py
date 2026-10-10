@@ -66,6 +66,18 @@ def ensure_stable_k5(before: dict[str, Any], after: dict[str, Any], now: datetim
         raise PublicationHeld("K5 changed during export")
 
 
+def require_crypto_writer_interlock(root: Path) -> None:
+    """No shared K5 writer/publisher protocol exists in the frozen writer.
+
+    This intentionally cannot return successfully in the current reviewed
+    source. A future separate registered version must establish and verify
+    that BOTH K5's writer and this publisher enforce the same interlock, and
+    that it covers export THROUGH HTTP acceptance. A simple boolean edit is
+    insufficient to enable crypto publication.
+    """
+    raise PublicationHeld("K5 writer-side interlock is not implemented")
+
+
 def probe_k5() -> dict[str, Any]:
     if os.name != "nt":
         raise PublicationHeld("native Windows Task Scheduler required")
@@ -352,6 +364,7 @@ def publish_locked(root: Path) -> None:
     data = root / "data"
     crypto_ready = False
     if CRYPTO_WRITER_INTERLOCK_READY:
+        require_crypto_writer_interlock(root)
         try:
             before = probe_k5()
             validate_k5_finished(before, datetime.now(timezone.utc))
@@ -360,17 +373,10 @@ def publish_locked(root: Path) -> None:
         except Exception:
             crypto_ready = False
 
-    if not crypto_ready:
-        # Without independently verified writer-side coordination, crypto
-        # remains absent (not current, not DELAYED). Publish only separately
-        # verified fresh core/expansion; no K5 task probing is necessary.
-        pass
-
-    # Existing future-only crypto path remains dormant. Any crypto-only
-    # inability to prove completion is a crypto hold;
-        # it must not prevent independently verified core/expansion updates.
-        # Crypto must never be exposed on this path.
-        # Crypto hold is NOT authority to suppress independent core/expansion.
+    # Default: no current or delayed public crypto. The K5 writer has no
+    # mutually exclusive publisher lock, so separate task status and hashes
+    # cannot establish consistency THROUGH the final HTTP POST. The disabled
+    # branch may be exercised in isolated tests only after mocking the guard.
 
     with tempfile.TemporaryDirectory(prefix="guarded-publish-", dir=data) as tmp:
         staging_dir = Path(tmp)

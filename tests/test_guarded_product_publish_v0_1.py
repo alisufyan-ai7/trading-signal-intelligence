@@ -152,7 +152,7 @@ def test_failed_export_does_not_push_old_snapshot(monkeypatch, tmp_path):
     monkeypatch.setattr(guard, "run_checked", fail)
     with pytest.raises(guard.PublicationHeld, match="export failure"):
         guard.publish_locked(tmp_path)
-    assert calls == ["export_public_snapshot.py", "export_guarded_core_expansion_v0_2.py"]
+    assert calls == ["export_guarded_full_v0_1.py", "export_guarded_core_expansion_v0_2.py"]
     assert (data / "public_snapshot.json").read_text() == "OLD-SNAPSHOT"
 
 
@@ -169,7 +169,7 @@ def test_crypto_ledger_change_falls_back_to_fresh_core_expansion(monkeypatch, tm
     def run(argv, root, *, timeout):
         name = Path(argv[2]).name
         calls.append(name)
-        if name == "export_public_snapshot.py":
+        if name == "export_guarded_full_v0_1.py":
             Path(argv[-1]).write_text(json.dumps(_candidate()), encoding="utf-8")
         elif name == "export_guarded_core_expansion_v0_2.py":
             two = _candidate()
@@ -179,7 +179,7 @@ def test_crypto_ledger_change_falls_back_to_fresh_core_expansion(monkeypatch, tm
     monkeypatch.setattr(guard, "run_checked", run)
     guard.publish_locked(tmp_path)
     assert calls == [
-        "export_public_snapshot.py",
+        "export_guarded_full_v0_1.py",
         "export_guarded_core_expansion_v0_2.py",
         "push_public_snapshot.py",
     ]
@@ -220,7 +220,7 @@ def test_failed_cloud_push_preserves_previous_local_snapshot(monkeypatch, tmp_pa
 
     def mock_run(argv, root, *, timeout):
         calls.append(Path(argv[2]).name)
-        if Path(argv[2]).name == "export_public_snapshot.py":
+        if Path(argv[2]).name == "export_guarded_full_v0_1.py":
             Path(argv[-1]).write_text(json.dumps(_candidate()), encoding="utf-8")
         elif Path(argv[2]).name == "push_public_snapshot.py":
             raise guard.PublicationHeld("mock cloud push failed")
@@ -228,7 +228,7 @@ def test_failed_cloud_push_preserves_previous_local_snapshot(monkeypatch, tmp_pa
     monkeypatch.setattr(guard, "run_checked", mock_run)
     with pytest.raises(guard.PublicationHeld, match="cloud push failed"):
         guard.publish_locked(tmp_path)
-    assert calls == ["export_public_snapshot.py", "push_public_snapshot.py"]
+    assert calls == ["export_guarded_full_v0_1.py", "push_public_snapshot.py"]
     assert old.read_text(encoding="utf-8") == "IMMUTABLE-OLD-SNAPSHOT"
 
 
@@ -242,11 +242,11 @@ def test_successful_mock_push_atomically_updates_local_snapshot(monkeypatch, tmp
     monkeypatch.setattr(guard, "validate_candidate", lambda *_: None)
     def mock_run(argv, root, *, timeout):
         calls.append(Path(argv[2]).name)
-        if Path(argv[2]).name == "export_public_snapshot.py":
+        if Path(argv[2]).name == "export_guarded_full_v0_1.py":
             Path(argv[-1]).write_text(json.dumps(_candidate()), encoding="utf-8")
     monkeypatch.setattr(guard, "run_checked", mock_run)
     guard.publish_locked(tmp_path)
-    assert calls == ["export_public_snapshot.py", "push_public_snapshot.py"]
+    assert calls == ["export_guarded_full_v0_1.py", "push_public_snapshot.py"]
     assert json.loads((data / "public_snapshot.json").read_text(encoding="utf-8"))["validation_programs"][2]["program_id"] == "crypto-expansion-1"
 
 

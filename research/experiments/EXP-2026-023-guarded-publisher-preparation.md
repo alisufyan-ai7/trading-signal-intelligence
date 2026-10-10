@@ -2,7 +2,9 @@
 
 ## Scope and ownership
 
-Status: **PROSPECTIVE / DRAFT / OFFLINE-TESTS PENDING / NOT DEPLOYED**.
+Status: **PROSPECTIVE / DRAFT / v0.2 INDEPENDENT-LINEAGE REVISION — NATIVE OFFLINE RETEST PENDING / NOT DEPLOYED**.
+
+The preceding v0.1 review HEAD e49a0bb0ac2ff4c876054ddeabdca5afb5bb1ae5 had 27 guarded tests and 48 integration regressions PASS (75 total). These passes do **NOT** carry forward to the new v0.2 candidate until rerun.
 
 Owner approval on 2026-10-10: APPROVE VOWSIG GUARDED PUBLISHER PREPARATION ONLY.
 
@@ -41,6 +43,26 @@ If crypto is incomplete, the guard withholds the **whole** update, leaving the l
 - Future native Windows tests and a zero-network live-data *preview* in an isolated checkout are required; offline fixture success alone is insufficient for merge or deployment.
 - Preserve original Task Scheduler XML/action and original snapshot SHA for rollback. After cutover, restore normal schedule only after verified hosted snapshot and immutable correction/source integrity.
 - Keep current correction #9 unchanged. New add-on scripts are not included in the existing AI-v1.1 artifact correction allowlist; an independently reviewed source-integrity/packaging strategy is required before deployment.
+
+## 2026-10-10 revision — no cross-lineage outage or lost accepted snapshot evidence
+
+Owner explicitly requested a PR #48 revision ensuring that incomplete AI-v1.3 does not hold otherwise verified core/expansion website updates. The owner's full scope remains **GitHub-only preparation and offline tests**; this revision is NOT VPS/cutover authority.
+
+The first v0.1 version withheld the entire public snapshot when K5 was Running, missing, failed, stale or changing. That could make even AI-v1.1/AI-v1.2.1 public statistics stale. The prospective v0.2 implementation instead uses:
+
+1. **Fresh current crypto path:** require exact K5 Ready + successful fresh LastTaskResult + upstream and three-ledger fingerprints; export original three-program snapshot into a unique staging path, validate it, recheck K5 and ledger hashes, then publish.
+2. **Independent core/expansion fallback:** when K5 is incomplete, crypto export or postcheck fails, or crypto ledgers change, discard that three-program staging attempt and run *new independent* `scripts/export_guarded_core_expansion_v0_2.py` to generate a brand-new current two-program snapshot through the original core and expansion public report builders. The stale `data/public_snapshot.json` is **never** used to supply current core/expansion values.
+3. **Historic crypto if available:** only carry forward a previously **accepted** verified crypto aggregate from an append-only, byte-hashed snapshot archive. Set `data_freshness=delayed`, `status=delayed`, health `healthy=false` / `scheduler_healthy=false`, retain true `last_verified_snapshot_at_utc`, and include the original time prominently in the `title`, which the unchanged generic website renders. Never present the last crypto metrics as freshly verified. If no valid prior acceptance exists or archive is damaged, show *only* two current programs (crypto pending), without suppressing healthy core and expansion.
+4. **History preservation:** before each attempted upload, retain the exact validated sanitized candidate bytes in a *new* SHA-256-addressed file under `data/guarded-snapshot-history-v0.2/` using exclusive create + fsync; after an upload reports success, append a separate `.accepted` receipt (also exclusive/fsycn). Do not overwrite any previous accepted artifact or modify private append-only AI ledgers. Atomic replacement of `data/public_snapshot.json` occurs only after upload success and acceptance receipt. An interrupted upload may leave a candidate **without** an acceptance receipt; such a candidate is never reused as proven accepted.
+5. **No false availability:** a successful read-only core/expansion validation is still mandatory; no fallback is allowed for an unhealthy core/expansion lineage, malformed snapshots, cloud schema failures or source governance failures. An offline pass will not prove operational concurrency or hosted durability.
+
+**New additive file:** `scripts/export_guarded_core_expansion_v0_2.py`. Earlier files remain on the review branch, and the original production runner, original exporter, frozen K3/K4, correction #9 and all current VPS schedulers remain untouched.
+
+**Data semantics:** private crypto/core/expansion SQLite ledgers remain the source of truth; website snapshots are derived publication artifacts. We preserve accepted artifacts prospectively. We cannot guarantee reconstructing *every past unarchived hourly snapshot*, nor atomically commit a single transaction across remote cloud and local disk. Provider/outage and K5 lifecycle gap evidence remains in the untouched ledgers. The `generated_at_utc` of a delayed-crypto publication refers to its **new current core/expansion snapshot**; the crypto's `last_verified_snapshot_at_utc` explicitly refers to older data.
+
+**Open pre-cutover blockers:** narrow race between K5 final check and cloud POST; no shared cross-market writer lock; new core/expansion exporter equivalence to current production under real ledgers; archive retention/rotation/security/storage quota policy; accepted-receipt crash semantics; independent alert completion, historical source backup review and rollback; unchanged old Product Publish task must be contained before cutover; source-integrity provenance for new additive runner/exporter. These are stop conditions, not silently accepted limitations. No public crypto directional signal exposure or broker execution is permitted.
+
+**Required fresh offline tests:** K5 Running while core/expansion *still publish*; current BTC/ETH/SOL success; K5 change during export falling back to 2 programs; failed export with no old-snapshot upload; malformed cached crypto excluded safely; verified old crypto explicitly DELAYED with preserved timestamp; no archive overwrites; failed upload creates no acceptance receipt; no ledger writes; existing 48 public tests unchanged. Repeat native Windows tests against exact revised head only.
 
 ## Prospective test matrix
 

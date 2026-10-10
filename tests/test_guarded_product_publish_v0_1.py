@@ -153,11 +153,11 @@ def test_failed_export_does_not_push_old_snapshot(monkeypatch, tmp_path):
     monkeypatch.setattr(guard, "run_checked", fail)
     with pytest.raises(guard.PublicationHeld, match="export failure"):
         guard.publish_locked(tmp_path)
-    assert calls == ["export_public_snapshot.py"]
+    assert calls == ["export_public_snapshot.py", "export_guarded_core_expansion_v0_2.py"]
     assert (data / "public_snapshot.json").read_text() == "OLD-SNAPSHOT"
 
 
-def test_crypto_ledger_change_blocks_push(monkeypatch, tmp_path):
+def test_crypto_ledger_change_falls_back_to_fresh_core_expansion(monkeypatch, tmp_path):
     data = tmp_path / "data"
     data.mkdir()
     calls = []
@@ -166,16 +166,29 @@ def test_crypto_ledger_change_blocks_push(monkeypatch, tmp_path):
     monkeypatch.setattr(guard, "validate_candidate", lambda *_: None)
     state = iter([{"BTCUSDT": "old"}, {"BTCUSDT": "new"}])
     monkeypatch.setattr(guard, "crypto_fingerprints", lambda _: next(state))
+
     def run(argv, root, *, timeout):
         name = Path(argv[2]).name
         calls.append(name)
         if name == "export_public_snapshot.py":
             Path(argv[-1]).write_text(json.dumps(_candidate()), encoding="utf-8")
+        elif name == "export_guarded_core_expansion_v0_2.py":
+            two = _candidate()
+            two["validation_programs"].pop()
+            Path(argv[-1]).write_text(json.dumps(two), encoding="utf-8")
+
     monkeypatch.setattr(guard, "run_checked", run)
-    with pytest.raises(guard.PublicationHeld, match="ledger changed"):
-        guard.publish_locked(tmp_path)
-    assert calls == ["export_public_snapshot.py"]
-    assert not (data / "public_snapshot.json").exists()
+    guard.publish_locked(tmp_path)
+    assert calls == [
+        "export_public_snapshot.py",
+        "export_guarded_core_expansion_v0_2.py",
+        "push_public_snapshot.py",
+    ]
+    accepted = json.loads((data / "public_snapshot.json").read_text(encoding="utf-8"))
+    assert [p["program_id"] for p in accepted["validation_programs"]] == [
+        "core-ai-shadow", "market-expansion-1",
+    ]
+    assert len(list((data / guard.HISTORY_NAME).glob("*.accepted"))) == 1
 
 
 def test_disabled_by_default_without_cutover(tmp_path, monkeypatch):
@@ -236,3 +249,108 @@ def test_successful_mock_push_atomically_updates_local_snapshot(monkeypatch, tmp
     guard.publish_locked(tmp_path)
     assert calls == ["export_public_snapshot.py", "push_public_snapshot.py"]
     assert json.loads((data / "public_snapshot.json").read_text(encoding="utf-8"))["validation_programs"][2]["program_id"] == "crypto-expansion-1"
+
+
+def test_running_k5_still_publishes_fresh_core_expansion(monkeypatch, tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    calls = []
+    monkeypatch.setattr(guard, "probe_k5", lambda: _task(state="Running"))
+    monkeypatch.setattr(guard, "validate_candidate", lambda *_: None)
+    def run(argv, root, *, timeout):
+        name = Path(argv[2]).name
+        calls.append(name)
+        if name == "export_guarded_core_expansion_v0_2.py":
+            fresh = _candidate()
+            fresh["validation_programs"].pop()
+            Path(argv[-1]).write_text(json.dumps(fresh), encoding="utf-8")
+    monkeypatch.setattr(guard, "run_checked", run)
+    guard.publish_locked(tmp_path)
+    assert calls == ["export_guarded_core_expansion_v0_2.py", "push_public_snapshot.py"]
+    stored = json.loads((data / "public_snapshot.json").read_text(encoding="utf-8"))
+    assert {p["program_id"] for p in stored["validation_programs"]} == guard.BASE_PROGRAMS
+
+
+def test_delayed_crypto_is_explicitly_labeled_and_original_time_preserved(monkeypatch, tmp_path):
+    _no_network_validators(monkeypatch)
+    (tmp_path / "data").mkdir()
+    original = _candidate()
+    # The fixture's crypto row was independently healthy and current.
+    crypto = original["validation_programs"][2]
+    crypto["status"] = "collecting"
+    encoded = json.dumps(original).encode("utf-8")
+    archive, receipt = guard._pending_archive(tmp_path, original, encoded)
+    guard._accept_archive(archive, receipt, encoded)
+    later = NOW + timedelta(minutes=61)
+    delayed = guard._last_accepted_crypto(tmp_path, later)
+    assert delayed["data_freshness"] == "delayed"
+    assert delayed["status"] == "delayed"
+    assert "DELAYED" in delayed["title"]
+    assert delayed["last_verified_snapshot_at_utc"] == NOW.isoformat()
+    assert delayed["health"]["healthy"] is False
+    assert delayed["health"]["scheduler_healthy"] is False
+    fresh = _candidate()
+    fresh["generated_at_utc"] = later.isoformat()
+    fresh["validation_programs"][2] = delayed
+    guard.validate_candidate(fresh, later)
+    stale_dressed_as_fresh = copy.deepcopy(fresh)
+    stale_dressed_as_fresh["validation_programs"][2]["title"] = "Crypto AI Shadow Validation"
+    with pytest.raises(guard.PublicationHeld):
+        guard.validate_candidate(stale_dressed_as_fresh, later)
+
+
+def test_corrupt_crypto_archive_never_blocks_fresh_core_expansion(monkeypatch, tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    archive_folder = data / guard.HISTORY_NAME
+    archive_folder.mkdir()
+    # Invalid receipt means cache cannot be trusted; core/expansion still advances.
+    (archive_folder / ("snapshot-20261010T130509Z-" + "0" * 64 + ".json.accepted")).write_text(
+        "CORRUPT-RECEIPT", encoding="utf-8"
+    )
+    monkeypatch.setattr(guard, "probe_k5", lambda: _task(state="Running"))
+    monkeypatch.setattr(guard, "validate_candidate", lambda *_: None)
+    calls = []
+    def run(argv, root, *, timeout):
+        name = Path(argv[2]).name
+        calls.append(name)
+        if name == "export_guarded_core_expansion_v0_2.py":
+            fresh = _candidate()
+            fresh["validation_programs"].pop()
+            Path(argv[-1]).write_text(json.dumps(fresh), encoding="utf-8")
+    monkeypatch.setattr(guard, "run_checked", run)
+    guard.publish_locked(tmp_path)
+    assert calls == ["export_guarded_core_expansion_v0_2.py", "push_public_snapshot.py"]
+    assert len(json.loads((data / "public_snapshot.json").read_text())["validation_programs"]) == 2
+
+
+def test_failed_cloud_post_never_generates_accepted_archive_receipt(monkeypatch, tmp_path):
+    data = tmp_path / "data"
+    data.mkdir()
+    monkeypatch.setattr(guard, "probe_k5", lambda: _task(state="Running"))
+    monkeypatch.setattr(guard, "validate_candidate", lambda *_: None)
+    def run(argv, root, *, timeout):
+        name = Path(argv[2]).name
+        if name == "export_guarded_core_expansion_v0_2.py":
+            fresh = _candidate()
+            fresh["validation_programs"].pop()
+            Path(argv[-1]).write_text(json.dumps(fresh), encoding="utf-8")
+        if name == "push_public_snapshot.py":
+            raise guard.PublicationHeld("mock HTTP failure")
+    monkeypatch.setattr(guard, "run_checked", run)
+    with pytest.raises(guard.PublicationHeld):
+        guard.publish_locked(tmp_path)
+    assert not list((data / guard.HISTORY_NAME).glob("*.accepted"))
+    assert not (data / "public_snapshot.json").exists()
+
+
+def test_archived_history_is_exclusive_and_cannot_be_overwritten(tmp_path):
+    (tmp_path / "data").mkdir()
+    snapshot = _candidate()
+    raw = json.dumps(snapshot).encode("utf-8")
+    first, receipt = guard._pending_archive(tmp_path, snapshot, raw)
+    guard._accept_archive(first, receipt, raw)
+    before = first.read_bytes()
+    with pytest.raises(guard.PublicationHeld, match="collision"):
+        guard._pending_archive(tmp_path, snapshot, raw)
+    assert first.read_bytes() == before

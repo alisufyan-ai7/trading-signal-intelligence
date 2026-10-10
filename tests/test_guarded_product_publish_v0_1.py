@@ -36,6 +36,7 @@ def _candidate():
             "program_id": ident,
             "runtime_version": "AI-v1.3" if ident == "crypto-expansion-1" else "AI-v1.1",
             "mode": "SHADOW_ONLY",
+            "status": "collecting",
             "public_research_observability": True,
             "public_signal_exposure": ident == "core-ai-shadow",
             "signal_details_included": False,

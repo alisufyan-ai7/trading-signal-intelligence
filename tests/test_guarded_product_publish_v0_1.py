@@ -106,7 +106,7 @@ def test_safe_three_program_contract(monkeypatch):
 
 
 @pytest.mark.parametrize("defect", [
-    "no_crypto", "four_programs", "unsafe_exposure", "signal_details",
+    "four_programs", "unsafe_exposure", "signal_details",
     "crypto_running", "bad_market", "bad_gate", "unverified_market",
     "private_signal", "stale_snapshot", "unhealthy_core",
 ])
@@ -114,9 +114,7 @@ def test_public_contract_rejects_unsafe_crypto(monkeypatch, defect):
     _no_network_validators(monkeypatch)
     data = _candidate()
     c = data["validation_programs"][2]
-    if defect == "no_crypto":
-        data["validation_programs"].pop()
-    elif defect == "four_programs":
+    if defect == "four_programs":
         data["validation_programs"].append(copy.deepcopy(c))
     elif defect == "unsafe_exposure":
         c["public_signal_exposure"] = True
@@ -419,3 +417,10 @@ def test_archival_filename_matches_exact_accepted_receipt(tmp_path):
     guard._accept_archive(archive, receipt, raw)
     assert guard.ARCHIVE_RE.fullmatch(receipt.name) is not None
     assert archive.read_bytes() == raw
+
+def test_safe_two_program_fallback_is_explicitly_allowed(monkeypatch):
+    _no_network_validators(monkeypatch)
+    data = _candidate()
+    data["validation_programs"].pop()
+    guard.validate_candidate(data, NOW)
+    assert {p["program_id"] for p in data["validation_programs"]} == guard.BASE_PROGRAMS

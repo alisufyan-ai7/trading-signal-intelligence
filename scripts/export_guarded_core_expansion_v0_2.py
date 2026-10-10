@@ -50,14 +50,22 @@ def build_core_expansion_programs(root: Path) -> list[dict]:
     report = build_report_v1_2_1(
         root, include_scheduler=True, verify_upstream=True,
     )
-    programs.append(
-        build_public_validation_program(
+    if report.get("health", {}).get("healthy") is True:
+        expansion_program = build_public_validation_program(
             report, program_id="market-expansion-1",
             title="Expansion Shadow Validation",
             market_labels=EXPANSION_MARKET_LABELS,
             public_signal_exposure=False,
         )
-    )
+    else:
+        # Historic anchor verification remains False. A separate, narrow,
+        # read-only compatibility attestation may qualify publication only
+        # if EXACTLY the two registered crypto mappings were later added.
+        from trading_signal_intelligence.product.expansion_registry_compat_v0_1 import (
+            build_compatibility_qualified_program,
+        )
+        expansion_program = build_compatibility_qualified_program(root, report)
+    programs.append(expansion_program)
     return programs
 
 

@@ -107,7 +107,7 @@ def test_safe_three_program_contract(monkeypatch):
 @pytest.mark.parametrize("defect", [
     "no_crypto", "four_programs", "unsafe_exposure", "signal_details",
     "crypto_running", "bad_market", "bad_gate", "unverified_market",
-    "private_signal", "stale_snapshot",
+    "private_signal", "stale_snapshot", "unhealthy_core",
 ])
 def test_public_contract_rejects_unsafe_crypto(monkeypatch, defect):
     _no_network_validators(monkeypatch)
@@ -133,6 +133,8 @@ def test_public_contract_rejects_unsafe_crypto(monkeypatch, defect):
         c["recent_decisions"] = []
     elif defect == "stale_snapshot":
         data["generated_at_utc"] = (NOW - timedelta(hours=1)).isoformat()
+    elif defect == "unhealthy_core":
+        data["validation_programs"][0]["health"]["healthy"] = False
     with pytest.raises(guard.PublicationHeld):
         guard.validate_candidate(data, NOW)
 
@@ -168,7 +170,7 @@ def test_crypto_ledger_change_blocks_push(monkeypatch, tmp_path):
     monkeypatch.setattr(guard, "run_checked", run)
     with pytest.raises(guard.PublicationHeld, match="ledger changed"):
         guard.publish_locked(tmp_path)
-    assert calls == ["export_public_snapshot.py", "notify_forward_events.py"]
+    assert calls == ["export_public_snapshot.py"]
     assert not (tmp_path / "public_snapshot.json").exists()
 
 
@@ -177,3 +179,11 @@ def test_disabled_by_default_without_cutover(tmp_path, monkeypatch):
     with pytest.raises(guard.PublicationHeld, match="cutover"):
         guard.run_guarded(tmp_path)
     assert not (tmp_path / "data").exists()
+
+
+def test_dormant_wrapper_runs_alerts_independently():
+    cmd = (ROOT / "scripts/run_product_publish_guarded_v0_1.cmd").read_text(encoding="utf-8")
+    assert 'scripts\\notify_forward_events.py' in cmd
+    assert 'scripts\\guarded_product_publish_v0_1.py' in cmd
+    assert cmd.index('scripts\\notify_forward_events.py') < cmd.index('scripts\\guarded_product_publish_v0_1.py')
+    assert 'if not "!ALERT_EXIT!"=="0" exit /b !ALERT_EXIT!' in cmd

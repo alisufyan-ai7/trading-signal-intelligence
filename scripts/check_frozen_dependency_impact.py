@@ -61,7 +61,7 @@ def canonical_path(value: object) -> str:
     if not isinstance(value, str) or not value or "\\" in value or "\x00" in value:
         raise GateViolation("frozen path must be a nonempty POSIX repository path")
     p = PurePosixPath(value)
-    if p.is_absolute() or ".." in p.parts or str(p) != value or value.startswith("."):
+    if p.is_absolute() or ".." in p.parts or str(p) != value or ".git" in p.parts:
         raise GateViolation(f"unsafe frozen path: {value}")
     return value
 

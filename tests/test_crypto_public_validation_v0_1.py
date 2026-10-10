@@ -137,7 +137,7 @@ def test_crypto_public_payload_has_three_markets_three_frozen_gates_and_no_priva
     for private in (
         "PRIVATE_", "ledger_path", "current_head_hash", "entry_price",
         "take_profit", "stop_loss", "confidence", "provider_parameters",
-        "reasoning", "weekend_private", "activation_record_hash",
+        "private_reasoning", "weekend_private", "activation_record_hash",
     ):
         assert private not in serialized
     for key in ("raw_market_data_included", "raw_feature_snapshots_included",

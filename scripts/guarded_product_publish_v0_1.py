@@ -116,6 +116,11 @@ def validate_candidate(payload: dict[str, Any], now: datetime) -> None:
     by_id = {p.get("program_id"): p for p in programs}
     if len(by_id) != 3 or set(by_id) != PROGRAMS:
         raise PublicationHeld("validation lineage mismatch")
+    # Independent core/expansion health is required; no false healthy appearance.
+    for program_id in PROGRAMS:
+        state = by_id[program_id].get("health")
+        if not isinstance(state, dict) or state.get("healthy") is not True:
+            raise PublicationHeld("validation lineage unhealthy: " + program_id)
     crypto = by_id["crypto-expansion-1"]
     if (crypto.get("runtime_version") != "AI-v1.3"
         or crypto.get("mode") != "SHADOW_ONLY"
@@ -178,11 +183,8 @@ def publish_locked(root: Path) -> None:
             raise PublicationHeld("fresh export was not readable") from exc
         validate_candidate(payload, datetime.now(timezone.utc))
 
-        # Keep preexisting notification step, but block push if notifications fail.
-        run_checked(
-            [sys.executable, "-B", str(root / "scripts/notify_forward_events.py")],
-            root, timeout=120,
-        )
+        # Notifications are invoked independently in the future .cmd action;
+        # K5 publication hold must never suppress core/expansion alerts.
         after = probe_k5()
         ensure_stable_k5(before, after, datetime.now(timezone.utc))
         if crypto_fingerprints(root) != ledger_before:

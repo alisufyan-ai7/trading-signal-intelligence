@@ -343,7 +343,9 @@ def publish_locked(root: Path) -> None:
                 if staged.read_bytes() != raw:
                     raise PublicationHeld("staged bytes changed")
                 validate_candidate(payload, datetime.now(timezone.utc))
-            except PublicationHeld:
+            except Exception:
+                # Isolate any crypto-only export/verification failure; the
+                # independent fallback still re-verifies core and expansion.
                 # Discard unpublishable three-program staging and generate a
                 # NEW core+expansion snapshot through independently verified builders.
                 crypto_ready = False
@@ -359,7 +361,7 @@ def publish_locked(root: Path) -> None:
                 raise PublicationHeld("core/expansion fallback is not independent")
             try:
                 cached_crypto = _last_accepted_crypto(root, datetime.now(timezone.utc))
-            except PublicationHeld:
+            except Exception:
                 # Corrupted or unverifiable crypto cache must not block fresh
                 # independently verified core/expansion publication.
                 cached_crypto = None

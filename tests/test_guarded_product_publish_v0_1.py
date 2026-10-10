@@ -187,3 +187,44 @@ def test_dormant_wrapper_runs_alerts_independently():
     assert 'scripts\\guarded_product_publish_v0_1.py' in cmd
     assert cmd.index('scripts\\notify_forward_events.py') < cmd.index('scripts\\guarded_product_publish_v0_1.py')
     assert 'if not "!ALERT_EXIT!"=="0" exit /b !ALERT_EXIT!' in cmd
+    assert 'if not "%VOWSIG_GUARDED_PUBLISH_ENABLED%"=="1" exit /b 31' in cmd
+    assert cmd.index('VOWSIG_GUARDED_PUBLISH_ENABLED') < cmd.index('scripts\\notify_forward_events.py')
+
+
+def test_failed_cloud_push_preserves_previous_local_snapshot(monkeypatch, tmp_path):
+    old = tmp_path / "public_snapshot.json"
+    old.write_text("IMMUTABLE-OLD-SNAPSHOT", encoding="utf-8")
+    calls = []
+    monkeypatch.setattr(guard, "probe_k5", lambda: _task())
+    monkeypatch.setattr(guard, "validate_k5_finished", lambda *_: None)
+    monkeypatch.setattr(guard, "crypto_fingerprints", lambda _: {"BTCUSDT": "unchanged"})
+    monkeypatch.setattr(guard, "validate_candidate", lambda *_: None)
+
+    def mock_run(argv, root, *, timeout):
+        calls.append(Path(argv[2]).name)
+        if Path(argv[2]).name == "export_public_snapshot.py":
+            Path(argv[-1]).write_text(json.dumps(_candidate()), encoding="utf-8")
+        elif Path(argv[2]).name == "push_public_snapshot.py":
+            raise guard.PublicationHeld("mock cloud push failed")
+
+    monkeypatch.setattr(guard, "run_checked", mock_run)
+    with pytest.raises(guard.PublicationHeld, match="cloud push failed"):
+        guard.publish_locked(tmp_path)
+    assert calls == ["export_public_snapshot.py", "push_public_snapshot.py"]
+    assert old.read_text(encoding="utf-8") == "IMMUTABLE-OLD-SNAPSHOT"
+
+
+def test_successful_mock_push_atomically_updates_local_snapshot(monkeypatch, tmp_path):
+    calls = []
+    monkeypatch.setattr(guard, "probe_k5", lambda: _task())
+    monkeypatch.setattr(guard, "validate_k5_finished", lambda *_: None)
+    monkeypatch.setattr(guard, "crypto_fingerprints", lambda _: {"BTCUSDT": "unchanged"})
+    monkeypatch.setattr(guard, "validate_candidate", lambda *_: None)
+    def mock_run(argv, root, *, timeout):
+        calls.append(Path(argv[2]).name)
+        if Path(argv[2]).name == "export_public_snapshot.py":
+            Path(argv[-1]).write_text(json.dumps(_candidate()), encoding="utf-8")
+    monkeypatch.setattr(guard, "run_checked", mock_run)
+    guard.publish_locked(tmp_path)
+    assert calls == ["export_public_snapshot.py", "push_public_snapshot.py"]
+    assert json.loads((tmp_path / "public_snapshot.json").read_text(encoding="utf-8"))["validation_programs"][2]["program_id"] == "crypto-expansion-1"

@@ -71,7 +71,7 @@ def test_new_unpinned_file_is_not_blocked(fixture):
     assert result["protected"] >= 5
 
 
-@pytest.mark.parametrize("changed", ["registry", "map", "anchor", "guard", "workflow"])
+@pytest.mark.parametrize("changed", ["registry", "map", "anchor", "guard", "workflow", "codeowners"])
 def test_freeze_change_blocks_even_if_diff_is_additive(fixture, changed):
     repo, first, anchor, source, registry = fixture
     targets = {
@@ -80,6 +80,7 @@ def test_freeze_change_blocks_even_if_diff_is_additive(fixture, changed):
         "anchor": anchor,
         "guard": "scripts/check_frozen_dependency_impact.py",
         "workflow": ".github/workflows/frozen-dependency-change-impact.yml",
+        "codeowners": ".github/CODEOWNERS",
     }
     file = targets[changed]
     target = repo / file
@@ -140,7 +141,7 @@ def test_manifest_missing_anchor_hashes_fails_closed(fixture):
 
 
 @pytest.mark.parametrize("path", ["/config/secret.json", "../secret.json", "config//bad.json",
-                                  "config\\instruments.json", ".github/evil.yml"])
+                                  "config\\instruments.json", ".git/evil.yml"])
 def test_unsafe_manifest_paths_rejected(path):
     with pytest.raises(gate.GateViolation):
         gate.canonical_path(path)

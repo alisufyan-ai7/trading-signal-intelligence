@@ -151,6 +151,34 @@ def validate_candidate(payload: dict[str, Any], now: datetime) -> None:
         if not isinstance(state, dict) or state.get("healthy") is not True:
             raise PublicationHeld("validation lineage unhealthy: " + program_id)
 
+    expansion = by_id["market-expansion-1"]
+    if "registry_compatibility" in expansion:
+        from trading_signal_intelligence.product.expansion_registry_compat_v0_1 import (
+            ADDITION_COMMIT, CURRENT_CRLF_SHA256, EXPECTED_ARTIFACT_COUNT,
+            HISTORIC_CRLF_SHA256,
+        )
+        proof = expansion["registry_compatibility"]
+        expansion_health = expansion.get("health") or {}
+        if (not isinstance(proof, dict)
+            or set(proof) != {
+                "schema_version", "status", "historic_activation_artifacts_valid",
+                "historic_registry_sha256", "current_registry_sha256",
+                "additive_git_commit", "added_symbols",
+                "unchanged_frozen_artifacts_verified",
+            }
+            or proof.get("schema_version") != 1
+            or proof.get("status") != "prospective_exact_registry_compatibility"
+            or proof.get("historic_activation_artifacts_valid") is not False
+            or proof.get("historic_registry_sha256") != HISTORIC_CRLF_SHA256
+            or proof.get("current_registry_sha256") != CURRENT_CRLF_SHA256
+            or proof.get("additive_git_commit") != ADDITION_COMMIT
+            or proof.get("added_symbols") != ["ETHUSDT", "SOLUSDT"]
+            or proof.get("unchanged_frozen_artifacts_verified") !=
+               EXPECTED_ARTIFACT_COUNT - 1
+            or expansion_health.get("historic_activation_artifacts_valid") is not False
+            or expansion_health.get("operational_compatibility_valid") is not True):
+            raise PublicationHeld("expansion registry compatibility certificate invalid")
+
     if "crypto-expansion-1" in by_id:
         crypto = by_id["crypto-expansion-1"]
         if (crypto.get("runtime_version") != "AI-v1.3"
@@ -330,7 +358,7 @@ def publish_locked(root: Path) -> None:
             try:
                 # Existing exporter, but NEVER the old local snapshot as fallback.
                 run_checked(
-                    [sys.executable, "-B", str(root / "scripts/export_public_snapshot.py"),
+                    [sys.executable, "-B", str(root / "scripts/export_guarded_full_v0_1.py"),
                      "--output", str(staged)], root, timeout=120,
                 )
                 raw, payload = _staged_snapshot(staged, datetime.now(timezone.utc))

@@ -179,3 +179,32 @@ def test_symlink_source_disallowed(tmp_path):
     with pytest.raises(p.SyntheticGateRejected, match="unsafe"):
         p.capture_synthetic_set(root, [p.SyntheticSpec("link", link.name, "AI")], set_id="link-01")
     assert not (root / "captured").exists()
+
+
+def test_windows_sqlite_journal_path_limit_without_database_access(monkeypatch):
+    monkeypatch.setattr(p, "_on_windows", lambda: True)
+    p._assert_windows_sqlite_path(Path("C:/t/synthetic.sqlite"))
+    overlong = Path("C:/t/" + "x" * 230 + ".sqlite")
+    with pytest.raises(p.SyntheticGateRejected, match="journal path too long"):
+        p._assert_windows_sqlite_path(overlong)
+
+
+def test_overlong_windows_destination_fails_before_staging(tmp_path, monkeypatch):
+    # Dynamically make the destination journal >=240 while the source remains <240.
+    name = "ai_fake.sqlite"
+    initial = tmp_path / "vowsig-b1b2-fixture-test"
+    target = initial / "captured" / "long-set-001" / name
+    extra = max(2, 245 - len(str(target) + "-journal"))
+    padding = tmp_path / ("p" * min(extra, 180))
+    padding.mkdir()
+    root = fixture_root(padding)
+    source = create_fixture(root)
+    expected = root / "captured" / "long-set-001" / name
+    assert len(str(source) + "-journal") < 240
+    assert len(str(expected) + "-journal") >= 240
+    monkeypatch.setattr(p, "_on_windows", lambda: True)
+    with pytest.raises(p.SyntheticGateRejected, match="journal path too long"):
+        p.capture_synthetic_set(
+            root, [p.SyntheticSpec("ai", name, "AI")], set_id="long-set-001"
+        )
+    assert not (root / "captured").exists()

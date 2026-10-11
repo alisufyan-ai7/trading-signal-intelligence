@@ -225,7 +225,7 @@ def capture_single_s02_trial(
         raise TrialRejected("missing exact pinned source Git revision")
     repo_root, output_parent = Path(repo_root), Path(output_parent)
     source, target = _preflight(repo_root, output_parent, trial_id)
-    before_size = source.stat().st_size
+    before_stat = source.stat()
     started = _utc_now()
     deadline = time.monotonic() + MAX_DURATION_SECONDS
     # No source changes or real backup execution in the preparation phase.
@@ -264,14 +264,22 @@ def capture_single_s02_trial(
         raise TrialRejected("captured S02 copy exceeds 10 MiB")
     ended = _utc_now()
     verification = verify_sealed_s02_copy(copied)
+    after_stat = source.stat()
+    if (before_stat.st_size, before_stat.st_mtime_ns) != (
+        after_stat.st_size, after_stat.st_mtime_ns
+    ):
+        raise TrialRejected("source metadata changed during single S02 capture")
+    for suffix in ("-wal", "-shm", "-journal"):
+        if Path(str(source) + suffix).exists():
+            raise TrialRejected("source SQLite sidecar appeared during capture")
     manifest: dict[str, Any] = {
         "schema": "vowsig-single-s02-local-trial-v0.1",
         "classification": "PRIVATE_LOCAL_EXPERIMENTAL_COPY_ONLY",
         "trial_id": trial_id,
         "source_relative_path": "data/forward.sqlite",
         "source_git_revision": source_revision,
-        "source_size_bytes_pre": before_size,
-        "source_size_bytes_post": source.stat().st_size,
+        "source_size_bytes_pre": before_stat.st_size,
+        "source_size_bytes_post": after_stat.st_size,
         "capture_started_utc": started,
         "capture_ended_utc": ended,
         "verified_utc": _utc_now(),

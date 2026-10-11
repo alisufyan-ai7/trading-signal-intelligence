@@ -203,11 +203,13 @@ def validate_candidate(payload: dict[str, Any], now: datetime) -> None:
                   and "last_verified_snapshot_at_utc" not in crypto):
                 match = re.fullmatch(
                     r"Crypto AI Shadow Validation — DELAYED "
-                    r"\\(last verified ([^()]+) UTC\\)",
+                    r"\(last verified ([^()]+) UTC\)",
                     crypto.get("title", ""),
                 )
-                observed = aware(match.group(1)) if match else now + __import__("datetime").timedelta(days=1)
-                labeled = match is not None
+                if match is None:
+                    raise PublicationHeld("delayed crypto time label missing")
+                observed = aware(match.group(1))
+                labeled = True
             else:
                 raise PublicationHeld("unknown delayed crypto provenance")
             if (observed > now.astimezone(timezone.utc)

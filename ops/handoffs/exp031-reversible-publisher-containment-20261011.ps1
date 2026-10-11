@@ -226,7 +226,7 @@ if ($Mode -eq "Contain") {
     if ($LASTEXITCODE -ne 0) { throw "STOP: private rollback directory ACL failed." }
     $taskXml = Get-TaskXML $TaskName
     $taskPath = Join-Path $folder "publisher-task.xml"
-    [IO.File]::WriteAllText($taskPath, $taskXml, (New-Object Text.UTF8Encoding($false)))
+    [IO.File]::WriteAllText($taskPath, $taskXml, ([System.Text.UTF8Encoding]::new($false)))
     $runnerSource = Join-Path $Repo "scripts\run_product_publish_task.cmd"
     $runnerCopy = Join-Path $folder "old-runner.cmd"
     Copy-Item -LiteralPath $runnerSource -Destination $runnerCopy -ErrorAction Stop
@@ -253,7 +253,7 @@ if ($Mode -eq "Contain") {
     $manifestPath = Join-Path $folder "manifest.json"
     [IO.File]::WriteAllText(
         $manifestPath, ($manifest | ConvertTo-Json -Depth 4),
-        (New-Object Text.UTF8Encoding($false))
+        ([System.Text.UTF8Encoding]::new($false))
     )
     $null = Verify-Evidence $folder
     Write-Host "PRIVATE_ROLLBACK_EVIDENCE=VERIFIED"

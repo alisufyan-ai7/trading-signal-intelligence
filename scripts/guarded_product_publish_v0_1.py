@@ -190,13 +190,29 @@ def validate_candidate(payload: dict[str, Any], now: datetime) -> None:
         health = crypto.get("health")
         if not isinstance(health, dict) or health.get("broker_execution_disabled") is not True:
             raise PublicationHeld("crypto broker boundary failed")
-        delayed = crypto.get("data_freshness") == "delayed"
+        delayed = crypto.get("status") == "delayed"
         if delayed:
-            observed = aware(crypto.get("last_verified_snapshot_at_utc"))
+            # Existing accepted-archive mode has extra provenance keys. New
+            # owner-pinned as-of seals instead use ONLY public schema-v1 keys:
+            # the exact immutable sample UTC is prominently in the title.
+            if crypto.get("data_freshness") == "delayed":
+                observed = aware(crypto.get("last_verified_snapshot_at_utc"))
+                title = crypto.get("title", "")
+                labeled = "DELAYED" in title and observed.isoformat() in title
+            elif ("data_freshness" not in crypto
+                  and "last_verified_snapshot_at_utc" not in crypto):
+                match = re.fullmatch(
+                    r"Crypto AI Shadow Validation — DELAYED "
+                    r"\\(last verified ([^()]+) UTC\\)",
+                    crypto.get("title", ""),
+                )
+                observed = aware(match.group(1)) if match else now + __import__("datetime").timedelta(days=1)
+                labeled = match is not None
+            else:
+                raise PublicationHeld("unknown delayed crypto provenance")
             if (observed > now.astimezone(timezone.utc)
                 or observed >= aware(payload["generated_at_utc"])
-                or crypto.get("status") != "delayed"
-                or "DELAYED" not in crypto.get("title", "")
+                or not labeled
                 or health.get("healthy") is not False
                 or health.get("scheduler_healthy") is not False):
                 raise PublicationHeld("unlabeled or implausible delayed crypto data")
@@ -423,9 +439,24 @@ def publish_locked(root: Path) -> None:
                     # current core/expansion. Without the writer-side interlock,
                     # cached crypto is never attached under ANY circumstances.
                     cached_crypto = None
+            if cached_crypto is None and os.environ.get("VOWSIG_CRYPTO_ASOF_ENABLED") == "1":
+                # No K5 probe or private-ledger read: the immutable, previously
+                # verified aggregate-only capture is explicitly owner-pinned.
+                # It is NEVER described as current. A bad seal cannot prevent
+                # independent fresh core/expansion publication.
+                try:
+                    from trading_signal_intelligence.product.crypto_asof_seal_v0_1 import (
+                        load_pinned_asof_program,
+                    )
+                    cached_crypto = load_pinned_asof_program(
+                        root, datetime.now(timezone.utc),
+                        os.environ.get("VOWSIG_CRYPTO_ASOF_SHA256", ""),
+                    )
+                except (OSError, ValueError):
+                    cached_crypto = None
             if cached_crypto is not None:
                 # New global generated_at_utc reflects fresh core/expansion only.
-                # Cached crypto is prominently DELAYED with its original timestamp.
+                # Historic crypto remains prominently DELAYED with its original time.
                 payload["validation_programs"].append(cached_crypto)
                 raw = json.dumps(payload, indent=2).encode("utf-8")
                 staged.write_bytes(raw)

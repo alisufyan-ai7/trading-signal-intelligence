@@ -61,17 +61,19 @@ function Get-TextHash([string]$Value) {
 }
 
 function Normalized-TaskDefinitionHash([string]$SourceXml) {
-    # Disable-ScheduledTask changes only the task's Enabled flag under normal
-    # operation. Compare the full XML definition with that flag neutralized;
-    # otherwise a legitimate PRE-SYNC disable would make rollback impossible.
+    # Disable-ScheduledTask may change or add <Enabled>; normalize by
+    # removing that single flag from both task definitions before compare.
+    # All other task settings/actions/triggers must remain byte-structurally
+    # identical after XML parsing/serialization.
     [xml]$document = $SourceXml
     $ns = New-Object Xml.XmlNamespaceManager($document.NameTable)
     $ns.AddNamespace("t", "http://schemas.microsoft.com/windows/2004/02/mit/task")
-    $enabled = $document.SelectSingleNode("/t:Task/t:Settings/t:Enabled", $ns)
-    if ($null -eq $enabled) {
-        throw "STOP: task XML lacks expected Settings/Enabled flag."
+    $settings = $document.SelectSingleNode("/t:Task/t:Settings", $ns)
+    if ($null -eq $settings) {
+        throw "STOP: task XML lacks expected Settings element."
     }
-    $enabled.InnerText = "normalized-for-enabled-state-comparison"
+    $enabled = $settings.SelectSingleNode("t:Enabled", $ns)
+    if ($null -ne $enabled) { [void]$settings.RemoveChild($enabled) }
     return Get-TextHash $document.OuterXml
 }
 

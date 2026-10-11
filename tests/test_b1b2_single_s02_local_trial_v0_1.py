@@ -194,3 +194,19 @@ def test_modified_copy_has_failing_integrity(tmp_path):
         handle.write(b"definitely-not-sqlite")
     with pytest.raises((trial.TrialRejected, sqlite3.DatabaseError)):
         trial.verify_sealed_s02_copy(sealed)
+
+
+def test_source_drift_during_copy_verification_prevents_manifest(tmp_path, monkeypatch):
+    root, scratch, source = fixture(tmp_path)
+    original_verify = trial.verify_sealed_s02_copy
+
+    def add_synthetic_source_bytes(copy_path):
+        verified = original_verify(copy_path)
+        with source.open("ab") as stream:
+            stream.write(b"synthetic concurrent source change")
+        return verified
+
+    monkeypatch.setattr(trial, "verify_sealed_s02_copy", add_synthetic_source_bytes)
+    with pytest.raises(trial.TrialRejected, match="source metadata changed"):
+        capture(root, scratch)
+    assert not (scratch / "trial-001" / "local-trial-manifest.json").exists()

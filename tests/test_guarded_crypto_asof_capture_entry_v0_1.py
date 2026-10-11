@@ -9,6 +9,7 @@ import importlib.util
 import subprocess
 import sys
 from pathlib import Path
+from urllib.parse import quote
 
 import pytest
 
@@ -49,6 +50,29 @@ def test_exact_nine_active_source_identities(guard, tmp_path):
 def test_sqlite_unapproved_targets_and_modes_rejected(guard, database):
     with pytest.raises(entry.CaptureGuardRejected):
         guard.db_key(database)
+
+
+def test_canonical_windows_encoded_space_path_and_aliases(tmp_path):
+    import os
+    if os.name != "nt":
+        pytest.skip("Windows native URI regression")
+    root = tmp_path / "Signal Projects"
+    root.mkdir()
+    guard = entry.CaptureGuard(root)
+    raw = (root / "data" / "ai_v1_3_btcusdt.sqlite").resolve().as_posix()
+    assert " " in raw
+    uri = "file:" + quote(raw, safe="/:") + "?mode=ro"
+    assert "%20" in uri
+    assert guard.db_key(uri) in guard.allowed
+    for unsafe in (
+        uri.replace("%20", " ", 1),
+        uri.replace("%20", "%2520", 1),
+        uri.replace("%20", "%20%20", 1),
+        uri.replace("?mode=ro", "?mode=rw"),
+        uri.replace("?mode=ro", "?mode=ro&cache=shared"),
+    ):
+        with pytest.raises(entry.CaptureGuardRejected):
+            guard.db_key(unsafe)
 
 
 @pytest.mark.parametrize("argv,cwd,shell", (

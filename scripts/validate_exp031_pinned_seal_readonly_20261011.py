@@ -76,7 +76,8 @@ def validate(root: Path) -> None:
         raise RuntimeError("Frozen cloud validation entry point not unique")
     restricted = ast.Module(body=[selected[0]], type_ignores=[])
     ast.fix_missing_locations(restricted)
-    namespace = {"HTTPException": HTTPException}
+    from typing import Any
+    namespace = {"HTTPException": HTTPException, "Any": Any}
     exec(compile(restricted, str(cloud_path), "exec"), namespace)
     _validate_validation_programs = namespace["_validate_validation_programs"]
     if SEAL_NAME != "crypto-research-asof-v0.1.json":

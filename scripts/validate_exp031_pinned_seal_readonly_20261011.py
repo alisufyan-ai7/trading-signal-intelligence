@@ -7,6 +7,7 @@ Do not import or invoke the guarded publisher.
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -62,9 +63,22 @@ def validate(root: Path) -> None:
     from trading_signal_intelligence.product.crypto_asof_seal_v0_1 import (
         SEAL_NAME, load_pinned_asof_program, asof_program_from_seal_bytes,
     )
-    from trading_signal_intelligence.product.cloud_app import (
-        _validate_validation_programs,
-    )
+    # Parse the EXACT frozen server validator without importing cloud_app,
+    # whose module-level load_dotenv() and app setup are unrelated to this
+    # strictly local seal-file review. No cloud or application initialization.
+    from fastapi import HTTPException
+    cloud_path = REPO_SOURCE / "src/trading_signal_intelligence/product/cloud_app.py"
+    tree = ast.parse(cloud_path.read_text(encoding="utf-8"), filename=str(cloud_path))
+    selected = [node for node in tree.body
+                if isinstance(node, ast.FunctionDef)
+                and node.name == "_validate_validation_programs"]
+    if len(selected) != 1:
+        raise RuntimeError("Frozen cloud validation entry point not unique")
+    restricted = ast.Module(body=[selected[0]], type_ignores=[])
+    ast.fix_missing_locations(restricted)
+    namespace = {"HTTPException": HTTPException}
+    exec(compile(restricted, str(cloud_path), "exec"), namespace)
+    _validate_validation_programs = namespace["_validate_validation_programs"]
     if SEAL_NAME != "crypto-research-asof-v0.1.json":
         raise RuntimeError("Unexpected frozen seal filename")
     source = root / "data" / SEAL_NAME

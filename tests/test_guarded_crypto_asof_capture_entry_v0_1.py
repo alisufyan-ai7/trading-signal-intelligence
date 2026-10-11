@@ -98,7 +98,5 @@ def test_read_only_task_inspection_form(guard):
 def test_install_is_not_needed_for_contract_and_remains_dormant(guard):
     assert isinstance(subprocess.Popen, type)
     assert guard.opened == set()
-    assert entry.CAPTURE_CONFIRMATION_IS_NOT_SET if hasattr(
-        entry, "CAPTURE_CONFIRMATION_IS_NOT_SET"
-    ) else entry.CONFIRM == "CAPTURE-ONE-CRYPTO-ASOF-RESEARCH-SEAL"
+    assert entry.CONFIRM == "CAPTURE-ONE-CRYPTO-ASOF-RESEARCH-SEAL"
     assert entry.OPT_IN == "VOWSIG_CRYPTO_SEAL_CAPTURE_ENABLED"

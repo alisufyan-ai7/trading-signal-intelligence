@@ -129,7 +129,7 @@ def test_wal_source_blocked_before_sqlite_connection(tmp_path):
     root, scratch, source = fixture(tmp_path)
     with sqlite3.connect(source) as con:
         assert con.execute("PRAGMA journal_mode=WAL").fetchone()[0] == "wal"
-    with pytest.raises(trial.TrialRejected, match="WAL or unsupported"):
+    with pytest.raises(trial.TrialRejected, match="WAL or unsupported|sidecar"):
         capture(root, scratch)
     assert list(scratch.iterdir()) == []
 

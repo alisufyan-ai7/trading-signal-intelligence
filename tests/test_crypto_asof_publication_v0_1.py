@@ -103,10 +103,30 @@ def test_asof_seal_schema_v1_and_history_label(tmp_path):
     assert val["health"]["ledgers_valid"] is True
     assert not {"data_freshness", "last_verified_snapshot_at_utc"}.intersection(val)
     assert len(raw) < 65536
-    # The published program must obey the previously frozen schema, not new keys.
-    from jsonschema import validate
-    schema = json.loads((ROOT / "config/public_validation_program_schema_v1.json").read_text())
-    validate(val, schema)
+    # Validate against the repo's frozen field contract and installed
+    # public-API validator. Native Windows venv does not include jsonschema.
+    from trading_signal_intelligence.product.cloud_app import _validate_validation_programs
+    schema = json.loads(
+        (ROOT / "config/public_validation_program_schema_v1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert schema["additionalProperties"] is False
+    assert set(val) == set(schema["required"]) == set(schema["properties"])
+    health = schema["properties"]["health"]
+    assert health["additionalProperties"] is False
+    assert set(val["health"]) == set(health["required"])
+    assert val["schema_version"] == schema["properties"]["schema_version"]["const"]
+    assert val["mode"] == schema["properties"]["mode"]["const"]
+    assert val["signal_details_included"] is False
+    assert val["public_signal_exposure"] is False
+    assert val["health"]["broker_execution_disabled"] is True
+    assert len(val["markets"]) == 3
+    assert len(val["gates"]) == 3
+    _validate_validation_programs({
+        "validation_programs_schema_version": 1,
+        "validation_programs": [val],
+    })
 
 
 @pytest.mark.parametrize("alter", [
@@ -230,7 +250,12 @@ def test_guard_default_never_reads_crypto_or_attaches_seal(monkeypatch, tmp_path
 def test_guard_opt_in_publishes_only_pinned_delayed_aggregates(
     monkeypatch, tmp_path, valid_pin
 ):
-    raw = seal_from_verified_snapshot(_snapshot(), AT + timedelta(seconds=1))
+    # Sample age must be historical relative to wall-clock in every timezone.
+    # Do not hardcode a fixed-time sample that might still be in the future.
+    observed = datetime.now(timezone.utc) - timedelta(minutes=2)
+    snapshot = _snapshot()
+    snapshot["generated_at_utc"] = observed.isoformat()
+    raw = seal_from_verified_snapshot(snapshot, observed + timedelta(seconds=1))
     (tmp_path / "data").mkdir()
     (tmp_path / "data" / SEAL_NAME).write_bytes(raw)
     digest = hashlib.sha256(raw).hexdigest()

@@ -262,8 +262,12 @@ def capture_synthetic_set(
             source = _readonly(src_path)
             try:
                 _assert_marker(source)
-                with sqlite3.connect(out) as dest:
-                    source.backup(dest, pages=8, progress=progress, sleep=0.05)
+                destination = sqlite3.connect(out)
+                try:
+                    source.backup(destination, pages=8, progress=progress, sleep=0.05)
+                    destination.commit()
+                finally:
+                    destination.close()
             finally:
                 source.close()
             finished = utc_now()

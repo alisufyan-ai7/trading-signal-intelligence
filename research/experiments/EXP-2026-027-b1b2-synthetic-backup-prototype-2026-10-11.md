@@ -45,3 +45,25 @@ This prototype is not eligible for merging/deployment and has no automatic runna
 - Complete actual B0 corpus (known + unknown), disk space/retention policy, manifest acceptance semantics.
 - Independent off-VPS encrypted copies, recovery key protection, restore verification from each provider.
 - Hosted exact-byte snapshot acceptance and K5 writer-side interlock (current/delayed crypto HELD).
+
+## Prospective Windows path-safety correction — 2026-10-11
+
+Frozen observation: Original Windows long-path synthetic SQLite backup FAILED at sqlite3.OperationalError (unable to open database file). The identical frozen code at short TEMP path then passed 15/15 on native Windows Python 3.12.10, exact SHA f5d6344245ff6d1475830bd6f56f71a4040b4ad9. This strongly supports a journal-path-length hypothesis but does not uniquely prove causality. Both observations remain immutable.
+
+Prospective correction: the synthetic-only prototype now checks source and destination prospective SQLite -journal path length, rejecting 240 or more characters on Windows before creating the synthetic destination directory. Two added tests cover the boundary and confirm no output staging on overlong simulated-Windows paths. The new SHA has NOT yet been tested on native Windows (expected: 17 tests). No real database backup, source read, production mutation, cloud call or deployment.
+
+## Repository-only classification of data/research.sqlite
+
+The B0 observed file was 198,176,768 bytes, with contents uninspected. Repository source src/trading_signal_intelligence/storage/sqlite.py defines CandleStore with default data/research.sqlite: a normalized research market-candle SQLite store containing source, source_symbol, symbol, timeframe, UTC timestamp, OHLC, volume and spread. scripts/backfill_mt5.py, scripts/backfill_binance.py and scripts/dataset_summary.py all default to this store. Therefore its *code-intended* role is historical raw market candles, **not an AI/S02 append-only event ledger**.
+
+Actual file schema, row data, provenance/source mix, coverage, corruption status and license terms remain UNVERIFIED; no database read was performed. docs/legal-data-rights.md and docs/data-sources.md record owner-confirmed Exness permission for intended derived-signal commercial use on 2026-09-21 (NOT general raw redistribution); Binance research usage is technically selected while formal paid-production rights are still under review. docs/source-status.md retains an older conflicting Exness BLOCKED entry. Preserve the historical documents; do not assume rights to upload raw candles offsite.
+
+Preservation class: RESEARCH_CANDLE_STORE_EXPECTED / REAL_CONTENT_UNVERIFIED / RIGHTS_HOLD_FOR_OFFSITE. Keep file intact; no deletion, exclusion from governed inventory or cloud transfer.
+
+## First bounded B1/B2 real-database trial — PROSPECTIVE DESIGN ONLY
+
+After a NEW explicit owner authorization for real SQLite access and local scratch writes, propose one small controlled SQLite online-backup experiment against a single S02 ledger (candidate data/forward.sqlite, B0 observed 53,248 bytes), not all 22 files and not the research-candle store. Lock one exact production source SHA, one allowed DB path, one isolated short-path private scratch location, restrictive ACL, max 10 MiB staging allocation, finite deadline and single attempt. Verify only the captured copy with full PRAGMA integrity_check, non-initializing read-only S02 hash-chain adapter, copy SHA-256/size/record counts/head, private local manifest, and clean pre/post Git and filesystem safety checks. Any missing datum, unexplained side effect, invalid chain or corrupted copy fails closed. No offsite service, upload, provider keys, restore, producer/scheduler changes, crypto or publication.
+
+The existing marker-gated synthetic prototype is NOT authorized for real files and must not be reused against real data. A real ledger-copy implementation would require separate review, synthetic proof and a fresh exact bounded owner approval before execution. A one-file success would establish only a LOCAL EXPERIMENTAL COPY, not full corpus protection, backup/restore durability, RPO/RTO or public release.
+
+Status: B0 metadata PASS; earlier synthetic short-path native Windows 15 PASS at frozen SHA; path-guard prospective correction awaiting exact-head 17-test parity; B1/B2 real backup NOT EXECUTED; B3–B9/release NO-GO.

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -539,6 +540,24 @@ def _v1_2_1_state(repo_root: Path) -> dict[str, Any]:
     }
 
 
+# Pin the newly added product adapter (not an AI-v1.1 correctable artifact)
+# to this existing, correction-governed public builder. Any changes to this
+# Git blob require a reviewed update of ai_insights and the correction anchor.
+_CRYPTO_VALIDATION_ADAPTER_GIT_BLOB = "65e4d992784e7c4156dde703047c331eda51c2cf"
+
+
+def _verify_crypto_validation_adapter_source(repo_root: Path) -> None:
+    relative = Path("src/trading_signal_intelligence/product/crypto_validation.py")
+    try:
+        raw = (repo_root / relative).read_bytes().replace(b"\r\n", b"\n")
+    except OSError as exc:
+        raise ObservabilityError("crypto public adapter file unavailable") from exc
+    header = f"blob {len(raw)}\0".encode("ascii")
+    actual_blob = hashlib.sha1(header + raw).hexdigest()
+    if actual_blob != _CRYPTO_VALIDATION_ADAPTER_GIT_BLOB:
+        raise ObservabilityError("crypto public adapter source integrity mismatch")
+
+
 def build_public_validation_programs(
     repo_root: Path,
     *,
@@ -592,6 +611,33 @@ def build_public_validation_programs(
                 title="Expansion Shadow Validation",
                 market_labels=EXPANSION_MARKET_LABELS,
                 public_signal_exposure=False,
+            )
+        )
+
+    # Add only a prospectively activated, independently verified crypto
+    # lineage. Never allow partial crypto state or private signal payloads.
+    from trading_signal_intelligence.ai_v1.observability import ObservabilityError
+    from trading_signal_intelligence.product.crypto_validation import (
+        build_crypto_public_validation_program,
+        crypto_activation_state,
+    )
+
+    crypto_state = crypto_activation_state(root)
+    if crypto_state["any_state"]:
+        if not crypto_state["complete_shape"]:
+            raise ObservabilityError(
+                "partial AI-v1.3 crypto state detected; "
+                "refuse incomplete public observability"
+            )
+        # Tie the new product adapter to this v0.3-correctable builder's
+        # own pinned source hash. Windows CRLF checkout normalization is
+        # equivalent to the reviewed Git blob's canonical LF representation.
+        _verify_crypto_validation_adapter_source(root)
+        programs.append(
+            build_crypto_public_validation_program(
+                root,
+                include_scheduler=include_scheduler,
+                verify_upstream=verify_upstream,
             )
         )
 

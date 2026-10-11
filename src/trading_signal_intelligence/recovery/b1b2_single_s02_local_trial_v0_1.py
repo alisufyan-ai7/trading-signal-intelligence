@@ -89,6 +89,8 @@ def verify_sealed_s02_copy(copy_path: Path) -> dict[str, Any]:
     copy_path = Path(copy_path)
     _safe_file(copy_path)
     _journal_path_safe(copy_path)
+    if copy_path.stat().st_size > MAX_TRIAL_BYTES:
+        raise TrialRejected("sealed copy exceeds 10 MiB trial budget")
     before = _sha256(copy_path)
     connection = sqlite3.connect(copy_path.resolve().as_uri() + "?mode=ro", uri=True)
     connection.row_factory = sqlite3.Row

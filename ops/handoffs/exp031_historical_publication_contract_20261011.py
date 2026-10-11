@@ -123,14 +123,13 @@ def preflight(root: Path):
     print("ONE_POST_NOT_YET_STARTED=TRUE")
 
 
-def postflight(root: Path, original_archive_names: list[str]):
+def postflight(root: Path):
     from guarded_product_publish_v0_1 import HISTORY_NAME
     folder = root / "data" / HISTORY_NAME
     files = sorted(p for p in folder.iterdir() if p.is_file())
-    added = [p for p in files if p.name not in original_archive_names]
-    demand(len(added) == 2, "one archive and one receipt were not created")
-    archive = next((p for p in added if p.suffix == ".json"), None)
-    receipt = next((p for p in added if p.name.endswith(".json.accepted")), None)
+    demand(len(files) == 2, "one archive and one receipt were not created")
+    archive = next((p for p in files if p.suffix == ".json"), None)
+    receipt = next((p for p in files if p.name.endswith(".json.accepted")), None)
     demand(archive is not None and receipt is not None and
            receipt.name == archive.name + ".accepted",
            "guarded archive/acceptance pair identity mismatch")
@@ -178,17 +177,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("mode", choices=("preview", "postflight"))
     parser.add_argument("--root", required=True)
-    parser.add_argument("--before-list", default="")
     args = parser.parse_args()
     root = Path(args.root).resolve(strict=True)
     sys.path[:0] = [str(root / "scripts"), str(root / "src")]
     if args.mode == "preview":
         preflight(root)
     else:
-        names = json.loads(args.before_list)
-        demand(isinstance(names, list) and all(isinstance(x, str) for x in names),
-               "invalid pre-publication archive inventory")
-        postflight(root, names)
+        postflight(root)
 
 
 if __name__ == "__main__":

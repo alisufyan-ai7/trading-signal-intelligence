@@ -300,27 +300,39 @@ def test_duplicate_seal_json_keys_rejected():
         asof_program_from_seal_bytes(duplicate, AT + timedelta(hours=1))
 
 
+def _capture_mocks(monkeypatch, capture):
+    monkeypatch.setattr(capture, "probe_k5", lambda: {"State": "Ready"})
+    monkeypatch.setattr(capture, "validate_k5_finished", lambda *_: None)
+    monkeypatch.setattr(capture, "ensure_stable_k5", lambda *_: None)
+    monkeypatch.setattr(
+        capture, "crypto_fingerprints",
+        lambda *_: {name: "same" for name in MARKETS},
+    )
+    monkeypatch.setattr(
+        capture, "nine_ledger_fingerprints",
+        lambda *_: {"nine-governed-ledgers": "same"},
+    )
+    monkeypatch.setattr(
+        capture, "build_three_program_observation",
+        lambda *_: _snapshot(),
+    )
+
+
 def test_one_shot_capture_only_on_mock_verified_reports(monkeypatch, tmp_path):
     import capture_crypto_research_asof_v0_1 as capture
     (tmp_path / "data").mkdir()
     monkeypatch.setenv(capture.ENABLE, "1")
-    times = []
-    monkeypatch.setattr(capture, "probe_k5", lambda: {"State": "Ready"})
-    monkeypatch.setattr(capture, "validate_k5_finished", lambda *_: None)
-    monkeypatch.setattr(capture, "ensure_stable_k5", lambda *_: None)
-    monkeypatch.setattr(capture, "crypto_fingerprints", lambda *_: {"BTCUSDT": "same"})
-    monkeypatch.setattr(capture, "build_guarded_full_snapshot", lambda *_: {
-        **_snapshot(),
-        "generated_at_utc": (
-            datetime.now(timezone.utc) - timedelta(seconds=1)
-        ).isoformat(),
-    })
-    monkeypatch.setattr(capture, "validate_candidate", lambda *_: None)
-    monkeypatch.setattr(capture, "_verify_current_expansion_claim", lambda *_: None)
+    _capture_mocks(monkeypatch, capture)
     digest = capture.produce_one_seal(tmp_path)
     data = (tmp_path / "data" / SEAL_NAME).read_bytes()
     assert hashlib.sha256(data).hexdigest() == digest
     assert asof_program_from_seal_bytes(data, datetime.now(timezone.utc))
+    assert set(json.loads(data)) == {
+        "seal_schema_version", "source_snapshot_generated_at_utc",
+        "crypto_program",
+    }
+    assert b"forward.sqlite" not in data
+    assert b"research.sqlite" not in data
     with pytest.raises(RuntimeError, match="overwrite"):
         capture.produce_one_seal(tmp_path)
 
@@ -329,14 +341,133 @@ def test_source_drift_during_mock_capture_refuses_seal(monkeypatch, tmp_path):
     import capture_crypto_research_asof_v0_1 as capture
     (tmp_path / "data").mkdir()
     monkeypatch.setenv(capture.ENABLE, "1")
-    monkeypatch.setattr(capture, "probe_k5", lambda: {"State": "Ready"})
-    monkeypatch.setattr(capture, "validate_k5_finished", lambda *_: None)
-    monkeypatch.setattr(capture, "ensure_stable_k5", lambda *_: None)
-    states = iter([{"BTCUSDT": "first"}, {"BTCUSDT": "changed"}])
+    _capture_mocks(monkeypatch, capture)
+    states = iter([
+        {"BTCUSDT": "original"}, {"BTCUSDT": "changed"},
+    ])
     monkeypatch.setattr(capture, "crypto_fingerprints", lambda *_: next(states))
-    monkeypatch.setattr(capture, "build_guarded_full_snapshot", lambda *_: _snapshot())
-    monkeypatch.setattr(capture, "validate_candidate", lambda *_: None)
-    monkeypatch.setattr(capture, "_verify_current_expansion_claim", lambda *_: None)
-    with pytest.raises(RuntimeError, match="source changed"):
+    with pytest.raises(RuntimeError, match="crypto ledger chain changed"):
         capture.produce_one_seal(tmp_path)
     assert not (tmp_path / "data" / SEAL_NAME).exists()
+
+
+def test_nine_ledger_drift_during_mock_capture_refuses_seal(
+    monkeypatch, tmp_path
+):
+    import capture_crypto_research_asof_v0_1 as capture
+    (tmp_path / "data").mkdir()
+    monkeypatch.setenv(capture.ENABLE, "1")
+    _capture_mocks(monkeypatch, capture)
+    states = iter([
+        {"nine": "before"}, {"nine": "after"},
+    ])
+    monkeypatch.setattr(
+        capture, "nine_ledger_fingerprints",
+        lambda *_: next(states),
+    )
+    with pytest.raises(RuntimeError, match="active AI ledger changed"):
+        capture.produce_one_seal(tmp_path)
+    assert not (tmp_path / "data" / SEAL_NAME).exists()
+
+
+def test_builder_reads_three_programs_only_no_public_snapshot(
+    monkeypatch, tmp_path
+):
+    import capture_crypto_research_asof_v0_1 as capture
+    seen = []
+    programs = _snapshot()["validation_programs"]
+    monkeypatch.setattr(
+        capture, "_verify_crypto_validation_adapter_source",
+        lambda *_: seen.append("adapter"),
+    )
+    monkeypatch.setattr(
+        capture, "build_core_expansion_programs",
+        lambda *_: (seen.append("core_expansion") or programs[:2]),
+    )
+    monkeypatch.setattr(
+        capture, "build_crypto_public_validation_program",
+        lambda *args, **kwargs: (
+            seen.append("crypto") or programs[2]
+        ),
+    )
+    monkeypatch.setattr(
+        capture, "_verify_current_expansion_claim",
+        lambda *_: seen.append("registry_compat"),
+    )
+    payload = capture.build_three_program_observation(tmp_path)
+    assert seen == [
+        "adapter", "core_expansion", "crypto", "registry_compat",
+    ]
+    assert len(payload["validation_programs"]) == 3
+    assert set(p["program_id"] for p in payload["validation_programs"]) == {
+        "core-ai-shadow", "market-expansion-1", "crypto-expansion-1",
+    }
+    # The former full exporter inspected S02 and other databases. Make its
+    # absence an explicit release invariant.
+    import inspect
+    source = inspect.getsource(capture)
+    assert "from export_guarded_full_v0_1 import" not in source
+    assert "build_guarded_full_snapshot(" not in source
+    assert "build_core_expansion_snapshot(" not in source
+
+
+@pytest.mark.parametrize("bad_program", [
+    "unsafe_entry", "crypto_public_exposure", "unhealthy",
+    "missing_crypto_market", "unexpected_cohort",
+])
+def test_builder_rejects_unqualified_synthetic_program(
+    monkeypatch, tmp_path, bad_program
+):
+    import capture_crypto_research_asof_v0_1 as capture
+    programs = _snapshot()["validation_programs"]
+    crypto = programs[2]
+    if bad_program == "unsafe_entry":
+        crypto["markets"][0]["entry_price"] = 1234
+    elif bad_program == "crypto_public_exposure":
+        crypto["public_signal_exposure"] = True
+    elif bad_program == "unhealthy":
+        crypto["health"]["healthy"] = False
+    elif bad_program == "missing_crypto_market":
+        crypto["markets"].pop()
+    elif bad_program == "unexpected_cohort":
+        crypto["program_id"] = "unregistered"
+    monkeypatch.setattr(
+        capture, "_verify_crypto_validation_adapter_source", lambda *_: None,
+    )
+    monkeypatch.setattr(
+        capture, "build_core_expansion_programs", lambda *_: programs[:2],
+    )
+    monkeypatch.setattr(
+        capture, "build_crypto_public_validation_program",
+        lambda *args, **kwargs: crypto,
+    )
+    monkeypatch.setattr(
+        capture, "_verify_current_expansion_claim", lambda *_: None,
+    )
+    with pytest.raises(RuntimeError):
+        capture.build_three_program_observation(tmp_path)
+
+
+def test_nine_ledger_guard_fingerprints_exact_paths(tmp_path):
+    import capture_crypto_research_asof_v0_1 as capture
+    for rel in capture.ACTIVE_AI_LEDGER_PATHS:
+        file = tmp_path / rel
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_bytes(b"synthetic metadata only; not SQLite content")
+    fingerprints = capture.nine_ledger_fingerprints(tmp_path)
+    assert len(fingerprints) == 9
+    assert set(fingerprints) == set(capture.ACTIVE_AI_LEDGER_PATHS)
+    for rel in fingerprints:
+        assert fingerprints[rel][2] == hashlib.sha256(
+            (tmp_path / rel).read_bytes()
+        ).hexdigest()
+    # Any sidecar means possible writer activity; refuse even clean content.
+    sidecar = tmp_path / (capture.ACTIVE_AI_LEDGER_PATHS[0] + "-wal")
+    sidecar.write_bytes(b"synthetic WAL")
+    with pytest.raises(RuntimeError, match="sidecar"):
+        capture.nine_ledger_fingerprints(tmp_path)
+    sidecar.unlink()
+    # Reject unexpected source changes instead of certifying evidence.
+    (tmp_path / capture.ACTIVE_AI_LEDGER_PATHS[1]).write_bytes(b"")
+    with pytest.raises(RuntimeError, match="unsafe active AI ledger"):
+        capture.nine_ledger_fingerprints(tmp_path)

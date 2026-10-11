@@ -326,7 +326,19 @@ def test_one_shot_capture_only_on_mock_verified_reports(monkeypatch, tmp_path):
     digest = capture.produce_one_seal(tmp_path)
     data = (tmp_path / "data" / SEAL_NAME).read_bytes()
     assert hashlib.sha256(data).hexdigest() == digest
-    assert asof_program_from_seal_bytes(data, datetime.now(timezone.utc))
+    # Windows clock ticks can remain unchanged across adjacent calls.
+    # A current observation is NOT yet historical; one second later is.
+    observed_at = datetime.fromisoformat(
+        json.loads(data)["source_snapshot_generated_at_utc"]
+    )
+    with pytest.raises(AsOfSealRejected, match="not historical"):
+        asof_program_from_seal_bytes(data, observed_at)
+    delayed = asof_program_from_seal_bytes(
+        data, observed_at + timedelta(seconds=1)
+    )
+    assert delayed["status"] == "delayed"
+    assert observed_at.isoformat() in delayed["title"]
+    assert delayed["public_signal_exposure"] is False
     assert set(json.loads(data)) == {
         "seal_schema_version", "source_snapshot_generated_at_utc",
         "crypto_program",

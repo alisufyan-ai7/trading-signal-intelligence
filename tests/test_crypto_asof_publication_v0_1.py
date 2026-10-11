@@ -198,7 +198,7 @@ def test_label_cannot_pretend_to_be_current(monkeypatch):
 def test_capture_is_disabled_until_explicit_owner_gate(monkeypatch, tmp_path):
     import capture_crypto_research_asof_v0_1 as capture
     monkeypatch.delenv(capture.ENABLE, raising=False)
-    with pytest.raises(guard.PublicationHeld):
+    with pytest.raises(RuntimeError, match="capture activation"):
         capture.produce_one_seal(tmp_path)
     assert not (tmp_path / "data").exists()
 
@@ -293,7 +293,7 @@ def test_one_shot_capture_only_on_mock_verified_reports(monkeypatch, tmp_path):
     data = (tmp_path / "data" / SEAL_NAME).read_bytes()
     assert hashlib.sha256(data).hexdigest() == digest
     assert asof_program_from_seal_bytes(data, datetime.now(timezone.utc))
-    with pytest.raises(guard.PublicationHeld, match="overwrite"):
+    with pytest.raises(RuntimeError, match="overwrite"):
         capture.produce_one_seal(tmp_path)
 
 
@@ -309,6 +309,6 @@ def test_source_drift_during_mock_capture_refuses_seal(monkeypatch, tmp_path):
     monkeypatch.setattr(capture, "build_guarded_full_snapshot", lambda *_: _snapshot())
     monkeypatch.setattr(capture, "validate_candidate", lambda *_: None)
     monkeypatch.setattr(capture, "_verify_current_expansion_claim", lambda *_: None)
-    with pytest.raises(guard.PublicationHeld, match="source changed"):
+    with pytest.raises(RuntimeError, match="source changed"):
         capture.produce_one_seal(tmp_path)
     assert not (tmp_path / "data" / SEAL_NAME).exists()

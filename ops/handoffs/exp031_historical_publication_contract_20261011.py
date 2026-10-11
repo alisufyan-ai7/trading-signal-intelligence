@@ -88,10 +88,26 @@ def preflight(root: Path):
     token = os.getenv("TRADINGTOP_INGEST_TOKEN") or dot.get("TRADINGTOP_INGEST_TOKEN")
     demand(bool(url) and bool(token), "production ingest credentials are not available")
     target = _validated_endpoint(str(url))
-    demand(urlparse(target).hostname == "vowsig.com",
-           "ingest target is not the authorized VowSig domain")
+    # The public site lives at vowsig.com, while the configured production
+    # ingestion URL may point at the separately named canonical Railway app.
+    # Pin ONLY the two established exact hosts; do not allow arbitrary
+    # Railway subdomains, redirects, credentials in URLs, or query changes.
+    parsed = urlparse(target)
+    allowed = {
+        "vowsig.com",
+        "tradingtop-early-access-production.up.railway.app",
+    }
+    demand(
+        parsed.scheme == "https"
+        and parsed.hostname in allowed
+        and parsed.port in (None, 443)
+        and parsed.username is None and parsed.password is None
+        and parsed.path == "/api/internal/snapshot"
+        and not parsed.params and not parsed.query and not parsed.fragment,
+        "ingest destination not a reviewed production HTTPS endpoint",
+    )
     print("INGEST_TOKEN_PRESENT=TRUE")
-    print("INGEST_TARGET_VOWSIG=PASS")
+    print("EXACT_PRODUCTION_INGEST_DESTINATION=PASS")
 
     original_markets = public_get(SITE + "/api/markets")
     original_programs = public_get(SITE + "/api/validation/programs")

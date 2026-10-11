@@ -67,6 +67,37 @@ def _check_no_private(value: Any) -> None:
             _check_no_private(nested)
 
 
+TOTAL_KEYS = frozenset({
+    "valid_inferences", "completed_shadow_trades", "open_shadow_signals",
+    "signals", "no_trade", "rejected_inferences", "missed_inferences", "errors",
+})
+MARKET_FIELDS = frozenset({
+    "source_symbol", "canonical_symbol", "ledger_valid",
+    "activation_anchor_match", "valid_inferences", "completed_shadow_trades",
+    "signals", "open_signals", "no_trade", "rejected_inferences",
+    "missed_inferences", "errors", "latest_recorded_at_utc",
+})
+
+
+def _verified_count(value: Any) -> int:
+    if type(value) is not int or value < 0:
+        raise AsOfSealRejected("invalid research aggregate count")
+    return value
+
+
+def _strict_json_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise AsOfSealRejected("duplicate JSON key in seal")
+        result[key] = value
+    return result
+
+
+def _reject_json_constant(value: str) -> None:
+    raise AsOfSealRejected("invalid JSON number: " + value)
+
+
 def _check_original_program(program: Any) -> None:
     if not isinstance(program, dict) or set(program) != PUBLIC_FIELDS:
         raise AsOfSealRejected("public crypto program shape changed")
@@ -101,6 +132,41 @@ def _check_original_program(program: Any) -> None:
         or any(not isinstance(g, dict) for g in gates)
         or {g.get("gate_id") for g in gates} != GATES):
         raise AsOfSealRejected("incomplete crypto cohort or invalid ledger evidence")
+    totals = program.get("totals")
+    if not isinstance(totals, dict) or set(totals) != TOTAL_KEYS:
+        raise AsOfSealRejected("unknown or absent total count keys")
+    for number in totals.values():
+        _verified_count(number)
+    if set(h) != {
+        "healthy", "ledgers_valid", "scheduler_healthy", "broker_execution_disabled"
+    }:
+        raise AsOfSealRejected("unexpected public crypto health keys")
+    for market in markets:
+        if set(market) != MARKET_FIELDS:
+            raise AsOfSealRejected("unknown or missing market field")
+        for key in (
+            "valid_inferences", "completed_shadow_trades", "signals",
+            "open_signals", "no_trade", "rejected_inferences",
+            "missed_inferences", "errors",
+        ):
+            _verified_count(market[key])
+    pairs = {
+        "valid_inferences": "valid_inferences",
+        "completed_shadow_trades": "completed_shadow_trades",
+        "open_shadow_signals": "open_signals",
+        "signals": "signals",
+        "no_trade": "no_trade",
+        "rejected_inferences": "rejected_inferences",
+        "missed_inferences": "missed_inferences",
+        "errors": "errors",
+    }
+    for total_key, market_key in pairs.items():
+        if totals[total_key] != sum(m[market_key] for m in markets):
+            raise AsOfSealRejected("inconsistent per-market crypto counts")
+    if any(set(g) != {"gate_id", "eligible", "requirements"}
+           or type(g["eligible"]) is not bool
+           or not isinstance(g["requirements"], list) for g in gates):
+        raise AsOfSealRejected("unsafe or incomplete gate schema")
     _check_no_private(program)
 
 
@@ -160,7 +226,10 @@ def asof_program_from_seal_bytes(raw: bytes, now: datetime) -> dict[str, Any]:
     if not isinstance(raw, bytes) or len(raw) > MAX_SEAL_BYTES:
         raise AsOfSealRejected("invalid seal content")
     try:
-        document = json.loads(raw)
+        document = json.loads(
+            raw, object_pairs_hook=_strict_json_pairs,
+            parse_constant=_reject_json_constant,
+        )
     except (UnicodeError, ValueError) as exc:
         raise AsOfSealRejected("invalid seal JSON") from exc
     if not isinstance(document, dict) or set(document) != {

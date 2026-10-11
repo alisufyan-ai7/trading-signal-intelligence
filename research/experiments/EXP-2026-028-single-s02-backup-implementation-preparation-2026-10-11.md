@@ -25,7 +25,7 @@ Boundaries for a separately approved future first trial:
 
 ## Offline-only tests
 
-`tests/test_b1b2_single_s02_local_trial_v0_1.py` contains 13 tests using `ForwardLedger` **only to generate fake SQLite files inside temporary mock repositories**. Covers explicit default denial, sealed-copy chain/integrity and manifest, no-overwrite, non-initializing copy verifier, tampering, missing triggers, WAL/sidecar hold, research-store rejection, in-repository destination rejection, size budget, malformed SHA/ID and empty ledger. **No private VPS DB or offsite source used.** Tests are authored but not yet run on the native Windows VPS at this new exact commit. Do not claim PASS based solely on prior PR #52 tests.
+`tests/test_b1b2_single_s02_local_trial_v0_1.py` contains 14 tests using `ForwardLedger` **only to generate fake SQLite files inside temporary mock repositories**. Covers explicit default denial, sealed-copy chain/integrity and manifest, no-overwrite, non-initializing copy verifier, tampering, missing triggers, WAL/sidecar hold, research-store rejection, in-repository destination rejection, size budget, malformed SHA/ID, empty ledger and synthetic source drift during copy verification. **No private VPS DB or offsite source used.** Tests are authored but not yet run on the native Windows VPS at this new exact commit. Do not claim PASS based solely on prior PR #52 tests.
 
 ## Repository-only research-store classification
 
@@ -36,3 +36,5 @@ Existing `data/research.sqlite` is the expected `CandleStore` raw market-bars st
 **No authorization yet** for opening/hashing/querying a real SQLite file, touching source sidecars, creating a backup on VPS, recovering/restoring, offsite storage, network/cloud, Task Scheduler, K5 crypto scan, publisher cutover or merging this PR. Historical failures stay historical. PRs require owner's explicit per-merge decision and mandatory manual dependency verification.
 
 Next: review the exact additive draft and perform one isolated synthetic-fixture test at the new SHA, then propose an owner-scoped one-file real-data execution command **only after separate explicit permission**. Keep work proportionate; don't run repeated safety-script campaigns. Even a successful one-ledger trial will not close B3–B9/full recovery.
+
+An additional fail-closed requirement rejects a source whose size/mtime changes or whose SQLite sidecars appear between preflight and manifest promotion. This is not a substitute for validating that the real source writer is quiescent before an authorized trial.

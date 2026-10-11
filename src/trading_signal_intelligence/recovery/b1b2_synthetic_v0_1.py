@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import sqlite3
 from dataclasses import dataclass
@@ -55,6 +56,16 @@ def sha256_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _on_windows() -> bool:
+    return os.name == "nt"
+
+
+def _assert_windows_sqlite_path(path: Path) -> None:
+    """Fail before SQLite tries to create an overlong journal sidecar on Windows."""
+    if _on_windows() and len(str(path) + "-journal") >= 240:
+        raise SyntheticGateRejected("synthetic SQLite journal path too long for Windows")
+
+
 def _safe_regular(path: Path) -> None:
     if path.is_symlink() or not path.is_file():
         raise SyntheticGateRejected("unsafe or missing fixture file")
@@ -79,6 +90,7 @@ def _fixture_path(root: Path, name: str) -> Path:
     if not FILE_RE.fullmatch(name):
         raise SyntheticGateRejected("invalid flat synthetic filename")
     path = root / name
+    _assert_windows_sqlite_path(path)
     if path.parent.resolve(strict=True) != root:
         raise SyntheticGateRejected("fixture traversal blocked")
     _safe_regular(path)
@@ -252,6 +264,9 @@ def capture_synthetic_set(
     target = copy_root / set_id
     if target.exists() or target.is_symlink():
         raise SyntheticGateRejected("no-overwrite synthetic set collision")
+    # Validate every SQLite destination/journal path before making directories.
+    for spec, _ in validated:
+        _assert_windows_sqlite_path(target / spec.filename)
     copy_root.mkdir(exist_ok=True)
     target.mkdir(exist_ok=False)
     collected = []

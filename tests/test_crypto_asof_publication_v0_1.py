@@ -86,6 +86,7 @@ def _snapshot():
 
 def _seal(tmp_path):
     raw = seal_from_verified_snapshot(_snapshot(), AT + timedelta(seconds=1))
+    tmp_path.mkdir(parents=True, exist_ok=True)
     (tmp_path / "data").mkdir()
     file = tmp_path / "data" / SEAL_NAME
     file.write_bytes(raw)

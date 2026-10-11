@@ -20,7 +20,7 @@ import sys
 import urllib.request
 from pathlib import Path
 from typing import Any
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
 
 ROOT = Path(__file__).resolve().parents[1]
 SEAL_NAME = "crypto-research-asof-v0.1.json"
@@ -60,11 +60,16 @@ class CaptureGuard:
         address, separator, options = database.partition("?")
         if not separator or options != "mode=ro":
             raise CaptureGuardRejected("SQLite mode must be exactly ro")
-        if "%" in address or "#" in address:
-            # No URI aliases or fragments. Existing observed DB builder uses
-            # plain file:<absolute-path>?mode=ro, which is unambiguous.
-            raise CaptureGuardRejected("encoded SQLite URI not accepted")
-        key = str(Path(unquote(address[5:])).resolve()).casefold()
+        encoded_path = address[5:]
+        # The frozen read-only SQLite builder encodes Windows path spaces
+        # ("Signal Projects" -> "Signal%20Projects") using quote(safe="/:").
+        # Admit only that exact canonical representation; refuse any alias,
+        # fragment, noncanonical escape, or unexpected ledger identity.
+        decoded_path = unquote(encoded_path)
+        if ("#" in encoded_path
+            or quote(decoded_path, safe="/:") != encoded_path):
+            raise CaptureGuardRejected("noncanonical SQLite URI path")
+        key = str(Path(decoded_path).resolve()).casefold()
         if key not in self.allowed:
             raise CaptureGuardRejected("SQLite outside nine active AI ledgers")
         return key

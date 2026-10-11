@@ -60,6 +60,21 @@ function Get-TextHash([string]$Value) {
     } finally { $sha.Dispose() }
 }
 
+function Normalized-TaskDefinitionHash([string]$SourceXml) {
+    # Disable-ScheduledTask changes only the task's Enabled flag under normal
+    # operation. Compare the full XML definition with that flag neutralized;
+    # otherwise a legitimate PRE-SYNC disable would make rollback impossible.
+    [xml]$document = $SourceXml
+    $ns = New-Object Xml.XmlNamespaceManager($document.NameTable)
+    $ns.AddNamespace("t", "http://schemas.microsoft.com/windows/2004/02/mit/task")
+    $enabled = $document.SelectSingleNode("/t:Task/t:Settings/t:Enabled", $ns)
+    if ($null -eq $enabled) {
+        throw "STOP: task XML lacks expected Settings/Enabled flag."
+    }
+    $enabled.InnerText = "normalized-for-enabled-state-comparison"
+    return Get-TextHash $document.OuterXml
+}
+
 function Scanner-XMLHashes {
     $result = [ordered]@{}
     foreach ($name in $Scanners) {
@@ -249,7 +264,7 @@ if ($Mode -eq "Contain") {
     if ([string]$again.Task.State -cne "Ready" -or
         $again.Info.NextRunTime.ToUniversalTime() -le ([DateTime]::UtcNow.AddMinutes(10)) -or
         (Get-SnapshotState).Sha256 -cne $snapshot.Sha256 -or
-        (Get-TextHash (Get-TaskXML $TaskName)) -cne (Get-TextHash $taskXml)) {
+        (Normalized-TaskDefinitionHash (Get-TaskXML $TaskName)) -cne (Normalized-TaskDefinitionHash $taskXml)) {
         throw "STOP: live task/snapshot drifted before containment."
     }
     Assert-NoPublisherProcess
@@ -282,8 +297,8 @@ if ($Mode -eq "PreSyncRollback") {
     $m = Verify-Evidence $EvidenceDirectory
     if ([string]$legacy.Task.State -cne "Disabled" -or
         $m.task_path -cne $legacy.Task.TaskPath -or
-        (Get-TextHash (Get-TaskXML $TaskName)) -cne
-          (Get-TextHash ([IO.File]::ReadAllText((Join-Path $EvidenceDirectory "publisher-task.xml")))) -or
+        (Normalized-TaskDefinitionHash (Get-TaskXML $TaskName)) -cne
+          (Normalized-TaskDefinitionHash ([IO.File]::ReadAllText((Join-Path $EvidenceDirectory "publisher-task.xml")))) -or
         (Get-SnapshotState).Sha256 -cne $m.snapshot_sha256) {
         throw "STOP: pre-sync rollback conditions do not hold. No task reenable."
     }

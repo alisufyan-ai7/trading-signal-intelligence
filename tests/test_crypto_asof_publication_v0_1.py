@@ -310,7 +310,10 @@ def test_one_shot_capture_only_on_mock_verified_reports(monkeypatch, tmp_path):
     monkeypatch.setattr(capture, "ensure_stable_k5", lambda *_: None)
     monkeypatch.setattr(capture, "crypto_fingerprints", lambda *_: {"BTCUSDT": "same"})
     monkeypatch.setattr(capture, "build_guarded_full_snapshot", lambda *_: {
-        **_snapshot(), "generated_at_utc": datetime.now(timezone.utc).isoformat()
+        **_snapshot(),
+        "generated_at_utc": (
+            datetime.now(timezone.utc) - timedelta(seconds=1)
+        ).isoformat(),
     })
     monkeypatch.setattr(capture, "validate_candidate", lambda *_: None)
     monkeypatch.setattr(capture, "_verify_current_expansion_claim", lambda *_: None)

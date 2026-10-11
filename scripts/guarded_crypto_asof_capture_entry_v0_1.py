@@ -94,13 +94,12 @@ class CaptureGuard:
             raise CaptureGuardRejected("Git command outside read-only allowlist")
 
     def _powershell_command(self, args: list[str]) -> None:
-        if args[1:4] not in (
-            ["-NoProfile", "-Command", args[3]] if len(args) == 4 else [],
-            ["-NoProfile", "-NonInteractive", "-Command"] if len(args) == 5 else [],
+        options = args[1:-1]
+        if options not in (
+            ["-NoProfile", "-Command"],
+            ["-NoProfile", "-NonInteractive", "-Command"],
         ):
             raise CaptureGuardRejected("unexpected PowerShell invocation")
-        if len(args) not in (4, 5):
-            raise CaptureGuardRejected("unexpected PowerShell argument count")
         script = args[-1]
         if not script.startswith("$ErrorActionPreference='Stop';"):
             raise CaptureGuardRejected("PowerShell fail-closed declaration missing")
@@ -179,7 +178,7 @@ class CaptureGuard:
 
         sys.addaudithook(audit)
 
-    def import_smoke(self) -> None:
+    def import_smoke(self, *, print_result: bool = True) -> None:
         if sys.platform != "win32":
             raise CaptureGuardRejected("native Windows required")
         import asyncio.windows_utils as windows_utils
@@ -207,13 +206,14 @@ class CaptureGuard:
                 pass
             else:
                 raise CaptureGuardRejected("negative self-check did not refuse")
-        print("CAPTURE_GUARD_IMPORT_ONLY=PASS")
-        print("WINDOWS_ASYNCIO_FASTAPI_IMPORT=PASS")
-        print("SUBPROCESS_POPEN_CLASS_COMPATIBLE=PASS")
-        print("FORBIDDEN_PROCESS_SQLITE_DENIAL=PASS")
-        print("LIVE_SQLITE_CONNECTIONS=0")
-        print("SEAL_CREATED=False")
-        print("CLOUD_PUBLICATION=False")
+        if print_result:
+            print("CAPTURE_GUARD_IMPORT_ONLY=PASS")
+            print("WINDOWS_ASYNCIO_FASTAPI_IMPORT=PASS")
+            print("SUBPROCESS_POPEN_CLASS_COMPATIBLE=PASS")
+            print("FORBIDDEN_PROCESS_SQLITE_DENIAL=PASS")
+            print("LIVE_SQLITE_CONNECTIONS=0")
+            print("SEAL_CREATED=False")
+            print("CLOUD_PUBLICATION=False")
 
 
 def safe_seal_metadata(path: Path, expected_digest: str) -> dict[str, Any]:
@@ -255,7 +255,7 @@ def main() -> None:
             raise CaptureGuardRejected("local seal exists; do not overwrite")
     guard = CaptureGuard(live)
     guard.install()
-    guard.import_smoke()
+    guard.import_smoke(print_result=(args.mode == "import-smoke"))
     if args.mode == "import-smoke":
         return
     from capture_crypto_research_asof_v0_1 import produce_one_seal

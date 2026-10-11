@@ -47,7 +47,7 @@ def task_info():
         "$o=[pscustomobject]@{Name=$t.TaskName;State=[string]$t.State;"
         "Action=$t.Actions[0].Execute;Arguments=$t.Actions[0].Arguments;"
         "TaskPath=$t.TaskPath;LastResult=$i.LastTaskResult;"
-        "LastRunTime=$i.LastRunTime.ToString('o')};"
+        "LastRunTime=$i.LastRunTime.ToUniversalTime().ToString('o')};"
         "$o|ConvertTo-Json -Compress"
     )
     p = subprocess.run(

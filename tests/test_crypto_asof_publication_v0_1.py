@@ -113,6 +113,7 @@ def test_asof_seal_schema_v1_and_history_label(tmp_path):
     "bad_digest", "missing_digest", "tampered_bytes", "symlink",
     "unsafe_payload", "unhealthy", "missing_market", "missing_gate",
     "exposed_signals", "new_field", "bad_time", "wrong_provenance",
+    "wrong_counts", "boolean_count", "market_extra_field", "gate_extra_field",
 ])
 def test_asof_seal_rejects_bad_evidence(tmp_path, alter):
     snap = _snapshot()
@@ -129,6 +130,14 @@ def test_asof_seal_rejects_bad_evidence(tmp_path, alter):
         crypto["public_signal_exposure"] = True
     elif alter == "new_field":
         crypto["unreviewed_public_field"] = True
+    elif alter == "wrong_counts":
+        crypto["totals"]["no_trade"] = 123
+    elif alter == "boolean_count":
+        crypto["markets"][0]["no_trade"] = True
+    elif alter == "market_extra_field":
+        crypto["markets"][0]["private_note"] = "bad"
+    elif alter == "gate_extra_field":
+        crypto["gates"][0]["hidden_evidence"] = "bad"
     elif alter == "bad_time":
         snap["generated_at_utc"] = "yesterday"
     elif alter == "wrong_provenance":
@@ -136,6 +145,7 @@ def test_asof_seal_rejects_bad_evidence(tmp_path, alter):
     if alter in {
         "unsafe_payload", "unhealthy", "missing_market", "missing_gate",
         "exposed_signals", "new_field", "bad_time", "wrong_provenance",
+        "wrong_counts", "boolean_count", "market_extra_field", "gate_extra_field",
     }:
         with pytest.raises(AsOfSealRejected):
             seal_from_verified_snapshot(snap, AT + timedelta(seconds=1))
@@ -253,3 +263,52 @@ def test_guard_opt_in_publishes_only_pinned_delayed_aggregates(
         assert set(c) == set(_crypto())
     else:
         assert {p["program_id"] for p in result["validation_programs"]} == guard.BASE_PROGRAMS
+
+
+def test_duplicate_seal_json_keys_rejected():
+    duplicate = (
+        b'{"seal_schema_version":1,"seal_schema_version":1,'
+        b'"source_snapshot_generated_at_utc":"2026-10-11T10:00:00+00:00",'
+        b'"crypto_program":{}}'
+    )
+    with pytest.raises(AsOfSealRejected):
+        asof_program_from_seal_bytes(duplicate, AT + timedelta(hours=1))
+
+
+def test_one_shot_capture_only_on_mock_verified_reports(monkeypatch, tmp_path):
+    import capture_crypto_research_asof_v0_1 as capture
+    (tmp_path / "data").mkdir()
+    monkeypatch.setenv(capture.ENABLE, "1")
+    times = []
+    monkeypatch.setattr(capture, "probe_k5", lambda: {"State": "Ready"})
+    monkeypatch.setattr(capture, "validate_k5_finished", lambda *_: None)
+    monkeypatch.setattr(capture, "ensure_stable_k5", lambda *_: None)
+    monkeypatch.setattr(capture, "crypto_fingerprints", lambda *_: {"BTCUSDT": "same"})
+    monkeypatch.setattr(capture, "build_guarded_full_snapshot", lambda *_: {
+        **_snapshot(), "generated_at_utc": datetime.now(timezone.utc).isoformat()
+    })
+    monkeypatch.setattr(capture, "validate_candidate", lambda *_: None)
+    monkeypatch.setattr(capture, "_verify_current_expansion_claim", lambda *_: None)
+    digest = capture.produce_one_seal(tmp_path)
+    data = (tmp_path / "data" / SEAL_NAME).read_bytes()
+    assert hashlib.sha256(data).hexdigest() == digest
+    assert asof_program_from_seal_bytes(data, datetime.now(timezone.utc))
+    with pytest.raises(guard.PublicationHeld, match="overwrite"):
+        capture.produce_one_seal(tmp_path)
+
+
+def test_source_drift_during_mock_capture_refuses_seal(monkeypatch, tmp_path):
+    import capture_crypto_research_asof_v0_1 as capture
+    (tmp_path / "data").mkdir()
+    monkeypatch.setenv(capture.ENABLE, "1")
+    monkeypatch.setattr(capture, "probe_k5", lambda: {"State": "Ready"})
+    monkeypatch.setattr(capture, "validate_k5_finished", lambda *_: None)
+    monkeypatch.setattr(capture, "ensure_stable_k5", lambda *_: None)
+    states = iter([{"BTCUSDT": "first"}, {"BTCUSDT": "changed"}])
+    monkeypatch.setattr(capture, "crypto_fingerprints", lambda *_: next(states))
+    monkeypatch.setattr(capture, "build_guarded_full_snapshot", lambda *_: _snapshot())
+    monkeypatch.setattr(capture, "validate_candidate", lambda *_: None)
+    monkeypatch.setattr(capture, "_verify_current_expansion_claim", lambda *_: None)
+    with pytest.raises(guard.PublicationHeld, match="source changed"):
+        capture.produce_one_seal(tmp_path)
+    assert not (tmp_path / "data" / SEAL_NAME).exists()

@@ -103,6 +103,13 @@ function Task-OtherXml {
     $actions = $xml.SelectSingleNode("/t:Task/t:Actions", $ns)
     Demand ($null -ne $actions) "Task XML Actions missing"
     [void]$actions.ParentNode.RemoveChild($actions)
+    # Enable changes only the supported Settings/Enabled flag; normalize
+    # that flag while retaining all other task XML, including principal,
+    # triggers, settings, URI and registration metadata.
+    $settings = $xml.SelectSingleNode("/t:Task/t:Settings", $ns)
+    Demand ($null -ne $settings) "Task XML Settings missing"
+    $enabled = $settings.SelectSingleNode("t:Enabled", $ns)
+    if ($null -ne $enabled) { [void]$settings.RemoveChild($enabled) }
     return $xml.OuterXml
 }
 function Runner-Hash {

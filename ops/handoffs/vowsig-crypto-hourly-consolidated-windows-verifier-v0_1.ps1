@@ -1,4 +1,4 @@
-# EXP-034 seven-module native Windows Python 3.12 SYNTHETIC parity checker.
+# VowSig consolidated hourly crypto: seven-module Windows 3.12 SYNTHETIC parity.
 # Only run after SHA-pinned GitHub clone and PowerShell AST bootstrap checks.
 [CmdletBinding()]
 param(
@@ -100,8 +100,8 @@ try {
           "tests/test_crypto_public_validation_v0_1.py")
  Write-Output "EXP034_SEVEN_SYNTHETIC_MODULES_STARTED=TRUE"
  & $py -B -m pytest -q -p no:cacheprovider --basetemp="$scratch\pt" @tests
- CheckExit "six-module synthetic suite"
- Write-Output "EXP034_SIX_SYNTHETIC_MODULES=PASS"
+ CheckExit "seven-module synthetic suite"
+ Write-Output "EXP034_SEVEN_SYNTHETIC_MODULES=PASS"
 }
 finally {
  Set-Location -LiteralPath $prior

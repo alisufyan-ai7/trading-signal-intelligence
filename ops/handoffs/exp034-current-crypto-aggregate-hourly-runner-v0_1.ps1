@@ -12,7 +12,7 @@ $OneShotMarker = Join-Path $Repo "data\exp031-one-shot-historical-publication-at
 $Command = Join-Path $Repo "scripts\run_product_publish_guarded_v0_1.cmd"
 # Fail closed unless the exact publisher source tested on Windows is installed.
 $PublisherRelative = "scripts/guarded_product_publish_v0_1.py"
-$ExpectedPublisherGitBlob = "e3f153128d4c65c7c98cfba7427a6e892eca2e29"
+$ExpectedPublisherGitBlob = "98363fb8a0122f560a468063fed1329987ebb130"
 $PublisherPath = Join-Path $Repo ($PublisherRelative.Replace("/", "\"))
 
 try {

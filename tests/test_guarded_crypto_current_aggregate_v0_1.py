@@ -10,6 +10,8 @@ import copy
 import hashlib
 import importlib.util
 import json
+import re
+import subprocess
 from datetime import timedelta
 from pathlib import Path
 
@@ -228,3 +230,19 @@ def test_crypto_source_hold_still_pushes_base_once(monkeypatch, tmp_path):
 def test_crypto_current_never_mutates_frozen_writer_interlock():
     assert guard.CRYPTO_WRITER_INTERLOCK_READY is False
     assert guard.require_crypto_writer_interlock.__name__ == "require_crypto_writer_interlock"
+
+
+def test_exp034_launcher_pins_exact_current_publisher_git_blob():
+    """A source update must not silently strand the already-installed hourly runner."""
+    runner = (ROOT / "ops/handoffs/exp034-current-crypto-aggregate-hourly-runner-v0_1.ps1").read_text(encoding="utf-8")
+    match = re.search(r'(?m)^\$ExpectedPublisherGitBlob = "([0-9a-f]{40})"$', runner)
+    assert match is not None
+    publisher = "scripts/guarded_product_publish_v0_1.py"
+    pinned = subprocess.run(
+        ["git", "-C", str(ROOT), "hash-object", f"--path={publisher}",
+         "--", str(ROOT / publisher)],
+        check=True, capture_output=True, text=True, timeout=15,
+    ).stdout.strip()
+    assert match.group(1) == pinned
+    assert '$env:VOWSIG_CRYPTO_CURRENT_AGGREGATES_V1 = "1"' in runner
+    assert '$env:VOWSIG_CRYPTO_ASOF_ENABLED = "1"' in runner

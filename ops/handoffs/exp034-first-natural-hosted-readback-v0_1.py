@@ -170,7 +170,8 @@ def verify() -> None:
         print("EXP034_HOSTED_CRYPTO_AGGREGATES=CURRENT_PASS")
     elif status == "delayed":
         demand("DELAYED" in crypto.get("title", "") and SEALED_AT in crypto.get("title", "")
-               and crypto.get("data_freshness") == "delayed",
+               and crypto.get("health", {}).get("healthy") is False
+               and crypto.get("health", {}).get("scheduler_healthy") is False,
                "historical DELAYED fallback missing provenance")
         print("EXP034_HOSTED_CRYPTO_AGGREGATES=DELAYED_FALLBACK_PASS")
     else:

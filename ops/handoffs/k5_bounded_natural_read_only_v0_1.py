@@ -18,7 +18,7 @@ from typing import Any, Callable
 UTC = timezone.utc
 SYMBOLS = ("BTCUSDT", "ETHUSDT", "SOLUSDT")
 TASK_NAME = "VowSig AI-v1.3 Crypto Shadow Scan"
-EXPECTED_MAIN = "a4f00578c00c5e23eb4fae073cf2df18c78d9a0a"
+EXPECTED_MAIN = "8ec0e82ea340682d92f9a62acf85171b7715bf5d"
 MAX_RUN_AGE_SECONDS = 75 * 60
 SOURCE_BLOBS = {
     "src/trading_signal_intelligence/ai_v1/observability.py": "b4ba334e6c7c2e54c301251268f5bfe2746c75cd",

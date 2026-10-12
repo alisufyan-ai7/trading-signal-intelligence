@@ -61,6 +61,55 @@ def test_source_attested_in_memory_crypto_passes_only_aggregate(monkeypatch, tmp
     ))
 
 
+def test_real_history_reader_legacy_delayed_does_not_block_current(monkeypatch, tmp_path):
+    """EXP034: exercise CURRENT publisher without mocking accepted history reader."""
+    from trading_signal_intelligence.product import crypto_epoch_source_producer_v0_1
+
+    raw = produce(fixture())
+    current = json.loads(raw)["crypto_program"]
+    old = copy.deepcopy(current)
+    old["status"] = "delayed"
+    old["title"] = (
+        "Crypto AI Shadow Validation — DELAYED "
+        f"(last verified {(AT - timedelta(hours=2)).isoformat()} UTC)"
+    )
+    old["health"]["healthy"] = False
+    old["health"]["scheduler_healthy"] = False
+    assert "data_freshness" not in old
+
+    data = tmp_path / "data"
+    data.mkdir()
+    accepted = {
+        "generated_at_utc": (AT - timedelta(minutes=1)).isoformat(),
+        "validation_programs": [
+            {"program_id": "core-ai-shadow"},
+            {"program_id": "market-expansion-1"},
+            old,
+        ],
+    }
+    encoded = json.dumps(accepted).encode("utf-8")
+    archive, receipt = guard._pending_archive(tmp_path, accepted, encoded)
+    guard._accept_archive(archive, receipt, encoded)
+
+    # Standalone legacy schema validation is independently covered in the
+    # regular guarded-publisher tests. Here exercise the genuine archive
+    # iteration plus the in-memory source -> CURRENT crypto integration.
+    monkeypatch.setattr(guard, "validate_candidate", lambda *_: None)
+    monkeypatch.setenv("VOWSIG_CRYPTO_CURRENT_AGGREGATES_V1", "1")
+    monkeypatch.delenv("VOWSIG_CRYPTO_ASOF_ENABLED", raising=False)
+    monkeypatch.setattr(
+        crypto_epoch_source_producer_v0_1,
+        "capture_completed_k5_epoch", lambda *a, **k: raw,
+    )
+    result = guard._try_source_attested_crypto_aggregate(tmp_path, AT)
+    assert result is not None
+    assert result["status"] == "collecting"
+    assert result["public_signal_exposure"] is False
+    assert result["signal_details_included"] is False
+    assert archive.read_bytes() == encoded
+    assert receipt.is_file()
+
+
 def test_first_current_rejects_count_regression_against_pinned_asof(monkeypatch, tmp_path):
     from trading_signal_intelligence.product import crypto_epoch_source_producer_v0_1
     from trading_signal_intelligence.product import crypto_asof_seal_v0_1

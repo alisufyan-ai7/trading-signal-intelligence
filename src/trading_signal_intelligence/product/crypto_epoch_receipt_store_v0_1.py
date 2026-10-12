@@ -77,14 +77,20 @@ def _write_exclusive(directory: Path, filename: str, raw: bytes) -> Path:
             os.fsync(handle.fileno())
         # Atomic no-overwrite on NTFS, unlike os.replace which could erase an
         # independently accepted prior receipt.
+        # During atomic os.link publication, temporary and target are
+        # deliberately two names for the same inode (st_nlink == 2).
+        # The strict consumer requires st_nlink == 1; checking that before
+        # unlinking the temporary name rejects every successful write.
         os.link(temporary, target)
-        if _read_once(target, max_bytes=MAX_RECEIPT) != raw:
-            raise ReceiptStoreHeld("immutable receipt readback mismatch")
     except FileExistsError:
         raise ReceiptStoreHeld("immutable receipt collision") from None
     finally:
         if temporary is not None:
             temporary.unlink(missing_ok=True)
+    # Only now has the transient link been removed. Enforce consumer-grade
+    # file checks after the atomic no-overwrite publication is complete.
+    if _read_once(target, max_bytes=MAX_RECEIPT) != raw:
+        raise ReceiptStoreHeld("immutable receipt readback mismatch")
     return target
 
 

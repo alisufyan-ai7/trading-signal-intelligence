@@ -54,6 +54,8 @@ try {
     exit [int]$code
 }
 catch {
-    Write-Error ("EXP031_GUARDED_HOURLY_HELD: " + $_.Exception.Message)
+    # Avoid leaking private failure details and ensure exit 31 even with
+    # ErrorActionPreference=Stop (Write-Error could terminate before exit).
+    Write-Output "EXP034_GUARDED_HOURLY_HELD"
     exit 31
 }

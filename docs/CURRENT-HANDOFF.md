@@ -1,5 +1,8 @@
 # Current Handoff / Operating Contract
 
+> **2026-10-12 CURRENT overlay — review candidate (not yet merged):** The canonical engineering lessons are in [engineering-lessons-and-release-checklist-2026-10-12.md](engineering-lessons-and-release-checklist-2026-10-12.md). The owner confirmed the primary business is a subscription service for high-quality BUY/SELL entry/SL/TP signals; the AI research platform is internal supporting work. For hourly crypto research *aggregate-only* updates, use ONE consolidated draft PR #63 against current main; older drafts #59–#62 are evidence only, **not individual merge requests**. Current production public crypto remains historical DELAYED, K5 private vs public output are separate, execution is disabled. Native Windows synthetic predecessor 142 PASS (PR #61) and corrected producer/receipt 156 PASS (PR #63 old exact SHA) do not establish new consolidated publication PASS. Reconcile actual main/head and latest issue evidence before further work; all future private K5 reads, merge, VPS sync, live activation and hosted publication need explicit owner approval. The engineering lessons specify mistakes and prevention checks to carry across chats. This overlay does not change any frozen constraints or constitute release authority.
+
+
 _Last reconciled: 2026-10-01_
 
 This file is the canonical continuation point for future normal-chat work on the

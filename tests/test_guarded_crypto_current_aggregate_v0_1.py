@@ -61,6 +61,32 @@ def test_source_attested_in_memory_crypto_passes_only_aggregate(monkeypatch, tmp
     ))
 
 
+def test_first_current_rejects_count_regression_against_pinned_asof(monkeypatch, tmp_path):
+    from trading_signal_intelligence.product import crypto_epoch_source_producer_v0_1
+    from trading_signal_intelligence.product import crypto_asof_seal_v0_1
+    raw = produce(fixture())
+    previous = copy.deepcopy(json.loads(raw)["crypto_program"])
+    previous["status"] = "delayed"
+    previous["title"] = (
+        "Crypto AI Shadow Validation — DELAYED "
+        "(last verified 2026-10-11T12:07:21+00:00 UTC)"
+    )
+    previous["markets"][0]["valid_inferences"] += 3
+    monkeypatch.setenv("VOWSIG_CRYPTO_CURRENT_AGGREGATES_V1", "1")
+    monkeypatch.setenv("VOWSIG_CRYPTO_ASOF_ENABLED", "1")
+    monkeypatch.setenv("VOWSIG_CRYPTO_ASOF_SHA256", "test-only-stub")
+    monkeypatch.setattr(
+        crypto_epoch_source_producer_v0_1,
+        "capture_completed_k5_epoch", lambda *a, **k: raw,
+    )
+    monkeypatch.setattr(guard, "_last_accepted_crypto", lambda *_: None)
+    monkeypatch.setattr(
+        crypto_asof_seal_v0_1, "load_pinned_asof_program",
+        lambda *_: previous,
+    )
+    assert guard._try_source_attested_crypto_aggregate(tmp_path, AT) is None
+
+
 def test_previous_accepted_counters_never_regress(monkeypatch, tmp_path):
     from trading_signal_intelligence.product import crypto_epoch_source_producer_v0_1
     raw = produce(fixture())

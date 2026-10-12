@@ -70,7 +70,7 @@ function SyncAssertLive([string]$VsgHead) {
         throw "Live tracked Git worktree is not clean"
     }
 }
-function SyncTaskSnapshot {
+function SyncTaskSnapshot([bool]$VsgRequireQuiet = $true) {
     $VsgResult = @{}
     foreach ($VsgName in $SyncTaskNames) {
         $VsgTask = Get-ScheduledTask -TaskName $VsgName -ErrorAction Stop
@@ -78,7 +78,8 @@ function SyncTaskSnapshot {
         if ([string]$VsgTask.State -cne "Ready" -or [int64]$VsgInfo.LastTaskResult -ne 0) {
             throw "Scheduled task state is not Ready/last-result-zero"
         }
-        if (($VsgInfo.NextRunTime - (Get-Date)).TotalMinutes -le 12) {
+        if ($VsgRequireQuiet -and
+            ($VsgInfo.NextRunTime - (Get-Date)).TotalMinutes -le 12) {
             throw "Safe quiet window unavailable (next scheduled task is within 12 minutes)"
         }
         $VsgResult[$VsgName] = Export-ScheduledTask -TaskName $VsgName -ErrorAction Stop
@@ -150,6 +151,9 @@ $SyncTaskBefore = SyncTaskSnapshot
 $SyncRunnerHash = (Get-FileHash -LiteralPath $SyncRunner -Algorithm SHA256).Hash
 
 $SyncHookPath = SyncGitSingle @("rev-parse", "--git-path", "hooks/post-merge")
+if (-not [System.IO.Path]::IsPathRooted($SyncHookPath)) {
+    $SyncHookPath = Join-Path $SyncRepo $SyncHookPath
+}
 if (Test-Path -LiteralPath $SyncHookPath -PathType Leaf) {
     throw "Active post-merge hook requires separate review"
 }
@@ -216,7 +220,7 @@ SyncAssertSealed
 if ((Get-FileHash -LiteralPath $SyncRunner -Algorithm SHA256).Hash -cne $SyncRunnerHash) {
     throw "Installed protected guarded task launcher changed"
 }
-$SyncTaskAfter = SyncTaskSnapshot
+$SyncTaskAfter = SyncTaskSnapshot -VsgRequireQuiet $false
 foreach ($VsgTaskName in $SyncTaskNames) {
     if ($SyncTaskAfter[$VsgTaskName] -cne $SyncTaskBefore[$VsgTaskName]) {
         throw "A scheduled task definition changed during source sync"

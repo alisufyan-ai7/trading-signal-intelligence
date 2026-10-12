@@ -10,7 +10,7 @@ param(
 $ErrorActionPreference = "Stop"
 $Base = "a4f00578c00c5e23eb4fae073cf2df18c78d9a0a"
 $GuardBranch = "governance/frozen-dependency-change-impact-gate-20261010"
-$GuardHead = "e1fb7073100746848bce8ee0b823f5528d14b"
+$GuardHead = "e1fb7073100746848bce8ee1ee0b823f5528d14b"
 $GuardScriptBlob = "502d180a91ed5e9c76d967289c30f2637d58fffa"
 $LauncherRel = "ops/handoffs/exp034-current-crypto-aggregate-hourly-runner-v0_1.ps1"
 $LauncherBlob = "3992bb46df25d97678f30023324a9dfc4bf41038"

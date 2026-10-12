@@ -101,9 +101,19 @@ def _capture(tmp_path, *, report=None, records=None, task_mutator=None,
             task_mutator(batches["probes"], result)
         return result
 
+    gate_rules = {"C1": (100, 20, 0), "C2": (500, 50, 60),
+                  "C3": (1000, 100, 120)}
+    def fixed_gate_reader(_root):
+        return {"valid": True, "gates": {
+            k: {"valid_inferences": vals[0],
+                "completed_shadow_trades": vals[1],
+                "minimum_calendar_days": vals[2]}
+            for k, vals in gate_rules.items()
+        }}
     raw = capture_completed_k5_epoch(
         tmp_path, observed_at_utc=NOW,
         reader=reader, reporter=reporter, task_probe=probe,
+        gate_reader=fixed_gate_reader,
     )
     return raw, batches
 
@@ -154,14 +164,9 @@ def test_report_changed_after_first_batch_holds(tmp_path):
 def test_frozen_gate_mismatch_holds(tmp_path):
     def mutate(report):
         report["gates"]["C2"]["valid_inferences"]["required"] = 3
-    # The same corrupted report creates both source/public gate requirements.
-    # This demonstrates why upstream artifact+frozen-gate provenance also
-    # needs verification by the real reporter, NOT an injected caller.
+    # Independent frozen config still says 500 valid inferences for C2.
     with pytest.raises(SourceEpochHeld):
-        _capture(tmp_path, report_mutator=mutate,
-                 second_batch_mutator=lambda sym, rows: rows[0].update(
-                     payload={"broken": "hash chain"}
-                 ))
+        _capture(tmp_path, report_mutator=mutate)
 
 
 def test_explicit_untrusted_clock_holds(tmp_path):

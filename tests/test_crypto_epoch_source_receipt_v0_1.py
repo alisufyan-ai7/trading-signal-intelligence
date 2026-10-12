@@ -242,6 +242,30 @@ def test_trusted_receipt_roundtrip_and_no_secret_leakage(tmp_path):
     assert program["public_signal_exposure"] is False
 
 
+def test_receipt_transient_hardlink_cleanup_before_strict_readback(tmp_path):
+    # os.link makes two hard links while the staging temp file exists.
+    # Verify the final receipt has only one hard link and passes the
+    # consumer's strict filesystem checks. PR #62 originally checked
+    # st_nlink == 1 prematurely, which rejected healthy publication.
+    raw, _ = _capture(tmp_path)
+    candidate = stage_authenticated_epoch(
+        tmp_path, raw_epoch=raw, signing_key=KEY, observation_utc=NOW,
+    )
+    receipt = tmp_path / candidate["receipt_filename"]
+    assert receipt.is_file()
+    assert receipt.stat().st_nlink == 1
+    assert not list(tmp_path.glob(".crypto-receipt-pending-*"))
+    recovered = consume_trusted_epoch(
+        tmp_path,
+        receipt_filename=candidate["receipt_filename"],
+        externally_pinned_receipt_sha256=candidate["receipt_sha256"],
+        verification_key=KEY,
+        observation_utc=NOW,
+        external_last_accepted_cycle_close_utc=None,
+    )
+    assert recovered["public_signal_exposure"] is False
+
+
 def test_receipt_tamper_bad_pin_wrong_key_and_rollback_hold(tmp_path):
     raw, _ = _capture(tmp_path)
     candidate = stage_authenticated_epoch(

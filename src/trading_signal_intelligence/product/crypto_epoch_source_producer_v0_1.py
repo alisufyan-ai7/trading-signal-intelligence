@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from trading_signal_intelligence.ai_v1.crypto_activation_v1_3 import (
-    DATABASE_PATHS, MARKETS,
+    DATABASE_PATHS, MARKETS, validate_review_gates,
 )
 from trading_signal_intelligence.ai_v1.crypto_observability_v1_3 import (
     build_report_v1_3,
@@ -116,6 +116,7 @@ def capture_completed_k5_epoch(
     reader: Callable[[Path], list[dict[str, Any]]] = read_records_read_only,
     reporter: Callable[..., dict[str, Any]] = build_report_v1_3,
     task_probe: Callable[[], dict[str, Any]] = probe_completed_k5_task_windows,
+    gate_reader: Callable[[Path], dict[str, Any]] = validate_review_gates,
 ) -> bytes:
     """PRIVATE-READ, prospective adapter; no calls unless explicitly invoked.
 
@@ -146,6 +147,28 @@ def capture_completed_k5_epoch(
         report = reporter(
             root, now_utc=now, include_scheduler=True, verify_upstream=True
         )
+        # Independently load and validate the frozen gate artifact. This
+        # prevents a report builder with altered thresholds from authorizing
+        # an equally altered public representation.
+        frozen = gate_reader(root)
+        source_gates = report.get("gates")
+        if (not isinstance(frozen, dict) or frozen.get("valid") is not True
+            or not isinstance(source_gates, dict)
+            or set(frozen.get("gates", {})) != {"C1", "C2", "C3"}
+            or set(source_gates) != set(frozen["gates"])):
+            raise SourceEpochHeld("frozen crypto gate artifact invalid")
+        for gate_id, spec in frozen["gates"].items():
+            entry = source_gates[gate_id]
+            if not isinstance(entry, dict):
+                raise SourceEpochHeld("crypto gate evidence invalid")
+            for metric in ("valid_inferences", "completed_shadow_trades"):
+                measure = entry.get(metric)
+                if (not isinstance(measure, dict)
+                    or type(spec.get(metric)) is not int
+                    or measure.get("required") != spec[metric]):
+                    raise SourceEpochHeld("frozen crypto gate target mismatch")
+            if entry.get("minimum_calendar_days") != spec.get("minimum_calendar_days"):
+                raise SourceEpochHeld("frozen crypto gate age mismatch")
         normalized = normalize_crypto_validation_report(report)
         public = build_public_validation_program(
             normalized, program_id="crypto-expansion-1",

@@ -78,9 +78,9 @@ function CheckPublisherTask([bool]$Staged) {
         [string]$T.Settings.MultipleInstances -ceq "IgnoreNew") "publisher task settings drifted"
     Demand ($T.Actions[0].Execute -ieq $PowerShellExe -and
         $T.Actions[0].WorkingDirectory -ieq $Repo) "publisher action differs"
-    $Args = $OldArgs
-    if ($Staged) { $Args = $NewArgs }
-    Demand ($T.Actions[0].Arguments -ceq $Args) "publisher runner changed"
+    $ExpectedActionArguments = $OldArgs
+    if ($Staged) { $ExpectedActionArguments = $NewArgs }
+    Demand ($T.Actions[0].Arguments -ceq $ExpectedActionArguments) "publisher runner changed"
     $Trigger = $T.Triggers[0]
     Demand ($Trigger.StartBoundary -match 'T\d\d:05:00(?:\+00:00)?$' -and
         $Trigger.Repetition.Interval -ceq "PT1H") "original :05 hourly trigger changed"

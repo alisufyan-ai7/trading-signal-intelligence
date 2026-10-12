@@ -146,6 +146,46 @@ def test_source_records_change_between_full_reads(tmp_path):
         _capture(tmp_path, second_batch_mutator=changed)
 
 
+
+def test_valid_append_between_reads_holds_even_if_each_chain_is_valid(tmp_path):
+    def append_valid(sym, rows):
+        if sym != "BTCUSDT":
+            return
+        extra = _make_row(
+            sym, "EXIT", "synthetic-earlier-signal", 4, rows[-1]["record_hash"]
+        )
+        rows.append(extra)
+        assert verify_records(rows)["valid"] is True
+    with pytest.raises(SourceEpochHeld):
+        _capture(tmp_path, second_batch_mutator=append_valid)
+
+
+def test_interrupted_receipt_commit_keeps_orphan_untrusted(monkeypatch, tmp_path):
+    from trading_signal_intelligence.product import crypto_epoch_receipt_store_v0_1 as store
+    raw, _ = _capture(tmp_path)
+    def interrupted(_root, _filename, _raw):
+        raise ReceiptStoreHeld("synthetic simulated receipt crash")
+    monkeypatch.setattr(store, "_write_exclusive", interrupted)
+    with pytest.raises(ReceiptStoreHeld, match="receipt crash"):
+        stage_authenticated_epoch(
+            tmp_path, raw_epoch=raw, signing_key=KEY, observation_utc=NOW,
+        )
+    assert len(list(tmp_path.glob("crypto-epoch-*.json"))) == 1
+    assert not list(tmp_path.glob("*.receipt"))
+    # An unsigned epoch is untrusted regardless of how valid its bytes look.
+
+
+def test_missing_receipt_holds(tmp_path):
+    raw, _ = _capture(tmp_path)
+    with pytest.raises(FileNotFoundError):
+        consume_trusted_epoch(
+            tmp_path, receipt_filename="crypto-epoch-20261012T100000Z-" +
+            "0"*64 + ".json.receipt",
+            externally_pinned_receipt_sha256="0"*64,
+            verification_key=KEY, observation_utc=NOW,
+            external_last_accepted_cycle_close_utc=None,
+        )
+
 def test_task_running_after_read_holds(tmp_path):
     def mutate(n, task):
         if n == 2:

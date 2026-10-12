@@ -35,8 +35,8 @@ function Demand([bool]$Pass,[string]$Reason) {
 function Sha([string]$Path) {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256 -ErrorAction Stop).Hash
 }
-function GitOne([string[]]$Args) {
-    $Lines = @(& git -C $Repo @Args)
+function GitOne([string[]]$GitParams) {
+    $Lines = @(& git -C $Repo @GitParams)
     Demand ($LASTEXITCODE -eq 0 -and $Lines.Count -eq 1) "Git verification unavailable"
     return ([string]$Lines[0]).Trim()
 }
@@ -67,9 +67,9 @@ function CheckGlobalOff {
     }
 }
 function Task([string]$Name) {
-    $Matches = @(Get-ScheduledTask -TaskPath "\" -TaskName $Name -ErrorAction Stop)
-    Demand ($Matches.Count -eq 1) "scheduled task missing or ambiguous"
-    return $Matches[0]
+    $FoundTasks = @(Get-ScheduledTask -TaskPath "\" -TaskName $Name -ErrorAction Stop)
+    Demand ($FoundTasks.Count -eq 1) "scheduled task missing or ambiguous"
+    return $FoundTasks[0]
 }
 function CheckPublisherTask([bool]$Staged) {
     $T = Task $TaskName
@@ -133,7 +133,8 @@ function CheckIdleAndWindow {
     foreach ($Name in @($Scanners + @($TaskName))) {
         $I = Get-ScheduledTaskInfo -TaskName $Name -TaskPath "\" -ErrorAction Stop
         Demand (($I.NextRunTime - (Get-Date)).TotalMinutes -gt 12) "a task is due in next 12 minutes"
-        Demand ([string](Task $Name).State -ceq "Ready") "another scheduled task is not ready"
+        $OneTask = Task $Name
+        Demand ([string]$OneTask.State -ceq "Ready") "another scheduled task is not ready"
     }
     $Processes = @(Get-CimInstance Win32_Process -Filter "Name='cmd.exe' OR Name='powershell.exe' OR Name='python.exe' OR Name='pythonw.exe'" -ErrorAction Stop | Where-Object {
         $_.CommandLine -match 'run_product_publish_guarded_v0_1\.cmd|guarded_product_publish_v0_1\.py|push_public_snapshot\.py|export_guarded_'
@@ -209,7 +210,8 @@ if ($Mode -eq "Stage") {
     CheckIdleAndWindow
     Write-Output "EXP034_STAGE_MUTATION_START=TRUE"
     Disable-ScheduledTask -TaskName $TaskName -TaskPath "\" -ErrorAction Stop | Out-Null
-    Demand ([string](Task $TaskName).State -ceq "Disabled") "task containment uncertain"
+    $ContainedTask = Task $TaskName
+    Demand ([string]$ContainedTask.State -ceq "Disabled") "task containment uncertain"
     Copy-Item -LiteralPath $Source -Destination $NewRunner -ErrorAction Stop
     Demand ((Sha $NewRunner) -ceq $Manifest.new_runner_sha256) "new protected runner differs"
     Demand ((GitOne @("hash-object","--path=$SourceRel","--",$NewRunner)) -ceq $SourceBlob) "staged runner Git blob mismatch"

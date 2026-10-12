@@ -315,7 +315,10 @@ def _last_accepted_crypto(root: Path, now: datetime) -> dict[str, Any] | None:
             raise PublicationHeld("historic snapshot unsafe") from exc
         by_id = {p["program_id"]: p for p in cached["validation_programs"]}
         crypto = by_id.get("crypto-expansion-1")
-        if crypto is None or crypto.get("data_freshness") == "delayed":
+        # A verified DELAYED archive may use the original public schema,
+        # where staleness is explicit in status/title but data_freshness is
+        # deliberately absent. Never treat it as failed CURRENT evidence.
+        if crypto is None or crypto.get("status") == "delayed":
             continue
         if (crypto.get("status") != "collecting"
             or crypto.get("health", {}).get("healthy") is not True):

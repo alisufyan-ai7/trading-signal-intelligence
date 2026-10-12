@@ -2,6 +2,7 @@
 import copy
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from collections import Counter
@@ -166,5 +167,11 @@ def test_cli_on_non_windows_fails_closed_with_no_private_data(tmp_path):
                          capture_output=True, text=True, check=False)
     assert out.returncode == 2
     assert '"result": "HELD"' in out.stdout
-    assert 'WINDOWS_PYTHON_312_REQUIRED' in out.stdout
+    # On Windows Python 3.12 reaches the next preflight: missing synthetic
+    # live source root. Elsewhere it must hold at native-platform preflight.
+    expected = (
+        'SOURCE_ROOT_MISSING' if os.name == 'nt' and sys.version_info[:2] == (3, 12)
+        else 'WINDOWS_PYTHON_312_REQUIRED'
+    )
+    assert expected in out.stdout
     assert out.stderr == ''

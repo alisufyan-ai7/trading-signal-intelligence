@@ -16,7 +16,7 @@ $blobs=[ordered]@{
  "src/trading_signal_intelligence/product/crypto_epoch_source_producer_v0_1.py"="dc0e6637e0cdcd16fbac554e76842c79d254cdeb"
  "tests/test_crypto_completed_epoch_v0_1.py"="c901ca1a529ddf6745e025b00ded82e17d94240a"
  "tests/test_crypto_epoch_bridge_v0_1.py"="e8e4012d8f53607d6f14577c5852e5b9d2c76008"
- "tests/test_crypto_epoch_source_v0_1.py"="7e9ba56c7c21d02e629372b6cb47d91b835a549e"
+ "tests/test_crypto_epoch_source_v0_1.py"="983b5afc4513b27bbd365c202446b650fd1cb469"
  "tests/test_crypto_asof_publication_v0_1.py"="a4c5447f2b197f4cf8afe8d446e5c0ef30f0618d"
  "tests/test_guarded_product_publish_v0_1.py"="25a4be6de1ad33921d8b4f66921cf0e2663f8783"
  "tests/test_guarded_crypto_current_aggregate_v0_1.py"="8a92fe52b8292d5f327aea7ed83693918c77b3cc"
@@ -98,6 +98,12 @@ try {
           "tests/test_crypto_asof_publication_v0_1.py",
           "tests/test_guarded_product_publish_v0_1.py",
           "tests/test_crypto_public_validation_v0_1.py")
+ # Catch newly introduced runtime NameError/import regressions before the
+ # complete suite; AST parsing alone cannot resolve undefined names.
+ Write-Output "EXP034_SOURCE_EPOCH_SMOKE_STARTED=TRUE"
+ & $py -B -m pytest -q -p no:cacheprovider --basetemp="$scratch\smoke" "tests/test_crypto_epoch_source_v0_1.py::test_real_repository_chain_verifier_and_source_report_sanitize"
+ CheckExit "source epoch positive-path smoke test"
+ Write-Output "EXP034_SOURCE_EPOCH_SMOKE=PASS"
  Write-Output "EXP034_SEVEN_SYNTHETIC_MODULES_STARTED=TRUE"
  & $py -B -m pytest -q -p no:cacheprovider --basetemp="$scratch\pt" @tests
  CheckExit "seven-module synthetic suite"

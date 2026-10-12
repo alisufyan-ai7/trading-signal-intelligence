@@ -19,10 +19,10 @@ $blobs=[ordered]@{
  "tests/test_crypto_epoch_source_v0_1.py"="7e9ba56c7c21d02e629372b6cb47d91b835a549e"
  "tests/test_crypto_asof_publication_v0_1.py"="a4c5447f2b197f4cf8afe8d446e5c0ef30f0618d"
  "tests/test_guarded_product_publish_v0_1.py"="25a4be6de1ad33921d8b4f66921cf0e2663f8783"
- "tests/test_guarded_crypto_current_aggregate_v0_1.py"="7d3c711fea8afbf4ac5026926ca19de9a26c9934"
+ "tests/test_guarded_crypto_current_aggregate_v0_1.py"="8a92fe52b8292d5f327aea7ed83693918c77b3cc"
  "tests/test_crypto_public_validation_v0_1.py"="04322ad6496e35968bced6556f8f8bf8aed90191"
  "config/public_validation_program_schema_v1.json"="e15025f8523d941bd183717b7d397f96a5020286"
- "scripts/guarded_product_publish_v0_1.py"="171f0f4ab69cd798a0e9a11de90788250c39fa55"
+ "scripts/guarded_product_publish_v0_1.py"="e3f153128d4c65c7c98cfba7427a6e892eca2e29"
 }
 function CheckExit([string]$What) {
  if($LASTEXITCODE -ne 0) { throw "$What failed: exit $LASTEXITCODE" }

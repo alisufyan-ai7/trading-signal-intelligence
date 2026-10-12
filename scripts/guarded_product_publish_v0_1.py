@@ -23,9 +23,9 @@ HISTORY_NAME = "guarded-snapshot-history-v0.2"
 ARCHIVE_RE = re.compile(r"^snapshot-(\d{8}T\d{6}Z)-([0-9a-f]{64})\.json\.accepted$")
 MAX_K5_AGE_SECONDS = 900
 MAX_SNAPSHOT_AGE_SECONDS = 120
-# No K5 writer-side lock is deployed or verified. Keep all current and delayed
-# public crypto aggregates OFF. A future prospective shared-writer coordination
-# protocol and separately authorized review must replace this fail-closed gate.
+# No K5 writer-side lock is deployed or verified. Keep this LEGACY full-
+# exporter/lock code path disabled. A separately opt-in double-read source-
+# attested in-memory aggregate-only branch below does not use this interlock.
 CRYPTO_WRITER_INTERLOCK_READY = False
 CONFIRM = "RUN-GUARDED-PUBLISH-V0.1"
 
@@ -337,6 +337,91 @@ def _last_accepted_crypto(root: Path, now: datetime) -> dict[str, Any] | None:
     return None
 
 
+def _try_source_attested_crypto_aggregate(root: Path, now: datetime) -> dict[str, Any] | None:
+    """Optional same-process verified aggregate; never reads K5 unless opt-in.
+
+    This does NOT enable individual crypto signals. The exporter already holds
+    a fresh two-program base, and the eventual staged/accepted snapshot is
+    immutable across HTTP push. Writer lock THROUGH the HTTP post is not
+    necessary because no live private record is read after this sealed copy.
+    """
+    if os.environ.get("VOWSIG_CRYPTO_CURRENT_AGGREGATES_V1") != "1":
+        return None
+    try:
+        from trading_signal_intelligence.product.crypto_epoch_source_producer_v0_1 import (
+            capture_completed_k5_epoch,
+        )
+        from trading_signal_intelligence.product.crypto_completed_epoch_v0_1 import (
+            public_program_from_completed_epoch,
+        )
+        from trading_signal_intelligence.product.crypto_asof_seal_v0_1 import (
+            _check_original_program,
+        )
+
+        # The producer itself double-reads and verifies all three ledgers,
+        # gates, natural K5 task completion, anchored artifacts and source
+        # report. Only its sanitized bytes cross this boundary.
+        epoch = capture_completed_k5_epoch(root, observed_at_utc=now)
+        envelope = json.loads(epoch)
+        cycle = aware(envelope.get("cycle_close_utc"))
+        crypto = public_program_from_completed_epoch(
+            epoch, expected_sha256=hashlib.sha256(epoch).hexdigest(), now=now
+        )
+        _check_original_program(crypto)
+
+        # Existing fsynced and hash-checked accepted publication archives
+        # supply an independent local non-regression reference. This is a
+        # same-host accidental-failure model, NOT a tamper-proof trust anchor
+        # against an administrator who can rewrite local archives.
+        previous = _last_accepted_crypto(root, now)
+        if previous is None and os.environ.get("VOWSIG_CRYPTO_ASOF_ENABLED") == "1":
+            # First prospective current aggregate must not erase history
+            # already visible in the original owner-pinned public-only seal.
+            from trading_signal_intelligence.product.crypto_asof_seal_v0_1 import (
+                load_pinned_asof_program,
+            )
+            previous = load_pinned_asof_program(
+                root, now, os.environ.get("VOWSIG_CRYPTO_ASOF_SHA256", "")
+            )
+        if previous is not None:
+            if "last_verified_snapshot_at_utc" in previous:
+                earlier = aware(previous["last_verified_snapshot_at_utc"])
+            else:
+                # Existing as-of schema has no extra timestamp field; its
+                # verified original time is intentionally embedded in title.
+                match = re.fullmatch(
+                    r"Crypto AI Shadow Validation — DELAYED "
+                    r"\(last verified ([^()]+) UTC\)",
+                    previous.get("title", ""),
+                )
+                if match is None:
+                    raise PublicationHeld("previous crypto sample lacks provenance")
+                earlier = aware(match.group(1))
+            if cycle <= earlier:
+                raise PublicationHeld("crypto completed cycle is not newer")
+            old_markets = {
+                m["source_symbol"]: m for m in previous["markets"]
+            }
+            if set(old_markets) != set(MARKETS):
+                raise PublicationHeld("accepted crypto cohort changed")
+            for market in crypto["markets"]:
+                old = old_markets[market["source_symbol"]]
+                for metric in (
+                    "valid_inferences", "completed_shadow_trades",
+                    "signals", "no_trade", "rejected_inferences",
+                    "missed_inferences", "errors",
+                ):
+                    if market[metric] < old[metric]:
+                        raise PublicationHeld("crypto source count regression")
+        _reject_private_crypto(crypto)
+        return crypto
+    except Exception:
+        # Aggregate-only failures never block fresh core and expansion;
+        # deliberately suppress private error details and filenames.
+        print("CRYPTO_CURRENT_AGGREGATE=HELD")
+        return None
+
+
 def _verify_current_expansion_claim(root: Path, payload: dict[str, Any]) -> None:
     """Reattest declared exceptional public health before sending any HTTP POST."""
     from trading_signal_intelligence.product.expansion_registry_compat_v0_1 import (
@@ -391,10 +476,9 @@ def publish_locked(root: Path) -> None:
         except Exception:
             crypto_ready = False
 
-    # Default: no current or delayed public crypto. The K5 writer has no
-    # mutually exclusive publisher lock, so separate task status and hashes
-    # cannot establish consistency THROUGH the final HTTP POST. The disabled
-    # branch may be exercised in isolated tests only after mocking the guard.
+    # The legacy full-export current crypto path above remains disabled.
+    # The independently verified IN-MEMORY aggregate-only opt-in below
+    # snapshots stable source before POST; the HTTP body is then immutable.
 
     with tempfile.TemporaryDirectory(prefix="guarded-publish-", dir=data) as tmp:
         staging_dir = Path(tmp)
@@ -432,8 +516,13 @@ def publish_locked(root: Path) -> None:
             raw, payload = _staged_snapshot(staged, datetime.now(timezone.utc))
             if {p["program_id"] for p in payload["validation_programs"]} != BASE_PROGRAMS:
                 raise PublicationHeld("core/expansion fallback is not independent")
-            cached_crypto = None
-            if CRYPTO_WRITER_INTERLOCK_READY:
+            # Explicit opt-in to SOURCE-ATTESTED AGGREGATES ONLY. No crypto
+            # trader detail, K5 task change, new public schema, or broker order.
+            # Preserve the frozen historical as-of program on every crypto HOLD.
+            cached_crypto = _try_source_attested_crypto_aggregate(
+                root, datetime.now(timezone.utc)
+            )
+            if cached_crypto is None and CRYPTO_WRITER_INTERLOCK_READY:
                 try:
                     cached_crypto = _last_accepted_crypto(root, datetime.now(timezone.utc))
                 except Exception:
@@ -481,10 +570,15 @@ def publish_locked(root: Path) -> None:
         _accept_archive(archive, receipt, raw)
         # Atomic local replacement AFTER confirmed cloud acceptance and receipt.
         os.replace(staged, data / "public_snapshot.json")
+        final_crypto = next(
+            (p for p in payload["validation_programs"]
+             if p["program_id"] == "crypto-expansion-1"), None
+        )
         print(json.dumps({
             "guarded_publish": "PASS",
-            "crypto_status": "current" if crypto_ready else
-                ("delayed" if len(payload["validation_programs"]) == 3 else "pending"),
+            "crypto_status": (
+                final_crypto["status"] if final_crypto is not None else "pending"
+            ),
             "snapshot_sha256": hashlib.sha256(raw).hexdigest(),
             "history_receipt": receipt.name,
             "validation_programs": sorted(p["program_id"] for p in payload["validation_programs"]),

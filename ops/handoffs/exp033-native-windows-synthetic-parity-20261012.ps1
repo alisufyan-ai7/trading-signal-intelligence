@@ -28,8 +28,8 @@ $ExpectedBlobs = [ordered]@{
 function Assert-Exit([string]$Action) {
     if ($LASTEXITCODE -ne 0) { throw "$Action exit=$LASTEXITCODE" }
 }
-function Git-One([string]$Root, [string[]]$Args) {
-    $lines = @(& git -C $Root @Args 2>&1)
+function Git-One([string]$Root, [string[]]$GitArgs) {
+    $lines = @(& git -C $Root @GitArgs 2>&1)
     Assert-Exit "git"
     if ($lines.Count -ne 1) { throw "unexpected git response shape" }
     return ([string]$lines[0]).Trim()

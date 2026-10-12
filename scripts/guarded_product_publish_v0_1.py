@@ -23,9 +23,9 @@ HISTORY_NAME = "guarded-snapshot-history-v0.2"
 ARCHIVE_RE = re.compile(r"^snapshot-(\d{8}T\d{6}Z)-([0-9a-f]{64})\.json\.accepted$")
 MAX_K5_AGE_SECONDS = 900
 MAX_SNAPSHOT_AGE_SECONDS = 120
-# No K5 writer-side lock is deployed or verified. Keep all current and delayed
-# public crypto aggregates OFF. A future prospective shared-writer coordination
-# protocol and separately authorized review must replace this fail-closed gate.
+# No K5 writer-side lock is deployed or verified. Keep this LEGACY full-
+# exporter/lock code path disabled. A separately opt-in double-read source-
+# attested in-memory aggregate-only branch below does not use this interlock.
 CRYPTO_WRITER_INTERLOCK_READY = False
 CONFIRM = "RUN-GUARDED-PUBLISH-V0.1"
 
@@ -374,8 +374,29 @@ def _try_source_attested_crypto_aggregate(root: Path, now: datetime) -> dict[str
         # same-host accidental-failure model, NOT a tamper-proof trust anchor
         # against an administrator who can rewrite local archives.
         previous = _last_accepted_crypto(root, now)
+        if previous is None and os.environ.get("VOWSIG_CRYPTO_ASOF_ENABLED") == "1":
+            # First prospective current aggregate must not erase history
+            # already visible in the original owner-pinned public-only seal.
+            from trading_signal_intelligence.product.crypto_asof_seal_v0_1 import (
+                load_pinned_asof_program,
+            )
+            previous = load_pinned_asof_program(
+                root, now, os.environ.get("VOWSIG_CRYPTO_ASOF_SHA256", "")
+            )
         if previous is not None:
-            earlier = aware(previous["last_verified_snapshot_at_utc"])
+            if "last_verified_snapshot_at_utc" in previous:
+                earlier = aware(previous["last_verified_snapshot_at_utc"])
+            else:
+                # Existing as-of schema has no extra timestamp field; its
+                # verified original time is intentionally embedded in title.
+                match = re.fullmatch(
+                    r"Crypto AI Shadow Validation — DELAYED "
+                    r"\(last verified ([^()]+) UTC\)",
+                    previous.get("title", ""),
+                )
+                if match is None:
+                    raise PublicationHeld("previous crypto sample lacks provenance")
+                earlier = aware(match.group(1))
             if cycle <= earlier:
                 raise PublicationHeld("crypto completed cycle is not newer")
             old_markets = {
@@ -455,10 +476,9 @@ def publish_locked(root: Path) -> None:
         except Exception:
             crypto_ready = False
 
-    # Default: no current or delayed public crypto. The K5 writer has no
-    # mutually exclusive publisher lock, so separate task status and hashes
-    # cannot establish consistency THROUGH the final HTTP POST. The disabled
-    # branch may be exercised in isolated tests only after mocking the guard.
+    # The legacy full-export current crypto path above remains disabled.
+    # The independently verified IN-MEMORY aggregate-only opt-in below
+    # snapshots stable source before POST; the HTTP body is then immutable.
 
     with tempfile.TemporaryDirectory(prefix="guarded-publish-", dir=data) as tmp:
         staging_dir = Path(tmp)

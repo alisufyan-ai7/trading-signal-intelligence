@@ -209,6 +209,7 @@ Write-Output "EXP034_OWNER_APPROVED_SOURCE_SYNC_STARTED=TRUE"
 if ($LASTEXITCODE -ne 0) {
     throw "Fast-forward failed; stop without auto-reset, retry or task changes"
 }
+Write-Output "EXP034_GIT_FAST_FORWARD_COMPLETED=TRUE"
 
 SyncAssertLive $SyncNew
 SyncAssertFrozenSource

@@ -314,6 +314,38 @@ def test_delayed_crypto_is_explicitly_labeled_and_original_time_preserved(monkey
         guard.validate_candidate(stale_dressed_as_fresh, later)
 
 
+def test_legacy_public_schema_delayed_archive_is_skipped_before_current(monkeypatch, tmp_path):
+    """EXP034: accepted legacy DELAYED archives must not block new CURRENT source."""
+    _no_network_validators(monkeypatch)
+    (tmp_path / "data").mkdir()
+    accepted = _candidate()
+    generated = NOW - timedelta(minutes=60)
+    observed = generated - timedelta(minutes=10)
+    accepted["generated_at_utc"] = generated.isoformat()
+    crypto = accepted["validation_programs"][2]
+    crypto["status"] = "delayed"
+    crypto["title"] = (
+        "Crypto AI Shadow Validation — DELAYED "
+        f"(last verified {observed.isoformat()} UTC)"
+    )
+    crypto["health"]["healthy"] = False
+    crypto["health"]["scheduler_healthy"] = False
+    assert "data_freshness" not in crypto
+    assert "last_verified_snapshot_at_utc" not in crypto
+
+    raw = json.dumps(accepted).encode("utf-8")
+    archive, receipt = guard._pending_archive(tmp_path, accepted, raw)
+    guard._accept_archive(archive, receipt, raw)
+
+    # Legacy archived crypto is validated for hash, status and historical
+    # provenance, then intentionally skipped as a *current* predecessor.
+    # Previously it raised "historic crypto was not independently verified"
+    # for every owner-pinned schema-v1 DELAYED archive.
+    assert guard._last_accepted_crypto(tmp_path, NOW) is None
+    assert archive.read_bytes() == raw
+    assert receipt.is_file()
+
+
 def test_corrupt_crypto_archive_never_blocks_fresh_core_expansion(monkeypatch, tmp_path):
     data = tmp_path / "data"
     data.mkdir()

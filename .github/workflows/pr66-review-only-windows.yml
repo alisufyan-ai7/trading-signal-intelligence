@@ -1,0 +1,50 @@
+name: PR66 synthetic Windows review (temporary branch-only)
+
+on:
+  push:
+    branches:
+      - fix/exp034-last-verified-crypto-fallback-20261021
+
+permissions:
+  contents: read
+
+jobs:
+  pr66-synthetic:
+    runs-on: windows-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install project and offline test dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check -e ".[dev,app,research]"
+      - name: Offline six-suite synthetic PR66 regression
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          python -m pytest -q tests/test_guarded_crypto_delayed_fallback_v0_1.py tests/test_guarded_crypto_current_aggregate_v0_1.py tests/test_guarded_product_publish_v0_1.py tests/test_crypto_completed_epoch_v0_1.py tests/test_crypto_epoch_bridge_v0_1.py tests/test_crypto_epoch_source_v0_1.py
+      - name: Verify launcher publisher Git blob pin
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $source = "scripts/guarded_product_publish_v0_1.py"
+          $launcher = Get-Content -LiteralPath "ops/handoffs/exp034-current-crypto-aggregate-hourly-runner-v0_1.ps1" -Raw
+          $blob = (git hash-object --path=$source -- $source).Trim()
+          if ($LASTEXITCODE -ne 0) { throw "git hash-object failed" }
+          if (-not $launcher.Contains('$ExpectedPublisherGitBlob = "' + $blob + '"')) {
+            throw "launcher Git blob pin mismatch"
+          }
+          $tokens = $null
+          $parseErrors = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path "ops/handoffs/exp034-current-crypto-aggregate-hourly-runner-v0_1.ps1").Path,
+            [ref]$tokens, [ref]$parseErrors
+          )
+          if (@($parseErrors).Count -ne 0) { throw "launcher AST parse failed" }
+          Write-Output "PR66_LAUNCHER_SOURCE_PIN_AND_AST=PASS"

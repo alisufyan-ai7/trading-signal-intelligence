@@ -350,6 +350,8 @@ def _try_source_attested_crypto_aggregate(root: Path, now: datetime) -> dict[str
     """
     if os.environ.get("VOWSIG_CRYPTO_CURRENT_AGGREGATES_V1") != "1":
         return None
+    # Fixed stage labels only: never log private exceptions, records or paths.
+    hold_stage = "SOURCE_CAPTURE"
     try:
         from trading_signal_intelligence.product.crypto_epoch_source_producer_v0_1 import (
             capture_completed_k5_epoch,
@@ -365,17 +367,20 @@ def _try_source_attested_crypto_aggregate(root: Path, now: datetime) -> dict[str
         # gates, natural K5 task completion, anchored artifacts and source
         # report. Only its sanitized bytes cross this boundary.
         epoch = capture_completed_k5_epoch(root, observed_at_utc=now)
+        hold_stage = "EPOCH_VALIDATION"
         envelope = json.loads(epoch)
         cycle = aware(envelope.get("cycle_close_utc"))
         crypto = public_program_from_completed_epoch(
             epoch, expected_sha256=hashlib.sha256(epoch).hexdigest(), now=now
         )
+        hold_stage = "PUBLIC_PROGRAM"
         _check_original_program(crypto)
 
         # Existing fsynced and hash-checked accepted publication archives
         # supply an independent local non-regression reference. This is a
         # same-host accidental-failure model, NOT a tamper-proof trust anchor
         # against an administrator who can rewrite local archives.
+        hold_stage = "ACCEPTED_HISTORY"
         previous = _last_accepted_crypto(root, now)
         if previous is None and os.environ.get("VOWSIG_CRYPTO_ASOF_ENABLED") == "1":
             # First prospective current aggregate must not erase history
@@ -386,6 +391,7 @@ def _try_source_attested_crypto_aggregate(root: Path, now: datetime) -> dict[str
             previous = load_pinned_asof_program(
                 root, now, os.environ.get("VOWSIG_CRYPTO_ASOF_SHA256", "")
             )
+        hold_stage = "NON_REGRESSION"
         if previous is not None:
             if "last_verified_snapshot_at_utc" in previous:
                 earlier = aware(previous["last_verified_snapshot_at_utc"])
@@ -416,12 +422,14 @@ def _try_source_attested_crypto_aggregate(root: Path, now: datetime) -> dict[str
                 ):
                     if market[metric] < old[metric]:
                         raise PublicationHeld("crypto source count regression")
+        hold_stage = "PUBLIC_PRIVACY"
         _reject_private_crypto(crypto)
         return crypto
     except Exception:
-        # Aggregate-only failures never block fresh core and expansion;
-        # deliberately suppress private error details and filenames.
+        # Never log exception strings/types, private filenames, rows or tokens.
+        # The fixed stage code is enough to locate a safe offline test boundary.
         print("CRYPTO_CURRENT_AGGREGATE=HELD")
+        print("CRYPTO_CURRENT_HOLD_STAGE=" + hold_stage)
         return None
 
 
@@ -533,11 +541,26 @@ def publish_locked(root: Path) -> None:
                     # current core/expansion. Without the writer-side interlock,
                     # cached crypto is never attached under ANY circumstances.
                     cached_crypto = None
+            if (cached_crypto is None and
+                    os.environ.get("VOWSIG_CRYPTO_CURRENT_AGGREGATES_V1") == "1"):
+                # A crypto-only HOLD must not make verified progress appear erased.
+                # This reads ONLY accepted, SHA/receipt-attested PUBLIC archives,
+                # never private K5 ledgers or the mutable local public snapshot.
+                # _last_accepted_crypto labels the last trusted CURRENT cohort
+                # DELAYED with its original publication time and unhealthy flags.
+                try:
+                    cached_crypto = _last_accepted_crypto(
+                        root, datetime.now(timezone.utc)
+                    )
+                except Exception:
+                    # Malformed history is never silently trusted.
+                    print("CRYPTO_DELAYED_ACCEPTED_HISTORY=HELD")
+                    cached_crypto = None
+                if cached_crypto is not None:
+                    print("CRYPTO_DELAYED_SOURCE=VERIFIED_ACCEPTED_CURRENT")
             if cached_crypto is None and os.environ.get("VOWSIG_CRYPTO_ASOF_ENABLED") == "1":
-                # No K5 probe or private-ledger read: the immutable, previously
-                # verified aggregate-only capture is explicitly owner-pinned.
-                # It is NEVER described as current. A bad seal cannot prevent
-                # independent fresh core/expansion publication.
+                # Fallback of last resort: unchanged immutable owner-pinned
+                # October 11 aggregate. Never call it CURRENT.
                 try:
                     from trading_signal_intelligence.product.crypto_asof_seal_v0_1 import (
                         load_pinned_asof_program,
@@ -548,6 +571,8 @@ def publish_locked(root: Path) -> None:
                     )
                 except (OSError, ValueError):
                     cached_crypto = None
+                if cached_crypto is not None:
+                    print("CRYPTO_DELAYED_SOURCE=PINNED_ORIGINAL_SEAL")
             if cached_crypto is not None:
                 # New global generated_at_utc reflects fresh core/expansion only.
                 # Historic crypto remains prominently DELAYED with its original time.

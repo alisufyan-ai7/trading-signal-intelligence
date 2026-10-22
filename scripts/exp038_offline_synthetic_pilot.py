@@ -15,6 +15,7 @@ import json
 import os
 import sqlite3
 import tempfile
+from contextlib import closing
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -106,7 +107,10 @@ def _create_disposable_synthetic_fixture(root: Path) -> Path:
         raise OfflinePreflightRejected("invalid disposable fixture root")
     (root / b1.FIXTURE_FILE).write_text(b1.FIXTURE_MARKER, encoding="utf-8")
     source = root / "forward.sqlite"
-    with sqlite3.connect(source) as con:
+    # sqlite3.Connection.__exit__ commits but does NOT close its file handle.
+    # On Windows, an open handle prevents TemporaryDirectory cleanup (WinError 32).
+    # Keep both the transactional context and deterministic close, even on errors.
+    with closing(sqlite3.connect(source)) as con, con:
         con.execute(
             "CREATE TABLE vowsig_synthetic_fixture_only "
             "(synthetic_token TEXT NOT NULL)"

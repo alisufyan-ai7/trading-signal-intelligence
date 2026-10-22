@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import sqlite3
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -93,6 +95,34 @@ def test_fake_writer_no_overwrite_and_no_delete():
         writer.put_object(**request)
     assert store.calls == ["PUT"]
     assert not hasattr(writer, "delete_object")
+
+
+def test_disposable_sqlite_connection_closed_explicitly_before_capture_returns(monkeypatch):
+    # Regression for real Windows WinError 32: sqlite3.Connection context
+    # commits transactions but does not close the underlying database handle.
+    # Track actual close() calls, independent of OS unlink semantics or GC.
+    with tempfile.TemporaryDirectory(prefix="vowsig-b1b2-fixture-exp038-test-") as temp:
+        root = Path(temp)
+        closed = []
+        original_connect = sqlite3.connect
+
+        class TrackedConnection(sqlite3.Connection):
+            def close(self):
+                closed.append(True)
+                return super().close()
+
+        def tracked_connect(*args, **kwargs):
+            # Trace only the new, temporary source file. The B1 helper opens
+            # its verified copies by SQLite URI and manages them separately.
+            if args and str(args[0]) == str(root / "forward.sqlite"):
+                return original_connect(*args, **{**kwargs, "factory": TrackedConnection})
+            return original_connect(*args, **kwargs)
+
+        monkeypatch.setattr(exp.sqlite3, "connect", tracked_connect)
+        captured = exp._create_disposable_synthetic_fixture(root)
+        assert captured.is_file()
+        assert closed == [True]
+    assert not root.exists()
 
 
 def test_ephemeral_fixture_is_deleted_on_return(monkeypatch):

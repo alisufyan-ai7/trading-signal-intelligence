@@ -42,16 +42,17 @@ def fixture(tmp_path: Path):
     return root, copy
 
 
-def test_roundtrip_both_providers_and_independent_restore(tmp_path):
+def test_roundtrip_both_providers_and_portable_restore_without_local_seal(tmp_path):
     root, source = fixture(tmp_path)
     sealed = b3.seal_captured_synthetic_s02(root, source, artifact_id="a1", key=KEY)
-    assert source.read_bytes() not in sealed.ciphertext
+    assert source.read_bytes() not in sealed.envelope
     a, b = b3.MemoryBucket("aws-s3-synthetic"), b3.MemoryBucket("b2-synthetic")
     outcome = b3.replicate_and_readback(sealed, a, b)
     assert outcome["status"] == "SYNTHETIC_ONLY_TWO_MEMORY_READBACKS_VERIFIED"
     assert outcome["cloud_uploads"] == 0 and outcome["billable_requests"] == 0
     for provider, ident in ((a, "awsrestore"), (b, "b2restore")):
-        report = b3.restore_synthetic_s02(root, sealed, provider.get(sealed.object_key),
+        # Only downloaded bytes and separately held key are needed for recovery.
+        report = b3.restore_synthetic_s02(root, bytes(provider.get(sealed.object_key)),
                                           key=KEY, restore_id=ident)
         assert report["records"] == 2 and report["sha256"] == sealed.plaintext_sha256
     assert a._objects is not b._objects
@@ -60,10 +61,10 @@ def test_roundtrip_both_providers_and_independent_restore(tmp_path):
 def test_tampered_ciphertext_denied_before_restore(tmp_path):
     root, copied = fixture(tmp_path)
     obj = b3.seal_captured_synthetic_s02(root, copied, artifact_id="t1", key=KEY)
-    corrupt = bytearray(obj.ciphertext)
+    corrupt = bytearray(obj.envelope)
     corrupt[-1] ^= 1
     with pytest.raises(b3.SyntheticOffsiteRejected):
-        b3.restore_synthetic_s02(root, obj, bytes(corrupt), key=KEY, restore_id="bad")
+        b3.restore_synthetic_s02(root, bytes(corrupt), key=KEY, restore_id="bad")
     assert not (root / "restored").exists()
 
 
@@ -71,16 +72,19 @@ def test_wrong_key_denied_before_plaintext_written(tmp_path):
     root, copied = fixture(tmp_path)
     obj = b3.seal_captured_synthetic_s02(root, copied, artifact_id="t2", key=KEY)
     with pytest.raises(b3.SyntheticOffsiteRejected):
-        b3.restore_synthetic_s02(root, obj, obj.ciphertext, key=BAD_KEY, restore_id="wrong")
+        b3.restore_synthetic_s02(root, obj.envelope, key=BAD_KEY, restore_id="wrong")
     assert not (root / "restored").exists()
 
 
 def test_altered_authenticated_manifest_denied(tmp_path):
     root, copied = fixture(tmp_path)
     obj = b3.seal_captured_synthetic_s02(root, copied, artifact_id="t3", key=KEY)
-    altered = replace(obj, aad=obj.aad.replace(b"SYNTHETIC_ONLY_NEVER_PRODUCTION", b"NOT_APPROVED_REAL_BACKUP"))
+    altered = bytearray(obj.envelope)
+    pos = obj.envelope.index(b"SYNTHETIC_ONLY_NEVER_PRODUCTION")
+    altered[pos] ^= 1
     with pytest.raises(b3.SyntheticOffsiteRejected):
-        b3.restore_synthetic_s02(root, altered, altered.ciphertext, key=KEY, restore_id="altered")
+        b3.restore_synthetic_s02(root, bytes(altered), key=KEY, restore_id="altered")
+    assert not (root / "restored").exists()
 
 
 def test_duplicate_object_fails_closed(tmp_path):
@@ -101,8 +105,8 @@ def test_partial_provider_failure_not_promoted(tmp_path):
     b.put_new(obj)  # simulate pre-existing version/no overwrite on second provider
     with pytest.raises(b3.SyntheticOffsiteRejected):
         b3.replicate_and_readback(obj, a, b)
-    assert a.get(obj.object_key) == obj.ciphertext
-    assert b.get(obj.object_key) == obj.ciphertext
+    assert a.get(obj.object_key) == obj.envelope
+    assert b.get(obj.object_key) == obj.envelope
 
 
 def test_live_or_unmarked_copy_rejected(tmp_path):
@@ -122,7 +126,7 @@ def test_file_limits_key_lengths_and_ids_rejected(tmp_path):
     with pytest.raises(b3.SyntheticOffsiteRejected):
         b3.seal_captured_synthetic_s02(root, copied, artifact_id="../untrusted", key=KEY)
     with pytest.raises(b3.SyntheticOffsiteRejected):
-        b3.restore_synthetic_s02(root, b3.seal_captured_synthetic_s02(root,copied,artifact_id="t4",key=KEY),b"",key=KEY,restore_id="../bad")
+        b3.restore_synthetic_s02(root, b"", key=KEY, restore_id="../bad")
     with pytest.raises(b3.SyntheticOffsiteRejected):
         b3.MemoryBucket("actual-s3-bucket")
 
@@ -131,8 +135,7 @@ def test_nonce_random_and_ciphertext_distinct(tmp_path):
     root, copied = fixture(tmp_path)
     one = b3.seal_captured_synthetic_s02(root, copied, artifact_id="nonce", key=KEY)
     two = b3.seal_captured_synthetic_s02(root, copied, artifact_id="nonce", key=KEY)
-    assert one.nonce != two.nonce
-    assert one.ciphertext != two.ciphertext
+    assert one.envelope != two.envelope
     assert one.plaintext_sha256 == two.plaintext_sha256
 
 
@@ -142,6 +145,31 @@ def test_wrong_provider_pair_and_payload_budget_denied(tmp_path):
     a = b3.MemoryBucket("aws-s3-synthetic")
     with pytest.raises(b3.SyntheticOffsiteRejected):
         b3.replicate_and_readback(obj, a, a)
-    altered = replace(obj, ciphertext=b"x" * (b3.MAX_OBJECT_BYTES + 1))
+    altered = replace(obj, envelope=b"x" * (b3.MAX_OBJECT_BYTES + 1))
     with pytest.raises(b3.SyntheticOffsiteRejected):
         a.put_new(altered)
+
+
+def test_corrupted_portable_header_fails_closed(tmp_path):
+    root, copied = fixture(tmp_path)
+    obj = b3.seal_captured_synthetic_s02(root, copied, artifact_id="header", key=KEY)
+    magic = len(b3.MAGIC)
+    bad_objects = (
+        b"bad" + obj.envelope[3:],
+        obj.envelope[:magic] + b"\xff\xff" + obj.envelope[magic + 2:],
+        obj.envelope[:magic + 4],
+    )
+    for corrupted in bad_objects:
+        with pytest.raises(b3.SyntheticOffsiteRejected):
+            b3.restore_synthetic_s02(root, corrupted, key=KEY, restore_id="badheader")
+    assert not (root / "restored").exists()
+
+
+def test_tampered_portable_nonce_fails_closed(tmp_path):
+    root, copied = fixture(tmp_path)
+    obj = b3.seal_captured_synthetic_s02(root, copied, artifact_id="noncebad", key=KEY)
+    corrupted = bytearray(obj.envelope)
+    corrupted[len(b3.MAGIC) + 2] ^= 1
+    with pytest.raises(b3.SyntheticOffsiteRejected):
+        b3.restore_synthetic_s02(root, bytes(corrupted), key=KEY, restore_id="badnonce")
+    assert not (root / "restored").exists()

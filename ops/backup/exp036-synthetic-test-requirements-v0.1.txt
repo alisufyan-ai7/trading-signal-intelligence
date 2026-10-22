@@ -1,0 +1,3 @@
+# Offline synthetic encryption test environment only; NOT installed in live VPS venv.
+cryptography==46.0.4
+pytest>=8,<10

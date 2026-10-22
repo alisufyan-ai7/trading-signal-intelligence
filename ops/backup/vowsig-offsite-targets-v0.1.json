@@ -1,0 +1,47 @@
+{
+  "schema": "vowsig-offsite-targets-v0.1",
+  "status": "PREPARATION_ONLY_NOT_WIRED_TO_RUNTIME",
+  "source_repository": "alisufyan-ai7/trading-signal-intelligence",
+  "approved_billing_limit_usd_month": 0,
+  "charged_usage_authorized": false,
+  "automatic_uploads_authorized": false,
+  "automatic_restore_authorized": false,
+  "backup_source_sqlite_reads_authorized": false,
+  "live_schedulers_may_be_modified": false,
+  "dataset_rights_to_cloud": "HOLD_PENDING_SOURCE_CLASSIFICATION",
+  "client_side_authenticated_encryption_required": true,
+  "key_recovery_must_be_off_vps": true,
+  "credential_storage": "WINDOWS_DPAPI_USER_SCOPE_PLANNED_NOT_INSTALLED",
+  "immutable_unique_object_keys_required": true,
+  "maximum_initial_pilot_plaintext_bytes": 1048576,
+  "current_capture_baseline_only": "HISTORICAL_METADATA_2026-10-11",
+  "destinations": {
+    "aws_s3": {
+      "provider": "aws",
+      "bucket": "vowsig-backup-s3-2026",
+      "region": "us-east-1",
+      "pilot_prefix": "pilot/",
+      "identity_name": "vowsig-s3-backup-writer",
+      "api_endpoint": null,
+      "enable_network_writes": false
+    },
+    "backblaze_b2": {
+      "provider": "backblaze",
+      "bucket": "vowsig-backup-b2-2026",
+      "region": "us-east-005",
+      "endpoint": "https://s3.us-east-005.backblazeb2.com",
+      "pilot_prefix": "pilot/",
+      "identity_name": "vowsig-b2-backup-writer",
+      "enable_network_writes": false
+    }
+  },
+  "checks_required_before_any_write": [
+    "provider_bucket_private_and_access_block_verified",
+    "free_space_actual_and_transaction_limits_verified_under_zero_charge_policy",
+    "separate_nonroot_nonmaster_writer_principals",
+    "no_provider_secret_in_git_chat_logs",
+    "rights_for_actual_artifact_resolved",
+    "encryption_and_offsite_key_recovery_mock_test_pass",
+    "synthetic_upload_and_independent_readback_explicitly_approved"
+  ]
+}

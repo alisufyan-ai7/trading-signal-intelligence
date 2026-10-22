@@ -14,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from pathlib import Path
 from typing import Any
 
@@ -192,7 +193,7 @@ def _run_one(provider: Provider, writer: Any, reader: Any, obj: b3.SealedSynthet
 
 
 def run_two_provider_pilot(
-    *, fixture_root: Path, obj: b3.SealedSynthetic, key: bytes,
+    *, fixture_root: Path, captured_source: Path, obj: b3.SealedSynthetic, key: bytes,
     aws_writer: Any, aws_reader: Any, b2_writer: Any, b2_reader: Any,
     network_approved: bool = False, approval_phrase: str = "",
 ) -> dict:
@@ -215,14 +216,31 @@ def run_two_provider_pilot(
             or not isinstance(key, bytes) or len(key) != 32):
         raise SyntheticS3PilotRejected("unapproved synthetic object or size")
     try:
-        b1.assert_fixture_scope(Path(fixture_root))
-        metadata, _, _, _ = b3._decode_envelope(obj.envelope)
+        base = b1.assert_fixture_scope(Path(fixture_root))
+        source = Path(captured_source)
+        if source.is_symlink() or source.name != "forward.sqlite":
+            raise SyntheticS3PilotRejected("unrecognized synthetic captured file")
+        resolved = source.resolve(strict=True)
+        if (resolved.parent.parent != base / "captured"
+                or not b1.NAME_RE.fullmatch(resolved.parent.name)
+                or resolved.parent.is_symlink()
+                or resolved.parent.parent.is_symlink()
+                or not 0 < resolved.stat().st_size <= MAX_ENVELOPE_BYTES):
+            raise SyntheticS3PilotRejected("synthetic captured source scope rejected")
+        evidence = b1.verify_synthetic_copy(resolved, "S02")
+        metadata, nonce, aad, ciphertext = b3._decode_envelope(obj.envelope)
+        plaintext = AESGCM(key).decrypt(nonce, ciphertext, aad)
         if (metadata.get("classification") != "SYNTHETIC_ONLY_NEVER_PRODUCTION"
                 or metadata.get("plaintext_sha256") != obj.plaintext_sha256
-                or metadata.get("record_count") != obj.record_count):
-            raise SyntheticS3PilotRejected("synthetic manifest attestation rejected")
-    except (b1.SyntheticGateRejected, b3.SyntheticOffsiteRejected, OSError) as exc:
-        raise SyntheticS3PilotRejected("synthetic fixture or envelope rejected") from exc
+                or metadata.get("record_count") != obj.record_count
+                or metadata.get("plaintext_size") != len(plaintext)
+                or evidence["copy_sha256"] != _sha(plaintext)
+                or evidence["records"] != metadata["record_count"]):
+            raise SyntheticS3PilotRejected("synthetic source attestation mismatch")
+    except SyntheticS3PilotRejected:
+        raise
+    except Exception:
+        raise SyntheticS3PilotRejected("synthetic source authentication failed") from None
     # Client configs are inspected before any network operation on either.
     for provider, writer, reader in (
         (AWS, aws_writer, aws_reader),

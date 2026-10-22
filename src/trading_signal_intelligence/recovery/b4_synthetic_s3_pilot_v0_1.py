@@ -31,7 +31,7 @@ B2_ENDPOINT = "https://s3.us-east-005.backblazeb2.com"
 
 # Tight one-time limits. This is NOT a provider-side bill/price guarantee.
 MAX_ENVELOPE_BYTES = 128 * 1024
-MAX_REMOTE_OPERATIONS = 6  # 2 HEAD + 2 PUT + 2 GET across both providers
+MAX_REMOTE_OPERATIONS = 5  # AWS: PUT + GET; B2: HEAD + PUT + GET
 APPROVAL_PHRASE = "OWNER_APPROVED_EXP037_SYNTHETIC_TWO_PROVIDER_PILOT"
 KEY_RE = re.compile(r"^pilot/synthetic/v1/[a-z][a-z0-9_-]{0,39}/[0-9a-f]{64}\.aesgcm$")
 
@@ -139,7 +139,10 @@ def _run_one(provider: Provider, writer: Any, reader: Any, obj: b3.SealedSynthet
              key: bytes, fixture_root: Path, budget: list[int]) -> PilotReceipt:
     _check_client(writer, provider)
     _check_client(reader, provider)
-    _expect_new_key(reader, provider, obj.object_key, budget)
+    # AWS atomic IfNoneMatch prevents overwrite without a HEAD request.
+    # B2 header support is not verified; use preflight HEAD with separate reader.
+    if provider == B2:
+        _expect_new_key(reader, provider, obj.object_key, budget)
     if budget[0] >= MAX_REMOTE_OPERATIONS:
         raise SyntheticS3PilotRejected("synthetic API request budget exhausted")
     budget[0] += 1

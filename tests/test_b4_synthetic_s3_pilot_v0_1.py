@@ -158,10 +158,10 @@ def test_two_providers_two_independent_restores(tmp_path):
     source_digest = hashlib.sha256(copied.read_bytes()).hexdigest()
     report = invoke(root, copied, obj, clients)
     assert report["status"] == "SYNTHETIC_ONLY_TWO_REMOTE_PROVIDER_RESTORES"
-    assert report["actual_attempted_requests"] == report["max_requests"] == 6
+    assert report["actual_attempted_requests"] == report["max_requests"] == 5
     assert report["object_size_bytes"] <= b4.MAX_ENVELOPE_BYTES
     assert [r["provider"] for r in report["receipts"]] == ["AWS_S3", "BACKBLAZE_B2"]
-    assert [name for name, _ in clients[0].operations] == ["head", "put", "get"]
+    assert [name for name, _ in clients[0].operations] == ["put", "get"]
     assert [name for name, _ in clients[1].operations] == ["head", "put", "get"]
     assert clients[0].objects is not clients[1].objects
     for place in ("awsrestore", "b2restore"):
@@ -175,7 +175,7 @@ def test_writer_and_reader_roles_never_interchanged(tmp_path):
     root, copied, obj = synthetic_fixture(tmp_path)
     clients = pairs()
     report = invoke(root, copied, obj, clients)
-    assert report["actual_attempted_requests"] == 6
+    assert report["actual_attempted_requests"] == 5
     for backend in clients[:2]:
         assert all((act == "put") == (role == "writer") for act, role in backend.operations)
 
@@ -223,23 +223,24 @@ def test_unsafe_shared_writer_reader_rejected(tmp_path):
     assert not clients[0].operations and not clients[1].operations
 
 
-def test_existing_key_denied_no_put(tmp_path):
+def test_b2_existing_key_denied_without_b2_put(tmp_path):
     root, copied, obj = synthetic_fixture(tmp_path)
     clients = pairs()
-    clients[0].already_exists = True
+    clients[1].already_exists = True
     with pytest.raises(b4.SyntheticS3PilotRejected, match="already exists"):
         invoke(root, copied, obj, clients)
-    assert [name for name, _ in clients[0].operations] == ["head"]
-    assert not clients[1].operations
+    assert [name for name, _ in clients[0].operations] == ["put", "get"]
+    assert [name for name, _ in clients[1].operations] == ["head"]
 
 
-def test_permission_denied_head_fails_closed(tmp_path):
+def test_b2_permission_denied_head_fails_closed(tmp_path):
     root, copied, obj = synthetic_fixture(tmp_path)
     clients = pairs()
-    clients[0].deny_head = True
+    clients[1].deny_head = True
     with pytest.raises(b4.SyntheticS3PilotRejected, match="inconclusive"):
         invoke(root, copied, obj, clients)
-    assert [name for name, _ in clients[0].operations] == ["head"]
+    assert [name for name, _ in clients[0].operations] == ["put", "get"]
+    assert [name for name, _ in clients[1].operations] == ["head"]
 
 
 def test_ambiguous_put_never_retries(tmp_path):
@@ -248,7 +249,7 @@ def test_ambiguous_put_never_retries(tmp_path):
     clients[0].fail_put = True
     with pytest.raises(b4.SyntheticS3PilotRejected, match="do not retry"):
         invoke(root, copied, obj, clients)
-    assert [name for name, _ in clients[0].operations] == ["head", "put"]
+    assert [name for name, _ in clients[0].operations] == ["put"]
     assert not clients[1].operations
 
 
@@ -258,7 +259,7 @@ def test_missing_version_no_get_and_no_second_provider(tmp_path):
     clients[0].omit_version = True
     with pytest.raises(b4.SyntheticS3PilotRejected, match="versioned"):
         invoke(root, copied, obj, clients)
-    assert [name for name, _ in clients[0].operations] == ["head", "put"]
+    assert [name for name, _ in clients[0].operations] == ["put"]
     assert not clients[1].operations
 
 
@@ -268,7 +269,7 @@ def test_b2_corrupted_readback_fails_no_all_clear(tmp_path):
     clients[1].bad_content = True
     with pytest.raises(b4.SyntheticS3PilotRejected, match="mismatch"):
         invoke(root, copied, obj, clients)
-    assert [name for name, _ in clients[0].operations] == ["head", "put", "get"]
+    assert [name for name, _ in clients[0].operations] == ["put", "get"]
     assert [name for name, _ in clients[1].operations] == ["head", "put", "get"]
     assert not (root / "restored" / "b2restore").exists()
 

@@ -10,7 +10,7 @@ import hashlib
 import json
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
 from cryptography.exceptions import InvalidTag
@@ -32,7 +32,7 @@ class PrivateManifestRejected(RuntimeError):
 @dataclass(frozen=True)
 class SealedRecoveryManifest:
     """Object holding only encrypted recoverability references."""
-    sealed_bytes: bytes
+    sealed_bytes: bytes = field(repr=False)
     sealed_sha256: str
     run_id: str
 
@@ -40,12 +40,12 @@ class SealedRecoveryManifest:
 @dataclass(frozen=True)
 class VerifiedRecoveryTargets:
     """Private recoverability references; NEVER log or send to GitHub."""
-    object_key: str
+    object_key: str = field(repr=False)
     object_sha256: str
     plaintext_sha256: str
     record_count: int
-    aws_version_id: str
-    b2_version_id: str
+    aws_version_id: str = field(repr=False)
+    b2_version_id: str = field(repr=False)
     run_id: str
     key_custody_reference_sha256: str
 

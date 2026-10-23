@@ -41,6 +41,13 @@ class OperatorRejected(RuntimeError):
     """Fixed refusal; do not pass through secret-containing SDK exceptions."""
 
 
+class _NoEchoParser(argparse.ArgumentParser):
+    """Never echo unknown arguments: operator may accidentally paste secrets."""
+
+    def error(self, message: str) -> None:
+        raise OperatorRejected("invalid or conflicting operator arguments")
+
+
 @dataclass(frozen=True, repr=False)
 class Credential:
     access_key_id: str
@@ -235,7 +242,7 @@ def cloud_pilot(*, phrase: str = "", prompt_fn: Callable[[str], str] | None = No
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
+    parser = _NoEchoParser(
         description="VPS only; cloud-pilot mode compiled DISABLED"
     )
     modes = parser.add_mutually_exclusive_group(required=True)

@@ -190,3 +190,34 @@ def test_source_has_no_ambient_credential_or_client_construction():
     assert names.isdisjoint({"boto3", "botocore", "getpass", "os", "socket"})
     assert cloud.MAX_REQUESTS == 5
     assert cloud.AWS.bucket != cloud.B2.bucket
+
+
+
+def test_invalid_aead_key_stops_before_any_provider_call(tmp_path):
+    _, scratch, _, _, key, obj = sealed_fixture(tmp_path)
+    aw, ar, bw, br = clients(obj)
+    with pytest.raises(cloud.LiveTransportRejected, match="pre-transfer"):
+        cloud.replicate_approved_s02(
+            obj=obj, key=b"wrong-encryption-key-wrong-encry"[:32],
+            authorization=permit(obj), aws_writer=aw, aws_reader=ar,
+            b2_writer=bw, b2_reader=br, recovery_scratch=scratch,
+        )
+    assert not any(c.called for c in (aw, ar, bw, br))
+
+
+def test_preflight_rollback_is_never_overwritten(tmp_path):
+    _, scratch, _, _, key, obj = sealed_fixture(tmp_path)
+    aw, ar, bw, br = clients(obj)
+    cloud.replicate_approved_s02(
+        obj=obj, key=key, authorization=permit(obj), aws_writer=aw,
+        aws_reader=ar, b2_writer=bw, b2_reader=br, recovery_scratch=scratch,
+    )
+    newer = clients(obj)
+    with pytest.raises(cloud.LiveTransportRejected, match="pre-transfer"):
+        cloud.replicate_approved_s02(
+            obj=obj, key=key, authorization=permit(obj),
+            aws_writer=newer[0], aws_reader=newer[1],
+            b2_writer=newer[2], b2_reader=newer[3],
+            recovery_scratch=scratch,
+        )
+    assert all(not c.called for c in newer)

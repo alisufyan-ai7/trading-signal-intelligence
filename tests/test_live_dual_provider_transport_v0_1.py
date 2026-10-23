@@ -80,7 +80,9 @@ class FakeS3:
         self._emit("GET", kwargs)
         # Another stub client may have handled PUT. The expected authenticated
         # object is injected into readers by the test; never external data.
-        body = self.stored if not self.corrupt else self.stored[:-1] + b"x"
+        body = self.stored if not self.corrupt else (
+            self.stored[:-1] + bytes([self.stored[-1] ^ 1])
+        )
         return {"VersionId": "fake-version-0001", "ContentLength": len(body),
                 "Body": io.BytesIO(body)}
 

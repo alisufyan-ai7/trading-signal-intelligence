@@ -348,3 +348,102 @@ def test_fake_only_body_freezer_is_registered_before_original_b6():
     assert "_freeze_verified_fake_put_body(request, obj.envelope)" in source
     assert "http_session = transport" in source
     assert source.index("http_session = transport") < source.index("normalize_fake_put")
+
+
+def test_sdk_after_call_probe_captures_only_fixed_safe_booleans():
+    from types import SimpleNamespace
+    probe = exp._SafeSDKPutParserProbe()
+    assert probe.after_call_count == 0
+    assert all(value is False for value in probe.flags.values())
+    parsed = {
+        "VersionId": exp.FAKE_VERSION,
+        "ResponseMetadata": {"HTTPStatusCode": 200},
+        "Authorization": "FAKE-DO-NOT-LOG-CREDENTIAL",
+    }
+    result = probe.observe(http_response=SimpleNamespace(status_code=200),
+                           parsed=parsed)
+    assert result is None
+    assert probe.after_call_count == 1
+    assert all(type(value) is bool for value in probe.flags.values())
+    assert all(value is True for value in probe.flags.values())
+    import json
+    rendered = json.dumps(probe.flags)
+    assert exp.FAKE_VERSION not in rendered
+    assert "FAKE-DO-NOT-LOG-CREDENTIAL" not in rendered
+    assert "Authorization" not in rendered
+
+
+def test_sdk_after_call_probe_rejects_unexpected_parsed_shape_without_logging():
+    from types import SimpleNamespace
+    probe = exp._SafeSDKPutParserProbe()
+    parsed = ["FAKE-DO-NOT-LOG"]
+    probe.observe(http_response=SimpleNamespace(status_code=503), parsed=parsed)
+    assert probe.flags["sdk_put_after_call_seen"] is True
+    assert probe.flags["sdk_put_http_status_200"] is False
+    assert probe.flags["sdk_put_parsed_is_dict"] is False
+    assert probe.flags["sdk_put_parsed_version_exact"] is False
+    assert probe.flags["sdk_put_parsed_metadata_status_200"] is False
+    assert "FAKE-DO-NOT-LOG" not in json.dumps(probe.flags)
+
+
+def test_sdk_after_call_probe_bad_or_absent_version_remains_false():
+    from types import SimpleNamespace
+    for parsed in (
+        {"VersionId": "NOT-EXPECTED", "ResponseMetadata": {"HTTPStatusCode": 200}},
+        {"ResponseMetadata": {"HTTPStatusCode": 200}},
+        {"VersionId": exp.FAKE_VERSION, "ResponseMetadata": {"HTTPStatusCode": 400}},
+    ):
+        probe = exp._SafeSDKPutParserProbe()
+        probe.observe(http_response=SimpleNamespace(status_code=200), parsed=parsed)
+        assert probe.flags["sdk_put_after_call_seen"] is True
+        assert probe.flags["sdk_put_parsed_is_dict"] is True
+        assert probe.flags["sdk_put_parsed_version_exact"] is (parsed.get("VersionId") == exp.FAKE_VERSION)
+        assert probe.flags["sdk_put_parsed_metadata_status_200"] is (parsed["ResponseMetadata"]["HTTPStatusCode"] == 200)
+
+
+def test_fake_response_constructor_flag_marks_completed_awsresponse_only():
+    from types import SimpleNamespace
+    class DummyFence:
+        attempted_sends = 1
+    class DummyPayload:
+        envelope = b"fake-ciphertext"
+    class DummyResponse:
+        def __init__(self, url, code, headers, body):
+            assert code == 200
+            assert body.read() == b""
+    obj = exp._MockSDKResponses(DummyPayload(), DummyFence(), DummyResponse)
+    request = SimpleNamespace(method="PUT", url="https://invalid.example")
+    result = obj.make_handler(exp.b4.AWS, "writer")(request)
+    assert isinstance(result, DummyResponse)
+    assert obj.aws_put_fake_response_constructed is True
+    assert obj.operations == ["AWS_S3_PUT"]
+
+
+def test_mock_response_constructor_failure_does_not_mark_success():
+    from types import SimpleNamespace
+    class DummyFence:
+        attempted_sends = 1
+    class DummyPayload:
+        envelope = b"fake-ciphertext"
+    def raising_response(*args, **kwargs):
+        raise ValueError("FAKE-DO-NOT-LOG-ERROR")
+    obj = exp._MockSDKResponses(DummyPayload(), DummyFence(), raising_response)
+    request = SimpleNamespace(method="PUT", url="https://invalid.example")
+    with pytest.raises(ValueError):
+        obj.make_handler(exp.b4.AWS, "writer")(request)
+    assert obj.aws_put_fake_response_constructed is False
+
+
+def test_parser_diagnostic_source_has_no_real_network_or_raw_parsed_storage():
+    import inspect
+    src = inspect.getsource(exp._SafeSDKPutParserProbe)
+    assert 'self.flags["sdk_put_parsed_version_exact"]' in src
+    assert "after_call_count" in src
+    assert "request.url" not in src
+    assert "http_response.headers" not in src
+    assert "self.parsed =" not in src
+    assert "self.exception =" not in src
+    runner = inspect.getsource(exp.run_pinned_fake_sdk_proof)
+    assert '"after-call.s3.PutObject", parser_probe.observe' in runner
+    assert runner.index("http_session = transport") < runner.index("parser_probe =")
+    assert "REAL_PROVIDER_REQUESTS_ENABLED = True" not in runner

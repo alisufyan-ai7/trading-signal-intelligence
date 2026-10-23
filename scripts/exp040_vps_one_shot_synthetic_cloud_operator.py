@@ -81,6 +81,13 @@ def _masked_credentials(label: str, reader: Callable[[str], str]) -> Credential:
         raise OperatorRejected("credential entry cancelled") from None
 
 
+def _assert_four_distinct_identities(credentials: tuple[Credential, ...]) -> None:
+    """Reject accidentally reused identities before future client creation."""
+    if (len(credentials) != 4
+            or len({credential.access_key_id for credential in credentials}) != 4):
+        raise OperatorRejected("four distinct access identities required")
+
+
 def _construct_explicit_boto3_client(provider: b4.Provider, cred: Credential) -> Any:
     """Future-only: construct explicit-credential SigV4 client, NO request.
 
@@ -216,6 +223,7 @@ def cloud_pilot(*, phrase: str = "", prompt_fn: Callable[[str], str] | None = No
             _masked_credentials("B2 writer", reader),
             _masked_credentials("B2 reader", reader),
         )
+        _assert_four_distinct_identities(credentials)
         # Four distinct SDK clients, four restricted roles. Real calls would
         # need a separate approved source activation, request-level security
         # proof and explicit owner approval. No automatic retry or deletion.
@@ -262,6 +270,9 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except OperatorRejected:
-        # Fixed sanitized message; do not reveal Python/provider exceptions.
-        print("EXP040_FINAL=STOPPED; CLOUD_REQUESTS=NONE", file=sys.stderr)
+        # Never claim zero provider calls if some future separately approved
+        # source revision has enabled a real SDK request before an error.
+        status = ("CLOUD_MODE=DISABLED" if not REAL_PROVIDER_REQUESTS_ENABLED
+                  else "CLOUD_REQUEST_STATUS=UNKNOWN")
+        print("EXP040_FINAL=STOPPED; " + status, file=sys.stderr)
         raise SystemExit(2) from None

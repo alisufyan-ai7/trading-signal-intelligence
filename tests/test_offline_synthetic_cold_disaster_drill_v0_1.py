@@ -126,7 +126,7 @@ def test_wrong_keys_or_cold_receipt_digest_fail_closed(tmp_path, fault):
     if fault == "bad_manifest_hash":
         args["manifest_sha256"] = "0" * 64
     if fault == "bad_receipt":
-        args["escrow_reader"]._bytes = args["escrow_reader"]._bytes[:-1] + b"Z"
+        args["escrow_reader"]._bytes = (args["escrow_reader"]._bytes[:-1] + bytes([args["escrow_reader"]._bytes[-1] ^ 1]))
     if fault == "bad_data_key":
         with pytest.raises(p8.OfflineColdDrillRejected, match="no retry"):
             p8.run_synthetic_cold_disaster_drill(**args)

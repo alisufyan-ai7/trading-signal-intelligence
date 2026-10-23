@@ -144,7 +144,7 @@ def _signed_http_headers(raw_headers: Any) -> dict[str, str]:
                 value = value.decode("ascii")
             if (type(key) is not str or type(value) is not str
                     or not key or not key.isascii() or not value.isascii()
-                    or any(mark in key or mark in value for mark in ("\\r", "\\n", "\\0"))):
+                    or any(ord(ch) < 32 or ord(ch) == 127 for ch in key + value)):
                 raise LiveTransportRejected("invalid signed header encoding")
             normalized = key.lower()
             if normalized in result:

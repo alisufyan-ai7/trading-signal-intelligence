@@ -22,6 +22,7 @@ import os
 from pathlib import Path
 import socket
 import tempfile
+from urllib.parse import urlsplit
 from typing import Any
 
 from trading_signal_intelligence.recovery import b4_synthetic_s3_pilot_v0_1 as b4
@@ -98,6 +99,51 @@ class _DenyHTTPTransport:
         return None
 
 
+class _SanitizedRequestProbe:
+    """Only boolean shape evidence; NEVER retain raw HTTP request material."""
+
+    def __init__(self, obj: Any) -> None:
+        self._obj = obj
+        self.seen = 0
+        self.first_shape: dict[str, bool] = {}
+
+    def make_handler(self, provider: b4.Provider, role: str):
+        def record(request: Any, **kwargs: Any) -> None:
+            self.seen += 1
+            if self.seen != 1:
+                return
+            # Read-only inspection, no network, no body read, no secrets logged.
+            try:
+                parsed = urlsplit(request.url)
+                fields = {
+                    (key.decode("ascii").lower() if isinstance(key, bytes)
+                     else str(key).lower()):
+                    (value.decode("latin-1") if isinstance(value, bytes)
+                     else str(value))
+                    for key, value in request.headers.items()
+                }
+                body = request.body
+                self.first_shape = {
+                    "first_request_is_aws_writer": provider == b4.AWS and role == "writer",
+                    "method_is_put": request.method == "PUT",
+                    "scheme_is_https": parsed.scheme == "https",
+                    "host_is_pinned": parsed.netloc == urlsplit(provider.endpoint).netloc,
+                    "path_is_exact": parsed.path == f"/{provider.bucket}/{self._obj.object_key}",
+                    "query_absent": parsed.query == "",
+                    "body_exact_bytes": type(body) is bytes and body == self._obj.envelope,
+                    "content_type_exact": fields.get("content-type") == "application/octet-stream",
+                    "content_length_exact": fields.get("content-length") == str(len(self._obj.envelope)),
+                    "atomic_put_condition": fields.get("if-none-match") == "*",
+                    "sigv4_scheme": fields.get("authorization", "").startswith("AWS4-HMAC-SHA256 "),
+                    "sigv4_region": f"/{provider.region}/s3/aws4_request" in fields.get("authorization", ""),
+                    "has_transfer_encoding": "transfer-encoding" in fields,
+                    "has_aws_session_token": "x-amz-security-token" in fields,
+                }
+            except Exception:
+                self.first_shape = {"shape_inspection_succeeded": False}
+        return record
+
+
 class _MockSDKResponses:
     """Registered AFTER the B6 allowlist; supplies no-network AWSResponse."""
 
@@ -163,7 +209,7 @@ def _new_client(boto3: Any, Config: Any, provider: b4.Provider) -> Any:
     return client
 
 
-def run_pinned_fake_sdk_proof() -> dict:
+def run_pinned_fake_sdk_proof(*, diagnostic: bool = False) -> dict:
     if PROVIDER_CALLS_ALLOWED is not False:
         raise SDKOfflineRejected("EXP042 network permission invariant violated")
     if exp040.REAL_PROVIDER_REQUESTS_ENABLED is not False:
@@ -207,6 +253,16 @@ def run_pinned_fake_sdk_proof() -> dict:
             gaw, gar, ga = b5.guard_pair(b4.AWS, aw, ar, obj)
             gbw, gbr, gb = b5.guard_pair(b4.B2, bw, br, obj)
             fence = b6.SyntheticWireFence(obj, ga, gb)
+            probe = _SanitizedRequestProbe(obj)
+            for provider, role, client in (
+                (b4.AWS, "writer", aw), (b4.AWS, "reader", ar),
+                (b4.B2, "writer", bw), (b4.B2, "reader", br),
+            ):
+                # Register before B6 so a denied request still leaves only
+                # boolean shape evidence; never store URLs/headers/body.
+                client.meta.events.register(
+                    "before-send.s3", probe.make_handler(provider, role)
+                )
             fence.attach(aw, ar, bw, br)
             responses = _MockSDKResponses(obj, fence, AWSResponse)
             for provider, role, client in (
@@ -217,11 +273,29 @@ def run_pinned_fake_sdk_proof() -> dict:
                     "before-send.s3", responses.make_handler(provider, role)
                 )
             # Actual SDK operation serialization/signing/parsing, but no HTTP.
-            result = b4.run_two_provider_pilot(
-                fixture_root=root, captured_source=copied, obj=obj, key=key,
-                aws_writer=gaw, aws_reader=gar, b2_writer=gbw, b2_reader=gbr,
-                network_approved=True, approval_phrase=b4.APPROVAL_PHRASE,
-            )
+            try:
+                result = b4.run_two_provider_pilot(
+                    fixture_root=root, captured_source=copied, obj=obj, key=key,
+                    aws_writer=gaw, aws_reader=gar, b2_writer=gbw, b2_reader=gbr,
+                    network_approved=True, approval_phrase=b4.APPROVAL_PHRASE,
+                )
+            except Exception:
+                if diagnostic:
+                    return {
+                        "status": "EXP042_FAKE_HTTP_DIAGNOSTIC_HOLD",
+                        "boto3_pin": PIN_BOTO3,
+                        "botocore_pin": PIN_BOTOCORE,
+                        "sdk_before_send_observed": probe.seen,
+                        "b6_accepted_pre_send_events": fence.attempted_sends,
+                        "mock_response_events": len(responses.operations),
+                        "denied_transport_send_attempts": sum(
+                            x.unsolicited_send_calls for x in transports),
+                        "first_request_shape_checks": dict(probe.first_shape),
+                        "real_provider_requests": 0,
+                        "real_credentials": False,
+                        "cloud_mode_enabled": False,
+                    }
+                raise
             fence_status = fence.assert_complete()
             expected = [
                 "AWS_S3_PUT", "AWS_S3_GET",
@@ -248,12 +322,13 @@ def run_pinned_fake_sdk_proof() -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     parser = _QuietParser(description="EXP042 VPS-only PINNED SDK FAKE HTTP proof")
-    parser.add_argument(OFFLINE_MODE, action="store_true", required=True)
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument(OFFLINE_MODE, action="store_true")
+    mode.add_argument("--diagnostic-only", action="store_true")
     args = parser.parse_args(argv)
-    if not args.offline_only:
-        raise SDKOfflineRejected("offline mode required")
-    print(json.dumps(run_pinned_fake_sdk_proof(), sort_keys=True, separators=(",", ":")))
-    return 0
+    output = run_pinned_fake_sdk_proof(diagnostic=args.diagnostic_only)
+    print(json.dumps(output, sort_keys=True, separators=(",", ":")))
+    return 0 if output["status"] == "EXP042_PINNED_SDK_FAKE_TRANSPORT_PASS" else 2
 
 
 if __name__ == "__main__":

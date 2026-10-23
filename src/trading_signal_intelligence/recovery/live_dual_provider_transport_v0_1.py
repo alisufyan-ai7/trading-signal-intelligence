@@ -279,7 +279,7 @@ def _version(receipt: Any) -> str:
 
 
 def _one_provider(provider: Provider, writer: Any, reader: Any, wire: _WireFence,
-                  key: bytes, recovery_scratch: Path, restore_id: str) -> dict:
+                  key: bytes, recovery_scratch: Path, restore_id: str) -> tuple[dict, str]:
     if provider == B2:
         # Must observe exactly one signed preflight HEAD returning authentic 404.
         wire.before_call(provider, "reader", "HEAD", None)
@@ -307,22 +307,32 @@ def _one_provider(provider: Provider, writer: Any, reader: Any, wire: _WireFence
             or restored["record_count"] != wire.obj.record_count
             or restored["plaintext_sha256"] != wire.obj.plaintext_sha256):
         raise LiveTransportRejected("independent provider restore inconsistent")
-    return {"provider": provider.name, "region": provider.region,
-            "object_sha256": wire.obj.envelope_sha256,
-            "version_sha256": _sha(version.encode("utf-8")),
-            "verified_records": restored["record_count"]}
+    # The second tuple item is a PRIVATE opaque version reference. Never
+    # include it in sanitized provider receipts or public logs.
+    return ({"provider": provider.name, "region": provider.region,
+             "object_sha256": wire.obj.envelope_sha256,
+             "version_sha256": _sha(version.encode("utf-8")),
+             "verified_records": restored["record_count"]}, version)
 
 
 def replicate_approved_s02(*, obj: core.SealedLiveCopy, key: bytes,
                            authorization: ReleaseAuthorization,
                            aws_writer: Any, aws_reader: Any,
                            b2_writer: Any, b2_reader: Any,
-                           recovery_scratch: Path) -> dict:
+                           recovery_scratch: Path,
+                           require_private_receipt: bool = False,
+                           private_receipt_sink: Any = None) -> dict:
     """Five request maximum. May use REAL cloud if explicitly invoked; NOT wired.
 
     No API is ever called by importing this module. Retention and billing
     attestations must be independently substantiated before invoking.
     """
+    # Explicit opt-in is necessary, but insufficient for real cloud release.
+    # Missing sink must be denied BEFORE any SDK network-capable method.
+    if (type(require_private_receipt) is not bool
+            or (require_private_receipt and not callable(private_receipt_sink))
+            or (not require_private_receipt and private_receipt_sink is not None)):
+        raise LiveTransportRejected("private exact-version recovery sink not configured")
     authorization.validate(obj)
     if (type(key) is not bytes or len(key) != 32
             or len({id(x) for x in (aws_writer, aws_reader, b2_writer, b2_reader)}) != 4
@@ -357,16 +367,48 @@ def replicate_approved_s02(*, obj: core.SealedLiveCopy, key: bytes,
     for client in (aws_writer, aws_reader, b2_writer, b2_reader):
         client.meta.events.register("before-send.s3", wire.hook)
     # Strict order: AWS PUT+versioned GET, then B2 HEAD404+PUT+versioned GET.
-    first = _one_provider(
+    first, aws_version = _one_provider(
         AWS, aws_writer, aws_reader, wire, key, Path(recovery_scratch),
         "aws-restore-0001",
     )
-    second = _one_provider(
+    second, b2_version = _one_provider(
         B2, b2_writer, b2_reader, wire, key, Path(recovery_scratch),
         "b2-restore-0001",
     )
     if wire.pending is not None or wire.attempted != MAX_REQUESTS:
         raise LiveTransportRejected("request/receipt sequence incomplete")
-    return {"status": "LIVE_S02_TWO_PROVIDER_VERIFIED",
+    safe = {"status": "LIVE_S02_TWO_PROVIDER_VERIFIED",
             "attempted_signed_requests": wire.attempted, "receipts": [first, second],
             "data_rights_ref_sha256": authorization.rights_sha256}
+    if not require_private_receipt:
+        # Legacy offline verification result; NOT sufficient to claim durable
+        # recoverability because raw opaque cloud versions are not retained.
+        return safe
+    try:
+        # Only AFTER both independent complete restores, one in-memory handoff.
+        # This callable must be explicitly reviewed. Do not log arguments or
+        # propagate its raw exception, which could contain private VersionIds.
+        ack = private_receipt_sink(obj, safe, (aws_version, b2_version))
+        if (type(ack) is not dict
+                or set(ack) != {"status", "manifest_sha256", "run_id",
+                                "real_provider_operation_authorized",
+                                "offhost_persistence_verified"}
+                or ack["status"] != "OFFLINE_PRIVATE_RECOVERY_MANIFEST_SEALED"
+                or type(ack["manifest_sha256"]) is not str
+                or not core.HEX64.fullmatch(ack["manifest_sha256"])
+                or ack["run_id"] != obj.run_id
+                or ack["real_provider_operation_authorized"] is not False
+                or ack["offhost_persistence_verified"] is not False):
+            raise LiveTransportRejected("invalid private receipt acknowledgement")
+    except Exception:
+        raise LiveTransportRejected(
+            "private recovery manifest handoff failed; no retry or release claim"
+        ) from None
+    # This is strictly LOCAL receipt proof. Off-host persistence remains FALSE.
+    return {"status": "LIVE_S02_TWO_PROVIDER_VERIFIED_LOCAL_RECEIPT_ONLY",
+            "attempted_signed_requests": wire.attempted,
+            "receipts": [first, second],
+            "data_rights_ref_sha256": authorization.rights_sha256,
+            "private_manifest_sha256": ack["manifest_sha256"],
+            "offhost_persistence_verified": False,
+            "real_provider_operation_authorized": False}

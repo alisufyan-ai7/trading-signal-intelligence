@@ -58,3 +58,15 @@ Owner must execute an SHA-pinned disposable GitHub checkout using the already ex
 - PR #68 IAM/credential documentation remains separate and unmerged.
 
 **Status at authoring: EXP042 DRAFT PREPARATION; SDK pin availability on owner's isolated Windows VPS UNKNOWN; no package install, real network request or live cloud activation.**
+
+## EXP042 second attempt and prospective diagnostic correction (2026-10-23)
+
+**Immutable owner VPS result (original tested HEAD `73e06ae176da45344316bf0268ebfc8ba04be379`):** PR #76's seven-wheel acquisition PASSED (17 unit tests, SHA-256 of all seven wheels, active dependencies, new disposable VPS environment). The original PR #75 SDK proof then **FAILED CLOSED** on the **first fake AWS PUT**, producing B4 `SyntheticS3PilotRejected("synthetic upload ambiguous; stop, do not retry")`. SDK-overlay suite: **131 PASSED, 1 FAILED**. Production remained unchanged. Overall EXP042 HOLD. Full evidence in PR #75 and Issue #67. Earlier 131 PASS/1 SKIP missing-SDK HOLD remains independently immutable.
+
+**Narrow prospective change on DRAFT PR #75:** The source retains `PROVIDER_CALLS_ALLOWED=False`, EXP040 `REAL_PROVIDER_REQUESTS_ENABLED=False`, four deny-all transports, fake-only credentials and socket denies. The new `--diagnostic-only` adds a read-only fixed-boolean event observer before B6, and reports only boolean request-shape categories (HTTPS, host/path, body byte-match, content type/length, SigV4 region and AWS conditional PUT) and counts of SDK before-send events, B6 accepted events, mock response events and denied HTTP transport invocations.
+
+**Never printed:** raw URLs, Authorization headers, access key IDs, signatures, object IDs, ciphertext, plaintext, exception messages or provider response contents. B4/B5/B6 validations remain unchanged. This output is not itself a secure audit of all secrets held in Python process memory; it is fixed-field diagnostic output.
+
+**Semantics:** `--diagnostic-only` deliberately returns nonzero exit code 2 and `EXP042_FAKE_HTTP_DIAGNOSTIC_HOLD` on a stopped mock operation. The diagnostic is NOT a restored backup or permission to retry an ambiguous real upload. Any eventual fix must target the observed fake-SDK mismatch, preserve fail-closed B4/B5/B6 checks, and be retested at a NEW SHA.
+
+**Next permitted step:** exact new PR #75 checkout on the existing Windows VPS; reuse (do NOT reinstall) the previously verified isolated seven-wheel environment if it still exists; run negative/offline tests excluding the original known failing integration, then the sanitized `--diagnostic-only`, frozen dependency guard, and production unchanged postflight. NO provider API calls, owner credentials, real databases, package installation, production updates, task modifications or GitHub merge.

@@ -223,3 +223,69 @@ def test_preflight_rollback_is_never_overwritten(tmp_path):
             recovery_scratch=scratch,
         )
     assert all(not c.called for c in newer)
+
+
+
+def test_signed_sdk_ascii_bytes_headers_preserve_exact_authentication(tmp_path):
+    """Botocore signed values may be bytes; no SDK transport/network needed."""
+    _, _, _, _, _, obj = sealed_fixture(tmp_path)
+    wire = cloud._WireFence(obj)
+    wire.before_call(cloud.AWS, "writer", "PUT", None)
+    request = SimpleNamespace(
+        method="PUT",
+        url=(cloud.AWS.endpoint + "/" + cloud.AWS.bucket + "/" + obj.object_key),
+        headers={
+            "Authorization": (
+                b"AWS4-HMAC-SHA256 Credential=FAKE/"
+                b"20261023/us-east-1/s3/aws4_request"
+            ),
+            "Content-Length": str(len(obj.envelope)).encode("ascii"),
+            "Content-Type": b"application/octet-stream",
+            "If-None-Match": b"*",
+        },
+        body=io.BytesIO(obj.envelope),
+    )
+    wire.hook(request)
+    assert wire.attempted == 1
+    assert wire.seen_this_call == 1
+    wire.after_call()
+    assert wire.pending is None
+
+
+@pytest.mark.parametrize("malformed", [
+    {"Content-Type": b"application/octet-stream\xff"},
+    {"Content-Type": "application/octet-stream\r\nInjected: yes"},
+    {"Content-Type": "application/octet-stream\n"},
+    {"Content-Type": b"application/octet-stream\x00"},
+    {"Content-Type": object()},
+    {"content-type": "application/octet-stream", "Content-Type": "application/octet-stream"},
+    {"Authorization": b"\xff"},
+    {b"Content-Type": b"\xff"},
+])
+def test_signed_sdk_rejects_ambiguous_nonascii_and_control_headers(malformed):
+    baseline = {
+        "Authorization": b"AWS4-HMAC-SHA256 Credential=FAKE/20261023/us-east-1/s3/aws4_request",
+        "Content-Length": b"1024",
+        "Content-Type": b"application/octet-stream",
+        "If-None-Match": b"*",
+    }
+    baseline.update(malformed)
+    with pytest.raises(cloud.LiveTransportRejected):
+        cloud._signed_http_headers(baseline)
+
+
+def test_signed_sdk_normalizer_does_not_strip_modify_or_coerce_unknown_values():
+    assert cloud._signed_http_headers(
+        {b"Content-Type": b"application/octet-stream",
+         "If-None-Match": "*"}
+    ) == {"content-type": "application/octet-stream", "if-none-match": "*"}
+    for bad in (
+        {"X-A": " trailing "},
+        {"X-A": True},
+        {"X-A": ["one"]},
+    ):
+        if "X-A" in bad and bad["X-A"] == " trailing ":
+            assert cloud._signed_http_headers(bad)["x-a"] == " trailing "
+        else:
+            with pytest.raises(cloud.LiveTransportRejected):
+                cloud._signed_http_headers(bad)

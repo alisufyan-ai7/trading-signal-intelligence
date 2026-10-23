@@ -127,7 +127,7 @@ def test_untrusted_callback_outcomes_fail_closed_and_redact(tmp_path, fault):
         if fault == "missing":
             return None
         if fault == "bad_bytes":
-            return vault.objects[key][:-1] + b"!"
+            return vault.objects[key][:-1] + bytes([vault.objects[key][-1] ^ 1])
         return vault.objects[key]
     adapter = escrow(vault, writer=writer, reader=reader)
     with pytest.raises(p7.ReceiptEscrowRejected) as exc:

@@ -447,3 +447,92 @@ def test_parser_diagnostic_source_has_no_real_network_or_raw_parsed_storage():
     assert '"after-call.s3.PutObject", parser_probe.observe' in runner
     assert runner.index("http_session = transport") < runner.index("parser_probe =")
     assert "REAL_PROVIDER_REQUESTS_ENABLED = True" not in runner
+
+
+def test_fake_sdk_raw_stream_exact_chunks_and_exhaustion():
+    payload = b"synthetic-raw-stream-fake-only"
+    raw = exp._InMemorySDKRawResponse(payload)
+    assert b"".join(raw.stream(amt=4)) == payload
+    assert raw.tell() == len(payload)
+    assert list(raw.stream(amt=4)) == []
+    raw.seek(0)
+    assert raw.read() == payload
+
+
+def test_fake_sdk_raw_stream_default_reads_entire_payload():
+    payload = b"abcde" * 5000
+    raw = exp._InMemorySDKRawResponse(payload)
+    assert b"".join(raw.stream()) == payload
+    assert raw.tell() == len(payload)
+
+
+def test_fake_sdk_raw_stream_empty_and_direct_read():
+    empty = exp._InMemorySDKRawResponse(b"")
+    assert list(empty.stream()) == []
+    assert empty.read() == b""
+    data = exp._InMemorySDKRawResponse(b"abcdef")
+    assert data.read(2) == b"ab"
+    assert b"".join(data.stream(amt=2)) == b"cdef"
+
+
+@pytest.mark.parametrize("bad_chunk", [0, -1, 2.1, "12", True])
+def test_fake_sdk_raw_stream_denies_invalid_chunk_budget(bad_chunk):
+    raw = exp._InMemorySDKRawResponse(b"encrypted")
+    with pytest.raises(exp.SDKOfflineRejected):
+        list(raw.stream(amt=bad_chunk))
+
+
+def test_fake_sdk_raw_stream_refuses_decompression():
+    raw = exp._InMemorySDKRawResponse(b"encrypted")
+    with pytest.raises(exp.SDKOfflineRejected, match="decompression denied"):
+        list(raw.stream(decode_content=True))
+
+
+def test_fake_sdk_raw_stream_refuses_oversize_or_nonbytes():
+    with pytest.raises(exp.SDKOfflineRejected):
+        exp._InMemorySDKRawResponse(b"x" * (exp.b4.MAX_ENVELOPE_BYTES + 1))
+    for malformed in (None, bytearray(b"x"), "string", [1, 2]):
+        with pytest.raises(exp.SDKOfflineRejected):
+            exp._InMemorySDKRawResponse(malformed)
+
+
+def test_sdk_raw_fake_awsresponse_content_if_pinned():
+    # This is a separate exact SDK parser-interface gate, not a restore pass.
+    if exp.sdk_pin_status() != "PINNED_SDK_AVAILABLE":
+        pytest.skip("Real pinned botocore is required for raw interface proof")
+    from botocore.awsrequest import AWSResponse
+    raw = exp._InMemorySDKRawResponse(b"fake-raw-only")
+    response = AWSResponse("https://invalid.example/", 200, {}, raw)
+    assert response.status_code == 200
+    assert response.content == b"fake-raw-only"
+    assert raw.tell() == len(b"fake-raw-only")
+
+
+def test_fake_sdk_put_mock_response_has_urllib3_stream_interface():
+    from types import SimpleNamespace
+    class DummyFence:
+        attempted_sends = 1
+    class DummyPayload:
+        envelope = b"encrypted"
+    class FakeAWSResponse:
+        def __init__(self, url, code, headers, raw):
+            assert code == 200
+            assert hasattr(raw, "stream")
+            assert raw.read() == b""
+    fake = exp._MockSDKResponses(DummyPayload(), DummyFence(), FakeAWSResponse)
+    request = SimpleNamespace(method="PUT", url="https://invalid.example/")
+    response = fake.make_handler(exp.b4.AWS, "writer")(request)
+    assert isinstance(response, FakeAWSResponse)
+    assert fake.aws_put_fake_response_constructed is True
+    assert fake.operations == ["AWS_S3_PUT"]
+
+
+def test_fake_sdk_raw_adapter_never_supplies_provider_transport():
+    import inspect
+    source = inspect.getsource(exp._InMemorySDKRawResponse)
+    assert "io.BytesIO" in source
+    assert "self.read" in source
+    assert "socket" not in source
+    assert "urllib3" not in source.replace("urllib3-style", "")
+    assert "requests" not in source
+    assert "urlopen" not in source

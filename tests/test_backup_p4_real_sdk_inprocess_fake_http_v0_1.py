@@ -323,7 +323,7 @@ def test_fake_sdk_harness_never_has_a_real_transport_fallback():
 def test_wire_shape_diagnostic_is_boolean_only_and_never_leaks_values():
     from types import SimpleNamespace
     obj = SimpleNamespace(
-        object_key="vowsig/approved-s02/v1/synthetic-001/" + "0" * 64 + ".aesgcm",
+        object_key="pilot/vowsig/approved-s02/v1/synthetic-001/" + "0" * 64 + ".aesgcm",
         envelope=b"synthetic-ciphertext",
     )
     wire = SimpleNamespace(obj=obj, pending=(p2.AWS, "writer", "PUT", None))
@@ -369,7 +369,7 @@ def test_wire_shape_missing_pending_yields_safe_false_flags():
 def test_safe_shape_accepts_actual_sdk_ascii_byte_headers_after_normalization():
     from types import SimpleNamespace
     obj = SimpleNamespace(
-        object_key="vowsig/approved-s02/v1/synthetic-001/" + "0" * 64 + ".aesgcm",
+        object_key="pilot/vowsig/approved-s02/v1/synthetic-001/" + "0" * 64 + ".aesgcm",
         envelope=b"synthetic-ciphertext",
     )
     wire = SimpleNamespace(obj=obj, pending=(p2.AWS, "writer", "PUT", None))

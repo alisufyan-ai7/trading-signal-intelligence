@@ -175,6 +175,7 @@ def setup_aws_put(tmp_path):
     lambda req: req.headers.update({"If-None-Match": "wrong"}),
     lambda req: req.headers.update({"Content-Length": "123"}),
     lambda req: req.headers.update({"Authorization": "Basic invalid"}),
+    lambda req: req.headers.update({"Authorization": req.headers["Authorization"].replace("/us-east-1/s3/", "/us-west-2/s3/")}),
     lambda req: setattr(req, "body", b"not-authenticated"),
 ])
 def test_aws_put_rejects_mutated_or_unsafe_http_send(tmp_path, mutator):

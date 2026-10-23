@@ -9,7 +9,9 @@ from __future__ import annotations
 
 import hashlib
 import io
+import json
 import socket
+from urllib.parse import urlsplit, unquote, parse_qs
 from pathlib import Path
 
 import pytest
@@ -20,6 +22,73 @@ from test_live_sqlite_envelope_v0_1 import sealed_fixture
 FAKE_ACCESS = "EXP046_FAKE_NOT_VALID"
 FAKE_SECRET = "EXP046_SYNTHETIC_NEVER_VALID_NOT_A_REAL_AWS_SECRET"
 FAKE_VERSION = "exp046-in-process-version-id"
+
+
+
+def _safe_sdk_wire_shape(request, fence):
+    """Fixed boolean-only shape; NEVER store/log url, header values or body."""
+    result = {
+        "method_matches_pending": False,
+        "https_scheme": False,
+        "endpoint_host_matches": False,
+        "bucket_and_key_path_exact": False,
+        "sigv4_scheme": False,
+        "sigv4_region_scope": False,
+        "correct_query": False,
+        "no_transfer_encoding": False,
+        "body_is_exact_bytes": False,
+        "body_has_read_seek_tell": False,
+        "body_exact_verified_bounded": False,
+        "content_length_exact": False,
+        "content_type_exact": False,
+        "aws_put_conditional": False,
+    }
+    try:
+        if fence.pending is None:
+            return result
+        provider, role, verb, version = fence.pending
+        uri = urlsplit(request.url)
+        headers = {str(k).lower(): str(v) for k, v in request.headers.items()}
+        auth = headers.get("authorization", "")
+        result["method_matches_pending"] = request.method == verb
+        result["https_scheme"] = uri.scheme == "https"
+        result["endpoint_host_matches"] = uri.netloc == urlsplit(provider.endpoint).netloc
+        result["bucket_and_key_path_exact"] = (
+            unquote(uri.path) == f"/{provider.bucket}/{fence.obj.object_key}"
+        )
+        result["sigv4_scheme"] = auth.startswith("AWS4-HMAC-SHA256 ")
+        result["sigv4_region_scope"] = (
+            f"/{provider.region}/s3/aws4_request" in auth
+        )
+        result["correct_query"] = (
+            parse_qs(uri.query, keep_blank_values=True) == {"versionId": [version]}
+            if verb == "GET" else not bool(uri.query)
+        )
+        result["no_transfer_encoding"] = "transfer-encoding" not in headers
+        body = getattr(request, "body", None)
+        result["body_is_exact_bytes"] = type(body) is bytes and body == fence.obj.envelope
+        result["body_has_read_seek_tell"] = all(
+            callable(getattr(body, method, None))
+            for method in ("read", "seek", "tell", "seekable")
+        )
+        if verb == "PUT":
+            result["body_exact_verified_bounded"] = p2._body_matches(
+                body, fence.obj.envelope
+            )
+            result["content_length_exact"] = (
+                headers.get("content-length") == str(len(fence.obj.envelope))
+            )
+            result["content_type_exact"] = (
+                headers.get("content-type") == "application/octet-stream"
+            )
+            result["aws_put_conditional"] = (
+                headers.get("if-none-match") == "*"
+                if provider == p2.AWS else "if-none-match" not in headers
+            )
+    except Exception:
+        # No raw exception/SDK object is captured or ever printed.
+        return result
+    return result
 
 
 class NoExternalSocket(RuntimeError):
@@ -163,6 +232,22 @@ def test_real_pinned_sdk_five_signed_events_two_verified_synthetic_restores(
     # installed before invocation; only synthetic responders can be reached.
     trace = []
     proxies = []
+    diagnostic = {
+        "sdk_before_send_events": 0,
+        "guard_hook_calls": 0,
+        "guard_hook_accepted": 0,
+        "mock_response_events": 0,
+        "sdk_first_request_shape": None,
+        "cloud_mode_enabled": False,
+        "real_credentials": False,
+        "real_provider_requests": 0,
+    }
+    original_hook = p2._WireFence.hook
+    def audited_original_guard(self, request, **kwargs):
+        diagnostic["guard_hook_calls"] += 1
+        original_hook(self, request, **kwargs)
+        diagnostic["guard_hook_accepted"] += 1
+
     original_init = p2._WireFence.__init__
     def observe_fence_init(self, sealed):
         original_init(self, sealed)
@@ -174,15 +259,33 @@ def test_real_pinned_sdk_five_signed_events_two_verified_synthetic_restores(
             proxy = _InProcessFakeHttp(self, sealed, provider, role, AWSResponse, trace)
             client._endpoint.http_session = proxy
             proxies.append(proxy)
+            # Test-only observer runs before the unchanged original wire fence.
+            def inspect_request(request, **kwargs):
+                diagnostic["sdk_before_send_events"] += 1
+                if diagnostic["sdk_first_request_shape"] is None:
+                    diagnostic["sdk_first_request_shape"] = _safe_sdk_wire_shape(
+                        request, self
+                    )
+            client.meta.events.register("before-send.s3", inspect_request)
 
     with monkeypatch.context() as patch:
         patch.setattr(p2._WireFence, "__init__", observe_fence_init)
-        result = p2.replicate_approved_s02(
-            obj=obj, key=key, authorization=_release_token(obj),
-            aws_writer=clients[0], aws_reader=clients[1],
-            b2_writer=clients[2], b2_reader=clients[3],
-            recovery_scratch=Path(scratch),
-        )
+        patch.setattr(p2._WireFence, "hook", audited_original_guard)
+        try:
+            result = p2.replicate_approved_s02(
+                obj=obj, key=key, authorization=_release_token(obj),
+                aws_writer=clients[0], aws_reader=clients[1],
+                b2_writer=clients[2], b2_reader=clients[3],
+                recovery_scratch=Path(scratch),
+            )
+        except Exception:
+            # Only fixed counters and booleans. No headers, keys, bytes,
+            # raw response, exception text, URLs or secret values.
+            diagnostic["mock_response_events"] = len(trace)
+            print("BACKUP_P4_DIAGNOSTIC_JSON=" + json.dumps(
+                diagnostic, sort_keys=True, separators=(",", ":")
+            ))
+            raise
 
     assert result["status"] == "LIVE_S02_TWO_PROVIDER_VERIFIED"
     assert result["attempted_signed_requests"] == 5
@@ -214,3 +317,49 @@ def test_fake_sdk_harness_never_has_a_real_transport_fallback():
     assert "_endpoint.http_session = proxy" in inspect.getsource(
         test_real_pinned_sdk_five_signed_events_two_verified_synthetic_restores
     )
+
+
+
+def test_wire_shape_diagnostic_is_boolean_only_and_never_leaks_values():
+    from types import SimpleNamespace
+    obj = SimpleNamespace(
+        object_key="vowsig/approved-s02/v1/synthetic-001/" + "0" * 64 + ".aesgcm",
+        envelope=b"synthetic-ciphertext",
+    )
+    wire = SimpleNamespace(obj=obj, pending=(p2.AWS, "writer", "PUT", None))
+    fake_secret = "FAKE-SDK-SECRET-NEVER-LOG"
+    request = SimpleNamespace(
+        method="PUT",
+        url=p2.AWS.endpoint + "/" + p2.AWS.bucket + "/" + obj.object_key,
+        headers={
+            "Authorization": f"AWS4-HMAC-SHA256 Credential={fake_secret}/20261023/us-east-1/s3/aws4_request",
+            "Content-Length": str(len(obj.envelope)),
+            "Content-Type": "application/octet-stream",
+            "If-None-Match": "*",
+        },
+        body=io.BytesIO(obj.envelope),
+    )
+    flags = _safe_sdk_wire_shape(request, wire)
+    assert set(flags) == {
+        "method_matches_pending", "https_scheme", "endpoint_host_matches",
+        "bucket_and_key_path_exact", "sigv4_scheme", "sigv4_region_scope",
+        "correct_query", "no_transfer_encoding", "body_is_exact_bytes",
+        "body_has_read_seek_tell", "body_exact_verified_bounded",
+        "content_length_exact", "content_type_exact", "aws_put_conditional",
+    }
+    assert all(type(value) is bool for value in flags.values())
+    assert all(flags[k] for k in flags if k != "body_is_exact_bytes")
+    assert flags["body_is_exact_bytes"] is False
+    rendered = json.dumps(flags)
+    assert fake_secret not in rendered
+    assert obj.object_key not in rendered
+    assert obj.envelope.decode() not in rendered
+
+
+def test_wire_shape_missing_pending_yields_safe_false_flags():
+    from types import SimpleNamespace
+    req = SimpleNamespace(method="PUT", url="https://invalid.example/",
+                          headers={"Authorization": "SECRET"}, body=b"SECRET")
+    flags = _safe_sdk_wire_shape(req, SimpleNamespace(pending=None))
+    assert all(value is False for value in flags.values())
+    assert "SECRET" not in json.dumps(flags)

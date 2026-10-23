@@ -10,6 +10,7 @@ from trading_signal_intelligence.recovery import integrated_s02_backup_operator_
 from trading_signal_intelligence.recovery import live_sqlite_envelope_v0_1 as core
 from trading_signal_intelligence.recovery import live_dual_provider_transport_v0_1 as p2
 from trading_signal_intelligence.recovery import backup_release_evidence_gate_v0_1 as p3
+from trading_signal_intelligence.recovery import offline_immutable_receipt_escrow_v0_1 as p7
 
 
 def review(override=None):
@@ -122,6 +123,8 @@ def test_object_keys_match_already_scoped_pilot_credentials(tmp_path):
     assert not p2.KEY_RX.fullmatch(
         "vowsig/approved-s02/v1/release-test-0001/" + "0"*64 + ".aesgcm"
     )
+    assert p7.ESCROW_PREFIX == "pilot/vowsig/private-recovery-receipts/v1"
+    assert p7._identity("release-test-0001", "0"*64).startswith("pilot/")
 
 
 def test_no_hidden_cloud_activation_via_environment_or_command_line():

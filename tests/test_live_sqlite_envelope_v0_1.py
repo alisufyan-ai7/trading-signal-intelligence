@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 import pytest
@@ -23,7 +24,7 @@ def fixture_s02(tmp_path):
     scratch = tmp_path / "private-scratch"
     scratch.mkdir()
     database = data / "forward.sqlite"
-    with sqlite3.connect(database) as con:
+    with closing(sqlite3.connect(database)) as con:
         con.execute("""CREATE TABLE forward_records (
             sequence INTEGER, record_id TEXT, record_type TEXT, entity_id TEXT,
             recorded_at_utc TEXT, effective_at_utc TEXT, payload_json TEXT,
@@ -169,7 +170,7 @@ def test_reject_symlink_or_path_escape(tmp_path):
 
 def test_reject_tampered_s02_hash_chain(tmp_path):
     repo, scratch, permit = fixture_s02(tmp_path)
-    with sqlite3.connect(repo / "data" / "forward.sqlite") as con:
+    with closing(sqlite3.connect(repo / "data" / "forward.sqlite")) as con:
         con.execute("DROP TRIGGER forward_records_no_update")
         con.execute("UPDATE forward_records SET record_hash=? WHERE sequence=2",
                     ("0" * 64,))
@@ -188,3 +189,14 @@ def test_no_real_provider_sdk_network_or_runtime_entrypoint():
     names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
     assert names.isdisjoint({"boto3", "botocore", "requests", "socket", "urllib"})
     assert live.MAX_SOURCE_BYTES <= 16 * 1024 * 1024
+
+
+def test_sqlite_fixture_releases_handle_before_unlink_on_windows(tmp_path):
+    """SQLite context manager commits but is NOT responsible for close()."""
+    repo, _, _ = fixture_s02(tmp_path)
+    database = repo / "data" / "forward.sqlite"
+    with closing(sqlite3.connect(database)) as check:
+        assert check.execute("PRAGMA integrity_check").fetchone()[0] == "ok"
+    # Must work on Windows without sleeps, retries or bypassing symlink checks.
+    database.unlink()
+    assert not database.exists()

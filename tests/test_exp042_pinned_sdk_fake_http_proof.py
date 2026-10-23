@@ -124,3 +124,58 @@ def test_source_contains_no_provider_keys_or_live_sdk_activation():
     assert "https://s3.us-east-1.amazonaws.com" not in source
     assert "https://s3.us-east-005.backblazeb2.com" not in source
     assert "--offline-only" in source
+
+
+def test_sanitized_probe_reports_booleans_never_request_values():
+    from types import SimpleNamespace
+    class FakeObject:
+        object_key = "pilot/synthetic/v1/exp042/FAKEFILE"
+        envelope = b"fake-encrypted-data"
+    fake = FakeObject()
+    request = SimpleNamespace(
+        method="PUT",
+        url=f"https://{exp.b4.AWS.endpoint.split('//')[1]}/{exp.b4.AWS.bucket}/{fake.object_key}",
+        headers={
+            "Authorization": "AWS4-HMAC-SHA256 Credential=FAKE-SECRET-KEY/20261023/us-east-1/s3/aws4_request",
+            "Content-Type": "application/octet-stream",
+            "Content-Length": str(len(fake.envelope)),
+            "If-None-Match": "*",
+        },
+        body=fake.envelope,
+    )
+    probe = exp._SanitizedRequestProbe(fake)
+    assert probe.make_handler(exp.b4.AWS, "writer")(request) is None
+    assert probe.seen == 1
+    assert probe.first_shape
+    assert all(type(value) is bool for value in probe.first_shape.values())
+    import json
+    output = json.dumps(probe.first_shape)
+    assert "FAKE-SECRET-KEY" not in output
+    assert fake.object_key not in output
+    assert "fake-encrypted-data" not in output
+    assert probe.first_shape["body_exact_bytes"] is True
+    assert probe.first_shape["host_is_pinned"] is True
+
+
+def test_diagnostic_cli_holds_even_when_report_is_structured(monkeypatch, capsys):
+    def fake_diagnostic(*, diagnostic=False):
+        assert diagnostic is True
+        return {
+            "status": "EXP042_FAKE_HTTP_DIAGNOSTIC_HOLD",
+            "sdk_before_send_observed": 1,
+            "first_request_shape_checks": {"content_length_exact": False},
+            "real_provider_requests": 0,
+        }
+    monkeypatch.setattr(exp, "run_pinned_fake_sdk_proof", fake_diagnostic)
+    assert exp.main(["--diagnostic-only"]) == 2
+    output = capsys.readouterr().out
+    assert "EXP042_FAKE_HTTP_DIAGNOSTIC_HOLD" in output
+    assert '"content_length_exact":false' in output.replace(" ", "")
+    assert "FAKE-SECRET-KEY" not in output
+
+
+def test_diagnostic_does_not_permit_unknown_arguments(monkeypatch):
+    with pytest.raises(exp.SDKOfflineRejected, match="unapproved"):
+        exp.main(["--diagnostic-only", "--secret", "DONT_ECHO"])
+    with pytest.raises(exp.SDKOfflineRejected, match="unapproved"):
+        exp.main(["--offline-only", "--diagnostic-only"])

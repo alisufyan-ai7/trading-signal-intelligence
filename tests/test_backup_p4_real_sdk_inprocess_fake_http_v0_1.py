@@ -48,7 +48,7 @@ def _safe_sdk_wire_shape(request, fence):
             return result
         provider, role, verb, version = fence.pending
         uri = urlsplit(request.url)
-        headers = {str(k).lower(): str(v) for k, v in request.headers.items()}
+        headers = p2._signed_http_headers(request.headers)
         auth = headers.get("authorization", "")
         result["method_matches_pending"] = request.method == verb
         result["https_scheme"] = uri.scheme == "https"
@@ -363,3 +363,29 @@ def test_wire_shape_missing_pending_yields_safe_false_flags():
     flags = _safe_sdk_wire_shape(req, SimpleNamespace(pending=None))
     assert all(value is False for value in flags.values())
     assert "SECRET" not in json.dumps(flags)
+
+
+
+def test_safe_shape_accepts_actual_sdk_ascii_byte_headers_after_normalization():
+    from types import SimpleNamespace
+    obj = SimpleNamespace(
+        object_key="vowsig/approved-s02/v1/synthetic-001/" + "0" * 64 + ".aesgcm",
+        envelope=b"synthetic-ciphertext",
+    )
+    wire = SimpleNamespace(obj=obj, pending=(p2.AWS, "writer", "PUT", None))
+    req = SimpleNamespace(
+        method="PUT",
+        url=p2.AWS.endpoint + "/" + p2.AWS.bucket + "/" + obj.object_key,
+        headers={
+            "Authorization": b"AWS4-HMAC-SHA256 Credential=FAKE/20261023/us-east-1/s3/aws4_request",
+            "Content-Length": str(len(obj.envelope)).encode("ascii"),
+            "Content-Type": b"application/octet-stream",
+            "If-None-Match": b"*",
+        },
+        body=io.BytesIO(obj.envelope),
+    )
+    flags = _safe_sdk_wire_shape(req, wire)
+    assert all(type(v) is bool for v in flags.values())
+    assert all(flags[k] for k in flags if k != "body_is_exact_bytes")
+    assert flags["body_is_exact_bytes"] is False
+    assert "Credential" not in json.dumps(flags)

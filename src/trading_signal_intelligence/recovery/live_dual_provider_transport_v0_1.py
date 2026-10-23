@@ -127,6 +127,36 @@ def _body_matches(body: Any, expected: bytes) -> bool:
         return False
 
 
+def _signed_http_headers(raw_headers: Any) -> dict[str, str]:
+    """Reject unsafe/ambiguous headers; admit exact ASCII botocore byte values.
+
+    Botocore's signed AWSPreparedRequest can expose ASCII header values as
+    bytes. Calling str(bytes_value) introduces literal b'...' characters and
+    breaks correct exact-value comparisons. Decode ASCII instead; never strip,
+    coerce arbitrary objects, silently merge duplicates or accept CR/LF/NUL.
+    """
+    try:
+        result: dict[str, str] = {}
+        for key, value in raw_headers.items():
+            if type(key) is bytes:
+                key = key.decode("ascii")
+            if type(value) is bytes:
+                value = value.decode("ascii")
+            if (type(key) is not str or type(value) is not str
+                    or not key or not key.isascii() or not value.isascii()
+                    or any(mark in key or mark in value for mark in ("\\r", "\\n", "\\0"))):
+                raise LiveTransportRejected("invalid signed header encoding")
+            normalized = key.lower()
+            if normalized in result:
+                raise LiveTransportRejected("ambiguous duplicate signed header")
+            result[normalized] = value
+        return result
+    except LiveTransportRejected:
+        raise
+    except (UnicodeDecodeError, AttributeError, TypeError):
+        raise LiveTransportRejected("unverifiable signed header types") from None
+
+
 class _WireFence:
     """One selected SDK method = at most one actual signed before-send event."""
 
@@ -149,7 +179,7 @@ class _WireFence:
         provider, role, verb, version = self.pending
         try:
             uri = urlsplit(request.url)
-            headers = {str(k).lower(): str(v) for k, v in request.headers.items()}
+            headers = _signed_http_headers(request.headers)
             authorization = headers.get("authorization", "")
             if (request.method != verb or uri.scheme != "https"
                     or uri.netloc != urlsplit(provider.endpoint).netloc

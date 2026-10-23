@@ -225,7 +225,7 @@ def seal_verified_copy(*, copied: Path, run_id: str, key: bytes,
     if len(envelope) > MAX_ENVELOPE_BYTES:
         raise LiveBackupRejected("envelope size over budget")
     sha = _sha(envelope)
-    return SealedLiveCopy(f"vowsig/approved-s02/v1/{run_id}/{sha}.aesgcm",
+    return SealedLiveCopy(f"pilot/vowsig/approved-s02/v1/{run_id}/{sha}.aesgcm",
                           envelope, sha, original_sha, count, run_id, _sha(aad))
 
 

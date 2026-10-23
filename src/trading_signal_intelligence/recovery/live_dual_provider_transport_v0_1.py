@@ -302,6 +302,21 @@ def replicate_approved_s02(*, obj: core.SealedLiveCopy, key: bytes,
             or _sha(obj.envelope) != obj.envelope_sha256):
         raise LiveTransportRejected("invalid sealed source or independent client boundaries")
     core._safe_directory(Path(recovery_scratch))
+    # Independent offline AEAD and full SQLite-chain verification MUST finish
+    # before the first provider request; never send an unauthenticated envelope.
+    try:
+        preflight = core.restore_verified_envelope(
+            envelope=obj.envelope, key=key, scratch_parent=Path(recovery_scratch),
+            restore_id="preflight-" + _sha(obj.run_id.encode("utf-8"))[:24],
+            expected_sha256=obj.envelope_sha256,
+        )
+        if (preflight["record_count"] != obj.record_count
+                or preflight["plaintext_sha256"] != obj.plaintext_sha256):
+            raise LiveTransportRejected("pre-transfer authenticated source mismatch")
+    except LiveTransportRejected:
+        raise
+    except Exception:
+        raise LiveTransportRejected("pre-transfer AEAD and ledger proof rejected") from None
     # Fail before network if any of the four pinned clients is misconfigured.
     for client, provider in (
         (aws_writer, AWS), (aws_reader, AWS),

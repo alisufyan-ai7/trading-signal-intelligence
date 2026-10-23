@@ -257,3 +257,94 @@ def test_body_shape_fixed_schema_never_includes_body_values_or_types():
     assert "UNSAFE-SECRET-FAKE-PAYLOAD" not in text
     assert "BytesIO" not in text
     assert "bytes" in text  # fixed field names are permitted
+
+
+def test_fake_only_body_freezer_accepts_exact_bytes_and_seekable_stream():
+    from types import SimpleNamespace
+    import io
+    payload = b"\x00\x01\xfe\xffsynthetic-encrypted\x00"
+    raw = SimpleNamespace(method="PUT", body=payload)
+    exp._freeze_verified_fake_put_body(raw, payload)
+    assert type(raw.body) is bytes and raw.body == payload
+    stream = io.BytesIO(payload)
+    prepared = SimpleNamespace(method="PUT", body=stream)
+    exp._freeze_verified_fake_put_body(prepared, payload)
+    assert type(prepared.body) is bytes and prepared.body == payload
+    assert stream.tell() == 0
+    assert stream.read() == payload
+
+
+def test_fake_only_body_freezer_does_not_change_head_or_get_body():
+    from types import SimpleNamespace
+    import io
+    envelope = b"\x03\x04\x05"
+    for method in ("GET", "HEAD"):
+        stream = io.BytesIO(b"other")
+        prepared = SimpleNamespace(method=method, body=stream)
+        exp._freeze_verified_fake_put_body(prepared, envelope)
+        assert prepared.body is stream
+        assert stream.tell() == 0
+
+
+@pytest.mark.parametrize("content", [
+    b"altered", b"", b"\x00\x01\x02\x04", b"\x00\x01\x02\x03\x00",
+])
+def test_fake_only_body_freezer_denies_wrong_truncated_or_extra_stream(content):
+    from types import SimpleNamespace
+    import io
+    target = b"\x00\x01\x02\x03"
+    original = io.BytesIO(content)
+    prepared = SimpleNamespace(method="PUT", body=original)
+    with pytest.raises(exp.SDKOfflineRejected, match="fake SDK payload stream"):
+        exp._freeze_verified_fake_put_body(prepared, target)
+    assert prepared.body is original
+    assert original.tell() == 0
+
+
+def test_fake_only_body_freezer_denies_nonzero_cursor_and_nonseekable():
+    from types import SimpleNamespace
+    import io
+    target = b"\x00\x01\x02\x03"
+    moved = io.BytesIO(target)
+    moved.seek(1)
+    prepared = SimpleNamespace(method="PUT", body=moved)
+    with pytest.raises(exp.SDKOfflineRejected):
+        exp._freeze_verified_fake_put_body(prepared, target)
+    assert prepared.body is moved and moved.tell() == 1
+
+    class NonSeekable:
+        def read(self, count): raise AssertionError("cannot read nonseekable stream")
+        def seek(self, pos): raise AssertionError("cannot seek nonseekable stream")
+        def tell(self): return 0
+        def seekable(self): return False
+    ns = NonSeekable()
+    prepared = SimpleNamespace(method="PUT", body=ns)
+    with pytest.raises(exp.SDKOfflineRejected):
+        exp._freeze_verified_fake_put_body(prepared, target)
+    assert prepared.body is ns
+
+
+def test_fake_only_body_freezer_denies_mismatched_bytes():
+    from types import SimpleNamespace
+    prepared = SimpleNamespace(method="PUT", body=b"incorrect")
+    with pytest.raises(exp.SDKOfflineRejected, match="fake SDK payload did not match"):
+        exp._freeze_verified_fake_put_body(prepared, b"authentic")
+    assert prepared.body == b"incorrect"
+
+
+def test_fake_only_body_freezer_denies_cannot_assign_immutable_request():
+    from collections import namedtuple
+    import io
+    request = namedtuple("Request", "method body")("PUT", io.BytesIO(b"synthetic"))
+    with pytest.raises(exp.SDKOfflineRejected, match="inspection failed"):
+        exp._freeze_verified_fake_put_body(request, b"synthetic")
+
+
+def test_fake_only_body_freezer_is_registered_before_original_b6():
+    import inspect
+    source = inspect.getsource(exp.run_pinned_fake_sdk_proof)
+    assert source.index("normalize_fake_put") < source.index("fence.attach(aw, ar, bw, br)")
+    assert "client.meta.events.register(" in source
+    assert "_freeze_verified_fake_put_body(request, obj.envelope)" in source
+    assert "http_session = transport" in source
+    assert source.index("http_session = transport") < source.index("normalize_fake_put")

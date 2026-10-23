@@ -187,3 +187,19 @@ def test_public_summary_rejects_corrupted_ciphertext_object(tmp_path):
     )
     with pytest.raises(vault.PrivateManifestRejected):
         vault.public_receipt_summary(broken)
+
+
+
+def test_dataclass_repr_must_not_expose_private_versions_or_ciphertext(tmp_path):
+    obj, result, key = sample_verified(tmp_path)
+    sealed = create_manifest(obj, result, key)
+    opened = vault.open_private_recovery_manifest(
+        sealed=sealed.sealed_bytes, manifest_key=MANIFEST_KEY,
+        expected_sha256=sealed.sealed_sha256,
+    )
+    assert "sealed_bytes=" not in repr(sealed)
+    assert "object_key=" not in repr(opened)
+    assert "aws_version_id=" not in repr(opened)
+    assert "b2_version_id=" not in repr(opened)
+    assert FAKE_AWS_VERSION not in repr(opened)
+    assert obj.object_key not in repr(opened)

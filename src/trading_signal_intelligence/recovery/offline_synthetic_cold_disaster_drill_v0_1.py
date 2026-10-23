@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from . import live_sqlite_envelope_v0_1 as core
 from . import live_dual_provider_transport_v0_1 as p2
@@ -61,6 +61,28 @@ class SyntheticMemoryVersionReader:
         return self._envelope
 
 
+
+class SyntheticMemoryEscrowReader:
+    """Explicit in-memory vault copy, independent of original writer/sink."""
+
+    def __init__(self, *, run_id: str, manifest_sha256: str, ciphertext: bytes):
+        if run_id != SYNTHETIC_RUN_ID:
+            raise OfflineColdDrillRejected("synthetic escrow run rejected")
+        self._key = p7._identity(run_id, manifest_sha256)
+        p7._sealed_bytes(ciphertext, manifest_sha256)
+        self._bytes = ciphertext
+        self.read_calls = 0
+
+    def __repr__(self) -> str:
+        return "<SyntheticMemoryEscrowReader ciphertext=REDACTED>"
+
+    def read_exact(self, key: str) -> bytes:
+        self.read_calls += 1
+        if key != self._key:
+            raise OfflineColdDrillRejected("synthetic escrow identity mismatch")
+        return self._bytes
+
+
 def _read_and_restore(reader: SyntheticMemoryVersionReader, provider: Any,
                       targets: Any, version: str, data_key: bytes,
                       scratch: Path, restore_id: str) -> bool:
@@ -90,7 +112,7 @@ def _read_and_restore(reader: SyntheticMemoryVersionReader, provider: Any,
 
 
 def run_synthetic_cold_disaster_drill(
-    *, escrow_read_exact: Callable[[str], bytes],
+    *, escrow_reader: SyntheticMemoryEscrowReader,
     run_id: str, manifest_sha256: str,
     manifest_key: bytes, data_key: bytes,
     aws_reader: SyntheticMemoryVersionReader,
@@ -106,6 +128,7 @@ def run_synthetic_cold_disaster_drill(
             or type(manifest_key) is not bytes or len(manifest_key) != 32
             or type(data_key) is not bytes or len(data_key) != 32
             or data_key == manifest_key
+            or type(escrow_reader) is not SyntheticMemoryEscrowReader
             or type(aws_reader) is not SyntheticMemoryVersionReader
             or type(b2_reader) is not SyntheticMemoryVersionReader
             or aws_reader is b2_reader
@@ -115,7 +138,7 @@ def run_synthetic_cold_disaster_drill(
     try:
         core._safe_directory(Path(scratch_parent))
         targets = p7.open_from_independent_escrow(
-            read_exact=escrow_read_exact,
+            read_exact=escrow_reader.read_exact,
             run_id=run_id,
             manifest_sha256=manifest_sha256,
             manifest_key=manifest_key,

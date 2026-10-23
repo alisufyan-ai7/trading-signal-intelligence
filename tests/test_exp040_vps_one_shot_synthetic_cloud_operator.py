@@ -111,6 +111,21 @@ def test_invalid_credential_fails_closed_without_values(invalid):
     assert "secretsecret" not in str(err.value)
 
 
+def test_distinct_writer_and_reader_credentials_required():
+    make = lambda name: op.Credential(name, "SYNTHETICSECRET0123")
+    aws_writer = make("SYNTHETICWRITER123")
+    aws_reader = make("SYNTHETICREADER123")
+    b2_writer = make("SYNTHETICWRITER456")
+    b2_reader = make("SYNTHETICREADER456")
+    op._assert_four_distinct_identities((
+        aws_writer, aws_reader, b2_writer, b2_reader))
+    with pytest.raises(op.OperatorRejected, match="distinct"):
+        op._assert_four_distinct_identities((
+            aws_writer, aws_reader, b2_writer, aws_writer))
+    with pytest.raises(op.OperatorRejected, match="distinct"):
+        op._assert_four_distinct_identities((aws_writer, aws_reader))
+
+
 def test_cancelled_prompt_never_constructs_credential():
     def cancel(label):
         raise KeyboardInterrupt

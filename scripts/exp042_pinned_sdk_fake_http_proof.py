@@ -260,6 +260,39 @@ class _SafeSDKPutParserProbe:
             )
 
 
+class _InMemorySDKRawResponse(io.BytesIO):
+    """FAKE HTTP ONLY: bounded urllib3-style raw stream for botocore.
+
+    AWSResponse expects raw.stream() for ordinary non-streaming SDK payload
+    parsing and raw.read() for streaming result shapes. No HTTP, sockets,
+    providers, filesystem reads, or reloading of a completed response.
+    """
+
+    _MAX_FAKE_REPLY = b4.MAX_ENVELOPE_BYTES
+
+    def __init__(self, payload: bytes) -> None:
+        if type(payload) is not bytes or len(payload) > self._MAX_FAKE_REPLY:
+            raise SDKOfflineRejected("invalid bounded fake SDK response")
+        super().__init__(payload)
+
+    def stream(self, amt: int | None = None,
+               decode_content: bool = False):
+        if decode_content is not False:
+            raise SDKOfflineRejected("fake SDK raw decompression denied")
+        if amt is not None and (
+            type(amt) is not int or amt < 1 or amt > self._MAX_FAKE_REPLY
+        ):
+            raise SDKOfflineRejected("invalid fake SDK raw stream chunk budget")
+        block_size = amt if amt is not None else 8192
+        while True:
+            chunk = self.read(block_size)
+            if not chunk:
+                return
+            if type(chunk) is not bytes or len(chunk) > block_size:
+                raise SDKOfflineRejected("invalid fake SDK raw stream bytes")
+            yield chunk
+
+
 class _MockSDKResponses:
     """Registered AFTER the B6 allowlist; supplies no-network AWSResponse."""
 
@@ -286,11 +319,11 @@ class _MockSDKResponses:
                 payload = b"<Error><Code>NoSuchKey</Code><Message>Not Found</Message></Error>"
                 headers = {"content-type": "application/xml",
                            "content-length": str(len(payload))}
-                return self.response_type(request.url, 404, headers, io.BytesIO(payload))
+                return self.response_type(request.url, 404, headers, _InMemorySDKRawResponse(payload))
             if verb == "PUT":
                 headers = {"x-amz-version-id": FAKE_VERSION, "etag": '"exp042-fake"'}
                 response = self.response_type(
-                    request.url, 200, headers, io.BytesIO(b"")
+                    request.url, 200, headers, _InMemorySDKRawResponse(b"")
                 )
                 if provider == b4.AWS and role == "writer":
                     self.aws_put_fake_response_constructed = True
@@ -302,7 +335,7 @@ class _MockSDKResponses:
                     "content-type": "application/octet-stream",
                     "content-length": str(len(payload)),
                 }
-                return self.response_type(request.url, 200, headers, io.BytesIO(payload))
+                return self.response_type(request.url, 200, headers, _InMemorySDKRawResponse(payload))
             raise SDKOfflineRejected("unexpected synthetic operation")
         return respond
 

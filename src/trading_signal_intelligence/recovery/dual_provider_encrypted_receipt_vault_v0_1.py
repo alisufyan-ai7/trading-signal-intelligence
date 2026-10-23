@@ -24,6 +24,8 @@ from . import private_versioned_restore_manifest_v0_1 as p5
 
 # Must be changed only in a separately reviewed exact release commit.
 REAL_ESCROW_REQUESTS_ENABLED = False
+# B2 HEAD404+PUT is not an atomic exclusive create; never bypass by boolean attestation.
+B2_EXCLUSIVE_CREATE_PROTOCOL_AVAILABLE = False
 MAX_WIRE_ATTEMPTS = 5
 MAX_ENCRYPTED_RECEIPT_BYTES = p7.MAX_SEALED_BYTES
 
@@ -129,6 +131,8 @@ class PreparedDualProviderEncryptedReceiptVault:
     def _preflight(self):
         if not REAL_ESCROW_REQUESTS_ENABLED:
             raise CloudEscrowRejected("encrypted receipt cloud I/O compiled OFF")
+        if not B2_EXCLUSIVE_CREATE_PROTOCOL_AVAILABLE:
+            raise CloudEscrowRejected("B2 atomic no-overwrite not established; no requests")
         if len({id(x) for x in self._clients}) != 4:
             raise CloudEscrowRejected("independent receipt SDK clients missing")
         for client, provider in zip(

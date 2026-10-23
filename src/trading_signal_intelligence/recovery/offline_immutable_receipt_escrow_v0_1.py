@@ -12,7 +12,7 @@ from typing import Any, Callable
 from . import live_sqlite_envelope_v0_1 as core
 from . import private_versioned_restore_manifest_v0_1 as manifest
 
-ESCROW_PREFIX = "vowsig/private-recovery-receipts/v1"
+ESCROW_PREFIX = "pilot/vowsig/private-recovery-receipts/v1"
 MAX_SEALED_BYTES = len(manifest.MAGIC) + 12 + manifest.MAX_MANIFEST_BYTES + 16
 
 

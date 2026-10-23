@@ -211,7 +211,7 @@ def open_private_recovery_manifest(
                     "key_custody_reference_sha256", "rights_ref_sha256"):
             _require_sha(data[key])
         if data["object_key"] != (
-            f"vowsig/approved-s02/v1/{data['run_id']}/{data['object_sha256']}.aesgcm"
+            f"pilot/vowsig/approved-s02/v1/{data['run_id']}/{data['object_sha256']}.aesgcm"
         ):
             raise PrivateManifestRejected("object key and ciphertext hash mismatch")
         for key, provider in (("aws", transport.AWS), ("backblaze", transport.B2)):

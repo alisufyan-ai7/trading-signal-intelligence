@@ -1,0 +1,34 @@
+# EXP044 — dual-provider real-S02 transport release candidate (dependent on PR #77)
+
+Status: **DRAFT, UNTESTED NATIVE WINDOWS, NO REAL CLOUD AUTHORIZATION**. 2026-10-23.
+
+This PR is a dependent *library-only* transport proposal. Its parent is EXP043 / PR #77, not production `main`. A merge of this PR without its parent cannot work. Neither PR is currently approved to merge or deploy.
+
+## Target production behavior — one approved S02 artifact
+
+1. An operator explicitly obtains actual source/rights authorization (not a placeholder hash), verifies the VPS private scratch ACL, captures `data/forward.sqlite` read-only using the EXP043 SQLite online-copy library, and verifies SQLite integrity and entire S02 append-only hash chain. `research.sqlite` remains excluded and all other ledgers require individually reviewed scope.
+2. A 32-byte AES-256-GCM key is supplied from independently recoverable, owner-controlled custody; it must never be committed, echoed in a script, stored in GitHub or logged. Encrypt the verified copy with fresh random nonce and authenticated rights/identity metadata. Key material must remain available for future disaster recovery if the VPS and both cloud accounts are lost.
+3. Operator supplies **four independent, explicitly configured SDK clients**: AWS writer, AWS reader, B2 writer, B2 reader. Client construction/credential discovery is **not provided** in this PR. All must use the exact approved owner selected endpoint/bucket/region, SigV4, max one attempt, and fixed connect/read timeout; no dynamic targets.
+4. `ReleaseAuthorization` asserts exact rights digest, budget/billing safeguard attestation, IAM/retention attestation, independent key recovery attestation and both provider regions. The library verifies only the structure/identity of those references—**not** underlying legal, IAM or bill-spend facts. Unverified or fabricated attestations are prohibited in real operations.
+5. Count and validate on-wire signed requests with `before-send.s3`: AWS conditional `If-None-Match: *` PUT followed by exact-version GET; B2 HEAD404 (no existing object) followed by PUT and exact-version GET. One SDK attempt per call, global five-request maximum, exact HTTPS endpoint/bucket/key/SigV4 region and full encrypted payload. Any ambiguous error = STOP, no retry, no deletion or auto-resumption. B2 has no verified atomic no-overwrite header; HEAD404 + unique content hash key is weaker and must undergo provider validation.
+6. Each provider must return a usable object version; the reader retrieves its exact version, checks full byte count and SHA-256; a fresh independent scratch restore authenticates AES-GCM and re-verifies the SQLite chain. Only if both complete does the function return `LIVE_S02_TWO_PROVIDER_VERIFIED`. Version identifiers are hashed in the safe returned report (full version identifiers remain in private operator state for recoverability and must be stored securely outside GitHub). No public data exposure.
+
+## Scope and exclusions
+
+- This library contains **real method calls if invoked**. There is deliberately **no CLI, credential loading, scheduler, agent, auto-deploy, production import, environment-driven activation or provider client factory**. Import alone makes no API call. No user-specific keys are ever requested by ChatGPT.
+- Client state/identity restrictions are necessary but **not a complete security sandbox or billing guarantee**. IAM principals must be proven independent outside this module; two Python client instances may still share the same credential provider if misconfigured. Verify caller-supplied credentials off-VPS and allow only approved principals. Provider Object Lock/versioning, end-to-end receipt/restore and billing are not proved by fake-client tests.
+- As of Oct 23, Issue #67 has no recorded evidence establishing that real S02 contents may be stored with AWS/B2 in the chosen regions. Exness-derived publication rights are not blanket third-party storage rights; Binance raw data storage remains under review. `research.sqlite` specifically remains HOLD.
+- Owner hard **$0 out-of-pocket** rule: fixed-size/request budgets are NOT enough to prove zero charges. Before any actual provider call (including HEAD), require verified existing account plan, lifecycle/retention, billing/spend protections, API and readback/egress costs, region and actual rights. If zero spending cannot be objectively guaranteed, live provider I/O stays disabled. No implicit agreement to pay.
+- For unattended daily scheduling, an independently reviewed machine-identity design and off-VPS key-recovery strategy must be approved. The existing restriction keeping four real credentials off VPS cannot be circumvented by silently writing keys/env vars to VPS. A long-lived unattended real uploader is not operational without resolving those controls.
+- Scratch may contain real plaintext SQLite snapshots and authenticated recovered copies. Do not treat deletion on Windows SSD as secure erasure. Explicit ACL, disk encryption, retention and fail-closed incident handling are prerequisites.
+- Scheduler, publishing, broker execution and live product tasks are excluded. Existing production VPS tree and four scheduled tasks must remain untouched pending separate exact deployment approval.
+
+## Acceptance gates before merge/release
+
+- On an isolated Windows VPS checkout at exact GitHub SHA, test P1/P2 fixture suites using existing isolated Python; no provider I/O or secrets. Add missing negative cases for provider-head ambiguity, version mismatch, extra retry, stream readback errors, tampered GCM/SQLite, upload interruption, and repeated-run protection.
+- Trusted frozen-dependency change-impact checker PASS at exact head/base; no protected-path modifications. Static code/scope review and manual owner exact-head approval before merge (P1 parent first, then P2).
+- Hardening step P3: true client construction with scoped ephemeral identities, no implicit SDK credentials, Windows ACL/recovery key handling, cost guard, operator UI/CLI with OFF by default, Windows integration tests and rollback; documented emergency response to AWS succeeded/B2 failed state; secret-free private version manifests and RPO/RTO metrics.
+- External-provider integration P4 only after separate owner authorization for a *synthetic* one-object pilot and, separately, for any private S02 object. Verify actual provider version semantics/Object Lock/retention and receipt behavior, and independent recovery from another host. No unverified account API requests even for discovery.
+- Future corpus expansion only by an explicit data classification/right and verifier record per database. Model/runtimes archived records must be included later, without erasing failures.
+
+**Status upon creation: P2 source prepared on a dependent review branch; no native Windows run for this code, no real AWS/B2 calls, no private database reads, no production deployment and no PR merge.**

@@ -18,7 +18,7 @@ from . import live_sqlite_envelope_v0_1 as core
 MAX_REQUESTS = 5
 MAX_BYTES = core.MAX_ENVELOPE_BYTES
 APPROVAL = "OWNER_APPROVED_REAL_S02_ENCRYPTED_AWS_B2_FIRST_TRANSFER"
-KEY_RX = re.compile(r"^vowsig/approved-s02/v1/[a-z][a-z0-9-]{7,55}/[0-9a-f]{64}\.aesgcm$")
+KEY_RX = re.compile(r"^pilot/vowsig/approved-s02/v1/[a-z][a-z0-9-]{7,55}/[0-9a-f]{64}\.aesgcm$")
 
 
 class LiveTransportRejected(RuntimeError):

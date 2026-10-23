@@ -225,6 +225,41 @@ class _SanitizedRequestProbe:
         return record
 
 
+class _SafeSDKPutParserProbe:
+    """Fixed-schema after-call indicators only; no SDK objects stored.
+
+    Botocore may reject a fake response before emitting after-call. An unseen
+    event is a HOLD diagnostic, not evidence of a specific root cause.
+    """
+
+    def __init__(self) -> None:
+        self.after_call_count = 0
+        self.flags: dict[str, bool] = {
+            "sdk_put_after_call_seen": False,
+            "sdk_put_http_status_200": False,
+            "sdk_put_parsed_is_dict": False,
+            "sdk_put_parsed_version_exact": False,
+            "sdk_put_parsed_metadata_status_200": False,
+        }
+
+    def observe(self, http_response: Any = None, parsed: Any = None,
+                **kwargs: Any) -> None:
+        self.after_call_count += 1
+        self.flags["sdk_put_after_call_seen"] = True
+        self.flags["sdk_put_http_status_200"] = (
+            getattr(http_response, "status_code", None) == 200
+        )
+        self.flags["sdk_put_parsed_is_dict"] = type(parsed) is dict
+        if type(parsed) is dict:
+            self.flags["sdk_put_parsed_version_exact"] = (
+                parsed.get("VersionId") == FAKE_VERSION
+            )
+            meta = parsed.get("ResponseMetadata")
+            self.flags["sdk_put_parsed_metadata_status_200"] = (
+                type(meta) is dict and meta.get("HTTPStatusCode") == 200
+            )
+
+
 class _MockSDKResponses:
     """Registered AFTER the B6 allowlist; supplies no-network AWSResponse."""
 
@@ -233,6 +268,7 @@ class _MockSDKResponses:
         self.fence = fence
         self.response_type = aws_response_type
         self.operations: list[str] = []
+        self.aws_put_fake_response_constructed = False
 
     def make_handler(self, provider: b4.Provider, role: str):
         def respond(request: Any, **kwargs: Any) -> Any:
@@ -253,7 +289,12 @@ class _MockSDKResponses:
                 return self.response_type(request.url, 404, headers, io.BytesIO(payload))
             if verb == "PUT":
                 headers = {"x-amz-version-id": FAKE_VERSION, "etag": '"exp042-fake"'}
-                return self.response_type(request.url, 200, headers, io.BytesIO(b""))
+                response = self.response_type(
+                    request.url, 200, headers, io.BytesIO(b"")
+                )
+                if provider == b4.AWS and role == "writer":
+                    self.aws_put_fake_response_constructed = True
+                return response
             if verb == "GET":
                 payload = self.obj.envelope
                 headers = {
@@ -362,6 +403,12 @@ def run_pinned_fake_sdk_proof(*, diagnostic: bool = False) -> dict:
                 client.meta.events.register(
                     "before-send.s3", responses.make_handler(provider, role)
                 )
+            parser_probe = _SafeSDKPutParserProbe()
+            aw.meta.events.register(
+                "after-call.s3.PutObject", parser_probe.observe
+            )
+            # Observes only fixed booleans after SDK response parsing.
+            # Not part of actual HTTP, B5, B6 or production operation.
             # Actual SDK operation serialization/signing/parsing, but no HTTP.
             try:
                 result = b4.run_two_provider_pilot(
@@ -380,7 +427,12 @@ def run_pinned_fake_sdk_proof(*, diagnostic: bool = False) -> dict:
                         "mock_response_events": len(responses.operations),
                         "denied_transport_send_attempts": sum(
                             x.unsolicited_send_calls for x in transports),
-                        "first_request_shape_checks": dict(probe.first_shape),
+                        "first_request_shape_checks": {
+                            **probe.first_shape,
+                            "aws_put_mock_response_constructed":
+                                responses.aws_put_fake_response_constructed,
+                            **parser_probe.flags,
+                        },
                         "real_provider_requests": 0,
                         "real_credentials": False,
                         "cloud_mode_enabled": False,

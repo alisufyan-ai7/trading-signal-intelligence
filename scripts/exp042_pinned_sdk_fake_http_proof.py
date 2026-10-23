@@ -142,6 +142,42 @@ def _safe_body_shape(body: Any, expected: bytes) -> dict[str, bool]:
     return checks
 
 
+def _freeze_verified_fake_put_body(request: Any, envelope: bytes) -> None:
+    """FAKE SDK ONLY: replace an identical rewindable stream with bytes.
+
+    Runs after botocore signing but before the UNCHANGED B6 strict bytes check.
+    Never wired to EXP040, a production client, or a real HTTP transport.
+    Stream must be positioned at zero, readable only up to expected+1 bytes,
+    match the entire authenticated ciphertext and restore its cursor.
+    """
+    if request.method != "PUT":
+        return
+    try:
+        body = request.body
+        if type(body) is bytes:
+            if body != envelope:
+                raise SDKOfflineRejected("fake SDK payload did not match")
+            return
+        checks = _safe_body_shape(body, envelope)
+        if not all(checks[name] for name in (
+            "body_has_stream_methods",
+            "body_stream_seekable",
+            "body_stream_at_zero",
+            "body_stream_full_payload_match",
+            "body_stream_cursor_restored",
+        )):
+            raise SDKOfflineRejected("fake SDK payload stream not admissible")
+        # These are byte-for-byte the bytes that the existing B6 fence expects.
+        # No SDK request is ever allowed to reach an HTTP transport in EXP042.
+        request.body = envelope
+        if type(request.body) is not bytes or request.body != envelope:
+            raise SDKOfflineRejected("fake SDK body replacement rejected")
+    except SDKOfflineRejected:
+        raise
+    except Exception:
+        raise SDKOfflineRejected("fake SDK payload inspection failed") from None
+
+
 class _SanitizedRequestProbe:
     """Only boolean shape evidence; NEVER retain raw HTTP request material."""
 
@@ -307,6 +343,15 @@ def run_pinned_fake_sdk_proof(*, diagnostic: bool = False) -> dict:
                 # boolean shape evidence; never store URLs/headers/body.
                 client.meta.events.register(
                     "before-send.s3", probe.make_handler(provider, role)
+                )
+            # Offline fake-SDK compatibility only: normalize an already
+            # proven byte-identical SDK body BEFORE the original B6 hook.
+            # This does not change B6 and cannot contact a real HTTP server.
+            for client in (aw, bw):
+                def normalize_fake_put(request: Any, **kwargs: Any) -> None:
+                    _freeze_verified_fake_put_body(request, obj.envelope)
+                client.meta.events.register(
+                    "before-send.s3", normalize_fake_put
                 )
             fence.attach(aw, ar, bw, br)
             responses = _MockSDKResponses(obj, fence, AWSResponse)

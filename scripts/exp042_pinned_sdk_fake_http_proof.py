@@ -99,6 +99,49 @@ class _DenyHTTPTransport:
         return None
 
 
+def _safe_body_shape(body: Any, expected: bytes) -> dict[str, bool]:
+    """Bounded fake-HTTP diagnostics; no raw body, type names or keys returned.
+
+    A readable body is sampled ONLY if it is seekable and initially at 0.
+    Always try to restore its exact cursor before subsequent B6 validation.
+    This diagnostic does NOT authorize a new body representation in B6.
+    """
+    checks = {
+        "body_is_bytes_type": type(body) is bytes,
+        "body_bytes_match": type(body) is bytes and body == expected,
+        "body_has_stream_methods": all(
+            callable(getattr(body, name, None)) for name in
+            ("read", "seek", "tell", "seekable")
+        ),
+        "body_stream_seekable": False,
+        "body_stream_at_zero": False,
+        "body_stream_full_payload_match": False,
+        "body_stream_cursor_restored": False,
+    }
+    if not checks["body_has_stream_methods"]:
+        return checks
+    try:
+        checks["body_stream_seekable"] = body.seekable() is True
+        pos = body.tell()
+        checks["body_stream_at_zero"] = type(pos) is int and pos == 0
+        if not checks["body_stream_seekable"] or not checks["body_stream_at_zero"]:
+            return checks
+        # Limit read to exact ciphertext length + 1 to detect extra bytes.
+        # Deny-transport context prevents any network submission.
+        try:
+            observed = body.read(len(expected) + 1)
+            checks["body_stream_full_payload_match"] = (
+                type(observed) is bytes and observed == expected
+            )
+        finally:
+            body.seek(pos)
+            checks["body_stream_cursor_restored"] = body.tell() == pos
+    except Exception:
+        # Fail closed: boolean-only diagnostic, no unsafe exceptions or data.
+        return checks
+    return checks
+
+
 class _SanitizedRequestProbe:
     """Only boolean shape evidence; NEVER retain raw HTTP request material."""
 
@@ -123,7 +166,9 @@ class _SanitizedRequestProbe:
                     for key, value in request.headers.items()
                 }
                 body = request.body
+                body_shape = _safe_body_shape(body, self._obj.envelope)
                 self.first_shape = {
+                    **body_shape,
                     "first_request_is_aws_writer": provider == b4.AWS and role == "writer",
                     "method_is_put": request.method == "PUT",
                     "scheme_is_https": parsed.scheme == "https",

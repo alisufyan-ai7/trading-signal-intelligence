@@ -76,7 +76,7 @@ def test_snapshot_encrypt_and_independent_authenticated_restore(tmp_path):
     _, scratch, permit, copied, key, sealed = sealed_fixture(tmp_path)
     assert copied.exists()
     assert sealed.record_count == 3
-    assert sealed.object_key.startswith("vowsig/approved-s02/v1/release-test-0001/")
+    assert sealed.object_key.startswith("pilot/vowsig/approved-s02/v1/release-test-0001/")
     assert not sealed.envelope.startswith(b"SQLite format 3")
     recovered = live.restore_verified_envelope(
         envelope=sealed.envelope, key=key, scratch_parent=scratch,

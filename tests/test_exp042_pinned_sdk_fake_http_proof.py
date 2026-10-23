@@ -532,7 +532,16 @@ def test_fake_sdk_raw_adapter_never_supplies_provider_transport():
     source = inspect.getsource(exp._InMemorySDKRawResponse)
     assert "io.BytesIO" in source
     assert "self.read" in source
-    assert "socket" not in source
-    assert "urllib3" not in source.replace("urllib3-style", "")
-    assert "requests" not in source
-    assert "urlopen" not in source
+    # AST checks executable identifiers and call targets; do not flag words
+    # in explanatory class docstrings such as "no sockets".
+    import ast
+    tree = ast.parse(source)
+    forbidden = {"socket", "requests", "urllib3", "urlopen", "boto3", "botocore"}
+    executable_names = {
+        n.id for n in ast.walk(tree) if isinstance(n, ast.Name)
+    }
+    assert executable_names.isdisjoint(forbidden)
+    assert not any(
+        isinstance(n, ast.Attribute) and n.attr in {"connect", "urlopen", "send"}
+        for n in ast.walk(tree)
+    )

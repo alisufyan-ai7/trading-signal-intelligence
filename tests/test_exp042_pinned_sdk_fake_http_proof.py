@@ -179,3 +179,81 @@ def test_diagnostic_does_not_permit_unknown_arguments(monkeypatch):
         exp.main(["--diagnostic-only", "--secret", "DONT_ECHO"])
     with pytest.raises(exp.SDKOfflineRejected, match="unapproved"):
         exp.main(["--offline-only", "--diagnostic-only"])
+
+
+def test_body_shape_exact_bytes_and_wrong_bytes_are_separately_identified():
+    expected = b"synthetic-ciphertext"
+    good = exp._safe_body_shape(expected, expected)
+    bad = exp._safe_body_shape(expected + b"-mismatch", expected)
+    assert good["body_is_bytes_type"] is True
+    assert good["body_bytes_match"] is True
+    assert bad["body_is_bytes_type"] is True
+    assert bad["body_bytes_match"] is False
+    assert good["body_has_stream_methods"] is False
+    assert all(type(v) is bool for v in bad.values())
+
+
+def test_body_shape_bounded_seekable_stream_matches_and_restores_cursor():
+    import io
+    expected = b"synthetic-encrypted"
+    stream = io.BytesIO(expected)
+    info = exp._safe_body_shape(stream, expected)
+    assert info["body_is_bytes_type"] is False
+    assert info["body_has_stream_methods"] is True
+    assert info["body_stream_seekable"] is True
+    assert info["body_stream_at_zero"] is True
+    assert info["body_stream_full_payload_match"] is True
+    assert info["body_stream_cursor_restored"] is True
+    assert stream.tell() == 0
+    assert stream.read() == expected
+
+
+def test_body_shape_rejects_different_or_extra_stream_bytes_and_restores():
+    import io
+    expected = b"encrypted"
+    for content in (b"changed!", expected + b"x", b""):
+        stream = io.BytesIO(content)
+        info = exp._safe_body_shape(stream, expected)
+        assert info["body_stream_full_payload_match"] is False
+        assert info["body_stream_cursor_restored"] is True
+        assert stream.tell() == 0
+
+
+def test_body_shape_does_not_read_nonseekable_or_nonzero_cursor():
+    class NonSeekable:
+        read_called = False
+        def read(self, size):
+            self.read_called = True
+            raise AssertionError("nonseekable body must not be read")
+        def seek(self, pos):
+            raise AssertionError("nonseekable body must not be seeked")
+        def tell(self):
+            return 0
+        def seekable(self):
+            return False
+    stream = NonSeekable()
+    info = exp._safe_body_shape(stream, b"encrypted")
+    assert info["body_has_stream_methods"] is True
+    assert info["body_stream_seekable"] is False
+    assert info["body_stream_full_payload_match"] is False
+    assert stream.read_called is False
+
+    import io
+    off = io.BytesIO(b"encrypted")
+    off.seek(3)
+    info = exp._safe_body_shape(off, b"encrypted")
+    assert info["body_stream_at_zero"] is False
+    assert info["body_stream_full_payload_match"] is False
+    assert off.tell() == 3
+
+
+def test_body_shape_fixed_schema_never_includes_body_values_or_types():
+    expected = b"UNSAFE-SECRET-FAKE-PAYLOAD"
+    import io
+    info = exp._safe_body_shape(io.BytesIO(expected), expected)
+    import json
+    text = json.dumps(info)
+    assert all(type(value) is bool for value in info.values())
+    assert "UNSAFE-SECRET-FAKE-PAYLOAD" not in text
+    assert "BytesIO" not in text
+    assert "bytes" in text  # fixed field names are permitted

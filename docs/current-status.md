@@ -1,5 +1,11 @@
 # Current Status
 
+## 2026-10-24 — current verified VowSig S02 offsite protection
+
+**Read [the canonical operational status](vowsig-operational-status-2026-10-24.md), [Issue #67](https://github.com/alisufyan-ai7/trading-signal-intelligence/issues/67), and draft PR #85 before any backup/retention action.** Real manual and first *scheduled* AES-encrypted S02 backups and independently verified AWS+B2 restores **PASS**; a daily **04:15 VPS-local** backup task is installed in isolated ProgramData under Windows user `fxut9592472\trader`. Both first recovery points are protected. AWS/B2 exact cloud-version inventories **PASS** (two backup IDs, four data+manifest object versions in each provider, zero deletions). Owner did not yet provide the next naturally scheduled run.
+
+The **30-daily / 8-weekly / 12-monthly** retention decision is implemented as **pure read-only selection and opt-in audits in draft, unmerged PR #85**. **No automatic DeleteObject, IAM delete principal, cleanup task, lifecycle purge or physical retention expiration is installed.** First 30-day expiry lies in late November 2026. Installed scope is only `data/forward.sqlite` (S02), **not** all research evidence. Production Git checkout stayed clean at `d5a139e87a0ee90d5a70f5aa040220fffa7af82a` after verified owner runs, while remote GitHub `main` was `bc00e87cfaafe03127fde3d1ddda5154801e3d92` as observed Oct 24; **never conflate or automatically synchronize them**. Previous sections below are dated historical checkpoints for other tracks.
+
 Canonical cross-chat continuation: `docs/CURRENT-HANDOFF.md` — reconcile it against current `main` before significant work or any mutation.
 
 **Phase:** VowSig public rebrand complete; AI-v1.1 forward shadow collection active; Organic Acquisition & SEO Phase 8A active; first-cohort G4 evidence parallel  

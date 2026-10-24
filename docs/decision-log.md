@@ -712,3 +712,25 @@ The completed offline package includes:
 
 **Status:** The offline runtime-package construction blocker is closed. K2 package publication is the next boundary and remains separately owner-gated. K3 activation, K4 first performance-bearing cycle, K5 scheduler installation, public actionable signals and broker/exchange execution remain unapproved.
 
+
+## 2026-10-24 — D045: Adopt real dual-provider encrypted S02 recovery with independent verification
+
+**Decision/implemented scope:** Back up the specifically approved `data/forward.sqlite` S02 database using fresh per-run AES-GCM encrypted ciphertext and a separately encrypted recovery manifest to **AWS S3 and Backblaze B2**. Keep an independent off-VPS owner-held recovery passphrase. Owner's first real manual backup and independent restore from both providers passed (`backup-8bce80179c524ace8f4a52cb702b3716`, EXP053).
+
+**Boundary:** This is **one SQLite database**, not all project research ledgers, GitHub history or the full VPS. Exact cloud versions/receipts and earlier failed experiments remain immutable; no broad live trading/broker action. The original 2026-10-08 wider durable-IP architecture remains a future target for unsupported asset classes.
+
+## 2026-10-24 — D046: Use an isolated daily same-user Windows task and fail closed on uncertain backups
+
+**Decision/verified result:** Install one additive Windows Task Scheduler task `VowSig S02 Encrypted Dual Cloud Backup` at **04:15 VPS-local time** under Interactive `fxut9592472\trader`; use a stable isolated ProgramData Python runtime, the existing four cloud-role vault entries, and a fifth Generic Credential Manager passphrase entry. The first *actual scheduler-invoked* backup and independent AWS/B2 recovery passed (ID `backup-83688210120f48fa8dd62491720df132`; EXP054–055). Do not retarget original scheduled tasks or assume a successful future natural daily run until separately observed.
+
+**Tradeoffs:** RDP disconnect is supported while the Windows user stays signed in; full sign-out or reboot without interactive sign-in stops the job. Failures that might leave ambiguous provider writes create a review-required latch: no blind retry. Delivered failure alerts, broader IP backups and billing alarms are not implemented. The recovery phrase still needs independent off-VPS custody.
+
+## 2026-10-24 — D047: Adopt GFS 30 daily / 8 weekly / 12 monthly for retained backups, but separate deletion authority
+
+**Decision:** Keep every recent verified daily backup for 30 UTC days, then a recent verified backup per ISO UTC week for the next 8 weeks, then a verified snapshot per UTC month for 12 older months; preserve the original manual baseline and at least two newest independently recovered scheduled IDs. A provider copy and its encrypted cloud recovery manifest form one inseparable restore point.
+
+**Evidence:** The local deterministic GFS selector and optional cloud inventory/recovery auditors were committed to **open, unmerged, draft PR #85** (EXP056–057). Owner's local preview had `eligible_ids=[]`; two protected backup IDs passed actual separate AWS+B2 restores. The AWS restore reader's narrowly scoped `s3:ListBucketVersions` permission was corrected (EXP058). The complete read-only two-provider inventory subsequently PASSED for **2 backup IDs, 4 versioned data+manifest objects/provider**, `CLOUD_DELETIONS_PERFORMED=0` (EXP059).
+
+**Deliberate non-decision:** Neither automatically delete cloud versions nor grant existing backup writer/readers deletion privileges or install lifecycle expiration today. Physical pruning needs a separate, owner-authorized exact-version delete actor and immutable reviewed plan with >=7-day grace, retained restore verification before/after, independent failure latches and audit. No historical cloud version is currently old enough to require expiry. The successful original backup task remains unaffected.
+
+**Continuity:** [Current operations and exact source/runtime pins](vowsig-operational-status-2026-10-24.md) is the fresh canonical handoff for this issue, superseding any undated "backup design only" description of the narrow S02 implementation while preserving earlier decisions.

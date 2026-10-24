@@ -1,6 +1,6 @@
 """Manual one-shot dual-cloud encrypted S02 backup / disaster restore.
 
-VPS interactive console for recovery passphrase. Cloud credentials loaded only
+VPS graphical masked window for recovery passphrase (Ctrl+V capable). Cloud credentials loaded only
 from four fixed Windows Credential Manager Generic entries in same Windows user
 account. No automatic scheduling, dotenv, environment/command-line secrets,
 silent charges or secret logging.
@@ -9,9 +9,7 @@ Running 'backup' intentionally uses real AWS S3 and B2 provider APIs.
 from __future__ import annotations
 
 import argparse
-import getpass
 import json
-import os
 import sys
 import tempfile
 from pathlib import Path
@@ -19,6 +17,7 @@ from pathlib import Path
 from trading_signal_intelligence.recovery import manual_dual_cloud_backup_v0_1 as backup
 from trading_signal_intelligence.recovery import live_dual_provider_transport_v0_1 as targets
 from trading_signal_intelligence.recovery import windows_credential_manager_v0_1 as vault
+from trading_signal_intelligence.recovery import windows_passphrase_dialog_v0_1 as password_dialog
 
 EXPECTED_REPO = "trading-signal-intelligence"
 
@@ -29,18 +28,6 @@ class _NoSecretEchoParser(argparse.ArgumentParser):
         raise backup.BackupOperationError(
             "invalid operator command arguments; never supply secrets on CLI"
         )
-
-
-def _prompt(label: str) -> str:
-    if not sys.stdin.isatty() or not sys.stderr.isatty():
-        raise backup.BackupOperationError("interactive VPS console required")
-    try:
-        value = getpass.getpass(label + ": ")
-    except (EOFError, KeyboardInterrupt):
-        raise backup.BackupOperationError("masked input cancelled") from None
-    if type(value) is not str or not value:
-        raise backup.BackupOperationError("required masked input absent")
-    return value
 
 
 def _credentials(mode: str) -> tuple[tuple[str, str], ...]:
@@ -55,14 +42,18 @@ def _credentials(mode: str) -> tuple[tuple[str, str], ...]:
 
 
 def _passphrase(mode: str) -> str:
-    password = _prompt("Private off-VPS recovery passphrase (16+ characters)")
-    if mode == "backup":
-        confirm = _prompt("Confirm private recovery passphrase")
-        if password != confirm:
-            raise backup.BackupOperationError("recovery passphrase confirmation mismatch")
-    if len(password) < 16:
-        raise backup.BackupOperationError("recovery passphrase too short")
-    return password
+    """Masked native Windows window; clipboard paste is supported in the GUI.
+
+    A short or mismatched passphrase is rejected BEFORE cloud/source access.
+    No key/secret is passed through PowerShell, environment or the clipboard
+    APIs by this Python program.
+    """
+    try:
+        return password_dialog.prompt(mode)
+    except password_dialog.PrivatePassphraseRejected:
+        raise backup.BackupOperationError(
+            "Windows recovery passphrase dialog cancelled/unavailable"
+        ) from None
 
 
 def _emit(result: dict) -> None:

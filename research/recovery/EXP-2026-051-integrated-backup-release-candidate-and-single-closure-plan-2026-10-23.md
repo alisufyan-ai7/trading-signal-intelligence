@@ -1,3 +1,5 @@
+> **2026-10-24 OWNER DECISION SUPERSEDES PRIOR HARD-$0 AND DEVELOPMENT-ONLY HOLDS:** The owner clarified that zero cost is desirable but **minimal real AWS/B2 charges are acceptable**. The executable, user-invoked one-shot backup/restore now lives in `scripts/vowsig_dual_cloud_backup.py` + `manual_dual_cloud_backup_v0_1.py`; see [the updated practical operator runbook](EXP-2026-052-practical-manual-dual-cloud-s02-backup-runbook-2026-10-24.md) and Issue #67 owner correction. This October 23 document records earlier design history, **not the latest cost policy or current executable functionality**. General code-only OFF flags in prior candidate modules remain but do NOT describe the separate explicitly invoked new manual CLI. Real cloud execution still requires the owner to run the CLI with existing scoped credentials and passphrase. No backup was uploaded merely by committing this code.
+
 # VowSig integrated AWS S3 + Backblaze B2 backup release candidate — single closure plan
 
 Date 2026-10-23 | Issue #67 | Owner: finish the backup feature and stop iterative synthetic script runs.

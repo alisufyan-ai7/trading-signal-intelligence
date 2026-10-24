@@ -1,5 +1,9 @@
 # Project Brief
 
+## 2026-10-24 — operational status / currently verified evidence
+
+Refer first to [VowSig current operational status](docs/vowsig-operational-status-2026-10-24.md). The owner has now verified two **real** AES-encrypted S02-only AWS S3 + Backblaze B2 backups and independent full SQLite restores (one manual, one Task Scheduler launched); **daily 04:15 VPS-local** backup is installed. Both protected IDs have also passed independent two-provider recovery and exact encrypted data/manifest version matching (four cloud object versions each provider). The first next-day natural schedule run remains unobserved. The **30 daily / 8 weekly / 12 monthly** GFS policy exists as read-only selector/audits in open draft PR #85, but **deletion is disabled**, no versions have been removed and no cleanup task or delete IAM permissions have been installed. This only protects `data/forward.sqlite` (S02), not the complete project-IP set. `main` and the live VPS HEAD differ and must be reconciled before any sync/merge. The 2026-10-01 brief below remains historical product/gate context; do not interpret its older immediate-status lines as a fresher Oct 24 runtime verification.
+
 _Last updated: 2026-10-01_
 
 ## Goal

@@ -1,0 +1,19 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListOnlyScopedEncryptedS02BackupObjectVersions",
+      "Effect": "Allow",
+      "Action": "s3:ListBucketVersions",
+      "Resource": "arn:aws:s3:::vowsig-backup-s3-2026",
+      "Condition": {
+        "StringEquals": {
+          "s3:prefix": [
+            "pilot/vowsig/approved-s02/v1/",
+            "pilot/vowsig/backup-receipts/v1/"
+          ]
+        }
+      }
+    }
+  ]
+}

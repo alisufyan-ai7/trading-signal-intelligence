@@ -1,5 +1,12 @@
 # Documentation Index
 
+## Start here — latest verified status, 2026-10-24
+
+- [VowSig current operational status and strict handoff](vowsig-operational-status-2026-10-24.md) — active installed daily S02 dual-cloud backup, actual real recoveries, two-provider version audit, source pins and next actions.
+- [Read First](README-FIRST.md) and [Current Handoff](CURRENT-HANDOFF.md) — project isolation, frozen production boundary and instructions to reconcile historical checkpoints.
+- [VowSig durable-IP backup plan](vowsig-durable-ip-backup-and-recovery-plan-v0.1.md) — original wider *design*, now annotated with actual S02-only implementation scope.
+- [Backup evidence EXP053–EXP059](../research/recovery/README.md) and [Issue #67](https://github.com/alisufyan-ai7/trading-signal-intelligence/issues/67) / [draft PR #85](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/85) — immutable owner-run evidence and pending physical GFS deletion boundary.
+
 - `architecture.md` — system boundaries and data flow
 - `decision-log.md` — durable dated decisions
 - `data-sources.md` — technical source capabilities

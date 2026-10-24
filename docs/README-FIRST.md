@@ -1,5 +1,15 @@
 # Read First
 
+## Latest verified operations — 2026-10-24
+
+**Read [VowSig current operational status](vowsig-operational-status-2026-10-24.md) FIRST.** This is the newest confirmed backup/recovery/GFS handoff; the 2026-10-12 EXP034/crypto notes below are dated history for a separate workstream.
+
+- Real manual S02 AWS+B2 encrypted backup + independent restore **PASS**; separately, real daily Task Scheduler install and first task-run backup + independent restore **PASS** (Issue #67, draft PR #85, research EXP053/EXP055).
+- Both protected backup IDs recovered from **both** providers; exact AWS/B2 data + manifest version pairing passed the **read-only GFS inventory** (EXP059); no deletions.
+- Automatic daily S02 task installed at 04:15 **VPS local UTC+00** under Interactive Windows user; next natural day needs fresh verification.
+- GFS **30 daily / 8 weekly / 12 monthly** policy is coded **in draft PR #85 only**; physical auto-deletion, failure notifications, broader DB coverage and full-server recovery are **not active**.
+- Code/runtime safety: remote main and live VPS HEAD differ; the unmerged PR branch is not installed code. No merge, task modification, IAM delete rights or cleanup is authorized by this documentation update.
+
 Project state is in `PROJECT.md` and `docs/current-status.md`. Immediate execution is in `docs/next-actions.md`. This repository is intentionally isolated from unrelated projects.
 
 ## 2026-10-12 single-feature handoff

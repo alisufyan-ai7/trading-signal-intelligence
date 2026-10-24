@@ -44,3 +44,18 @@
 9. New mistakes must be added here with symptom, root cause, preventative test and durable GitHub reference.
 
 **Principle:** Build quickly, test appropriately, protect production. Strict safety at real trust boundaries; no unnecessary PR/governance multiplication.
+
+
+## 2026-10-24 addendum — S02 backup and GFS operator lessons
+
+This is a **new dated addendum**, not a retroactive reinterpretation of the 2026-10-12 crypto mistakes or an excuse to repeat previously completed synthetic tests.
+
+| Observed failure in backup program | Preventative engineering / operator rule |
+| --- | --- |
+| Windows PowerShell native Python `-c` quoting caused a false `NameError` during the Tk GUI check. | Prefer a literal PowerShell here-string piped to `python -B -` for multiline Python probes; execute the actual complete operator wrapper once in an appropriate Windows shell. Do not misdiagnose an argument-quoting failure as missing Tk support. |
+| Two consecutive GUI-test updates falsely failed on documentation substrings `environment`/`getpass`; the first attempted correction referenced AST variable `tree` before assignment and failed to eliminate the remaining faulty assertion. | Do not raw-substring scan module docstrings/comments for banned API usage. Parse actual AST and inspect imports/names/attributes; statically verify variables are initialized before traversal; run the smallest edited test subset locally before giving the owner another VPS command. Preserve both failed test outputs. |
+| An overlong operator script and fragile `git ls-remote` precheck produced an unnecessary `Retention candidate HEAD mismatch` even though the GitHub branch SHA was unchanged. | Verify repo branch current SHA through GitHub once, then compare an explicit `git fetch` `FETCH_HEAD` to the exact reviewed SHA inside the disposable checkout. Reuse an existing verified checkout where safe; do not rerun installed backup or broad suites for a read-only GFS policy check. |
+| Owner confirmed the cloud inventory `HOLD` despite two successful cold restores. Focused provider read-only probe classified AWS S3 data + receipt version listings as denied while B2 listings succeeded. | Separate `GetObject(VersionId)` recovery permissions from `ListBucketVersions` inventory permissions. Grant only bucket-scoped `s3:ListBucketVersions` for the two exact S02 prefixes to the dedicated **reader**, not a writer or delete-enabled account. Reprobe only the denied listing; then run exact paired-manifest inventory and preserve original cold-restore PASS. |
+| User requested GFS retention soon after first real scheduled backup, before 30 days of history existed. | Implement GFS selection and real read-only recovery/version inventory independently of destructive pruning. Keep initial manual success plus two newest verified backups pinned. A read-only `eligible_ids` output is not a deletion permit. Require a separate least-privilege deletion actor, exact versioned data+manifest pairing, owner SHA-bound plan, >=7-day grace and post-delete restore proof before any first cloud removal. |
+
+**Outcome as of Oct 24:** first real manual AWS+B2 S02 backup and restoration PASS, first real daily task-launched backup and restoration PASS, and exact two-provider version topology PASS; **zero cloud deletes**. All milestones captured in [VowSig operational handoff](vowsig-operational-status-2026-10-24.md) and [recovery evidence index](../research/recovery/README.md). First *natural next-day* task and GFS synthetic offline test suite do not yet have owner-verified PASS evidence; do not fill that gap with optimistic language.

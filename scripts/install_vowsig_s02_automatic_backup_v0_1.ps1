@@ -68,13 +68,12 @@ print("STABLE_PYTHON_SDK=PASS")
   Need ($LASTEXITCODE -eq 0) "Stable Python SDK or source imports failed"
  }
  finally { $env:PYTHONPATH=$OldPath; $env:PYTHONNOUSERSITE=$OldNoUser }
- Move-Item -LiteralPath $Stage -Destination $Current
- $Published = $true
+ # Validate all 5 Windows vault entries BEFORE moving staging to current.
  $OldPath = $env:PYTHONPATH
  try {
-  $env:PYTHONPATH = Join-Path $Current "src"
-  $Py = Join-Path $Current ".venv\Scripts\python.exe"
-  $App = Join-Path $Current "scripts\vowsig_s02_automatic_backup_v0_1.py"
+  $env:PYTHONPATH = Join-Path $Stage "src"
+  $Py = Join-Path $Stage ".venv\Scripts\python.exe"
+  $App = Join-Path $Stage "scripts\vowsig_s02_automatic_backup_v0_1.py"
   $ResultText = (& $Py -B $App --readiness --repo-root $Live --state-dir $State | Out-String).Trim()
   Need ($LASTEXITCODE -eq 0) "Scheduled vault and source readiness failed"
   $Result = $ResultText | ConvertFrom-Json
@@ -82,6 +81,8 @@ print("STABLE_PYTHON_SDK=PASS")
  }
  finally { $env:PYTHONPATH=$OldPath }
  Write-Output "SCHEDULED_CREDENTIALS=READY"
+ Move-Item -LiteralPath $Stage -Destination $Current
+ $Published = $true
  $Runner = Join-Path $Current "scripts\run_vowsig_s02_automatic_backup_v0_1.ps1"
  $Action = New-ScheduledTaskAction -Execute (Join-Path $PSHOME "powershell.exe") -Argument ('-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + $Runner + '"')
  $Trigger = New-ScheduledTaskTrigger -Daily -At $TimeLocal
@@ -98,6 +99,40 @@ print("STABLE_PYTHON_SDK=PASS")
  Write-Output ("TASK_NEXT_RUN=" + $Info.NextRunTime.ToString("o"))
  Write-Output "OLDER_AWS_AND_B2_BACKUPS=PRESERVED"
  Write-Output "RDP_DISCONNECT=SUPPORTED; WINDOWS_FULL_LOGOFF=NOT_SUPPORTED"
+
+ # Run the actual new scheduled task once under its Interactive principal.
+ # Confirm the new history record, not merely successful registration.
+ $StartedAt = Get-Date
+ Start-ScheduledTask -TaskName $TaskName -ErrorAction Stop
+ Write-Output "FIRST_SCHEDULED_BACKUP=STARTED"
+ $Completed = $false
+ for ($i=0; $i -lt 60; $i++) {
+   Start-Sleep -Seconds 3
+   $TaskNow = Get-ScheduledTask -TaskName $TaskName
+   $InfoNow = Get-ScheduledTaskInfo -TaskName $TaskName
+   if ($InfoNow.LastRunTime -ge $StartedAt.AddSeconds(-5) -and
+       $TaskNow.State -ne "Running") {
+      $Completed = $true
+      break
+   }
+ }
+ if (-not $Completed) {
+   Write-Output "FIRST_SCHEDULED_BACKUP=PENDING_CHECK_TASK_HISTORY"
+ } else {
+   $LogPath = Join-Path $State "history.jsonl"
+   $Last = $null
+   if (Test-Path -LiteralPath $LogPath -PathType Leaf) {
+      $LogLine = Get-Content -LiteralPath $LogPath -Tail 1
+      try { $Last = $LogLine | ConvertFrom-Json } catch { $Last = $null }
+   }
+   if ($InfoNow.LastTaskResult -eq 0 -and $null -ne $Last -and
+       $Last.status -eq "BACKUP_AND_INDEPENDENT_DUAL_CLOUD_RECOVERY_VERIFIED") {
+      Write-Output "FIRST_SCHEDULED_BACKUP=PASS"
+      Write-Output ("NEW_BACKUP_ID=" + $Last.backup_id)
+   } else {
+      Write-Output "FIRST_SCHEDULED_BACKUP=HOLD_REVIEW_HISTORY_NO_AUTOMATIC_RETRY"
+   }
+ }
 }
 catch {
  Write-Output "AUTOMATIC_BACKUP_INSTALL=HOLD"

@@ -1,5 +1,17 @@
 # Current Next Actions
 
+## 2026-10-24 — current backup/GFS next actions (Issue #67)
+
+The real **manual** and first **scheduler-invoked** S02 AWS+B2 backups and cold restores PASS; first two recovery points remain pinned. The 04:15 VPS-local Interactive daily backup task is ACTIVE; **no automatic GFS pruning** has been deployed. See [current operational handoff](vowsig-operational-status-2026-10-24.md) and [EXP059 inventory PASS](../research/recovery/EXP-2026-059-gfs-two-cloud-read-only-version-inventory-pass-2026-10-24.md).
+
+1. **First:** observe the *next natural* scheduled task after `2026-10-25T04:15:15+00:00` (actual task state, last result, `history.jsonl`, independent recovery and no incident latch); no claim of PASS until owner evidence.
+2. **Second:** run only targeted new GFS offline tests in a pinned disposable Windows checkout; don't rerun previously completed large backup tests or retarget the installed task unnecessarily.
+3. **Third (separate approval):** design and verify an exact-version, two-provider, delete-only cleanup operator with an immutable SHA-bound plan, >=7-day approval period, protected manual baseline/recent history, cold restore checks and fail-closed audits. The GFS policy is **30 daily / 8 weekly / 12 monthly**, but physical deletes are **DISABLED**. Do not grant the daily cloud reader/writer DeleteObject permissions.
+4. **Operational follow-ups:** delivered failure alerting (not active), cloud storage/billing monitoring (not verified), independent off-VPS recovery-passphrase custody, and broader SQLite/IP coverage beyond the single current `data/forward.sqlite` scope.
+5. Unrelated crypto, public product, competitor, issue #9 or brokerage tasks remain governed by their own evidence and approval boundaries. Reconcile current branch/main before resuming. Do not extrapolate the Oct 12 PR #63 overlay into a later verified state.
+
+Older instructions further down are **historical** and may describe already-completed or superseded checkpoints; do not treat them as a newer execution instruction.
+
 Canonical cross-chat continuation: `docs/CURRENT-HANDOFF.md` — reconcile it against current `main` before significant work or any mutation.
 
 _Last updated: 2026-10-01_

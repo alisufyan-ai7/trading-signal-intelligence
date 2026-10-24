@@ -51,3 +51,23 @@ A `--local-receipt <path>` option allows independently decrypting the encrypted 
 Use the four credentials the owner previously confirmed (hold them privately, never paste into chat). Save a unique 16+-character recovery passphrase securely OFF the VPS. Choose the single copy-paste SHA-pinned final review/backup command only after the exact integrated PR passes one consolidated VPS code check and the user has an opportunity to confirm they are ready for minimal possible provider charges and the scoped S02 content. No new endless P9/P10 artificial stages.
 
 **What is not included**: all-DB backup, unattended scheduler, automatic retention cleanup, guaranteed $0 charges, B2 atomic conditional write guarantee, restoration of app services beyond S02 SQLite, or real provider proof until executed. The user-requested first working deliverable is a manual, encrypted, versioned **dual-cloud S02 backup with a real recovery command**.
+
+
+## 2026-10-24 Option 2 — Windows Credential Manager instead of masked cloud-key prompts
+
+**Owner decision:** Keep one-time cloud credentials encrypted under the Windows user account rather than struggle with pasting access IDs and secrets into interactive PowerShell. The operator CLI now has a `credential-status` **read-only** command. The `backup` and `restore` commands load only four fixed `CredReadW` Generic credential targets from the signed-in Windows account; no credential values are passed through commands, files, environment variables, subprocess pipes or test logs. The **recovery passphrase is deliberately NOT saved in the same VPS credential vault**: retain it independently off VPS and enter it at the masked passphrase prompt.
+
+### Once, using GUI on the Windows VPS (not PowerShell secret pastes)
+
+1. Abort the previous paused CLI with `Ctrl+C`; before all four cloud IDs are entered it has made no real upload. Then run **`control.exe /name Microsoft.CredentialManager`** from that VPS session.
+2. In **Credential Manager > Windows Credentials > Add a generic credential**, add FOUR Generic credentials. For every entry set **Internet or network address** to the exact target below; put the corresponding cloud **access key ID** in **User name**, and the cloud **secret access key** in **Password**. Do NOT type the actual IAM account friendly name as User name: it needs the actual access key ID for the AWS/B2 signing algorithm.
+   - `VowSig.S02.AWS.Writer.v1` — AWS S3 writer's access key ID and secret.
+   - `VowSig.S02.AWS.Reader.v1` — AWS S3 restore reader's access key ID and secret.
+   - `VowSig.S02.B2.Writer.v1` — Backblaze B2 writer's application key ID and application key.
+   - `VowSig.S02.B2.Reader.v1` — Backblaze B2 restore reader's application key ID and application key.
+3. Sign in as the **same Windows user** that runs `python scripts/vowsig_dual_cloud_backup.py`. Current live PowerShell prompt in owner-provided output uses `Administrator`; credentials stored under a different Windows account/user profile will not be found. Generic entries are retrievable by programs running as that signed-in account; do not pretend protection against malware running as the same Windows user.
+4. Verify presence **without external network or secret output**: `python scripts/vowsig_dual_cloud_backup.py credential-status` from a disposable, SHA-pinned candidate checkout with the pinned Python environment and `PYTHONPATH` preconfigured. Required result: `backup_roles_ready=true`, `restore_roles_ready=true`, four `roles` booleans true and `network_requests=0`. If false, correct target label, username/key values or Windows account **in the GUI**. Never display or paste actual values into GitHub/chat.
+5. Future manual **backup/restore commands** keep the same operator options and masked **passphrase** prompt, but **do not ask for any AWS/B2 access ID or secret**. A new native Windows acceptance is still required for the revised exact GitHub code; preserve P1–P8 and prior 153-PASS tests as historical separate heads.
+6. DPAPI/Windows Credential Manager is an **on-VPS at-rest custody convenience, not independent offsite recovery**. Back up secrets and recovery passphrase in an independent MFA-protected password manager. Windows Task Scheduler running as a different Windows account, without a loaded user profile, or under an incompatible service account, may not be able to read these entries. No autonomous scheduler is installed by this change.
+
+**Only source-scope change since the initial 153-test pass:** one added module `windows_credential_manager_v0_1.py`, one added corresponding offline-test module, one amended CLI to use `CredReadW` and `credential-status`, and this updated runbook. No production task or installed package changed.

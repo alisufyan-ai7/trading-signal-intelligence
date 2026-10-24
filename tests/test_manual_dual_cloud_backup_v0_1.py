@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import io
 import sqlite3
+from contextlib import closing
 
 import pytest
 
@@ -102,7 +103,8 @@ def test_full_real_operator_logic_with_fake_aws_b2_dual_recovery(tmp_path,monkey
     assert restored["status"]=="BACKUP_RECOVERY_TWO_PROVIDERS_VERIFIED"
     assert restored["record_count"]==3
     assert out.exists()
-    assert sqlite3.connect(out).execute("PRAGMA integrity_check").fetchone()[0]=="ok"
+    with closing(sqlite3.connect(out)) as recovered_connection:
+        assert recovered_connection.execute("PRAGMA integrity_check").fetchone()[0]=="ok"
     assert result["backup_id"] in out.name or out.name=="independent-restore.sqlite"
 
 

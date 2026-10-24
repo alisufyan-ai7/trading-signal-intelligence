@@ -17,6 +17,7 @@ $Account = (whoami).Trim()
 $Sid = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
 $Stage = Join-Path $Base ("staging-" + [guid]::NewGuid().ToString("N"))
 $Published = $false
+$Registered = $false
 function Need([bool]$Condition,[string]$Message) { if (-not $Condition) { throw $Message } }
 try {
  Need ($env:OS -eq "Windows_NT") "Windows VPS required"
@@ -110,6 +111,7 @@ print("STABLE_PYTHON_SDK=PASS")
  $Principal = New-ScheduledTaskPrincipal -UserId $Account -LogonType Interactive -RunLevel Limited
  $Settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -MultipleInstances IgnoreNew -ExecutionTimeLimit (New-TimeSpan -Minutes 25)
  Register-ScheduledTask -TaskName $TaskName -Action $Action -Trigger $Trigger -Principal $Principal -Settings $Settings -Description "Daily encrypted S02 AWS/B2 backup and independent restore; same logged-on user" -ErrorAction Stop | Out-Null
+ $Registered = $true
  $Task = Get-ScheduledTask -TaskName $TaskName
  $Info = Get-ScheduledTaskInfo -TaskName $TaskName
  Need ($Task.Principal.LogonType -eq "Interactive") "Scheduled task logon mode mismatch"
@@ -158,6 +160,14 @@ print("STABLE_PYTHON_SDK=PASS")
 catch {
  Write-Output "AUTOMATIC_BACKUP_INSTALL=HOLD"
  Write-Output ("REASON=" + $_.Exception.Message)
- if (-not $Published -and (Test-Path -LiteralPath $Stage)) { Remove-Item -LiteralPath $Stage -Recurse -Force -ErrorAction SilentlyContinue }
+ if (-not $Published -and (Test-Path -LiteralPath $Stage)) {
+   Remove-Item -LiteralPath $Stage -Recurse -Force -ErrorAction SilentlyContinue
+ }
+ # A failed first installation can be retried without manually deleting an
+ # unused published runtime, but NEVER delete code while a task may exist.
+ if ($Published -and -not $Registered -and
+     $null -eq (Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue)) {
+   Remove-Item -LiteralPath $Current -Recurse -Force -ErrorAction SilentlyContinue
+ }
  throw
 }

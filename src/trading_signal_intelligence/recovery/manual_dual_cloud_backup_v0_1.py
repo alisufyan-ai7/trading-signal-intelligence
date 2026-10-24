@@ -62,11 +62,14 @@ def _manifest_key(backup_id: str) -> str:
     return MANIFEST_PREFIX + backup_id + ".aesgcm"
 
 
-def _provider_clients(credentials: tuple[tuple[str, str], ...]) -> tuple[Any, ...]:
-    """Four explicit credentials; SDK is imported only after manual invocation."""
-    if (type(credentials) is not tuple or len(credentials) != 4
+def _configured_clients(
+    credentials: tuple[tuple[str, str], ...],
+    providers: tuple[endpoints.Provider, ...],
+) -> tuple[Any, ...]:
+    """Explicit role-scoped clients. No ambient credentials or file reading."""
+    if (type(credentials) is not tuple or len(credentials) != len(providers)
             or any(type(p) is not tuple or len(p) != 2 for p in credentials)):
-        raise BackupOperationError("four scoped provider identities required")
+        raise BackupOperationError("scoped provider identities required")
     ids = []
     for access, secret in credentials:
         if (type(access) is not str or type(secret) is not str
@@ -74,16 +77,13 @@ def _provider_clients(credentials: tuple[tuple[str, str], ...]) -> tuple[Any, ..
                 or not all(32 < ord(x) < 127 for x in access + secret)):
             raise BackupOperationError("invalid credential input")
         ids.append(access)
-    if len(set(ids)) != 4:
-        raise BackupOperationError("writer and reader identities must differ")
+    if len(set(ids)) != len(ids):
+        raise BackupOperationError("separate cloud identities required")
     try:
         import boto3
         from botocore.config import Config
         clients = []
-        for provider, (access, secret) in zip(
-            (endpoints.AWS, endpoints.AWS, endpoints.B2, endpoints.B2),
-            credentials,
-        ):
+        for provider, (access, secret) in zip(providers, credentials):
             cfg = Config(
                 region_name=provider.region, signature_version="s3v4",
                 s3={"addressing_style": "path", "payload_signing_enabled": True},
@@ -111,6 +111,16 @@ def _provider_clients(credentials: tuple[tuple[str, str], ...]) -> tuple[Any, ..
         return tuple(clients)
     except Exception:
         raise BackupOperationError("explicit cloud client creation failed") from None
+
+
+def _provider_clients(credentials: tuple[tuple[str, str], ...]) -> tuple[Any, ...]:
+    return _configured_clients(
+        credentials, (endpoints.AWS, endpoints.AWS, endpoints.B2, endpoints.B2)
+    )
+
+
+def _provider_readers(credentials: tuple[tuple[str, str], ...]) -> tuple[Any, ...]:
+    return _configured_clients(credentials, (endpoints.AWS, endpoints.B2))
 
 
 def _read_exact(reader: Any, provider: endpoints.Provider,
@@ -376,12 +386,7 @@ def restore_once(*, backup_id: str, output_path: Path,
     dest = Path(output_path)
     if dest.exists() or dest.is_symlink() or not dest.parent.is_dir():
         raise BackupOperationError("recovery destination must be new existing-parent path")
-    aws_reader, b2_reader = _provider_clients(
-        (credentials[0], credentials[0], credentials[1], credentials[1])
-        if False else credentials  # credentials tuple supplied as four independent roles
-    )[1::2]
-    # In restore mode callers pass 4 distinct scoped identities and the
-    # unused writer clients are never invoked for provider API operations.
+    aws_reader, b2_reader = _provider_readers(credentials)
     manifest_bytes = []
     if local_receipt is not None:
         try:
@@ -441,6 +446,10 @@ def restore_once(*, backup_id: str, output_path: Path,
             with verified_source.open("rb") as src, dest.open("xb") as out:
                 shutil.copyfileobj(src, out, length=65536)
         except Exception:
+            try:
+                dest.unlink(missing_ok=True)
+            except Exception:
+                pass
             raise BackupOperationError("verified recovery output write failed") from None
     return {
         "status": ("BACKUP_RECOVERY_TWO_PROVIDERS_VERIFIED"

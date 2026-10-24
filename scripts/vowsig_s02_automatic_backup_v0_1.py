@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import tempfile
 from contextlib import contextmanager
@@ -118,6 +119,7 @@ def run_once(*, repo_root: Path, state_dir: Path) -> dict:
             raise AutomatedBackupRejected("scheduled credential preparation failed") from None
         # All preflight inputs exist. From this point, provider writes may be
         # ambiguous after any failure; latch rather than blindly run next day.
+        backed = None
         try:
             receipts = Path(state_dir) / "encrypted-receipts"
             receipts.mkdir(exist_ok=True)
@@ -148,15 +150,23 @@ def run_once(*, repo_root: Path, state_dir: Path) -> dict:
             }
             _record(history, result)
             return result
-        except Exception:
+        except Exception as failure:
             # Conservative even if failure happened before upload: no repeated
             # unknown provider writes until the owner checks the account.
+            # Recover a NONSECRET run id for investigating partial provider
+            # objects without ever logging provider exceptions or version IDs.
+            known_id = backed.get("backup_id") if type(backed) is dict else None
+            if known_id is None and type(failure) is cloud.BackupOperationError:
+                found = re.search(r"backup-[0-9a-f]{32}", str(failure))
+                known_id = found.group(0) if found else None
             flag = {
                 "at_utc": _now(),
                 "status": "REVIEW_REQUIRED_PARTIAL_CLOUD_STATE_POSSIBLE",
                 "retry_allowed": False,
                 "cloud_deletion_performed": False,
             }
+            if type(known_id) is str and cloud.RUN_RX.fullmatch(known_id):
+                flag["backup_id"] = known_id
             # Exclusive-create; if a prior latch exists preserve it.
             try:
                 with latch.open("x", encoding="utf-8") as out:

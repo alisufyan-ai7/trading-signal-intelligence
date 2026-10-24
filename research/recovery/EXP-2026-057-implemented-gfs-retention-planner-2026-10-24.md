@@ -45,3 +45,13 @@ Why that boundary is essential:
 ## Evidence and governance
 
 First real manual dual-cloud PASS: EXP-2026-053; first real task-backed scheduler PASS: EXP-2026-055; owner-selected GFS design: EXP-2026-056. These records are immutable. This EXP-057 documents the policy implementation and explicitly *does not* overwrite their results. Draft PR #85 is unmerged; live production checkout and existing tasks are intentionally untouched.
+
+
+## 2026-10-24 additional code: optional live read-only AWS+B2 exact-version inventory
+
+- `src/trading_signal_intelligence/recovery/s02_gfs_cloud_inventory_v0_1.py`: read-only `list_object_versions` for exact permitted encrypted S02 data/manifest prefixes in the two pinned private buckets, only when caller explicitly provides reader SDK clients. Bounded pagination (100 pages/50K listing entries), strict S02 key parser, version IDs kept in Python memory only, missing/extra backups/partial provider mismatches/nonlatest versions/delete markers/permission denied all HOLD. Output is limited to counts and SHA-256 of publicly safe backup-ID sets, `cloud_deletion_authorized=false`, `provider_deletions_performed=0`. This does not by itself prove cryptographic recovery.
+- `tests/test_s02_gfs_cloud_inventory_v0_1.py`: fake-provider read-only inventory tests of complete pair, incomplete/unknown sets, denied listing, duplicate/version invalidity, no uploads/deletes.
+- `scripts/vowsig_s02_gfs_retention_preview_v0_1.py` now supports optional `--audit-provider-versions --acknowledge-read-cost I_ACCEPT_READ_ONLY_CLOUD_LISTING_COST`. This explicitly opted-in mode loads the existing **reader** credentials from Windows Credential Manager and may perform billable provider read-only list calls, but it has **no DeleteObject path**, and refuses to authorize cloud deletion even on an inventory match. Default local preview performs **zero cloud API requests**.
+- The initial historical backup ID is always explicitly included in the expected cloud inventory alongside scheduled history. Any unrecorded provider object or imperfect B2/AWS version list causes a HOLD instead of omitting it from retention decisions.
+- Current Windows Credential Manager **reader** principals may not have ListBucketVersions permissions. A read-only version-audit HOLD is expected until least-privileged list permissions are independently verified. No expansion of IAM granted by this commit.
+- Next acceptance is offline targeted native Windows tests and a default local-only preview. Real-version cloud auditing is optional and explicitly consented. Actual deletion/pruning still not live; it requires a separate approved delete identity, verified retained cloud restores, version-aware signed immutable candidate list, >=7-day grace, and owner approval.

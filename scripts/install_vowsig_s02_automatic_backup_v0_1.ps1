@@ -83,6 +83,18 @@ print("STABLE_PYTHON_SDK=PASS")
  Write-Output "SCHEDULED_CREDENTIALS=READY"
  Move-Item -LiteralPath $Stage -Destination $Current
  $Published = $true
+ # Verify relocated .venv operates from durable ProgramData, not TEMP.
+ $OldPath = $env:PYTHONPATH
+ try {
+  $env:PYTHONPATH = Join-Path $Current "src"
+  $ActivePy = Join-Path $Current ".venv\Scripts\python.exe"
+  $ActiveApp = Join-Path $Current "scripts\vowsig_s02_automatic_backup_v0_1.py"
+  $ActiveJson = (& $ActivePy -B $ActiveApp --readiness --repo-root $Live --state-dir $State | Out-String).Trim()
+  Need ($LASTEXITCODE -eq 0) "Relocated stable runtime is not ready"
+  Need (($ActiveJson | ConvertFrom-Json).ready -eq $true) "Relocated task vault unavailable"
+ }
+ finally { $env:PYTHONPATH=$OldPath }
+ Write-Output "RELOCATED_STABLE_RUNTIME=PASS"
  $Runner = Join-Path $Current "scripts\run_vowsig_s02_automatic_backup_v0_1.ps1"
  $Action = New-ScheduledTaskAction -Execute (Join-Path $PSHOME "powershell.exe") -Argument ('-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "' + $Runner + '"')
  $Trigger = New-ScheduledTaskTrigger -Daily -At $TimeLocal

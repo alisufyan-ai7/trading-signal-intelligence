@@ -86,8 +86,11 @@ def _decode_blob(data: bytes) -> str:
     except UnicodeError:
         pass
     for value in possibilities:
-        if _printable(value):
-            return value
+        # Some Windows Generic credential writers include exactly one
+        # terminal NUL; allow this encoding artifact only, never NUL inside.
+        candidate = value[:-1] if value.endswith("\\x00") else value
+        if _printable(candidate):
+            return candidate
     raise WindowsVaultRejected("Windows credential secret encoding invalid")
 
 

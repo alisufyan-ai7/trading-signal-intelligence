@@ -24,6 +24,8 @@ TARGETS = {
 }
 BACKUP_ROLES = ("aws_writer", "aws_reader", "b2_writer", "b2_reader")
 RESTORE_ROLES = ("aws_reader", "b2_reader")
+SCHEDULED_PASSPHRASE_TARGET = "VowSig.S02.Recovery.Passphrase.v1"
+SCHEDULED_PASSPHRASE_USERNAME = "VowSigS02"
 GENERIC_TYPE = 1
 MAX_BLOB = 2048
 
@@ -97,7 +99,7 @@ def _decode_blob(data: bytes) -> str:
 def _read_generic(target: str) -> ScopedSecret:
     if sys.platform != "win32":
         raise WindowsVaultRejected("Windows Credential Manager requires a Windows session")
-    if target not in TARGETS.values():
+    if target not in TARGETS.values() and target != SCHEDULED_PASSPHRASE_TARGET:
         raise WindowsVaultRejected("unapproved Windows credential target")
     try:
         library = ctypes.WinDLL("Advapi32.dll", use_last_error=True)
@@ -181,4 +183,51 @@ def credential_status(*, lookup: Callable[[str], ScopedSecret] | None = None) ->
         "restore_roles_ready": available["aws_reader"] and available["b2_reader"],
         "roles": available,
         "network_requests": 0,
+    }
+
+
+def load_scheduled_recovery_passphrase(
+    *, lookup: Callable[[str], ScopedSecret] | None = None,
+) -> str:
+    """Load one owner-stored Windows Generic secret in the SAME task account.
+
+    No passphrase or hash printed, saved in source, CLI/environment or logs.
+    The owner must ALSO keep the passphrase off VPS for disaster recovery.
+    """
+    read = _read_generic if lookup is None else lookup
+    if not callable(read):
+        raise WindowsVaultRejected("recovery passphrase reader unavailable")
+    try:
+        item = read(SCHEDULED_PASSPHRASE_TARGET)
+        if (type(item) is not ScopedSecret
+                or item.access_id != SCHEDULED_PASSPHRASE_USERNAME
+                or type(item.secret) is not str
+                or not 16 <= len(item.secret) <= 256
+                or not _printable(item.secret)):
+            raise WindowsVaultRejected("scheduled recovery passphrase entry invalid")
+        return item.secret
+    except WindowsVaultRejected:
+        raise
+    except Exception:
+        raise WindowsVaultRejected("scheduled recovery passphrase unavailable") from None
+
+
+def scheduled_credential_status(
+    *, lookup: Callable[[str], ScopedSecret] | None = None
+) -> dict:
+    """Only boolean readiness. Not a test of provider permissions or cloud."""
+    lookup_fn = _read_generic if lookup is None else lookup
+    roles = credential_status(lookup=lookup_fn)
+    try:
+        load_scheduled_recovery_passphrase(lookup=lookup_fn)
+        ready = True
+    except Exception:
+        ready = False
+    return {
+        "status": "SCHEDULED_S02_WINDOWS_CREDENTIALS_READINESS",
+        "cloud_roles_ready": roles["backup_roles_ready"],
+        "recovery_passphrase_present": ready,
+        "ready": roles["backup_roles_ready"] and ready,
+        "network_requests": 0,
+        "passphrase_exposed": False,
     }

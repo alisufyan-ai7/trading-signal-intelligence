@@ -71,7 +71,7 @@ def _printable(text: object) -> bool:
     )
 
 
-def _decode_blob(data: bytes) -> str:
+def _decode_blob(data: bytes, *, allow_recovery_phrase: bool = False) -> str:
     # Windows Credential Manager GUI stores Generic passwords as UTF-16LE.
     # Some API clients store UTF-8 instead. Support both but accept only
     # printable ASCII AWS/B2 key material; never trim or normalize a key.
@@ -91,7 +91,11 @@ def _decode_blob(data: bytes) -> str:
         # Some Windows Generic credential writers include exactly one
         # terminal NUL; allow this encoding artifact only, never NUL inside.
         candidate = value[:-1] if value.endswith("\\x00") else value
-        if _printable(candidate):
+        if allow_recovery_phrase:
+            if (16 <= len(candidate) <= 256
+                    and all(ord(ch) >= 32 and ord(ch) != 127 for ch in candidate)):
+                return candidate
+        elif _printable(candidate):
             return candidate
     raise WindowsVaultRejected("Windows credential secret encoding invalid")
 
@@ -121,7 +125,12 @@ def _read_generic(target: str) -> ScopedSecret:
                     or not record.CredentialBlob):
                 raise WindowsVaultRejected("Windows generic credential invalid")
             value = ctypes.string_at(record.CredentialBlob, record.CredentialBlobSize)
-            return ScopedSecret(record.UserName, _decode_blob(value))
+            return ScopedSecret(
+                record.UserName,
+                _decode_blob(value, allow_recovery_phrase=(
+                    target == SCHEDULED_PASSPHRASE_TARGET
+                )),
+            )
         finally:
             library.CredFree(ctypes.cast(pointer, ctypes.c_void_p))
     except WindowsVaultRejected:
@@ -203,7 +212,7 @@ def load_scheduled_recovery_passphrase(
                 or item.access_id != SCHEDULED_PASSPHRASE_USERNAME
                 or type(item.secret) is not str
                 or not 16 <= len(item.secret) <= 256
-                or not _printable(item.secret)):
+                or any(ord(ch) < 32 or ord(ch) == 127 for ch in item.secret)):
             raise WindowsVaultRejected("scheduled recovery passphrase entry invalid")
         return item.secret
     except WindowsVaultRejected:

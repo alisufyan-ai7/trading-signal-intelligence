@@ -1,7 +1,9 @@
 """Manual one-shot dual-cloud encrypted S02 backup / disaster restore.
 
-VPS interactive console only. No automatic scheduling, unattended credentials,
-dotenv, environment/command-line secrets, silent charges or secret logging.
+VPS interactive console for recovery passphrase. Cloud credentials loaded only
+from four fixed Windows Credential Manager Generic entries in same Windows user
+account. No automatic scheduling, dotenv, environment/command-line secrets,
+silent charges or secret logging.
 Running 'backup' intentionally uses real AWS S3 and B2 provider APIs.
 """
 from __future__ import annotations
@@ -16,6 +18,7 @@ from pathlib import Path
 
 from trading_signal_intelligence.recovery import manual_dual_cloud_backup_v0_1 as backup
 from trading_signal_intelligence.recovery import live_dual_provider_transport_v0_1 as targets
+from trading_signal_intelligence.recovery import windows_credential_manager_v0_1 as vault
 
 EXPECTED_REPO = "trading-signal-intelligence"
 
@@ -41,18 +44,14 @@ def _prompt(label: str) -> str:
 
 
 def _credentials(mode: str) -> tuple[tuple[str, str], ...]:
-    labels = (
-        ("AWS S3 backup writer", "AWS S3 restore reader",
-         "Backblaze B2 backup writer", "Backblaze B2 restore reader")
-        if mode == "backup" else
-        ("AWS S3 restore reader", "Backblaze B2 restore reader")
-    )
-    values = []
-    for label in labels:
-        ident = _prompt(label + " access key ID (masked)")
-        secret = _prompt(label + " secret key (masked)")
-        values.append((ident, secret))
-    return tuple(values)
+    """Credentials come only from fixed Windows Generic credential entries."""
+    try:
+        return vault.load_credentials(mode)
+    except vault.WindowsVaultRejected:
+        raise backup.BackupOperationError(
+            "Windows Credential Manager roles missing/invalid; use "
+            "'credential-status' and Windows Credentials GUI"
+        ) from None
 
 
 def _passphrase(mode: str) -> str:
@@ -77,6 +76,7 @@ def main(argv: list[str] | None = None) -> int:
     group = parser.add_subparsers(dest="operation", required=True)
 
     verify = group.add_parser("status", allow_abbrev=False)
+    credential_check = group.add_parser("credential-status", allow_abbrev=False)
     run = group.add_parser("backup", allow_abbrev=False)
     run.add_argument("--repo-root", required=True)
     run.add_argument("--receipt-dir", required=True)
@@ -106,14 +106,19 @@ def main(argv: list[str] | None = None) -> int:
         })
         return 0
 
+    if args.operation == "credential-status":
+        _emit(vault.credential_status())
+        return 0
+
     if args.operation == "backup":
         repo = Path(args.repo_root)
         if (repo.name.lower() != EXPECTED_REPO
                 or not repo.is_dir()
                 or not (repo / ".git").exists()):
             raise backup.BackupOperationError("expected scoped repository missing")
-        # All prompts are masked; do not print any access ID or secret. An
-        # authorized backup necessarily reads the selected real S02 source.
+        # Only the passphrase is prompted; access IDs and secrets come from
+        # the current Windows account Credential Manager, never PowerShell.
+        # An authorized backup necessarily reads the selected real S02 source.
         print("MODE=MANUAL_REAL_S02_CLOUD_BACKUP; NO_AUTOMATIC_RETRY", flush=True)
         key = _passphrase("backup")
         creds = _credentials("backup")

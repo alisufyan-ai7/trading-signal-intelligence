@@ -19,6 +19,14 @@ from trading_signal_intelligence.recovery import live_dual_provider_transport_v0
 EXPECTED_REPO = "trading-signal-intelligence"
 
 
+class _NoSecretEchoParser(argparse.ArgumentParser):
+    """Reject malformed CLI input without printing possibly pasted credentials."""
+    def error(self, message: str) -> None:
+        raise backup.BackupOperationError(
+            "invalid operator command arguments; never supply secrets on CLI"
+        )
+
+
 def _prompt(label: str) -> str:
     if not sys.stdin.isatty() or not sys.stderr.isatty():
         raise backup.BackupOperationError("interactive VPS console required")
@@ -63,7 +71,7 @@ def _emit(result: dict) -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(add_help=True, allow_abbrev=False,
+    parser = _NoSecretEchoParser(add_help=True, allow_abbrev=False,
         description="Manually back up or restore one encrypted S02 SQLite database")
     group = parser.add_subparsers(dest="operation", required=True)
 

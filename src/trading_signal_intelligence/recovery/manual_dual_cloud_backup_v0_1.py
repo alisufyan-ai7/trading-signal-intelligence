@@ -290,14 +290,19 @@ def backup_once(*, repo_root: Path, receipt_dir: Path,
             s02.SOURCE_REL, "S02", rights_ref, owner_ref,
             (endpoints.AWS.region, endpoints.B2.region),
         )
-        copied = s02.capture_approved_s02(
-            repo_root=Path(repo_root), scratch_parent=temp,
-            run_id=backup_id, authorization=permit,
-        )
-        sealed = s02.seal_verified_copy(
-            copied=copied, run_id=backup_id, key=data_key,
-            authorization=permit,
-        )
+        try:
+            copied = s02.capture_approved_s02(
+                repo_root=Path(repo_root), scratch_parent=temp,
+                run_id=backup_id, authorization=permit,
+            )
+            sealed = s02.seal_verified_copy(
+                copied=copied, run_id=backup_id, key=data_key,
+                authorization=permit,
+            )
+        except Exception:
+            raise BackupOperationError(
+                "scoped S02 SQLite capture, size or chain verification failed"
+            ) from None
         if not sealed.object_key.startswith(OBJECT_PREFIX):
             raise BackupOperationError("encrypted source key outside permitted IAM scope")
         aws_writer, aws_reader, b2_writer, b2_reader = _provider_clients(credentials)

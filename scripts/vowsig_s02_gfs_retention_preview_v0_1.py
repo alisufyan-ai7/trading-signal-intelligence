@@ -50,6 +50,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--history", required=True, type=Path)
     parser.add_argument("--as-of-utc", default=None)
     parser.add_argument("--audit-provider-versions", action="store_true")
+    parser.add_argument("--audit-retained-restores", action="store_true")
     parser.add_argument("--acknowledge-read-cost", default=None,
                         choices=["I_ACCEPT_READ_ONLY_CLOUD_LISTING_COST"])
     args = parser.parse_args(argv)
@@ -60,30 +61,50 @@ def main(argv: list[str] | None = None) -> int:
         result = policy.choose_gfs(
             records, as_of_utc=now, review_latch_present=latch,
         )
-        if args.audit_provider_versions:
+        if args.audit_provider_versions or args.audit_retained_restores:
             if args.acknowledge_read_cost != "I_ACCEPT_READ_ONLY_CLOUD_LISTING_COST":
                 raise policy.RetentionPlanRejected("read-only provider consent missing")
-            # Import only in explicitly consented provider-audit mode.
+            # No credentials/client calls without explicit owner opt-in.
             from trading_signal_intelligence.recovery import (
                 windows_credential_manager_v0_1 as vault,
                 manual_dual_cloud_backup_v0_1 as backups,
                 s02_gfs_cloud_inventory_v0_1 as inventory,
+                s02_gfs_retained_restore_audit_v0_1 as restore_audit,
             )
-            ids = set(result["keep_ids"]) | set(result["eligible_ids"])
-            ids.update(result["protected_ids"])
-            readers = backups._provider_readers(vault.load_credentials("restore"))
-            try:
-                result["cloud_inventory"] = inventory.audit_provider_pair(
-                    aws_reader=readers[0], b2_reader=readers[1],
-                    expected_backup_ids=ids,
-                )
-            except inventory.CloudInventoryRejected:
-                result["cloud_inventory"] = {
-                    "status": "INVENTORY_HOLD_PROVIDER_READ_OR_COVERAGE_UNVERIFIED",
-                    "provider_deletions_performed": 0,
-                }
-            # Even fully matching inventory is not a cold-restore or delete
-            # authorization. Never expose opaque provider VersionIds.
+            reader_credentials = vault.load_credentials("restore")
+            if args.audit_provider_versions:
+                ids = set(result["keep_ids"]) | set(result["eligible_ids"])
+                ids.update(result["protected_ids"])
+                readers = backups._provider_readers(reader_credentials)
+                try:
+                    result["cloud_inventory"] = inventory.audit_provider_pair(
+                        aws_reader=readers[0], b2_reader=readers[1],
+                        expected_backup_ids=ids,
+                    )
+                except inventory.CloudInventoryRejected:
+                    result["cloud_inventory"] = {
+                        "status": "INVENTORY_HOLD_PROVIDER_READ_OR_COVERAGE_UNVERIFIED",
+                        "provider_deletions_performed": 0,
+                    }
+            if args.audit_retained_restores:
+                retained = sorted(set(result["keep_ids"]) |
+                                  set(result["protected_ids"]))
+                try:
+                    phrase = vault.load_scheduled_recovery_passphrase()
+                    result["retained_recovery"] = (
+                        restore_audit.audit_retained_recovery_points(
+                            backup_ids=retained,
+                            read_credentials=reader_credentials,
+                            recovery_passphrase=phrase,
+                        )
+                    )
+                except (vault.WindowsVaultRejected,
+                        restore_audit.GfsRestoreAuditRejected):
+                    result["retained_recovery"] = {
+                        "status": "RETAINED_COLD_RECOVERY_HOLD",
+                        "provider_deletions_performed": 0,
+                    }
+            # Neither inventory nor restore implies deletion authorization.
             result["cloud_deletion_authorized"] = False
         elif args.acknowledge_read_cost is not None:
             raise policy.RetentionPlanRejected("unused provider consent option")

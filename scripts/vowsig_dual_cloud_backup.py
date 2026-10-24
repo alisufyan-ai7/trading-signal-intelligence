@@ -11,6 +11,7 @@ import getpass
 import json
 import os
 import sys
+import tempfile
 from pathlib import Path
 
 from trading_signal_intelligence.recovery import manual_dual_cloud_backup_v0_1 as backup
@@ -120,6 +121,29 @@ def main(argv: list[str] | None = None) -> int:
             repo_root=repo, receipt_dir=Path(args.receipt_dir),
             credentials=creds, passphrase=key,
         )
+        # Print the immutable nonsecret backup ID immediately, even when the
+        # subsequent independent cold-recovery drill cannot be completed.
+        _emit(result)
+        with tempfile.TemporaryDirectory(prefix="vowsig-s02-cold-proof-") as temp:
+            recovered = backup.restore_once(
+                backup_id=result["backup_id"],
+                output_path=Path(temp) / "restored-s02.sqlite",
+                credentials=(creds[1], creds[3]), passphrase=key,
+            )
+            if recovered["status"] != "BACKUP_RECOVERY_TWO_PROVIDERS_VERIFIED":
+                raise backup.BackupOperationError(
+                    "dual-cloud cold recovery incomplete; inspect backup ID " +
+                    result["backup_id"]
+                )
+        _emit({
+            "status": "BACKUP_AND_INDEPENDENT_DUAL_CLOUD_RECOVERY_VERIFIED",
+            "backup_id": result["backup_id"],
+            "aws_restored": True,
+            "b2_restored": True,
+            "production_modified": False,
+            "scheduler_installed": False,
+        })
+        return 0
     else:
         print("MODE=MANUAL_EXACT_VERSION_CLOUD_RECOVERY; NO_OVERWRITE", flush=True)
         key = _passphrase("restore")

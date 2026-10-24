@@ -1,5 +1,11 @@
 # Trading Signal Intelligence
 
+## Current verified VowSig operations (2026-10-24)
+
+The private repository's latest backup/recovery handoff is **[VowSig operational status — 2026-10-24](docs/vowsig-operational-status-2026-10-24.md)**. The Windows VPS has an **active daily 04:15 local-time encrypted S02-only backup** to AWS S3 and Backblaze B2. The first manual and first scheduled backups both passed independent real two-cloud restore; **two backup IDs** and **four encrypted data/receipt versions per provider** passed the subsequent read-only GFS version inventory. Source evidence: [Issue #67](https://github.com/alisufyan-ai7/trading-signal-intelligence/issues/67), [draft PR #85](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/85), EXP053–EXP059.
+
+The requested **30-day daily / 8-week weekly / 12-month monthly** historical retention policy is **coded and read-only verified**; **automatic cloud deletion is not enabled**. The installed scope covers `data/forward.sqlite` only. The first natural next-day task result, delivered failure alerts, broader-IP backups and owner-gated version-aware cleanup remain pending. Read the linked status before interpreting the legacy launch-stage description below. Broker execution remains disabled.
+
 Research and engineering repository for a broker-neutral, verified trading-signal intelligence SaaS.
 
 ## Product thesis

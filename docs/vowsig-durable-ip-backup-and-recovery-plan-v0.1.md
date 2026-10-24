@@ -1,5 +1,16 @@
 # VowSig Durable IP Backup and Recovery Plan v0.1
 
+## 2026-10-24 implementation overlay — S02 ONLY (supersedes original design-only header for that narrow scope)
+
+The above 2026-10-08 design was **NOT** left entirely unimplemented. The owner has since executed:
+- first real AES-GCM encrypted `data/forward.sqlite` backup + authenticated SQLite recovery from AWS S3 **and** Backblaze B2: **PASS** (EXP053);
+- a newly installed **daily 04:15 VPS-local** Interactive Windows Task Scheduler job, with five scoped Windows vault entries and an isolated ProgramData runtime; its **first task-launched backup and independent two-provider cold restore PASS** (EXP054–EXP055);
+- GFS **30 daily / 8 weekly / 12 monthly** retention selection, read-only exact cloud-version inventory and independently restored protected points **PASS** under owner's pinned disposable GFS candidate (EXP056–EXP059). AWS reader listing permissions were narrowed and confirmed fixed.
+
+**Explicit limits:** the installed automatic process covers **S02 `data/forward.sqlite` only**, not the other S02/AI evidence ledgers, Git bundle, future model archives or full system. Immutability/Object Lock, delivered failure notifications, automatic cloud deletion/pruning, paired version-aware cleanup, and a separate restricted delete identity are **not verified as deployed**. All older encrypted data and manifests are preserved, no version removed. The documented GFS policy is **selection/read-only only in unmerged draft PR #85**; it does NOT turn the original future-looking architecture into a claim of all-ledger coverage or immutable lifecycle storage.
+
+Read [the current operational handoff](vowsig-operational-status-2026-10-24.md), [Issue #67](https://github.com/alisufyan-ai7/trading-signal-intelligence/issues/67) and EXP053–EXP059 before interpreting the original numbered design below; historical design intent remains intact.
+
 _Status: DESIGN APPROVED FOR DOCUMENTATION / NOT YET IMPLEMENTED_  
 _Date: 2026-10-08_  
 _Scope: VowSig research evidence, code, model configuration, future training datasets and future proprietary model artifacts_

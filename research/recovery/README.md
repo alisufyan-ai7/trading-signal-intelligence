@@ -2,6 +2,10 @@
 
 **Current state (2026-10-24):** [VowSig operational status](../../docs/vowsig-operational-status-2026-10-24.md) — first actual encrypted AWS S3 + Backblaze B2 S02-only backup PASS; daily Interactive Task Scheduler installed and first real task-run independently verified recovery PASS; 30-daily / 8-weekly / 12-monthly GFS **selection** and verified two-provider version inventory PASS; **no cloud deletion/cleanup scheduler installed**.
 
+## Earlier P1–P8 preparatory evidence preserved from original stacked PRs
+
+The original **EXP-2026-043 through EXP-2026-050** research records are now included byte-identically here on `main` through the docs-only preservation change. They document the successive offline S02 capture core, dual-provider signed transport, signed release-evidence gate, pinned boto3 fake transport, encrypted exact-version recovery manifest, private receipt handoff, in-memory escrow and synthetic cold-disaster recovery. **Historic offline tests and intermediate FAIL/HOLDs remain factual, not upgraded retroactively to production PASS.** Their executable implementations and tests are separately staged in the focused code-only review successor; no installed VPS software changes from preserving these notes.
+
 ## Read in verification order
 
 | Evidence | What it establishes | Boundary |

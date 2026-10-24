@@ -40,8 +40,9 @@
 2. PR #58's two dated product/screenshot documents are on main through its explicit **merge commit**, and its two source commits remain reachable.
 3. PR #68, #75 and #76 original unique **11 complete files** are [archived byte-identically](../research/archive/pr-queue-2026-10-24/README.md), including code/tests in inert research paths; this is stronger than a summary or an ephemeral PR link. Their historic code must not be executed without re-review.
 4. The exact **eight P1–P8 PR head SHAs are ancestors of PR #85's current head**; PR #85 therefore still contains the full 44 prior stage commits and their source history even after parent PR closure. **Retarget #85 base to main after evidence/docs have been merged into main, BEFORE closing the parents.** Old PR page discussions and their source branches are preserved.
-5. Recovery EXP051–059 and main handoff `docs/vowsig-operational-status-2026-10-24.md` will be in main via this documentation-only consolidation; their text was copied from the frozen PR #85 tree, without altering real owner's PASS/HOLD, unexecuted GFS tests or permission history. Both original S02 backup IDs remain protected on provider, no physical cloud delete.
-6. PR #50's independently valuable CODEOWNERS + workflow/checker/test/evidence remain open and accessible; conflicts need a separate rebased feature and real guarded CI tests rather than accidental inclusion in backup changes.
+5. Original historical Python scripts/tests in the PR #75/#76 archive are saved with an added `.txt` filename suffix but identical source bytes/Git blob SHAs; they **cannot be automatically executed or collected by pytest** from that archive. The original paths and commits remain in the PRs.
+6. Recovery EXP051–059 and main handoff `docs/vowsig-operational-status-2026-10-24.md` will be in main via this documentation-only consolidation; their text was copied from the frozen PR #85 tree, without altering real owner's PASS/HOLD, unexecuted GFS tests or permission history. Both original S02 backup IDs remain protected on provider, no physical cloud delete.
+7. PR #50's independently valuable CODEOWNERS + workflow/checker/test/evidence remain open and accessible; conflicts need a separate rebased feature and real guarded CI tests rather than accidental inclusion in backup changes.
 
 ## Why PR #85 is NOT merged just because the backup works
 

@@ -39,7 +39,8 @@ def test_operator_requires_only_gui_for_private_recovery_phrase(monkeypatch):
     assert cli._passphrase("restore") == expected
     assert received == ["backup", "restore"]
     source = inspect.getsource(cli._passphrase)
-    # A docstring mentioning the removed getpass API is not a call to it.
+    tree = ast.parse(source)
+    # Inspect executable Python nodes, not words in comments/docstrings.
     assert not any(
         isinstance(node, ast.Import)
         and any(alias.name.split(".")[0] == "getpass" for alias in node.names)
@@ -48,7 +49,6 @@ def test_operator_requires_only_gui_for_private_recovery_phrase(monkeypatch):
         or isinstance(node, ast.Name) and node.id == "getpass"
         for node in ast.walk(tree)
     )
-    assert "stdin" not in source
     # Check executable access, not incidental words inside docstrings.
     tree = ast.parse(source)
     assert not any(
@@ -87,7 +87,16 @@ def test_lazy_tk_import_and_no_secret_persistence():
             modules.add(node.module.split(".")[0])
     assert "tkinter" not in modules
     assert modules.isdisjoint({"boto3", "socket", "subprocess", "urllib"})
-    assert "getpass" not in source
+    # A mention of an obsolete API in the module's documentation is not
+    # an import or runtime reference to that API.
+    assert not any(
+        isinstance(node, ast.Import)
+        and any(alias.name.split(".")[0] == "getpass" for alias in node.names)
+        or isinstance(node, ast.ImportFrom) and node.module == "getpass"
+        or isinstance(node, ast.Attribute) and node.attr == "getpass"
+        or isinstance(node, ast.Name) and node.id == "getpass"
+        for node in ast.walk(tree)
+    )
     assert "os.environ" not in source
     assert "CredWriteW" not in source
     assert "show=\"*\"" in source

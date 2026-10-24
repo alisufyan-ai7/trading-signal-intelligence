@@ -47,8 +47,8 @@ No paid SaaS launch should be treated as validated until all four gates have acc
 
 Never commit broker passwords, MetaTrader credentials, Binance API keys, tokens, or private account identifiers. Use environment variables or a secrets manager.
 
-## Status
+## Historical initial-build status (retained as dated launch context)
 
-**Phase 1: Early Access product build + continuing forward validation.**
+**Earlier phase description:** Phase 1: Early Access product build + continuing forward validation.
 
-Target launch is 3–5 days. Product development now runs in parallel with immutable strategy validation.
+An early project plan stated a 3–5 day launch target. **That estimate is historical, not a current October 24, 2026 deadline or validated product readiness statement.** Current operating milestones and pending work are in [the October 24 operational handoff](docs/vowsig-operational-status-2026-10-24.md).

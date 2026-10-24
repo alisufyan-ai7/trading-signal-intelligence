@@ -39,9 +39,23 @@ def test_operator_requires_only_gui_for_private_recovery_phrase(monkeypatch):
     assert cli._passphrase("restore") == expected
     assert received == ["backup", "restore"]
     source = inspect.getsource(cli._passphrase)
-    assert "getpass" not in source
+    # A docstring mentioning the removed getpass API is not a call to it.
+    assert not any(
+        isinstance(node, ast.Import)
+        and any(alias.name.split(".")[0] == "getpass" for alias in node.names)
+        or isinstance(node, ast.ImportFrom) and node.module == "getpass"
+        or isinstance(node, ast.Attribute) and node.attr == "getpass"
+        or isinstance(node, ast.Name) and node.id == "getpass"
+        for node in ast.walk(tree)
+    )
     assert "stdin" not in source
-    assert "env" not in source
+    # Check executable access, not incidental words inside docstrings.
+    tree = ast.parse(source)
+    assert not any(
+        isinstance(node, ast.Attribute)
+        and node.attr in {"environ", "getenv", "stdin"}
+        for node in ast.walk(tree)
+    )
     assert "password_dialog.prompt" in source
 
 

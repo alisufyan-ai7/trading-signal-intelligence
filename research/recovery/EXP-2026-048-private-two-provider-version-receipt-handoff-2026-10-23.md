@@ -1,0 +1,23 @@
+# EXP048 — Private exact-version callback after independently verified AWS/B2 restores
+
+**Date:** 2026-10-23. **Status: DRAFT PREPARATION ONLY, NOT NATIVE WINDOWS TESTED, NO CLOUD/REAL-DATA ACTIVATION.**
+
+Parent: P5 [PR #81](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/81) exact SHA `02360fadabe2a626d020f1c40be5d731621a49b4`. Owner's frozen P5 native Windows run: 29 synthetic tests PASS, 113 protected paths unchanged, production worktree unchanged, no SDK/network/real data/credential/schedule/merge. Inherited P1–P4 earlier consolidated 53 tests PASS at exact ancestor. This P6 work changes no existing P1/P2/P3/P4/P5 approved/draft branch; P2 modified only in NEW dependent P6 draft review branch.
+
+## Fix the actual end-to-end version-reference loss
+
+P2 previously returned hashes of successful AWS/B2 object `VersionId` values after independently authenticating and validating both versions. Hash-only is good for sanitized audit but cannot retrieve either exact version in disaster recovery. P5 can encrypt/validate real opaque versions only if the transport hands them off before they are discarded.
+
+P6 adjusts `_one_provider` **internally** to return its original scrubbed verified receipt plus an opaque exact version string. Public `replicate_approved_s02()` remains backward compatible by default and returns the original result when no private-receipt capture was requested; such a default result is **not a claim of durable backup recoverability**. A separate explicit `require_private_receipt=True` mode REJECTS missing callback BEFORE the first SDK operation. The callback is called **exactly once, only after AWS and B2 both complete independently authenticated ciphertext+SQLite chain restores and the request counter equals five**. On callback error or invalid acknowledgement the operation fails closed, never retries provider writes/deletes, never claims durable recovery, and redacts the raw error. The raw versions are only passed in-memory to this explicitly provided owner-reviewable callback and never added to public results.
+
+New `OfflinePrivateReceiptSink` passes the two raw versions plus the private P2 receipt into the inherited P5 AES-256-GCM sealing/verifying helper, using distinct supplied data and manifest keys. It invokes an injected `commit_and_readback` callback **once** with encrypted manifest bytes, verifies exact encrypted byte identity, reopens it under the separate manifest key, verifies exact version ID and object references, and returns only P5's safe summary. No SDK client/credential, network connection, ambient key discovery or scheduler is created by this module. **Crucially a readback callback can lie about persistence, so this layer NEVER claims off-host durability; public return explicitly reports `offhost_persistence_verified=False` and `real_provider_operation_authorized=False`.** In a real deployment a separately audited durable offsite implementation, multi-host recovery test and legal/billing/IAM checks must precede operations.
+
+## Safety tests
+
+Use only synthetic S02 fixture and fake AWS/B2 clients. Validate exact P2 private receipt one-shot after five verified operations, encrypted manifest bytes contain no raw version/object keys, private reopen checks both providers, no leak in dataclass/repr/public return, missing callback preflight fail before network, explicit opt-in required, wrong data/manifest keys and rights references fail, fail-closed on missing/corrupt readbacks, forged receipts or invalid ack, no callback on one-provider failure, no SDK imports or ambient network.
+
+Any test failure is a new prospective HOLD, not evidence P5's 29-pass immutable test or previous P4 53-pass offline benchmark failed. The changed P2 source on P6 branch means **none of the older source-specific PASS records automatically certify this P6 head**. Before considering merge, run SHA-pinned Windows VPS P1–P6 tests, pinned seven already installed boto3/botocore dependencies, frozen checker (113 protected paths) and unchanged production postflight.
+
+## External release blockers
+
+Continue hard **$0 provider cost** and actual data-rights verification for encrypted S02 third-party storage AWS us-east-1/B2 us-east-005, independently scoped secrets off VPS, auditable IAM/versioning/retention and offhost key custody, genuine private manifest persistence, exact-version offhost disaster restore, monitoring, partial-provider incident handling and rollback. No real cloud API, real SQLite read, credential provisioning, scheduled task mutation, production merge or deployment authorized by P6 preparation. No new package installations needed.

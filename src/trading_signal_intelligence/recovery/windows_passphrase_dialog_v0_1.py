@@ -115,6 +115,13 @@ def prompt(mode: str) -> str:
                 password = validate(mode, password_var.get(), confirm_var.get())
             except PrivatePassphraseRejected:
                 return
+            # Best-effort clear current RDP clipboard after a successful
+            # paste. Windows clipboard history and password-manager buffers
+            # are outside this process and may retain earlier entries.
+            try:
+                root.clipboard_clear()
+            except Exception:
+                pass
             answer["passphrase"] = password
             root.quit()
 

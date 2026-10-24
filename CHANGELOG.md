@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-24 — VowSig backup, recovery, scheduler and GFS durability
+
+- **REAL PASS:** encrypted one-shot S02 `data/forward.sqlite` backup (30 records) to AWS S3 and Backblaze B2 with exact-version cold restoration from both providers; backup ID `backup-8bce80179c524ace8f4a52cb702b3716` (EXP053).
+- **REAL PASS:** first daily Interactive Windows Task Scheduler 04:15 VPS-local run of isolated ProgramData encrypted AWS/B2 backup, independently verified recovery; backup ID `backup-83688210120f48fa8dd62491720df132` (EXP054–055). Natural next-day recurrence not yet observed; full Windows logoff prevents this Interactive job.
+- **GFS:** 30 daily / 8 weekly / 12 monthly deterministic read-only retention preview, protected milestone pinning, least-privilege AWS reader `s3:ListBucketVersions` correction, two retained real cold restores PASS and paired four exact AWS + four exact B2 cloud data/receipt versions PASS (EXP056–059). **No deletions; cloud pruning is NOT enabled**; new code remains in open draft PR #85.
+- Backups cover **one S02 SQLite only**, not all application/research/IP. Old failed experiments preserved; no merge or live trading. See [current operations](docs/vowsig-operational-status-2026-10-24.md), Issue #67.
+
 ## 2026-09-16
 
 - Initialized project source of truth.

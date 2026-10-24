@@ -46,6 +46,13 @@ try {
  Need ($LASTEXITCODE -eq 0) "Stable isolated Python creation failed"
  $SiteDest = Join-Path $Stage ".venv\Lib\site-packages"
  Copy-Item -Path (Join-Path $SeedSite "*") -Destination $SiteDest -Recurse -Force
+ # Avoid duplicate old dist-info causing nondeterministic SDK pin resolution.
+ foreach ($Package in @("boto3","botocore","s3transfer","jmespath","python_dateutil","urllib3","six")) {
+   Get-ChildItem -LiteralPath $SiteDest -Force | Where-Object {
+     $_.Name -eq $Package -or $_.Name -eq ($Package + ".py") -or
+     $_.Name -like ($Package + "-*.dist-info")
+   } | ForEach-Object { Remove-Item -LiteralPath $_.FullName -Recurse -Force }
+ }
  Copy-Item -Path (Join-Path $SdkSite "*") -Destination $SiteDest -Recurse -Force
  $StagedPy = Join-Path $Stage ".venv\Scripts\python.exe"
  Need (Test-Path -LiteralPath $StagedPy -PathType Leaf) "Stable Python missing"
@@ -60,7 +67,9 @@ from trading_signal_intelligence.recovery import manual_dual_cloud_backup_v0_1
 from trading_signal_intelligence.recovery import windows_credential_manager_v0_1
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import boto3, sqlite3
-pins={"boto3":"1.43.114","botocore":"1.43.114","s3transfer":"0.19.3","jmespath":"1.0.1"}
+pins={"boto3":"1.43.114","botocore":"1.43.114",
+      "s3transfer":"0.19.3","jmespath":"1.0.1",
+      "python-dateutil":"2.9.0.post0","urllib3":"2.8.0","six":"1.17.0"}
 assert all(metadata.version(key) == version for key,version in pins.items())
 print("STABLE_PYTHON_SDK=PASS")
 '@

@@ -130,8 +130,7 @@ def test_live_backup_safety_holds_prevent_preparation(tmp_path, outage):
     assert checked["status"] == "GFS_SAFETY_HOLD"
     assert checked["network_requests"] == 0
     with pytest.raises(q.PlanOnlyHold):
-        prepare(history, base, lambda **kw: None,
-                review_latch_present=True) if False else q.prepare_one_unsigned_plan(
+        q.prepare_one_unsigned_plan(
                     history=history, now_utc=TIME,
                     review_latch_present=(outage == "latch"),
                     base_directory=base, aws_reader=None, b2_reader=None,
@@ -278,3 +277,60 @@ def test_cli_refuses_prepare_without_provider_read_cost_ack(tmp_path, capsys):
                     str(tmp_path / "not-valid-history.jsonl")])
     assert ret == 2
     assert json.loads(capsys.readouterr().out)["status"] == "GFS_PLAN_ONLY_HOLD"
+
+
+def test_cli_prepare_without_expired_backups_does_not_touch_vault(
+    tmp_path, capsys, monkeypatch
+):
+    history = [success(i, i+1) for i in range(12)]
+    source = tmp_path / "VowSig-S02-AutoBackup" / "state" / "history.jsonl"
+    source.parent.mkdir(parents=True)
+    source.write_text("\n".join(json.dumps(x) for x in history) + "\n")
+    monkeypatch.setattr(vault, "read_plan_passphrase",
+                        lambda: pytest.fail("vault should not be accessed"))
+    result_code = cli.main([
+        "--mode", "prepare", "--history", str(source),
+        "--plan-root", str(tmp_path / "ProgramData" / q.STATE_ROOT),
+        "--acknowledge-read-cost", "I_ACCEPT_READ_ONLY_CLOUD_RESTORE_COST",
+    ])
+    result = json.loads(capsys.readouterr().out)
+    assert result_code == 0
+    assert result["status"] == "NO_ELIGIBLE_BACKUP"
+    assert result["network_requests"] == 0
+
+
+def test_existing_pending_private_files_without_receipt_force_hold(monkeypatch, tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    (base / "pending" / (policy["eligible_ids"][0] + ".aesgcm")).write_bytes(b"partial")
+    with pytest.raises(q.PlanOnlyHold, match="paired|invalid"):
+        prepare(history, base, verify)
+    assert events == []
+
+
+def test_prepare_no_retained_cold_restore_proof_never_writes_plan(monkeypatch, tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    def invalid_restore(**kw):
+        events.append("cold_restore")
+        return {"status": "NOT_VERIFIED", "provider_deletions_performed": 0}
+    with pytest.raises(q.PlanOnlyHold):
+        prepare(history, base, invalid_restore)
+    assert events == ["inventory", "cold_restore"]
+    assert not list((base / "pending").iterdir())
+    assert (base / "state" / "prepare-running.lock").exists()
+
+
+def test_no_owner_approval_signature_or_real_delete_capability_in_queue(monkeypatch, tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    result = prepare(history, base, verify)
+    receipt = json.loads(
+        (base / "state" / ("review-" + result["backup_id"] + ".json")).read_text())
+    assert set(receipt) == {
+        "status", "backup_id", "sealed_sha256", "not_before_utc",
+        "expires_utc", "plan_signed", "deletion_authorized",
+        "cloud_deletions_performed",
+    }
+    assert receipt["plan_signed"] is False
+    assert receipt["deletion_authorized"] is False

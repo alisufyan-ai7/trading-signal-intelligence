@@ -1,5 +1,11 @@
 # VowSig — current operating status and verified handoff (2026-10-24)
 
+## GitHub queue update — 2026-10-26 (not a new VPS runtime check)
+
+As of this GitHub verification, 18 open PRs were reduced to **two open draft PRs**: [#87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) (the complete **39-file** S02 backup + GFS source-and-test implementation, preserved byte-identically from original #85) and [#50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) (independent frozen-dependency impact guard). Original **#85 and #77–84 were closed as superseded**, and their complete 131-commit ancestry preserved in `archive/pr85-original-stacked-backup-history-20261024` at pinned source SHA `0c16270e4fca9f1f0124acf776ee4d2a0604de83`. All original EXP043–059 research evidence, October 24 owner-run PASS/HOLD results and historical AWS/SDK artifacts now reside in `main` through documentation-preservation merges #58, #86 and #88. See [PR disposition and recovery register](pr-queue-review-2026-10-24.md).
+
+**Important:** The dated S02 operational observations below remain **October 24 evidence**, not a verified October 26 runtime state. A newer natural scheduled-backup run has not been independently confirmed in this chat. Neither draft PR was merged or deployed. Physical 30d/8w/12m cloud pruning is **disabled**; no cleanup IAM roles or DeleteObject program was activated by PR housekeeping.
+
 > **Current operational overlay / read this first.** This document reconciles the owner's exact Windows VPS output and [Issue #67](https://github.com/alisufyan-ai7/trading-signal-intelligence/issues/67) against the private repository on 2026-10-24. It **supersedes older statements about the S02 backup implementation** in the 2026-10-08 design and the early-October status files. Earlier gate, product, trading and crypto research records are historical or belong to separate workstreams; nothing here silently authorizes changes to them.
 
 ## Trusted scope and sources

@@ -1,5 +1,9 @@
 # Current Next Actions
 
+## 2026-10-26 — post-PR-cleanup next actions
+
+GitHub queue is down to **two DRAFT PRs**: [#87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) for exact 39-file S02 encrypted backup/GFS code and tests, and [#50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) for the independent frozen-dependency CI gate. Historic #85 and #77–84 were closed and pinned in an archive branch, while evidence EXP043–059 is now on `main` (merges #86/#88). See [complete audit register](pr-queue-review-2026-10-24.md). Next operator work: (1) observe actual latest natural 04:15 VPS backup result since Oct24, separately from already-proven first launch; (2) focused **native Windows** tests and security review on the exact #87 head before a new code-merge decision; (3) independent #50 rebase/CI failure-mode tests before any governance merge; (4) separately permissioned and approved cloud pruning design (no automatic deletes currently). PR cleanup did not deploy any new code or change installed tasks.
+
 ## 2026-10-24 — current backup/GFS next actions (Issue #67)
 
 The real **manual** and first **scheduler-invoked** S02 AWS+B2 backups and cold restores PASS; first two recovery points remain pinned. The 04:15 VPS-local Interactive daily backup task is ACTIVE; **no automatic GFS pruning** has been deployed. See [current operational handoff](vowsig-operational-status-2026-10-24.md) and [EXP059 inventory PASS](../research/recovery/EXP-2026-059-gfs-two-cloud-read-only-version-inventory-pass-2026-10-24.md).

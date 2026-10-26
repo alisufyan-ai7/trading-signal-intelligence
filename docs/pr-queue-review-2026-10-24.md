@@ -1,5 +1,28 @@
 # GitHub open PR queue — source/commit audit and safe disposition (2026-10-24)
 
+## FINAL VERIFIED DISPOSITION — 2026-10-26
+
+**The original 18-open-PR cleanup is COMPLETE.** GitHub now shows **exactly TWO OPEN PRs**, both draft and unmerged:
+
+- [PR #87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87), exact head `391ebe912a34d42b8a55759e3e91a0966bc0b354`: standalone 39-file S02 AWS/B2 recovery and GFS code/test successor (5 operator scripts, 16 Python recovery modules, 18 tests), based directly on main. Git trees independently confirmed ALL 39 blob SHA values are identical to the complete frozen original PR85 source, including 9 inherited P1–P8 files. **Native Windows tests and security gate outstanding; not merged or deployed.**
+- [PR #50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50), exact head `e1fb7073100746848bce8ee1ee0b823f5528d14b`: separate frozen dependency/CODEOWNERS/CI change-impact control. Its previous workflow was SKIPPED, not a test pass. Kept open for a separate governance/CI verification before any merge.
+
+**Original PR accounting:** originally 18; **16 closed without merge** (#48, #49, #51, #55, #68, #75, #76, #77–#85), **one merged** (#58), and **one still open** (#50). A *new* successor #87 replaced #85 in the open queue, so **18 originally open → 2 now open**. Two newly created preservation PRs (#86 and #88) were also merged, yielding **three merges during cleanup** (#58, #86, #88). No branch deletions or force pushes occurred.
+
+**Evidence custody and exact merge commits:**
+- #58 merged `b024e142ba84a8679cb6666d1519e7406035ca14`: original two customer product-direction and screenshot observation documents.
+- #86 merged `e7fe231e38e2221869080f7529440189c062e707`: October 24 operational status, EXP051–059 verified evidence, permanent original-18 PR review ledger and **11 source-hash-verified old PR68/75/76 files** moved to inert archival paths. Original Python file contents were preserved with `.py.txt` names to prevent automatic execution/test discovery.
+- #88 merged `8d2973963f18f2652628995682b89f8fa04c4efc`: all eight original P1–P8 EXP043–050 offline research records and index, retaining negative and hold evidence.
+- A dedicated retained Git branch `archive/pr85-original-stacked-backup-history-20261024` points to exact frozen original PR85 head `0c16270e4fca9f1f0124acf776ee4d2a0604de83`. All exact PR77–84 heads were independently proven ancestors of this original full stacked backup history, including failed/corrected commit sequences. Original closed PR discussions, commits, diffs and source branch refs remain accessible. Avoid deleting this archive branch.
+- PR #87's final 39 active script/module/test file blobs were compared against original PR85 by **Git tree SHA**, all 39 matched; no missing original file remained after combining merged-main preserved documentation and the new code-only successor.
+
+**Safety caveat:** All three merges were documentation/evidence only (even if the archive includes inert text-suffixed Python code). No installed Windows VPS S02 backup task, other four scheduled tasks, cloud IAM or cloud object, S02 SQLite ledger, crypto/publication program, or live trading was modified. GFS automatic deletion remains NOT implemented or authorized. The last owner-confirmed real backup/cold-recovery/inventory evidence was October 24; the subsequent natural scheduled task must still be checked rather than assumed successful.
+
+**Recovery for an unexpected closure:** Open the closed GitHub PR number below, read Conversation/Commits/Files changed, use its original exact head SHA and/or the permanent original PR85 archive branch, then create a newly tested prospective PR against present main. A closed PR can be reopened. Nothing was discarded by deleting a branch or overwriting original commits.
+
+The 18-row matrix below is the **historical decision register as originally prepared**. Any then-future wording such as KEEP OPEN #85 or planned closures has been superseded by this verified final section.
+
+---
 **Repository:** private `alisufyan-ai7/trading-signal-intelligence` only. **Owner request:** review all 18 open PRs, inspect commit histories and cumulative diffs, preserve every valuable artifact and ability to revisit closed items, merge demonstrably safe work, and reduce the stale/open queue without jeopardizing production. This page is a permanent snapshot/review ledger. It does not authorize code deployment, scheduler changes, broker execution, private-data changes, object deletion, lifecycle retention, or restoring earlier failed releases.
 
 ## Audit methodology and confidence

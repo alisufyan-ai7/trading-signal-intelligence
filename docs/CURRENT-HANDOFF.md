@@ -1,5 +1,9 @@
 # Current Handoff / Operating Contract
 
+## GitHub cleanup verification — 2026-10-26
+
+Only [PR #87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) and [PR #50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) are OPEN; both remain DRAFT and UNMERGED. #87 is the complete final 39-file S02 encrypted backup/GFS code + regression-test review surface, with all file blob SHAs identical to the preserved original #85. Original #85's **full 131-commit stacked lineage** and earlier #77–84 commits are pinned in `archive/pr85-original-stacked-backup-history-20261024`; old stage PRs were closed, not erased. All original offline-to-real backup evidence EXP043–059 and historic IAM/SDK artifacts are now on `main` via documentary merges #58/#86/#88. Consult [PR queue final disposition](pr-queue-review-2026-10-24.md) before further code merges. Owner-verified Oct24 AWS/B2 cold-restores and exact cloud inventories remain historical PASS; no Oct26 natural recurrence or active cloud pruning has been verified. No VPS, cloud or trading execution changes were part of GitHub housekeeping.
+
 ## 2026-10-24 — verified backup, recovery and GFS operating overlay
 
 **Start with the [current operational handoff](vowsig-operational-status-2026-10-24.md) and [Issue #67](https://github.com/alisufyan-ai7/trading-signal-intelligence/issues/67) before using older 2026-10-01/12 checkpoints.** The owner proved real AWS S3 + Backblaze B2 encrypted S02 backup/restores twice: manual `backup-8bce80179c524ace8f4a52cb702b3716` and first installed **daily 04:15 VPS-local Interactive task** `backup-83688210120f48fa8dd62491720df132`. Both are protected and independently restorable from each provider. The 2026-10-24 GFS read-only inventory verified two backup IDs and **four exact versions per cloud** (data and recovery manifests) with no deletions.

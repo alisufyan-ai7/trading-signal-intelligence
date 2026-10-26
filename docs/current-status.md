@@ -1,5 +1,9 @@
 # Current Status
 
+## 2026-10-26 — GitHub PR maintenance and preservation CLOSED PASS
+
+Original **18 open PRs → 2 open draft PRs**: [#87 backup/GFS exact 39-file code+test successor](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) and [#50 frozen-dependency CI safeguard](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50). The full original #85 + #77–84 source lineage is pinned in `archive/pr85-original-stacked-backup-history-20261024`; all final source/test Git blob SHAs were copied unchanged to #87, and historic EXP043–059 evidence and product reports were merged into `main` via documentation-only #58/#86/#88. Original #85 was closed **unmerged**; no code release or VPS cutover occurred. Consult [the PR audit](pr-queue-review-2026-10-24.md) for exact SHAs and safe reopening. All VPS execution assertions below remain dated October 24; subsequent daily natural recurrence has not been observed here, and cloud pruning is not active.
+
 ## 2026-10-24 — current verified VowSig S02 offsite protection
 
 **Read [the canonical operational status](vowsig-operational-status-2026-10-24.md), [Issue #67](https://github.com/alisufyan-ai7/trading-signal-intelligence/issues/67), and draft PR #85 before any backup/retention action.** Real manual and first *scheduled* AES-encrypted S02 backups and independently verified AWS+B2 restores **PASS**; a daily **04:15 VPS-local** backup task is installed in isolated ProgramData under Windows user `fxut9592472\trader`. Both first recovery points are protected. AWS/B2 exact cloud-version inventories **PASS** (two backup IDs, four data+manifest object versions in each provider, zero deletions). Owner did not yet provide the next naturally scheduled run.

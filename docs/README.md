@@ -1,5 +1,9 @@
 # Documentation Index
 
+## October 26 GitHub PR cleanup
+
+All original 18 open PRs were classified and safely reduced to [two open drafts](pr-queue-review-2026-10-24.md): [#87 S02 backup/GFS code + tests](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87), and [#50 frozen-dependency governance guard](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50). Original #85 and older #77–84 backed-up stage history is retained in `archive/pr85-original-stacked-backup-history-20261024`; unique past IAM/SDK files are in [the inert source archive](../research/archive/pr-queue-2026-10-24/README.md). Source evidence EXP043–059 is committed on `main` and the actual Windows operator results remain dated October 24. No executable PR87 release, VPS cutover or cloud GFS expiration occurred during cleanup.
+
 ## Start here — latest verified status, 2026-10-24
 
 - [VowSig current operational status and strict handoff](vowsig-operational-status-2026-10-24.md) — active installed daily S02 dual-cloud backup, actual real recoveries, two-provider version audit, source pins and next actions.

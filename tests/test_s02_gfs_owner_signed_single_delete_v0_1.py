@@ -331,3 +331,84 @@ def test_deleter_identity_must_be_distinct_from_reader():
             delete_credentials=(("AWS-SAME","private"),("b2-data","private"),
                                 ("b2-manifest","private")),
         )
+
+
+def test_signed_capsule_tampering_fails_before_version_authorization():
+    case = sealed_case()
+    rec, before, after, candidate, sealed, sig, public = case
+    damaged = bytearray(sealed.blob)
+    damaged[-4] ^= 1
+    with pytest.raises(approval.GfsDeleteHold, match="signature invalid"):
+        approval.verify_owner_signed_candidate(
+            blob=bytes(damaged), private_phrase=PHRASE,
+            signature=sig, pinned_owner_public_key=public,
+            current_utc=(NOW + timedelta(days=8)).isoformat(),
+            current_policy=after, version_inventory=inventory_for(rec, after))
+
+
+def test_second_sealed_nonce_cannot_reset_candidate_journal(monkeypatch, tmp_path):
+    case = sealed_case()
+    aws, b2, directory, calls, args = _fake_executor(monkeypatch, case, tmp_path)
+    actor.execute_single_owner_approved_prune(**args)
+    rec, before, after, candidate, *_ = case
+    new_capsule = approval.freeze_one_candidate(
+        policy=before, candidate=candidate,
+        version_inventory=inventory_for(rec, before),
+        prepared_utc=NOW.isoformat(timespec="seconds"),
+        private_phrase=PHRASE)
+    secret, public = keys()
+    renewed_signature = secret.sign(approval.approval_message(new_capsule.sha256))
+    args["sealed_blob"] = new_capsule.blob
+    args["signature"] = renewed_signature
+    args["pinned_owner_public_key"] = public
+    with pytest.raises(actor.GfsExecutionHold, match="prior deletion attempt"):
+        actor.execute_single_owner_approved_prune(**args)
+    assert len(aws.deleted) + sum(len(x.deleted) for x in b2) == 4
+
+
+def test_review_latch_blocks_all_cloud_contact_even_when_fence_open(monkeypatch, tmp_path):
+    case = sealed_case()
+    aws, b2, directory, calls, args = _fake_executor(monkeypatch, case, tmp_path)
+    args["review_latch_present"] = True
+    with pytest.raises(actor.GfsExecutionHold, match="incident latch"):
+        actor.execute_single_owner_approved_prune(**args)
+    assert not calls
+    assert not list(directory.iterdir())
+
+
+def test_unchanged_owner_signature_does_not_approve_changed_b2_manifest():
+    case = sealed_case()
+    rec, before, after, candidate, *_ = case
+    fresh = inventory_for(rec, after)
+    original = fresh["b2_manifest"][candidate]
+    fresh["b2_manifest"][candidate] = inv.ObjectVersion(
+        original.provider, original.kind, candidate,
+        original.key, "different-b2-version-2026")
+    with pytest.raises(approval.GfsDeleteHold, match="versions changed"):
+        verify(case, inventory=fresh)
+
+
+def test_fake_inventory_fails_on_extra_cloud_version(monkeypatch):
+    rec, before, after, _ = fixtures()
+    expected = set(before["keep_ids"]) | set(before["eligible_ids"]) | set(before["protected_ids"])
+    class Reader:
+        def __init__(self, name):
+            self.name = name
+        def list_object_versions(self, **kwargs):
+            kind = "data" if "approved-s02" in kwargs["Prefix"] else "manifest"
+            role = ("aws_" if self.name == "AWS_S3" else "b2_") + kind
+            out = []
+            for bid in sorted(expected):
+                record = _fake_object(bid, role)
+                out.append({"Key": record.key, "VersionId": record.version_id,
+                            "IsLatest": True, "Size": 100})
+            if self.name == "AWS_S3" and kind == "data":
+                extra = _fake_object("backup-" + "f"*32, role)
+                out.append({"Key": extra.key, "VersionId": extra.version_id,
+                            "IsLatest": True, "Size": 100})
+            return {"Versions": out, "DeleteMarkers": [],
+                    "IsTruncated": False}
+    with pytest.raises(exact.GfsFullInventoryHold):
+        exact.read_exact_version_inventory(
+            aws_reader=Reader("AWS_S3"), b2_reader=Reader("BACKBLAZE_B2"),
+            expected_ids=expected)

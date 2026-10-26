@@ -45,3 +45,23 @@ S02 backup code is still draft [PR #87](https://github.com/alisufyan-ai7/trading
 ## Open limitations (do not overstate)
 
 The owner-signed plan and safe deletion algorithm are implemented, but there is deliberately **NO RUNNABLE REAL DELETE CLI OR ACTIVE PERMISSIONS**, and the release-fence source remains false. No full native Windows test output, provider-signed 403/204 response calibration, mixed provider partial-upload/retention-version hold recovery, external immutable clock anchor, delivered cleanup alerting, scheduled task, or destructive pilot has been observed PASS yet. Do not claim automatic cloud pruning is ACTIVE or that storage costs are already reduced.
+
+
+## 2026-10-26 — First owner-native-Windows targeted synthetic acceptance: CLOSED PASS
+
+**Verified source SHA:** `2cf16b8d496d4d85c5b5350c507808ffd610643d` (frozen complete candidate before this documentation-only amendment). Owner executed the exact Git SHA and per-file blob pins in a disposable isolated checkout, while the working production tree stayed clean. Exact result:
+
+```text
+CORRECTED_GFS_SOURCE=VERIFIED
+REAL_CLOUD_DELETION_FENCE=CLOSED
+59 passed in 11.98s
+GFS_SYNTHETIC_REGRESSION=PASS
+REAL_CLOUD_DELETIONS_PERFORMED=0
+PRODUCTION_UNCHANGED=PASS
+```
+
+This covers **59 tests in four synthetic/offline GFS suites**, including **21 new signed-plan / exact-version / one-shot journal tests**. The earlier output of **50 PASS / 7 FAIL** remains a historical negative checkpoint, not erased. Those failures traced to an invalid eight-day test simulation omitting a *new* successful backup (correctly activating the existing `NO_RECENT_VERIFIED_BACKUP` hold), plus a rotating latest-two protected-ID assertion. The correction adds fresh synthetic scheduled history while affirmatively testing the actual eight-day outage must still HOLD; it permits old protected IDs to move from the recent-two set into the still-protected GFS kept set, never into eligibility.
+
+**Milestone status:** synthetic test suite now **CLOSED PASS** at the exact pinned SHA. **CI workflow failures remain separate unverified failure states**; no GitHub Actions green conclusion has been demonstrated. No real cloud provider DELETE API, owner delete-identity IAM, live Windows ACL/restore cutover, trusted 7-day approval-clock anchor or operator plan-signature custody was exercised. No GFS prune has occurred. `PRODUCTION_CLOUD_DELETE_ENABLED=False`, no deletion task installed, existing 04:15 S02 backup unchanged.
+
+**Next pre-release architecture review:** executor currently uses one `private_phrase` for both sealed plan decryption and actual preserved backup cold-restore; separate plan encryption and recovery secret inputs must be enforced and tested before live release. This is a **future change that would require a fresh regression run** and must not be mixed with the 59/59 source acceptance claim. Also test native Windows owner-only journal ACL and provider-specific delete response behaviors using independently scoped credentials *without granting real delete access prematurely*.

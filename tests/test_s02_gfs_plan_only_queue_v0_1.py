@@ -1,0 +1,280 @@
+"""Synthetic-only unattended S02 GFS eligibility, private capsule and owner queue.
+
+No provider credentials, actual cloud endpoints, signing key or delete identity.
+"""
+from __future__ import annotations
+
+import ast
+import inspect
+import json
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+import pytest
+
+from trading_signal_intelligence.recovery import s02_gfs_retention_policy_v0_1 as gfs
+from trading_signal_intelligence.recovery import s02_gfs_plan_only_queue_v0_1 as q
+from trading_signal_intelligence.recovery import s02_gfs_plan_only_vault_v0_1 as vault
+from trading_signal_intelligence.recovery import s02_gfs_cloud_inventory_v0_1 as cloud
+from trading_signal_intelligence.recovery import s02_gfs_owner_signed_prune_plan_v0_1 as signed
+from scripts import vowsig_s02_gfs_plan_only_v0_1 as cli
+
+NOW = datetime(2026, 10, 26, 12, tzinfo=timezone.utc)
+TIME = NOW.isoformat(timespec="seconds")
+PLAN = "SYNTHETIC-ONLY-PLAN-ENCRYPTION-2026-ISOLATED"
+RECOVERY = "SYNTHETIC-ONLY-SQLITE-RECOVERY-2026-SEPARATE"
+
+
+def success(days: int, i: int) -> dict:
+    return {
+        "at_utc": (NOW - timedelta(days=days)).isoformat(timespec="seconds"),
+        "status": gfs.PASS, "backup_id": "backup-" + format(i, "032x"),
+        "record_count": 30, "aws_restored": True, "b2_restored": True,
+        "scheduled": True,
+    }
+
+
+def fixtures(tmp_path, *, count=120):
+    history = [success(i, i+1) for i in range(count)]
+    policy = gfs.choose_gfs(history, as_of_utc=TIME)
+    assert policy["eligible_ids"]
+    assert set(policy["hold_reasons"]) == q.EXPECTED_HOLDS
+    base = tmp_path / "ProgramData" / q.STATE_ROOT
+    for part in ("pending", "state"):
+        sub = base / part
+        sub.mkdir(parents=True)
+        sub.chmod(0o700)
+    return history, policy, base
+
+
+def versions(ids):
+    return {
+        role: {bid: cloud.ObjectVersion(
+            "AWS_S3" if role.startswith("aws") else "BACKBLAZE_B2",
+            "manifest" if role.endswith("manifest") else "data",
+            bid,
+            ("pilot/vowsig/backup-receipts/v1/" + bid + ".aesgcm"
+             if role.endswith("manifest") else
+             "pilot/vowsig/approved-s02/v1/" + bid + "/" + "a"*64 + ".aesgcm"),
+            "synthetic-version-" + role + bid[-8:],
+        ) for bid in ids}
+        for role in signed.EXPECTED_OPERATIONS
+    }
+
+
+def mock_dependencies(monkeypatch, history, policy, *, fail=None):
+    events = []
+    def list_versions(**kw):
+        events.append("inventory")
+        assert kw["expected_ids"] == (set(policy["keep_ids"]) |
+                                      set(policy["eligible_ids"]) |
+                                      set(policy["protected_ids"]))
+        if fail == "inventory":
+            raise OSError("SYNTHETIC CLOUD ERROR DO_NOT_LEAK")
+        return versions(kw["expected_ids"])
+    def cold_restore(**kw):
+        events.append("cold_restore")
+        assert kw["backup_ids"] == sorted(set(policy["keep_ids"]) |
+                                           set(policy["protected_ids"]))
+        assert kw["recovery_passphrase"] == RECOVERY
+        if fail == "restore":
+            raise ValueError("SYNTHETIC RECOVERY SECRET DO_NOT_LEAK")
+        return {"status": "ALL_SELECTED_RETAINED_COLD_RESTORES_VERIFIED",
+                "verified_backup_count": len(kw["backup_ids"]),
+                "provider_deletions_performed": 0}
+    monkeypatch.setattr(q.inventory, "read_exact_version_inventory", list_versions)
+    return events, cold_restore
+
+
+def prepare(history, base, cold_restore, **kwargs):
+    return q.prepare_one_unsigned_plan(
+        history=history, now_utc=TIME, review_latch_present=False,
+        base_directory=base, aws_reader=object(), b2_reader=object(),
+        reader_credentials=(("fake-reader-aws", "fake-secret"),
+                            ("fake-reader-b2", "fake-secret")),
+        plan_passphrase=PLAN, recovery_passphrase=RECOVERY,
+        retained_restore=cold_restore, **kwargs,
+    )
+
+
+def test_default_local_check_no_eligibility_no_network_no_disk(tmp_path):
+    history = [success(i, i+1) for i in range(12)]
+    result = q.check_eligibility(
+        history=history, now_utc=TIME, review_latch_present=False)
+    assert result["status"] == "NO_ELIGIBLE_BACKUP"
+    assert result["network_requests"] == 0
+    assert result["provider_deletions_performed"] == 0
+    assert list(tmp_path.iterdir()) == []
+
+
+def test_healthy_old_histories_require_exact_owner_review_holds(tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    check = q.check_eligibility(
+        history=history, now_utc=TIME, review_latch_present=False)
+    assert check["status"] == "ELIGIBLE_FOR_PRIVATE_PREPARATION"
+    assert set(check["hold_reasons"]) == q.EXPECTED_HOLDS
+    assert check["eligible_count"] > 0
+    assert check["cloud_deletion_authorized"] is False
+
+
+@pytest.mark.parametrize("outage", ["latch", "stale", "unknown_history"])
+def test_live_backup_safety_holds_prevent_preparation(tmp_path, outage):
+    history, policy, base = fixtures(tmp_path)
+    if outage == "stale":
+        history = [success(i+40, i+1) for i in range(120)]
+    if outage == "unknown_history":
+        history = [*history, {"status": "REVIEW_REQUIRED_PARTIAL_CLOUD_STATE_POSSIBLE"}]
+    checked = q.check_eligibility(
+        history=history, now_utc=TIME,
+        review_latch_present=(outage == "latch"))
+    assert checked["status"] == "GFS_SAFETY_HOLD"
+    assert checked["network_requests"] == 0
+    with pytest.raises(q.PlanOnlyHold):
+        prepare(history, base, lambda **kw: None,
+                review_latch_present=True) if False else q.prepare_one_unsigned_plan(
+                    history=history, now_utc=TIME,
+                    review_latch_present=(outage == "latch"),
+                    base_directory=base, aws_reader=None, b2_reader=None,
+                    reader_credentials=(), plan_passphrase=PLAN,
+                    recovery_passphrase=RECOVERY,
+                )
+    assert not list((base / "pending").iterdir())
+
+
+def test_healthy_one_pending_plan_is_private_encrypted_unsigned(monkeypatch, tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    out = prepare(history, base, verify)
+    assert out["status"] == "PENDING_SEPARATE_OWNER_APPROVAL"
+    assert out["plan_signed"] is False
+    assert out["provider_deletions_performed"] == 0
+    assert out["cloud_deletion_authorized"] is False
+    assert out["backup_id"] in policy["eligible_ids"]
+    assert out["backup_id"] not in policy["protected_ids"]
+    assert events == ["inventory", "cold_restore"]
+    private = base / "pending" / (out["backup_id"] + ".aesgcm")
+    public = base / "state" / ("review-" + out["backup_id"] + ".json")
+    assert private.is_file() and public.is_file()
+    assert not (base / "state" / "prepare-running.lock").exists()
+    ciphertext = private.read_bytes()
+    assert ciphertext.startswith(signed.MAGIC)
+    assert PLAN.encode() not in ciphertext
+    assert RECOVERY.encode() not in ciphertext
+    assert out["backup_id"].encode() not in ciphertext
+    assert b"synthetic-version" not in ciphertext
+    meta = json.loads(public.read_text())
+    assert meta["sealed_sha256"] == out["sealed_sha256"]
+    assert meta["plan_signed"] is False
+    assert meta["deletion_authorized"] is False
+    assert "objects" not in meta and "VersionId" not in public.read_text()
+    plan = signed._decrypt(ciphertext, PLAN)
+    assert plan["candidate"] == out["backup_id"]
+    assert len(plan["objects"]) == 4
+
+
+def test_second_unattended_run_preserves_original_capsule_no_cloud_cost(monkeypatch, tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    out = prepare(history, base, verify)
+    before = (base / "pending" / (out["backup_id"] + ".aesgcm")).read_bytes()
+    result = prepare(history, base, verify)
+    after = (base / "pending" / (out["backup_id"] + ".aesgcm")).read_bytes()
+    assert result["status"] == "PENDING_OWNER_REVIEW"
+    assert result["network_requests"] == 0
+    assert events == ["inventory", "cold_restore"]
+    assert before == after
+
+
+def test_active_or_abandoned_preparation_lock_blocks_provider_requests(monkeypatch, tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    (base / "state" / "prepare-running.lock").write_text("abandoned")
+    with pytest.raises(q.PlanOnlyHold, match="review"):
+        prepare(history, base, verify)
+    assert events == []
+
+
+@pytest.mark.parametrize("bad", [None, "", PLAN])
+def test_missing_or_aliased_backup_secret_blocks_before_cloud(monkeypatch, tmp_path, bad):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    with pytest.raises(q.PlanOnlyHold, match="independent"):
+        q.prepare_one_unsigned_plan(
+            history=history, now_utc=TIME, review_latch_present=False,
+            base_directory=base, aws_reader=object(), b2_reader=object(),
+            reader_credentials=(), plan_passphrase=PLAN,
+            recovery_passphrase=bad,
+        )
+    assert events == [] and not list((base / "state").iterdir())
+
+
+@pytest.mark.parametrize("broken", ["inventory", "restore"])
+def test_failed_provider_audit_leaves_fail_closed_operator_lock(monkeypatch, tmp_path, broken):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy, fail=broken)
+    with pytest.raises(q.PlanOnlyHold) as exc:
+        prepare(history, base, verify)
+    assert "DO_NOT_LEAK" not in str(exc.value)
+    assert (base / "state" / "prepare-running.lock").is_file()
+    assert not list((base / "pending").iterdir())
+    with pytest.raises(q.PlanOnlyHold):
+        prepare(history, base, verify)
+
+
+def test_unrecognized_private_file_or_orphan_receipt_holds(monkeypatch, tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    (base / "pending" / "unknown.aesgcm").write_bytes(b"not owner signed")
+    with pytest.raises(q.PlanOnlyHold):
+        prepare(history, base, verify)
+    assert events == []
+
+
+def test_wrong_programdata_root_never_prepares(monkeypatch, tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    with pytest.raises(q.PlanOnlyHold):
+        prepare(history, base.parent, verify)
+    assert events == []
+
+
+def test_plan_passphrase_windows_vault_is_separate_and_injectable():
+    assert vault.PLAN_TARGET != "VowSig.S02.Recovery.Passphrase.v1"
+    assert vault.PLAN_USERNAME == "VowSigGFSPlanner"
+    assert vault.read_plan_passphrase(lookup=lambda: PLAN) == PLAN
+    with pytest.raises(vault.GfsPlannerVaultHold):
+        vault.read_plan_passphrase(lookup=lambda: "")
+    with pytest.raises(vault.GfsPlannerVaultHold):
+        vault.read_plan_passphrase(lookup=lambda: None)
+
+
+def test_plan_only_modules_have_no_delete_and_no_owner_private_signature():
+    for module in (q, vault, cli):
+        tree = ast.parse(inspect.getsource(module))
+        found = {node.attr for node in ast.walk(tree)
+                 if isinstance(node, ast.Attribute)}
+        assert not found.intersection({
+            "delete_object", "delete_objects", "DeleteObject",
+            "put_object", "sign", "put_bucket_lifecycle_configuration",
+        })
+    assert q.PRODUCTION_CLOUD_DELETE_ENABLED is False
+
+
+def test_cli_default_check_requires_no_plan_vault_or_provider(tmp_path, capsys):
+    history = [success(i, i+1) for i in range(12)]
+    source = tmp_path / "VowSig-S02-AutoBackup" / "state" / "history.jsonl"
+    source.parent.mkdir(parents=True)
+    source.write_text("\n".join(json.dumps(x) for x in history)+"\n")
+    ret = cli.main(["--history", str(source)])
+    result = json.loads(capsys.readouterr().out)
+    assert ret == 0
+    assert result["network_requests"] == 0
+    assert result["cloud_deletion_authorized"] is False
+    assert not list(tmp_path.glob("**/*.aesgcm"))
+
+
+def test_cli_refuses_prepare_without_provider_read_cost_ack(tmp_path, capsys):
+    ret = cli.main(["--mode", "prepare", "--history",
+                    str(tmp_path / "not-valid-history.jsonl")])
+    assert ret == 2
+    assert json.loads(capsys.readouterr().out)["status"] == "GFS_PLAN_ONLY_HOLD"

@@ -62,10 +62,12 @@ def versions(ids):
     }
 
 
-def mock_dependencies(monkeypatch, history, policy, *, fail=None):
+def mock_dependencies(monkeypatch, history, policy, *, fail=None, base=None):
     events = []
     def list_versions(**kw):
         events.append("inventory")
+        if base is not None:
+            assert (base / "state" / "prepare-running.lock").is_file()
         assert kw["expected_ids"] == (set(policy["keep_ids"]) |
                                       set(policy["eligible_ids"]) |
                                       set(policy["protected_ids"]))
@@ -74,6 +76,8 @@ def mock_dependencies(monkeypatch, history, policy, *, fail=None):
         return versions(kw["expected_ids"])
     def cold_restore(**kw):
         events.append("cold_restore")
+        if base is not None:
+            assert (base / "state" / "prepare-running.lock").is_file()
         assert kw["backup_ids"] == sorted(set(policy["keep_ids"]) |
                                            set(policy["protected_ids"]))
         assert kw["recovery_passphrase"] == RECOVERY
@@ -182,6 +186,19 @@ def test_second_unattended_run_preserves_original_capsule_no_cloud_cost(monkeypa
     assert result["network_requests"] == 0
     assert events == ["inventory", "cold_restore"]
     assert before == after
+
+
+
+def test_exclusive_lock_is_held_before_any_provider_inventory_or_restore(
+    monkeypatch, tmp_path
+):
+    history, policy, base = fixtures(tmp_path)
+    events, restore = mock_dependencies(
+        monkeypatch, history, policy, base=base)
+    prepared = prepare(history, base, restore)
+    assert prepared["status"] == "PENDING_SEPARATE_OWNER_APPROVAL"
+    assert events == ["inventory", "cold_restore"]
+    assert not (base / "state" / "prepare-running.lock").exists()
 
 
 def test_active_or_abandoned_preparation_lock_blocks_provider_requests(monkeypatch, tmp_path):

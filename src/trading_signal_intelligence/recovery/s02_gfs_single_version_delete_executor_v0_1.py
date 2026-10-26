@@ -176,13 +176,13 @@ def _same_fresh_policy(
 
 def _restore_kept(
     *, policy: dict, reader_credentials: tuple[tuple[str, str], ...],
-    passphrase: str,
+    recovery_passphrase: str,
 ) -> None:
     ids = sorted(set(policy["keep_ids"]) | set(policy["protected_ids"]))
     try:
         report = cold.audit_retained_recovery_points(
             backup_ids=ids, read_credentials=reader_credentials,
-            recovery_passphrase=passphrase,
+            recovery_passphrase=recovery_passphrase,
         )
         if (report.get("status") != "ALL_SELECTED_RETAINED_COLD_RESTORES_VERIFIED"
                 or report.get("verified_backup_count") != len(ids)
@@ -212,7 +212,7 @@ def _delete_clients(
 
 def execute_single_owner_approved_prune(
     *, sealed_blob: bytes, signature: bytes, pinned_owner_public_key: bytes,
-    private_phrase: str, current_utc: str,
+    plan_passphrase: str, recovery_passphrase: str, current_utc: str,
     history: list[dict], extra_pinned_ids: tuple[str, ...],
     review_latch_present: bool,
     aws_reader: Any, b2_reader: Any,
@@ -229,11 +229,22 @@ def execute_single_owner_approved_prune(
         raise GfsExecutionHold("production cloud deletion release fence is closed")
     if type(review_latch_present) is not bool or review_latch_present:
         raise GfsExecutionHold("operator incident latch present")
+    # Two separately held secrets are mandatory. Never fall back from one
+    # to the other, including when a caller omits or accidentally aliases it.
+    # Validate before ANY provider reads, restores, journal creation or writes.
+    if (type(plan_passphrase) is not str
+            or not 16 <= len(plan_passphrase) <= 256
+            or type(recovery_passphrase) is not str
+            or not 16 <= len(recovery_passphrase) <= 1024
+            or plan_passphrase == recovery_passphrase):
+        raise GfsExecutionHold(
+            "distinct private plan and S02 recovery passphrases required"
+        )
     # Guard all candidate IDs, even if the owner seals a NEW capsule with
     # a fresh random nonce after an earlier partial provider failure.
     _check_prior_operations(Path(journal_directory))
     try:
-        pending_candidate = approvals._decrypt(sealed_blob, private_phrase).get("candidate")
+        pending_candidate = approvals._decrypt(sealed_blob, plan_passphrase).get("candidate")
         if (type(pending_candidate) is not str
                 or not gfs.BACKUP_ID.fullmatch(pending_candidate)):
             raise GfsExecutionHold("invalid sealed deletion candidate")
@@ -256,7 +267,7 @@ def execute_single_owner_approved_prune(
             aws_reader=aws_reader, b2_reader=b2_reader, expected_ids=expected
         )
         permit = approvals.verify_owner_signed_candidate(
-            blob=sealed_blob, private_phrase=private_phrase,
+            blob=sealed_blob, plan_passphrase=plan_passphrase,
             signature=signature, pinned_owner_public_key=pinned_owner_public_key,
             current_utc=current_utc, current_policy=policy,
             version_inventory=exact,
@@ -264,7 +275,7 @@ def execute_single_owner_approved_prune(
         # Complete two-cloud authenticated SQLite restore before ANY write.
         _restore_kept(
             policy=policy, reader_credentials=reader_credentials,
-            passphrase=private_phrase,
+            recovery_passphrase=recovery_passphrase,
         )
         deleters = _delete_clients(
             reader_credentials=reader_credentials,
@@ -314,7 +325,7 @@ def execute_single_owner_approved_prune(
         # ALL protected/retained restore points still recover from BOTH clouds.
         _restore_kept(
             policy=policy, reader_credentials=reader_credentials,
-            passphrase=private_phrase,
+            recovery_passphrase=recovery_passphrase,
         )
         journal.record("POSTCHECK_PASS", permit.backup_id)
         journal.record("COMPLETE", permit.backup_id)

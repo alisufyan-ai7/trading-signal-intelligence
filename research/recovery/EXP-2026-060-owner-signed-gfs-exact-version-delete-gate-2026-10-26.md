@@ -79,3 +79,22 @@ This covers **59 tests in four synthetic/offline GFS suites**, including **21 ne
 - This adds **no credential creation**: prospective plan phrase should be held privately under a separate owner-approved retention-operator key/credential store; existing dedicated off-VPS S02 recovery phrase remains separately held. A future operator launcher, owner ACL, trusted plan approval clock and narrowly scoped deletion identities require separate review.
 
 **Verification boundary:** The source routing and new tests are committed and have received a static GitHub source review. The CI environment still returned a failed workflow with no retrievable job-step logs/artifacts; **do not claim these new tests passed**. An exact-commit disposable **native Windows synthetic-only retest** is the next gate, while `PRODUCTION_CLOUD_DELETE_ENABLED = False` must remain hardcoded and cloud deletions must stay zero. Do not execute, merge to main, provision delete IAM or modify the installed S02 daily backup on the authority of this appendix.
+
+
+## 2026-10-26 — Native Windows secret-separation acceptance: CLOSED PASS at pinned source
+
+The owner executed the unchanged **executable source/test** from head `9e42b8dddd51a688a108cdab28637955d9fb819f` in a disposable Windows checkout with three exact Git file-blob pins verified: owner-plan module `76cac0fbbd40963d1a7d203254506023179327f9`, one-shot executor `1b4c1fce2147a7ac61616f97f03e95a53441504d`, and focused synthetic tests `1bdcc072927b69ab490cb0336b51e6c7e746bddc`.
+
+```text
+SECRET_SEPARATION_SOURCE=VERIFIED
+TWO_INDEPENDENT_SECRET_INPUTS=PASS
+REAL_CLOUD_DELETION_FENCE=CLOSED
+69 passed in 10.14s
+GFS_SECRET_SEPARATION_REGRESSION=PASS
+REAL_CLOUD_DELETIONS_PERFORMED=0
+PRODUCTION_UNCHANGED=PASS
+```
+
+**Result:** **69 passed, 0 failed** across the existing four GFS synthetic suites, including the new distinction between `plan_passphrase` (encrypted owner-signed version-deletion capsule) and `recovery_passphrase` (independent real-retained-backup cold-restore interface exercised using synthetic clients). Missing, invalid, reused and incorrect secrets fail closed. These tests do not call real cloud providers. The original production Git tree on Windows remained at its exact pinned clean HEAD, with no AWS/B2 object/version mutation. The previous 59/59 success remains historical for the earlier executable source; the previous 50 PASS/7 FAIL is also preserved.
+
+**Development gate CLOSED PASS; activation gate remains HOLD.** `PRODUCTION_CLOUD_DELETE_ENABLED = False` remains immutable in accepted code. PR #90 is still draft and stacked on draft #87, without a live retention operator, IAM delete identity or schedule. The separate GitHub Actions run that previously failed without retrievable diagnostics is **not** a passing hosted workflow; current success is native Windows-only. Real delete release still requires a fresh natural task health/recovery check, independent real IAM and prefix-scoping review, trusted public approval timestamp >=7 days, owner Ed25519 signing key custody, owner-only Windows state ACL and crash audit, exact provider delete-response behavior, and specific prospective owner approval. **Do not create a delete task, flip the fence, or delete protected versions merely because the synthetic milestone passed.**

@@ -189,7 +189,7 @@ def approval_message(sealed_sha256: str) -> bytes:
 
 def freeze_one_candidate(
     *, policy: dict, candidate: str, version_inventory: dict,
-    prepared_utc: str, private_phrase: str,
+    prepared_utc: str, plan_passphrase: str,
 ) -> SealedDeletePlan:
     """Read-only, private sealed candidate; never grants authorization."""
     _policy_valid(policy, candidate)
@@ -207,13 +207,13 @@ def freeze_one_candidate(
         "protected_ids": sorted(policy["protected_ids"]),
         "objects": [list(row) for row in rows],
     }
-    blob = _encrypt(record, private_phrase)
+    blob = _encrypt(record, plan_passphrase)
     return SealedDeletePlan(blob, _sha(blob), candidate,
                             record["not_before_utc"], record["expires_utc"])
 
 
 def verify_owner_signed_candidate(
-    *, blob: bytes, private_phrase: str, signature: bytes,
+    *, blob: bytes, plan_passphrase: str, signature: bytes,
     pinned_owner_public_key: bytes, current_utc: str,
     current_policy: dict, version_inventory: dict,
 ) -> VerifiedDeletePermit:
@@ -233,7 +233,7 @@ def verify_owner_signed_candidate(
         )
     except Exception:
         raise GfsDeleteHold("owner approval signature invalid") from None
-    record = _decrypt(blob, private_phrase)
+    record = _decrypt(blob, plan_passphrase)
     candidate = record.get("candidate")
     now = _utc(current_utc)
     try:

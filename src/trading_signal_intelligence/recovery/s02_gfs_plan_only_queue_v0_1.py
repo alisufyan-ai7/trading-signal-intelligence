@@ -35,9 +35,6 @@ def check_eligibility(*, history: list[dict], now_utc: str,
                       review_latch_present: bool,
                       extra_pinned_ids: tuple[str, ...] = ()) -> dict:
     """No vault reads, providers, cloud costs, filesystem writes or deletions."""
-    # Even after the local check, an exclusive lock must precede ALL
-    # network reads, signature-plan preparation and disk publishing.
-    lock = _acquire_preparation_lock(state)
     try:
         policy = gfs.choose_gfs(
             history, as_of_utc=now_utc,
@@ -244,6 +241,9 @@ def prepare_one_unsigned_plan(
             "provider_deletions_performed": 0,
             "network_requests": 0,
         }
+    # Exclusive lock is acquired BEFORE any cloud inventory, vault-backed
+    # restore or encrypted capsule creation. Crash/failure leaves the lock.
+    lock = _acquire_preparation_lock(state)
     try:
         policy = gfs.choose_gfs(
             history, as_of_utc=now_utc,

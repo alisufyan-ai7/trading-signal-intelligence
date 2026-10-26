@@ -369,6 +369,7 @@ def test_owner_extra_pin_file_must_be_explicit_before_cloud_preparation(
 ):
     freeze_cli_clock(monkeypatch)
     history, policy, base = fixtures(tmp_path)
+    monkeypatch.setattr(cli, "_validated_real_planner_root", lambda path: path)
     source = tmp_path / "VowSig-S02-AutoBackup" / "state" / "history.jsonl"
     source.parent.mkdir(parents=True)
     source.write_text("\n".join(json.dumps(r) for r in history)+"\n")
@@ -420,6 +421,7 @@ def test_unsigned_pending_status_cli_exposes_no_versions_or_secrets(
     monkeypatch, tmp_path, capsys
 ):
     history, policy, base = fixtures(tmp_path)
+    monkeypatch.setattr(cli, "_validated_real_planner_root", lambda path: path)
     events, verify = mock_dependencies(monkeypatch, history, policy)
     sealed = prepare(history, base, verify)
     assert events == ["inventory", "cold_restore"]
@@ -439,8 +441,9 @@ def test_unsigned_pending_status_cli_exposes_no_versions_or_secrets(
     assert events == ["inventory", "cold_restore"]
 
 
-def test_status_no_pending_uses_no_vault_or_cloud(tmp_path, capsys):
+def test_status_no_pending_uses_no_vault_or_cloud(tmp_path, capsys, monkeypatch):
     history, policy, base = fixtures(tmp_path)
+    monkeypatch.setattr(cli, "_validated_real_planner_root", lambda path: path)
     code = cli.main(["--mode", "status", "--plan-root", str(base)])
     shown = json.loads(capsys.readouterr().out)
     assert code == 0
@@ -448,8 +451,9 @@ def test_status_no_pending_uses_no_vault_or_cloud(tmp_path, capsys):
     assert shown["network_requests"] == 0
 
 
-def test_status_refuses_orphan_and_missing_root_without_cloud(tmp_path, capsys):
+def test_status_refuses_orphan_and_missing_root_without_cloud(tmp_path, capsys, monkeypatch):
     history, policy, base = fixtures(tmp_path)
+    monkeypatch.setattr(cli, "_validated_real_planner_root", lambda path: path)
     (base / "state" / ("review-" + policy["eligible_ids"][0] + ".json")).write_text("{}")
     code = cli.main(["--mode", "status", "--plan-root", str(base)])
     status = json.loads(capsys.readouterr().out)

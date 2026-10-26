@@ -1,5 +1,9 @@
 # S02 backup and disaster-recovery evidence index
 
+## GitHub lineage migration — 2026-10-26
+
+Historical P1–P8 stage PRs #77–84 and 87-direct-commit integration #85 were **closed superseded but not erased**. Their complete frozen commit ancestry is retained by branch `archive/pr85-original-stacked-backup-history-20261024` at `0c16270e4fca9f1f0124acf776ee4d2a0604de83`. The complete **39-file exact source/test blob-equivalent** successor is now [DRAFT PR #87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) based directly on `main`; it is not yet regression-tested/released. All EXP043–059 research notes stay on `main` via preservation merges #86 and #88. For closed-stage restoration and owner authorization boundaries see [PR audit](../../docs/pr-queue-review-2026-10-24.md). These administrative changes do not imply any new cloud backup execution, protected-version deletion or physical automatic GFS pruning.
+
 **Current state (2026-10-24):** [VowSig operational status](../../docs/vowsig-operational-status-2026-10-24.md) — first actual encrypted AWS S3 + Backblaze B2 S02-only backup PASS; daily Interactive Task Scheduler installed and first real task-run independently verified recovery PASS; 30-daily / 8-weekly / 12-monthly GFS **selection** and verified two-provider version inventory PASS; **no cloud deletion/cleanup scheduler installed**.
 
 ## Earlier P1–P8 preparatory evidence preserved from original stacked PRs

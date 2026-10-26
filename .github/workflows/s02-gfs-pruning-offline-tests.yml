@@ -1,0 +1,36 @@
+name: GFS controlled pruning offline safety tests
+
+on:
+  pull_request:
+    branches:
+      - implementation/s02-backup-gfs-code-review-20261024
+    paths:
+      - 'src/trading_signal_intelligence/recovery/s02_gfs_*'
+      - 'tests/test_s02_gfs_owner_signed_single_delete_v0_1.py'
+      - '.github/workflows/s02-gfs-pruning-offline-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-no-provider-credentials:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      PYTHONPATH: src
+      PYTHONNOUSERSITE: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install offline test dependencies only
+        run: |
+          python -m pip install --disable-pip-version-check pytest cryptography
+      - name: Assert production cloud-delete release fence defaults CLOSED
+        run: |
+          python -c "from trading_signal_intelligence.recovery import s02_gfs_single_version_delete_executor_v0_1 as e; assert e.PRODUCTION_CLOUD_DELETE_ENABLED is False"
+      - name: Synthetic-only GFS signed exact-version deletion negative/positive tests
+        run: |
+          python -B -m pytest -q --tb=short -p no:cacheprovider tests/test_s02_gfs_owner_signed_single_delete_v0_1.py

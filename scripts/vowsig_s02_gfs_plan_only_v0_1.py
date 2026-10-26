@@ -67,13 +67,23 @@ def _safe_print(payload: dict) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(allow_abbrev=False)
-    parser.add_argument("--mode", choices=["check", "prepare"], default="check")
-    parser.add_argument("--history", required=True, type=Path)
+    parser.add_argument("--mode", choices=["check", "prepare", "status"], default="check")
+    parser.add_argument("--history", type=Path)
     parser.add_argument("--plan-root", type=Path)
     parser.add_argument("--acknowledge-read-cost",
                         choices=["I_ACCEPT_READ_ONLY_CLOUD_RESTORE_COST"])
     args = parser.parse_args(argv)
     try:
+        if args.mode == "status":
+            if (args.history is not None or args.plan_root is None
+                    or args.acknowledge_read_cost is not None):
+                raise queue.PlanOnlyHold("read-only review-status arguments invalid")
+            state = queue.pending_owner_review_status(
+                base_directory=_validated_real_planner_root(args.plan_root))
+            _safe_print(state)
+            return 0
+        if args.history is None:
+            raise queue.PlanOnlyHold("scheduled S02 history path required")
         if args.mode == "check":
             if args.plan_root is not None or args.acknowledge_read_cost is not None:
                 raise queue.PlanOnlyHold("check-only mode does not use cloud options")

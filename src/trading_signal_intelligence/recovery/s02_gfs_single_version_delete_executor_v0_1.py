@@ -48,7 +48,7 @@ class _DurableOneShotJournal:
                 or not directory.parent.is_dir()
                 or directory.parent.is_symlink()):
             raise GfsExecutionHold("isolated owner-protected deletion journal required")
-        self.path = directory / (plan_sha256 + ".jsonl")
+        self.path = directory / (backup_id + ".jsonl")
         if self.path.exists() or self.path.is_symlink():
             raise GfsExecutionHold("existing or suspicious deletion journal; manual review")
         if os.name != "nt":
@@ -86,6 +86,83 @@ class _DurableOneShotJournal:
         except Exception:
             pass
 
+
+def _check_prior_operations(directory: Path) -> None:
+    """Block all new pruning after ANY earlier incomplete/unknown operation.
+
+    File names bind to BACKUP IDs, not randomized encrypted plan digests,
+    preventing a second plan for the same candidate from bypassing history.
+    """
+    if (not isinstance(directory, Path)
+            or directory.name != "state"
+            or directory.parent.name != "VowSig-S02-RetentionOperator"
+            or not directory.is_dir()
+            or directory.is_symlink() or directory.parent.is_symlink()):
+        raise GfsExecutionHold("protected retention-operator state not ready")
+    entries = list(directory.iterdir())
+    if len(entries) > 20000:
+        raise GfsExecutionHold("deletion history bound exceeded")
+    for path in entries:
+        if path.is_symlink() or not path.is_file():
+            raise GfsExecutionHold("unexpected deletion history entry")
+        if path.name == "current-operation.lock":
+            raise GfsExecutionHold("another or interrupted deletion operation pending")
+        if (path.suffix != ".jsonl"
+                or not gfs.BACKUP_ID.fullmatch(path.stem)
+                or path.stat().st_size > 131072):
+            raise GfsExecutionHold("unrecognized deletion history entry")
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+            last = json.loads(lines[-1])
+            if (not lines or type(last) is not dict
+                    or set(last) != {"state", "stage"}
+                    or last["state"] != "COMPLETE"):
+                raise ValueError
+        except Exception:
+            raise GfsExecutionHold(
+                "prior incomplete deletion; block every future operation"
+            ) from None
+
+
+class _ExclusiveOperatorLock:
+    """One process at a time, fail-closed on crash/abandoned lock."""
+    def __init__(self, directory: Path) -> None:
+        self.path = directory / "current-operation.lock"
+        try:
+            flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
+            if hasattr(os, "O_NOFOLLOW"):
+                flags |= os.O_NOFOLLOW
+            fd = os.open(str(self.path), flags, 0o600)
+            os.close(fd)
+        except Exception:
+            raise GfsExecutionHold("operator already running or lock unavailable") from None
+
+    def release(self, completed: bool) -> None:
+        # If a provider call or audit failed, retain the lock for manual
+        # reconciliation rather than allowing any unrelated candidate prune.
+        if completed:
+            try:
+                self.path.unlink()
+            except Exception:
+                raise GfsExecutionHold("cannot release completed operator lock") from None
+
+
+
+def _check_prior_operations_after_lock(directory: Path) -> None:
+    # Verify all other journals while preserving the one lock just acquired.
+    lock = directory / "current-operation.lock"
+    if not lock.is_file() or lock.is_symlink():
+        raise GfsExecutionHold("exclusive lock unexpectedly missing")
+    for item in directory.glob("*.jsonl"):
+        if (item.is_symlink() or not gfs.BACKUP_ID.fullmatch(item.stem)
+                or item.stat().st_size > 131072):
+            raise GfsExecutionHold("invalid existing deletion journal")
+        try:
+            last = json.loads(item.read_text(encoding="utf-8").splitlines()[-1])
+            if last.get("state") != "COMPLETE":
+                raise ValueError
+        except Exception:
+            raise GfsExecutionHold("incomplete earlier prune blocks new run") from None
 
 def _same_fresh_policy(
     *, history: list[dict], now: str, pins: tuple[str, ...],
@@ -152,11 +229,9 @@ def execute_single_owner_approved_prune(
         raise GfsExecutionHold("production cloud deletion release fence is closed")
     if type(review_latch_present) is not bool or review_latch_present:
         raise GfsExecutionHold("operator incident latch present")
-    # Reject a reused one-shot plan before even requesting cloud status.
-    fingerprint = approvals._sha(sealed_blob)
-    journal_path = Path(journal_directory) / (fingerprint + ".jsonl")
-    if journal_path.exists() or journal_path.is_symlink():
-        raise GfsExecutionHold("prior deletion attempt exists; manual reconciliation")
+    # Guard all candidate IDs, even if the owner seals a NEW capsule with
+    # a fresh random nonce after an earlier partial provider failure.
+    _check_prior_operations(Path(journal_directory))
     try:
         policy = _same_fresh_policy(
             history=history, now=current_utc, pins=extra_pinned_ids,
@@ -186,8 +261,12 @@ def execute_single_owner_approved_prune(
         raise GfsExecutionHold("owner signed plan, versions or predelete restore HOLD") from None
 
     journal: _DurableOneShotJournal | None = None
+    operator_lock: _ExclusiveOperatorLock | None = None
+    complete = False
     attempts = 0
     try:
+        operator_lock = _ExclusiveOperatorLock(Path(journal_directory))
+        _check_prior_operations_after_lock(Path(journal_directory))
         journal = _DurableOneShotJournal(
             Path(journal_directory), permit.sealed_sha256, permit.backup_id
         )
@@ -226,6 +305,7 @@ def execute_single_owner_approved_prune(
         )
         journal.record("POSTCHECK_PASS", permit.backup_id)
         journal.record("COMPLETE", permit.backup_id)
+        complete = True
         return {
             "status": FINAL_STATUS,
             "backup_id": permit.backup_id,
@@ -248,3 +328,5 @@ def execute_single_owner_approved_prune(
     finally:
         if journal is not None:
             journal.close()
+        if operator_lock is not None:
+            operator_lock.release(completed=complete)

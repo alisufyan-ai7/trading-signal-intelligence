@@ -252,7 +252,9 @@ def verify_owner_signed_candidate(
         if _utc(current_policy["as_of_utc"]) != now:
             raise GfsDeleteHold("fresh policy time not bound to current check")
         if (type(record["protected_ids"]) is not list
-                or not set(record["protected_ids"]).issubset(set(current_policy["protected_ids"]))
+                or not set(record["protected_ids"]).issubset(
+                    set(current_policy["protected_ids"]) | set(current_policy["keep_ids"])
+                )
                 or type(record["objects"]) is not list
                 or len(record["objects"]) != len(EXPECTED_OPERATIONS)):
             raise GfsDeleteHold("protected backup plan changed")

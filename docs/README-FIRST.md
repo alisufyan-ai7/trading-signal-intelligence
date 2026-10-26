@@ -1,5 +1,9 @@
 # Read First
 
+## Current GitHub handoff — 2026-10-26
+
+The original 18 PRs have been audited and safely reduced to **two remaining drafts**: [#87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) (39 exact preserved S02 backup/GFS code and test files, untested as a full native Windows release), and [#50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) (independent frozen-dependency CI guard). Historical #85 and #77–84 were closed **without deleting their source branches**; a dedicated `archive/pr85-original-stacked-backup-history-20261024` ref preserves their complete original commit ancestry. Preservation-only PR #86 (EXP051–059, Oct24 status, old SDK/IAM archive) and #88 (EXP043–050) merged into `main`; product evidence PR #58 merged separately. Read the [final GitHub PR audit](pr-queue-review-2026-10-24.md) and the [Oct24 owner-verified operational status](vowsig-operational-status-2026-10-24.md). **Do not misinterpret closed #85 as loss of backups or merge of its executable code.** No VPS/task/provider operations were performed by this cleanup.
+
 ## Latest verified operations — 2026-10-24
 
 **Read [VowSig current operational status](vowsig-operational-status-2026-10-24.md) FIRST.** This is the newest confirmed backup/recovery/GFS handoff; the 2026-10-12 EXP034/crypto notes below are dated history for a separate workstream.

@@ -219,7 +219,8 @@ class FakeCloud:
 
 def _fake_executor(monkeypatch, case, tmp_path, *, fail_at=None):
     records, _, after, candidate, sealed, signature, public = case
-    aws, b2 = FakeCloud("aws"), FakeCloud("b2")
+    aws, b2_data, b2_manifest = (FakeCloud("aws"), FakeCloud("b2-data"),
+                                  FakeCloud("b2-manifest"))
     aws.fail_at = fail_at
     cwd = tmp_path / "VowSig-S02-RetentionOperator" / "state"
     cwd.mkdir(parents=True)
@@ -243,7 +244,7 @@ def _fake_executor(monkeypatch, case, tmp_path, *, fail_at=None):
 
     def mock_clients(**kw):
         order.append("separate_deleter_ids")
-        return aws, b2
+        return aws, b2_data, b2_manifest
 
     def delete_with_inventory(client):
         original = client.delete_object
@@ -257,7 +258,8 @@ def _fake_executor(monkeypatch, case, tmp_path, *, fail_at=None):
             return ans
         client.delete_object = impl
     delete_with_inventory(aws)
-    delete_with_inventory(b2)
+    delete_with_inventory(b2_data)
+    delete_with_inventory(b2_manifest)
 
     monkeypatch.setattr(actor, "PRODUCTION_CLOUD_DELETE_ENABLED", True)
     monkeypatch.setattr(actor.inventory, "read_exact_version_inventory", list_versions)
@@ -271,10 +273,11 @@ def _fake_executor(monkeypatch, case, tmp_path, *, fail_at=None):
         history=records, extra_pinned_ids=(), review_latch_present=False,
         aws_reader=object(), b2_reader=object(),
         reader_credentials=(("reader-aws", "test"), ("reader-b2", "test")),
-        delete_credentials=(("delete-aws", "test"), ("delete-b2", "test")),
+        delete_credentials=(("delete-aws", "test"), ("delete-b2-data", "test"),
+                            ("delete-b2-manifest", "test")),
         journal_directory=cwd,
     )
-    return aws, b2, cwd, order, kwargs
+    return aws, (b2_data, b2_manifest), cwd, order, kwargs
 
 
 def test_synthetic_four_exact_deletions_and_pre_post_restore(monkeypatch, tmp_path):
@@ -284,7 +287,8 @@ def test_synthetic_four_exact_deletions_and_pre_post_restore(monkeypatch, tmp_pa
     assert result["status"] == actor.FINAL_STATUS
     assert result["provider_deletions_performed"] == 4
     assert not result["automatic_retry_enabled"]
-    assert len(aws.deleted) == len(b2.deleted) == 2
+    assert len(aws.deleted) == 2
+    assert [len(b.deleted) for b in b2] == [1, 1]
     assert calls.count("inventory") == 2
     assert calls.count("cold_restore") == 2
     files = list(directory.glob("*.jsonl"))
@@ -301,7 +305,7 @@ def test_synthetic_second_delete_try_is_blocked_by_journal(monkeypatch, tmp_path
     actor.execute_single_owner_approved_prune(**args)
     with pytest.raises(actor.GfsExecutionHold, match="prior deletion attempt"):
         actor.execute_single_owner_approved_prune(**args)
-    assert len(aws.deleted) + len(b2.deleted) == 4
+    assert len(aws.deleted) + sum(len(client.deleted) for client in b2) == 4
 
 
 def test_synthetic_failed_first_provider_denies_retry_and_redacts_exception(monkeypatch, tmp_path):
@@ -312,10 +316,11 @@ def test_synthetic_failed_first_provider_denies_retry_and_redacts_exception(monk
     with pytest.raises(actor.GfsExecutionHold) as err:
         actor.execute_single_owner_approved_prune(**args)
     assert "DO_NOT_LEAK" not in str(err.value)
-    assert len(aws.deleted) == len(b2.deleted) == 0
+    assert len(aws.deleted) == 0
+    assert all(not client.deleted for client in b2)
     j = next(directory.glob("*.jsonl"))
     assert '"state":"HOLD"' in j.read_text()
-    with pytest.raises(actor.GfsExecutionHold, match="prior deletion attempt"):
+    with pytest.raises(actor.GfsExecutionHold, match="interrupted|pending|incomplete"):
         actor.execute_single_owner_approved_prune(**args)
 
 
@@ -323,5 +328,6 @@ def test_deleter_identity_must_be_distinct_from_reader():
     with pytest.raises(actor.GfsExecutionHold, match="separate"):
         actor._delete_clients(
             reader_credentials=(("AWS-SAME","private"),("b2-reader","private")),
-            delete_credentials=(("AWS-SAME","private"),("b2-delete","private")),
+            delete_credentials=(("AWS-SAME","private"),("b2-data","private"),
+                                ("b2-manifest","private")),
         )

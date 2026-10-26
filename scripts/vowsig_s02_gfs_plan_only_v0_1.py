@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -44,6 +46,21 @@ def _load_owner_pins(plan_root: Path) -> tuple[str, ...]:
         raise queue.PlanOnlyHold("owner protected backup pins invalid") from None
 
 
+
+def _validated_real_planner_root(path: Path) -> Path:
+    """Native Windows never accepts user-supplied substitute ProgramData roots."""
+    requested = Path(path)
+    if sys.platform == "win32":
+        installed = os.environ.get("ProgramData")
+        if not installed:
+            raise queue.PlanOnlyHold("Windows ProgramData root unavailable")
+        canonical = Path(installed) / queue.STATE_ROOT
+        if (requested.is_symlink()
+                or requested.resolve(strict=False) != canonical.resolve(strict=False)):
+            raise queue.PlanOnlyHold("planner root outside fixed Windows ProgramData")
+    return requested
+
+
 def _safe_print(payload: dict) -> None:
     print(json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False))
 
@@ -77,9 +94,12 @@ def main(argv: list[str] | None = None) -> int:
                 "NO_ELIGIBLE_BACKUP", "ELIGIBLE_FOR_PRIVATE_PREPARATION"
             } else 2
 
+        # No alternate user-selected destination for private capsules on VPS.
+        # Resolve/check before owner pins, vault or cloud contact.
+        root = _validated_real_planner_root(args.plan_root)
         # Before any credential/cloud use, fail closed if explicit owner pins
         # were not installed or changed. Re-evaluate eligibility with pins.
-        pins = _load_owner_pins(args.plan_root)
+        pins = _load_owner_pins(root)
         check = queue.check_eligibility(
             history=rows, now_utc=now, review_latch_present=latch,
             extra_pinned_ids=pins,
@@ -90,7 +110,7 @@ def main(argv: list[str] | None = None) -> int:
 
         # An unsigned plan already awaiting the owner must NOT be overwritten,
         # and should NOT cause repeated cloud reads, restore bills or vault use.
-        pending, state = queue._state_directory(args.plan_root)
+        pending, state = queue._state_directory(root)
         if queue._existing_entries(pending, state):
             _safe_print({
                 "status": "PENDING_OWNER_REVIEW",
@@ -115,7 +135,7 @@ def main(argv: list[str] | None = None) -> int:
         clients = backup._provider_readers(readers)
         result = queue.prepare_one_unsigned_plan(
             history=rows, now_utc=now, review_latch_present=latch,
-            base_directory=args.plan_root,
+            base_directory=root,
             aws_reader=clients[0], b2_reader=clients[1],
             reader_credentials=readers,
             plan_passphrase=plan_secret, recovery_passphrase=recovery_secret,

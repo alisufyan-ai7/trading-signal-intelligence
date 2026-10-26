@@ -40,7 +40,7 @@ class GfsExecutionHold(RuntimeError):
 
 class _DurableOneShotJournal:
     def __init__(self, directory: Path, plan_sha256: str, backup_id: str) -> None:
-        if (type(directory) is not Path
+        if (not isinstance(directory, Path)
                 or directory.is_symlink()
                 or not directory.is_dir()
                 or directory.name != "state"

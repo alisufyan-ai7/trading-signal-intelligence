@@ -18,7 +18,9 @@ from trading_signal_intelligence.recovery import s02_gfs_exact_inventory_for_pru
 from trading_signal_intelligence.recovery import s02_gfs_single_version_delete_executor_v0_1 as actor
 
 NOW = datetime(2026, 10, 26, 12, tzinfo=timezone.utc)
-PHRASE = "SYNTHETIC-NEVER-REAL-RECOVERY-PHRASE-2026"
+PLAN_PHRASE = "SYNTHETIC-ONLY-INDEPENDENT-GFS-PLAN-SECRET-2026"
+RECOVERY_PHRASE = "SYNTHETIC-ONLY-S02-SQLITE-RECOVERY-SECRET-2026"
+assert PLAN_PHRASE != RECOVERY_PHRASE
 
 
 def row(day: int):
@@ -89,7 +91,7 @@ def sealed_case():
         policy=before, candidate=candidate,
         version_inventory=inventory_for(records, before),
         prepared_utc=NOW.isoformat(timespec="seconds"),
-        private_phrase=PHRASE,
+        plan_passphrase=PLAN_PHRASE,
     )
     private, public = keys()
     sig = private.sign(approval.approval_message(sealed.sha256))
@@ -99,7 +101,7 @@ def sealed_case():
 def verify(case, *, days=8, signature=None, inventory=None, policy=None):
     records, before, after, candidate, sealed, sig, public = case
     return approval.verify_owner_signed_candidate(
-        blob=sealed.blob, private_phrase=PHRASE,
+        blob=sealed.blob, plan_passphrase=PLAN_PHRASE,
         signature=sig if signature is None else signature,
         pinned_owner_public_key=public,
         current_utc=(NOW + timedelta(days=days)).isoformat(timespec="seconds"),
@@ -167,7 +169,7 @@ def test_missing_provider_or_unrelated_extra_backup_forces_hold():
         approval.freeze_one_candidate(
             policy=original, candidate=candidate,
             version_inventory=data, prepared_utc=NOW.isoformat(),
-            private_phrase=PHRASE
+            plan_passphrase=PLAN_PHRASE
         )
 
 
@@ -179,7 +181,7 @@ def test_old_manual_and_latest_two_always_rejected():
             approval.freeze_one_candidate(
                 policy=before, candidate=protected,
                 version_inventory=ids, prepared_utc=NOW.isoformat(),
-                private_phrase=PHRASE
+                plan_passphrase=PLAN_PHRASE
             )
 
 
@@ -192,14 +194,15 @@ def test_stale_or_failed_scheduled_history_blocks_owner_plan():
         approval.freeze_one_candidate(
             policy=blocked, candidate=candidate,
             version_inventory=inventory_for(rec, before),
-            prepared_utc=NOW.isoformat(timespec="seconds"), private_phrase=PHRASE)
+            prepared_utc=NOW.isoformat(timespec="seconds"), plan_passphrase=PLAN_PHRASE)
 
 
 def test_no_delete_call_when_production_release_fence_closed(tmp_path):
     with pytest.raises(actor.GfsExecutionHold, match="fence is closed"):
         actor.execute_single_owner_approved_prune(
             sealed_blob=b"x", signature=b"x", pinned_owner_public_key=b"x",
-            private_phrase=PHRASE, current_utc=NOW.isoformat(),
+            plan_passphrase=PLAN_PHRASE, recovery_passphrase=RECOVERY_PHRASE,
+            current_utc=NOW.isoformat(),
             history=[], extra_pinned_ids=(), review_latch_present=False,
             aws_reader=None, b2_reader=None,
             reader_credentials=(), delete_credentials=(),
@@ -216,7 +219,7 @@ def test_owner_plan_never_accepts_null_cloud_version():
     with pytest.raises(approval.GfsDeleteHold, match="inconsistent"):
         approval.freeze_one_candidate(
             policy=doc, candidate=candidate, version_inventory=data,
-            prepared_utc=NOW.isoformat(), private_phrase=PHRASE)
+            prepared_utc=NOW.isoformat(), plan_passphrase=PLAN_PHRASE)
 
 
 class FakeCloud:
@@ -255,6 +258,10 @@ def _fake_executor(monkeypatch, case, tmp_path, *, fail_at=None):
 
     def mock_restore(**kw):
         order.append("cold_restore")
+        if kw.get("recovery_passphrase") != RECOVERY_PHRASE:
+            raise ValueError("synthetic bad backup secret DO_NOT_LEAK")
+        if kw.get("recovery_passphrase") == PLAN_PHRASE:
+            raise AssertionError("plan secret forwarded to backup restore")
         return {"status": "ALL_SELECTED_RETAINED_COLD_RESTORES_VERIFIED",
                 "verified_backup_count": len(kw["backup_ids"]),
                 "provider_deletions_performed": 0}
@@ -285,7 +292,7 @@ def _fake_executor(monkeypatch, case, tmp_path, *, fail_at=None):
 
     kwargs = dict(
         sealed_blob=sealed.blob, signature=signature, pinned_owner_public_key=public,
-        private_phrase=PHRASE,
+        plan_passphrase=PLAN_PHRASE, recovery_passphrase=RECOVERY_PHRASE,
         current_utc=(NOW + timedelta(days=8)).isoformat(timespec="seconds"),
         history=future_history(records), extra_pinned_ids=(), review_latch_present=False,
         aws_reader=object(), b2_reader=object(),
@@ -357,7 +364,7 @@ def test_signed_capsule_tampering_fails_before_version_authorization():
     damaged[-4] ^= 1
     with pytest.raises(approval.GfsDeleteHold, match="signature invalid"):
         approval.verify_owner_signed_candidate(
-            blob=bytes(damaged), private_phrase=PHRASE,
+            blob=bytes(damaged), plan_passphrase=PLAN_PHRASE,
             signature=sig, pinned_owner_public_key=public,
             current_utc=(NOW + timedelta(days=8)).isoformat(),
             current_policy=after, version_inventory=inventory_for(rec, after))
@@ -372,7 +379,7 @@ def test_second_sealed_nonce_cannot_reset_candidate_journal(monkeypatch, tmp_pat
         policy=before, candidate=candidate,
         version_inventory=inventory_for(rec, before),
         prepared_utc=NOW.isoformat(timespec="seconds"),
-        private_phrase=PHRASE)
+        plan_passphrase=PLAN_PHRASE)
     secret, public = keys()
     renewed_signature = secret.sign(approval.approval_message(new_capsule.sha256))
     args["sealed_blob"] = new_capsule.blob
@@ -442,12 +449,12 @@ def test_stale_realistic_eight_day_gap_must_remain_a_hard_hold():
     sealed = approval.freeze_one_candidate(
         policy=before, candidate=bid,
         version_inventory=inventory_for(records, before),
-        prepared_utc=NOW.isoformat(timespec="seconds"), private_phrase=PHRASE)
+        prepared_utc=NOW.isoformat(timespec="seconds"), plan_passphrase=PLAN_PHRASE)
     private, public = keys()
     sig = private.sign(approval.approval_message(sealed.sha256))
     with pytest.raises(approval.GfsDeleteHold, match="unresolved safety holds"):
         approval.verify_owner_signed_candidate(
-            blob=sealed.blob, private_phrase=PHRASE, signature=sig,
+            blob=sealed.blob, plan_passphrase=PLAN_PHRASE, signature=sig,
             pinned_owner_public_key=public, current_utc=future_time,
             current_policy=stale, version_inventory=inventory_for(records, stale))
 
@@ -461,3 +468,74 @@ def test_rotation_of_latest_two_remains_safe_with_original_points_kept():
     assert candidate not in after["protected_ids"]
     case = sealed_case()
     assert verify(case).backup_id == case[3]
+
+
+def test_separate_plan_and_recovery_passphrases_route_to_distinct_paths(
+    monkeypatch, tmp_path
+):
+    case = sealed_case()
+    aws, b2, journal_dir, events, args = _fake_executor(monkeypatch, case, tmp_path)
+    assert args["plan_passphrase"] == PLAN_PHRASE
+    assert args["recovery_passphrase"] == RECOVERY_PHRASE
+    assert args["plan_passphrase"] != args["recovery_passphrase"]
+    result = actor.execute_single_owner_approved_prune(**args)
+    assert result["status"] == actor.FINAL_STATUS
+    assert events.count("cold_restore") == 2
+    assert sum(len(x.deleted) for x in (aws, *b2)) == 4
+
+
+@pytest.mark.parametrize("input_override", [
+    {"recovery_passphrase": PLAN_PHRASE},
+    {"recovery_passphrase": ""},
+    {"recovery_passphrase": None},
+    {"recovery_passphrase": "too-short"},
+    {"plan_passphrase": ""},
+    {"plan_passphrase": None},
+])
+def test_missing_or_identical_private_secrets_hold_before_network(
+    monkeypatch, tmp_path, input_override
+):
+    case = sealed_case()
+    aws, b2, journal_dir, events, args = _fake_executor(monkeypatch, case, tmp_path)
+    args.update(input_override)
+    with pytest.raises(actor.GfsExecutionHold, match="distinct private plan"):
+        actor.execute_single_owner_approved_prune(**args)
+    assert events == []
+    assert sum(len(x.deleted) for x in (aws, *b2)) == 0
+    assert not list(journal_dir.iterdir())
+
+
+def test_wrong_plan_secret_is_denied_before_cloud_or_journal(monkeypatch, tmp_path):
+    case = sealed_case()
+    aws, b2, journal_dir, events, args = _fake_executor(monkeypatch, case, tmp_path)
+    args["plan_passphrase"] = "SYNTHETIC-DIFFERENT-INCORRECT-PLAN-SECRET-2026"
+    with pytest.raises(actor.GfsExecutionHold, match="private deletion plan unreadable"):
+        actor.execute_single_owner_approved_prune(**args)
+    assert events == []
+    assert not list(journal_dir.iterdir())
+    assert not any(x.deleted for x in (aws, *b2))
+
+
+def test_wrong_recovery_secret_cannot_pass_predelete_restore(monkeypatch, tmp_path):
+    case = sealed_case()
+    aws, b2, journal_dir, events, args = _fake_executor(monkeypatch, case, tmp_path)
+    args["recovery_passphrase"] = "SYNTHETIC-DIFFERENT-INCORRECT-RECOVERY-2026"
+    with pytest.raises(actor.GfsExecutionHold) as error:
+        actor.execute_single_owner_approved_prune(**args)
+    assert "DO_NOT_LEAK" not in str(error.value)
+    assert events == ["inventory", "cold_restore"]
+    assert not list(journal_dir.iterdir())
+    assert not any(x.deleted for x in (aws, *b2))
+
+
+def test_plan_signature_not_decryptable_using_recovery_secret():
+    case = sealed_case()
+    records, before, after, candidate, capsule, signature, public = case
+    with pytest.raises(approval.GfsDeleteHold, match="authentication failed"):
+        approval.verify_owner_signed_candidate(
+            blob=capsule.blob, plan_passphrase=RECOVERY_PHRASE,
+            signature=signature, pinned_owner_public_key=public,
+            current_utc=(NOW + timedelta(days=8)).isoformat(timespec="seconds"),
+            current_policy=after,
+            version_inventory=inventory_for(records, after),
+        )

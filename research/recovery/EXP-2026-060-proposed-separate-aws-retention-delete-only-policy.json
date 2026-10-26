@@ -1,0 +1,14 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "S02OneVersionAtATimeOnlyAfterSeparateOwnerRelease",
+      "Effect": "Allow",
+      "Action": "s3:DeleteObjectVersion",
+      "Resource": [
+        "arn:aws:s3:::vowsig-backup-s3-2026/pilot/vowsig/approved-s02/v1/*",
+        "arn:aws:s3:::vowsig-backup-s3-2026/pilot/vowsig/backup-receipts/v1/*"
+      ]
+    }
+  ]
+}

@@ -195,16 +195,16 @@ def _restore_kept(
 def _delete_clients(
     *, reader_credentials: tuple[tuple[str, str], ...],
     delete_credentials: tuple[tuple[str, str], ...],
-) -> tuple[Any, Any]:
+) -> tuple[Any, Any, Any]:
     if (type(reader_credentials) is not tuple or len(reader_credentials) != 2
-            or type(delete_credentials) is not tuple or len(delete_credentials) != 2
+            or type(delete_credentials) is not tuple or len(delete_credentials) != 3
             or any(type(x) is not tuple or len(x) != 2 for x in
                    (*reader_credentials, *delete_credentials))
-            or len({x[0] for x in (*reader_credentials, *delete_credentials)}) != 4):
+            or len({x[0] for x in (*reader_credentials, *delete_credentials)}) != 5):
         raise GfsExecutionHold("separate AWS/B2 reader and deletion identities required")
     try:
         return backup._configured_clients(
-            delete_credentials, (providers.AWS, providers.B2)
+            delete_credentials, (providers.AWS, providers.B2, providers.B2)
         )
     except Exception:
         raise GfsExecutionHold("separate scoped delete clients unavailable") from None
@@ -284,7 +284,7 @@ def execute_single_owner_approved_prune(
             Path(journal_directory), permit.sealed_sha256, permit.backup_id
         )
         by_role = {"aws_manifest": deleters[0], "aws_data": deleters[0],
-                   "b2_manifest": deleters[1], "b2_data": deleters[1]}
+                   "b2_manifest": deleters[2], "b2_data": deleters[1]}
         for role, bucket, key, version in permit.objects:
             if role not in approvals.EXPECTED_OPERATIONS or role not in by_role:
                 raise GfsExecutionHold("unexpected exact provider deletion role")

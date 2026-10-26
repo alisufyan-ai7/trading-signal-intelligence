@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-26 — GitHub pull request history preservation and queue cleanup
+
+- Reduced **18 originally open PRs to 2**: [PR #87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) (39-file, exact-source S02 encrypted dual-cloud/GFS draft) and [PR #50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) (independent draft frozen-dependency CI guard). No implementation merge or production VPS deploy.
+- Merged historic product two-document PR #58; preserved 26 Oct24 VowSig operational/GFS documents plus 11 byte-identical historical AWS/SDK files via PR #86; preserved all EXP043–050 preparatory backup notes via PR #88.
+- Closed already-main PRs #48/#49/#51/#55, archived historical PRs #68/#75/#76, and superseded stages #77–#85 without deleting branches; original 131-commit stage/integration sequence retained at SHA `0c16270e4fca9f1f0124acf776ee4d2a0604de83` under `archive/pr85-original-stacked-backup-history-20261024`.
+- Candidate #87's full **39 files** (5 operator scripts, 16 recovery modules, 18 tests) Git-tree-verified byte-identical with original PR85; focused Windows regression and security review remain mandatory. No S3/B2 deletion or new backup run was performed by this cleanup. See [full PR audit](docs/pr-queue-review-2026-10-24.md).
+
 ## 2026-10-24 — VowSig backup, recovery, scheduler and GFS durability
 
 - **REAL PASS:** encrypted one-shot S02 `data/forward.sqlite` backup (30 records) to AWS S3 and Backblaze B2 with exact-version cold restoration from both providers; backup ID `backup-8bce80179c524ace8f4a52cb702b3716` (EXP053).

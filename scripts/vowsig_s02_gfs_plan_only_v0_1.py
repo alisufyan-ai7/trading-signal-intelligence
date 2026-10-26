@@ -17,6 +17,33 @@ from trading_signal_intelligence.recovery import s02_gfs_retention_policy_v0_1 a
 from scripts.vowsig_s02_gfs_retention_preview_v0_1 import _safe_history
 
 
+
+PINS_SCHEMA = "vowsig-s02-gfs-owner-extra-pins-v1"
+
+
+def _load_owner_pins(plan_root: Path) -> tuple[str, ...]:
+    """Immutable-installed, owner ACL protected explicit list; never default to []."""
+    root = Path(plan_root)
+    source = root / "owner-protected-ids.json"
+    if (root.is_symlink() or not source.is_file() or source.is_symlink()
+            or source.stat().st_size > 8192):
+        raise queue.PlanOnlyHold("owner-protected backup pin file required")
+    try:
+        obj = json.loads(source.read_text(encoding="utf-8"))
+        if (type(obj) is not dict
+                or set(obj) != {"schema", "extra_pinned_ids"}
+                or obj["schema"] != PINS_SCHEMA
+                or type(obj["extra_pinned_ids"]) is not list
+                or len(obj["extra_pinned_ids"]) > 100
+                or len(set(obj["extra_pinned_ids"])) != len(obj["extra_pinned_ids"])
+                or any(type(x) is not str or not policy.BACKUP_ID.fullmatch(x)
+                       for x in obj["extra_pinned_ids"])):
+            raise ValueError
+        return tuple(obj["extra_pinned_ids"])
+    except Exception:
+        raise queue.PlanOnlyHold("owner protected backup pins invalid") from None
+
+
 def _safe_print(payload: dict) -> None:
     print(json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False))
 
@@ -50,6 +77,17 @@ def main(argv: list[str] | None = None) -> int:
                 "NO_ELIGIBLE_BACKUP", "ELIGIBLE_FOR_PRIVATE_PREPARATION"
             } else 2
 
+        # Before any credential/cloud use, fail closed if explicit owner pins
+        # were not installed or changed. Re-evaluate eligibility with pins.
+        pins = _load_owner_pins(args.plan_root)
+        check = queue.check_eligibility(
+            history=rows, now_utc=now, review_latch_present=latch,
+            extra_pinned_ids=pins,
+        )
+        if check["status"] != "ELIGIBLE_FOR_PRIVATE_PREPARATION":
+            _safe_print(check)
+            return 0 if check["status"] == "NO_ELIGIBLE_BACKUP" else 2
+
         # An unsigned plan already awaiting the owner must NOT be overwritten,
         # and should NOT cause repeated cloud reads, restore bills or vault use.
         pending, state = queue._state_directory(args.plan_root)
@@ -81,6 +119,7 @@ def main(argv: list[str] | None = None) -> int:
             aws_reader=clients[0], b2_reader=clients[1],
             reader_credentials=readers,
             plan_passphrase=plan_secret, recovery_passphrase=recovery_secret,
+            extra_pinned_ids=pins,
         )
         _safe_print(result)
         return 0 if result["status"] in {

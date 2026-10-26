@@ -429,3 +429,35 @@ def test_fake_inventory_fails_on_extra_cloud_version(monkeypatch):
         exact.read_exact_version_inventory(
             aws_reader=Reader("AWS_S3"), b2_reader=Reader("BACKBLAZE_B2"),
             expected_ids=expected)
+
+
+def test_stale_realistic_eight_day_gap_must_remain_a_hard_hold():
+    """Without a new successful backup within 30 hours, no pruning approval."""
+    records = [row(i) for i in range(120)]
+    before = gfs.choose_gfs(records, as_of_utc=NOW.isoformat(timespec="seconds"))
+    future_time = (NOW + timedelta(days=8)).isoformat(timespec="seconds")
+    stale = gfs.choose_gfs(records, as_of_utc=future_time)
+    assert "NO_RECENT_VERIFIED_BACKUP" in stale["hold_reasons"]
+    bid = next(x for x in before["eligible_ids"] if x in stale["eligible_ids"])
+    sealed = approval.freeze_one_candidate(
+        policy=before, candidate=bid,
+        version_inventory=inventory_for(records, before),
+        prepared_utc=NOW.isoformat(timespec="seconds"), private_phrase=PHRASE)
+    private, public = keys()
+    sig = private.sign(approval.approval_message(sealed.sha256))
+    with pytest.raises(approval.GfsDeleteHold, match="unresolved safety holds"):
+        approval.verify_owner_signed_candidate(
+            blob=sealed.blob, private_phrase=PHRASE, signature=sig,
+            pinned_owner_public_key=public, current_utc=future_time,
+            current_policy=stale, version_inventory=inventory_for(records, stale))
+
+
+def test_rotation_of_latest_two_remains_safe_with_original_points_kept():
+    records, before, after, candidate = fixtures()
+    assert set(before["protected_ids"]) != set(after["protected_ids"])
+    assert set(before["protected_ids"]).issubset(
+        set(after["keep_ids"]) | set(after["protected_ids"]))
+    assert candidate not in after["keep_ids"]
+    assert candidate not in after["protected_ids"]
+    case = sealed_case()
+    assert verify(case).backup_id == case[3]

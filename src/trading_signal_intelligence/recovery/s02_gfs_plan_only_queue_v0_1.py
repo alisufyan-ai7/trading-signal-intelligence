@@ -131,6 +131,36 @@ def _existing_entries(pending: Path, state: Path) -> bool:
     return True
 
 
+
+def pending_owner_review_status(*, base_directory: Path) -> dict:
+    """No vault, provider or delete capability; expose ONLY nonsecret receipt."""
+    pending, state = _state_directory(base_directory)
+    if not _existing_entries(pending, state):
+        return {
+            "status": "NO_PENDING_OWNER_PLAN",
+            "cloud_deletion_authorized": False,
+            "provider_deletions_performed": 0,
+            "network_requests": 0,
+        }
+    try:
+        receipt = next(state.iterdir())
+        payload = json.loads(receipt.read_text(encoding="ascii"))
+        return {
+            "status": "PENDING_OWNER_APPROVAL",
+            "backup_id": payload["backup_id"],
+            "sealed_sha256": payload["sealed_sha256"],
+            "not_before_utc": payload["not_before_utc"],
+            "expires_utc": payload["expires_utc"],
+            "independent_owner_signature_present": False,
+            "trusted_7_day_approval_anchor_verified": False,
+            "cloud_deletion_authorized": False,
+            "provider_deletions_performed": 0,
+            "network_requests": 0,
+        }
+    except Exception:
+        raise PlanOnlyHold("private pending owner review unavailable") from None
+
+
 def _acquire_preparation_lock(state: Path) -> Path:
     """Exclusive lock BEFORE provider calls. Abandoned lock needs review."""
     lock = state / "prepare-running.lock"

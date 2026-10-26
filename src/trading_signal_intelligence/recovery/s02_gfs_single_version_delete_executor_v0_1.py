@@ -233,6 +233,19 @@ def execute_single_owner_approved_prune(
     # a fresh random nonce after an earlier partial provider failure.
     _check_prior_operations(Path(journal_directory))
     try:
+        pending_candidate = approvals._decrypt(sealed_blob, private_phrase).get("candidate")
+        if (type(pending_candidate) is not str
+                or not gfs.BACKUP_ID.fullmatch(pending_candidate)):
+            raise GfsExecutionHold("invalid sealed deletion candidate")
+        # A new salt/nonce cannot reset this one-shot candidate's history.
+        prior = Path(journal_directory) / (pending_candidate + ".jsonl")
+        if prior.exists() or prior.is_symlink():
+            raise GfsExecutionHold("prior deletion attempt exists; manual reconciliation")
+    except GfsExecutionHold:
+        raise
+    except Exception:
+        raise GfsExecutionHold("private deletion plan unreadable") from None
+    try:
         policy = _same_fresh_policy(
             history=history, now=current_utc, pins=extra_pinned_ids,
             latch_present=review_latch_present,

@@ -259,7 +259,17 @@ def test_plan_only_modules_have_no_delete_and_no_owner_private_signature():
     assert q.PRODUCTION_CLOUD_DELETE_ENABLED is False
 
 
-def test_cli_default_check_requires_no_plan_vault_or_provider(tmp_path, capsys):
+
+def freeze_cli_clock(monkeypatch):
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            return NOW
+    monkeypatch.setattr(cli, "datetime", FrozenDateTime)
+
+
+def test_cli_default_check_requires_no_plan_vault_or_provider(tmp_path, capsys, monkeypatch):
+    freeze_cli_clock(monkeypatch)
     history = [success(i, i+1) for i in range(12)]
     source = tmp_path / "VowSig-S02-AutoBackup" / "state" / "history.jsonl"
     source.parent.mkdir(parents=True)
@@ -282,6 +292,7 @@ def test_cli_refuses_prepare_without_provider_read_cost_ack(tmp_path, capsys):
 def test_cli_prepare_without_expired_backups_does_not_touch_vault(
     tmp_path, capsys, monkeypatch
 ):
+    freeze_cli_clock(monkeypatch)
     history = [success(i, i+1) for i in range(12)]
     source = tmp_path / "VowSig-S02-AutoBackup" / "state" / "history.jsonl"
     source.parent.mkdir(parents=True)
@@ -337,8 +348,9 @@ def test_no_owner_approval_signature_or_real_delete_capability_in_queue(monkeypa
 
 
 def test_owner_extra_pin_file_must_be_explicit_before_cloud_preparation(
-    tmp_path, capsys
+    tmp_path, capsys, monkeypatch
 ):
+    freeze_cli_clock(monkeypatch)
     history, policy, base = fixtures(tmp_path)
     source = tmp_path / "VowSig-S02-AutoBackup" / "state" / "history.jsonl"
     source.parent.mkdir(parents=True)

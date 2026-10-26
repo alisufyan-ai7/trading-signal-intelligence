@@ -31,15 +31,32 @@ def row(day: int):
     }
 
 
+def future_history(records):
+    """8-day approval delay with a newly VERIFIED scheduled backup.
+
+    A synthetic 8-day gap without a successful backup correctly triggers
+    the real safety rule NO_RECENT_VERIFIED_BACKUP after 30 hours. Keep
+    that rule intact: add a fresh future backup only to the future snapshot.
+    """
+    fresh = row(-8)
+    fresh["at_utc"] = (NOW + timedelta(days=8) - timedelta(hours=1)).isoformat(
+        timespec="seconds"
+    )
+    fresh["backup_id"] = "backup-" + "e" * 32
+    return [*records, fresh]
+
+
 def fixtures(count=120):
     records = [row(i) for i in range(count)]
     now = NOW.isoformat(timespec="seconds")
     initial = gfs.choose_gfs(records, as_of_utc=now)
     future = gfs.choose_gfs(
-        records, as_of_utc=(NOW + timedelta(days=8)).isoformat(timespec="seconds")
+        future_history(records),
+        as_of_utc=(NOW + timedelta(days=8)).isoformat(timespec="seconds"),
     )
     candidates = [x for x in initial["eligible_ids"] if x in future["eligible_ids"]]
     assert candidates
+    assert "NO_RECENT_VERIFIED_BACKUP" not in future["hold_reasons"]
     return records, initial, future, candidates[0]
 
 
@@ -270,7 +287,7 @@ def _fake_executor(monkeypatch, case, tmp_path, *, fail_at=None):
         sealed_blob=sealed.blob, signature=signature, pinned_owner_public_key=public,
         private_phrase=PHRASE,
         current_utc=(NOW + timedelta(days=8)).isoformat(timespec="seconds"),
-        history=records, extra_pinned_ids=(), review_latch_present=False,
+        history=future_history(records), extra_pinned_ids=(), review_latch_present=False,
         aws_reader=object(), b2_reader=object(),
         reader_credentials=(("reader-aws", "test"), ("reader-b2", "test")),
         delete_credentials=(("delete-aws", "test"), ("delete-b2-data", "test"),

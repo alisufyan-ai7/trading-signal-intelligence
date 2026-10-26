@@ -414,3 +414,45 @@ def test_wellformed_explicit_empty_owner_pin_config_allowed(tmp_path):
     (base / "owner-protected-ids.json").write_text(json.dumps({
         "schema": cli.PINS_SCHEMA, "extra_pinned_ids": []}))
     assert cli._load_owner_pins(base) == ()
+
+
+def test_unsigned_pending_status_cli_exposes_no_versions_or_secrets(
+    monkeypatch, tmp_path, capsys
+):
+    history, policy, base = fixtures(tmp_path)
+    events, verify = mock_dependencies(monkeypatch, history, policy)
+    sealed = prepare(history, base, verify)
+    assert events == ["inventory", "cold_restore"]
+    code = cli.main(["--mode", "status", "--plan-root", str(base)])
+    raw = capsys.readouterr().out
+    shown = json.loads(raw)
+    assert code == 0
+    assert shown["status"] == "PENDING_OWNER_APPROVAL"
+    assert shown["backup_id"] == sealed["backup_id"]
+    assert shown["sealed_sha256"] == sealed["sealed_sha256"]
+    assert shown["trusted_7_day_approval_anchor_verified"] is False
+    assert shown["independent_owner_signature_present"] is False
+    assert shown["provider_deletions_performed"] == 0
+    assert shown["network_requests"] == 0
+    assert all(x not in raw for x in (
+        PLAN, RECOVERY, "synthetic-version-", "VersionId", "DeleteObject"))
+    assert events == ["inventory", "cold_restore"]
+
+
+def test_status_no_pending_uses_no_vault_or_cloud(tmp_path, capsys):
+    history, policy, base = fixtures(tmp_path)
+    code = cli.main(["--mode", "status", "--plan-root", str(base)])
+    shown = json.loads(capsys.readouterr().out)
+    assert code == 0
+    assert shown["status"] == "NO_PENDING_OWNER_PLAN"
+    assert shown["network_requests"] == 0
+
+
+def test_status_refuses_orphan_and_missing_root_without_cloud(tmp_path, capsys):
+    history, policy, base = fixtures(tmp_path)
+    (base / "state" / ("review-" + policy["eligible_ids"][0] + ".json")).write_text("{}")
+    code = cli.main(["--mode", "status", "--plan-root", str(base)])
+    status = json.loads(capsys.readouterr().out)
+    assert code == 2
+    assert status["status"] == "GFS_PLAN_ONLY_HOLD"
+    assert status["provider_deletions_performed"] == 0

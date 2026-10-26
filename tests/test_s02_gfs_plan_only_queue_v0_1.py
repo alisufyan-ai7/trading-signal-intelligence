@@ -334,3 +334,54 @@ def test_no_owner_approval_signature_or_real_delete_capability_in_queue(monkeypa
     }
     assert receipt["plan_signed"] is False
     assert receipt["deletion_authorized"] is False
+
+
+def test_owner_extra_pin_file_must_be_explicit_before_cloud_preparation(
+    tmp_path, capsys
+):
+    history, policy, base = fixtures(tmp_path)
+    source = tmp_path / "VowSig-S02-AutoBackup" / "state" / "history.jsonl"
+    source.parent.mkdir(parents=True)
+    source.write_text("\n".join(json.dumps(r) for r in history)+"\n")
+    code = cli.main([
+        "--mode", "prepare", "--history", str(source),
+        "--plan-root", str(base),
+        "--acknowledge-read-cost", "I_ACCEPT_READ_ONLY_CLOUD_RESTORE_COST",
+    ])
+    result = json.loads(capsys.readouterr().out)
+    assert code == 2 and result["status"] == "GFS_PLAN_ONLY_HOLD"
+    assert not list((base / "pending").iterdir())
+
+
+def test_explicit_owner_pin_prevents_selected_retention_candidate(tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    candidate = policy["eligible_ids"][0]
+    pin_file = base / "owner-protected-ids.json"
+    pin_file.write_text(json.dumps({
+        "schema": cli.PINS_SCHEMA, "extra_pinned_ids": [candidate]}))
+    pins = cli._load_owner_pins(base)
+    assert pins == (candidate,)
+    reselected = gfs.choose_gfs(
+        history, as_of_utc=TIME, extra_pinned_ids=pins)
+    assert candidate in reselected["protected_ids"]
+    assert candidate in reselected["keep_ids"]
+    assert candidate not in reselected["eligible_ids"]
+
+
+@pytest.mark.parametrize("invalid", [
+    {}, {"schema": "old", "extra_pinned_ids": []},
+    {"schema": cli.PINS_SCHEMA, "extra_pinned_ids": ["bad"]},
+    {"schema": cli.PINS_SCHEMA, "extra_pinned_ids": ["backup-"+"a"*32]*2},
+])
+def test_bad_owner_pin_config_never_defaults_to_empty(tmp_path, invalid):
+    history, policy, base = fixtures(tmp_path)
+    (base / "owner-protected-ids.json").write_text(json.dumps(invalid))
+    with pytest.raises(q.PlanOnlyHold, match="pin"):
+        cli._load_owner_pins(base)
+
+
+def test_wellformed_explicit_empty_owner_pin_config_allowed(tmp_path):
+    history, policy, base = fixtures(tmp_path)
+    (base / "owner-protected-ids.json").write_text(json.dumps({
+        "schema": cli.PINS_SCHEMA, "extra_pinned_ids": []}))
+    assert cli._load_owner_pins(base) == ()

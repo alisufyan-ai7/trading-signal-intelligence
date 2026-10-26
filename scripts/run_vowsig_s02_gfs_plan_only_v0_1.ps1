@@ -16,7 +16,7 @@ try {
         -not (Test-Path -LiteralPath (Join-Path $Base "state") -PathType Container)) {
         throw "Isolated owner-approved read-only planner runtime not installed"
     }
-    $env:PYTHONPATH = Join-Path $Runtime "src"
+    $env:PYTHONPATH = (Join-Path $Runtime "src") + ";" + $Runtime
     $env:PYTHONNOUSERSITE = "1"
     $env:PYTHONDONTWRITEBYTECODE = "1"
     & $Python -B $Cli --mode prepare --history $History --plan-root $Base --acknowledge-read-cost I_ACCEPT_READ_ONLY_CLOUD_RESTORE_COST

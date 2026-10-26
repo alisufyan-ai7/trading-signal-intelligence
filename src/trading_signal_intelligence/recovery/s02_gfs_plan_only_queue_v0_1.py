@@ -35,6 +35,9 @@ def check_eligibility(*, history: list[dict], now_utc: str,
                       review_latch_present: bool,
                       extra_pinned_ids: tuple[str, ...] = ()) -> dict:
     """No vault reads, providers, cloud costs, filesystem writes or deletions."""
+    # Even after the local check, an exclusive lock must precede ALL
+    # network reads, signature-plan preparation and disk publishing.
+    lock = _acquire_preparation_lock(state)
     try:
         policy = gfs.choose_gfs(
             history, as_of_utc=now_utc,
@@ -91,24 +94,48 @@ def _state_directory(base: Path) -> tuple[Path, Path]:
 
 
 def _existing_entries(pending: Path, state: Path) -> bool:
-    """Any anomaly/lock fails closed; existing private capsules block next plan."""
-    if any(state.iterdir()):
-        raise PlanOnlyHold("review existing planner state before any new preparation")
+    """Recognize exactly one valid private capsule + matching public receipt.
+
+    A left-behind lock, orphan receipt, unknown entry or partial file HOLDs.
+    """
     entries = list(pending.iterdir())
-    if len(entries) > 20:
-        raise PlanOnlyHold("too many pending private plans")
-    for entry in entries:
-        if (entry.is_symlink() or not entry.is_file()
-                or not entry.name.startswith("backup-")
-                or not entry.name.endswith(".aesgcm")
-                or not gfs.BACKUP_ID.fullmatch(entry.name[:-7])
-                or entry.stat().st_size > approval.MAX_SEALED_BYTES):
-            raise PlanOnlyHold("unknown private planner artifact")
-    return bool(entries)
+    journals = list(state.iterdir())
+    if len(entries) > 1 or len(journals) > 2:
+        raise PlanOnlyHold("too many or conflicting owner review artifacts")
+    if any(path.is_symlink() or not path.is_file() for path in entries + journals):
+        raise PlanOnlyHold("unsafe owner review artifact")
+    if any(path.name == "prepare-running.lock" for path in journals):
+        raise PlanOnlyHold("previous preparation incomplete; operator review required")
+    if not entries and not journals:
+        return False
+    if len(entries) != 1 or len(journals) != 1:
+        raise PlanOnlyHold("private plan and public receipt not paired")
+    private, receipt = entries[0], journals[0]
+    bid = private.name.removesuffix(".aesgcm")
+    if (private.name != bid + ".aesgcm"
+            or not gfs.BACKUP_ID.fullmatch(bid)
+            or receipt.name != "review-" + bid + ".json"
+            or not 80 < private.stat().st_size <= approval.MAX_SEALED_BYTES
+            or receipt.stat().st_size > 4096):
+        raise PlanOnlyHold("invalid or unexpected pending-plan files")
+    try:
+        metadata = json.loads(receipt.read_text(encoding="ascii"))
+        blob = private.read_bytes()
+        if (type(metadata) is not dict
+                or metadata.get("status") != "PENDING_SEPARATE_OWNER_APPROVAL"
+                or metadata.get("backup_id") != bid
+                or metadata.get("sealed_sha256") != approval._sha(blob)
+                or metadata.get("plan_signed") is not False
+                or metadata.get("deletion_authorized") is not False
+                or metadata.get("cloud_deletions_performed") != 0):
+            raise ValueError
+    except Exception:
+        raise PlanOnlyHold("private pending-plan integrity HOLD") from None
+    return True
 
 
-def _write_private_pending(pending: Path, state: Path, capsule: approval.SealedDeletePlan) -> None:
-    """Exclusive write-ahead lock; crash leaves HOLD, never auto retries."""
+def _acquire_preparation_lock(state: Path) -> Path:
+    """Exclusive lock BEFORE provider calls. Abandoned lock needs review."""
     lock = state / "prepare-running.lock"
     flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
     if hasattr(os, "O_NOFOLLOW"):
@@ -116,21 +143,29 @@ def _write_private_pending(pending: Path, state: Path, capsule: approval.SealedD
     try:
         fd = os.open(lock, flags, 0o600)
         os.close(fd)
+        return lock
     except Exception:
-        raise PlanOnlyHold("private planner is busy or interrupted") from None
-    complete = False
+        raise PlanOnlyHold("private planner busy or interrupted") from None
+
+
+def _write_private_pending(pending: Path, state: Path,
+                           capsule: approval.SealedDeletePlan) -> None:
+    """Write once under the exclusive lock already held by the caller."""
+    lock = state / "prepare-running.lock"
+    if not lock.is_file() or lock.is_symlink():
+        raise PlanOnlyHold("exclusive planner lock missing")
+    flags = os.O_CREAT | os.O_EXCL | os.O_WRONLY
+    if hasattr(os, "O_NOFOLLOW"):
+        flags |= os.O_NOFOLLOW
     try:
-        if any(pending.iterdir()):
-            raise PlanOnlyHold("private pending plan already exists")
+        if any(pending.iterdir()) or any(p.name != lock.name for p in state.iterdir()):
+            raise PlanOnlyHold("private pending artifact or unsafe state exists")
         path = pending / (capsule.backup_id + ".aesgcm")
-        if path.is_symlink() or path.exists():
-            raise PlanOnlyHold("refuse to overwrite candidate capsule")
         fd = os.open(path, flags, 0o600)
         with os.fdopen(fd, "wb") as stream:
             stream.write(capsule.blob)
             stream.flush()
             os.fsync(stream.fileno())
-        # The capsule is UNAPPROVED. The public receipt excludes all VersionIds.
         receipt = state / ("review-" + capsule.backup_id + ".json")
         record = {
             "status": "PENDING_SEPARATE_OWNER_APPROVAL",
@@ -147,18 +182,33 @@ def _write_private_pending(pending: Path, state: Path, capsule: approval.SealedD
             stream.write(json.dumps(record, sort_keys=True, separators=(",", ":"))+"\n")
             stream.flush()
             os.fsync(stream.fileno())
-        complete = True
     except PlanOnlyHold:
         raise
     except Exception:
-        raise PlanOnlyHold("private plan publication interrupted; review required") from None
-    finally:
-        if complete:
-            try:
-                lock.unlink()
-            except Exception:
-                raise PlanOnlyHold("cannot clear successful owner planner lock") from None
-        # On failure keep lock, capsule and any partial file for MANUAL review.
+        raise PlanOnlyHold("private plan publication interrupted; operator review required") from None
+
+
+
+def _existing_entries_while_locked(pending: Path, state: Path,
+                                   lock: Path, capsule: approval.SealedDeletePlan) -> bool:
+    """Check exact capsule/receipt bytes without bypassing the exclusive lock."""
+    if not lock.is_file() or lock.is_symlink():
+        raise PlanOnlyHold("planner lock missing while verifying publication")
+    path = pending / (capsule.backup_id + ".aesgcm")
+    receipt = state / ("review-" + capsule.backup_id + ".json")
+    if (not path.is_file() or path.is_symlink()
+            or not receipt.is_file() or receipt.is_symlink()
+            or set(x.name for x in pending.iterdir()) != {path.name}
+            or set(x.name for x in state.iterdir()) != {lock.name, receipt.name}):
+        raise PlanOnlyHold("private candidate publication incomplete")
+    try:
+        metadata = json.loads(receipt.read_text(encoding="ascii"))
+        return (path.read_bytes() == capsule.blob
+                and metadata.get("sealed_sha256") == capsule.sha256
+                and metadata.get("status") == "PENDING_SEPARATE_OWNER_APPROVAL"
+                and metadata.get("deletion_authorized") is False)
+    except Exception:
+        raise PlanOnlyHold("private candidate file verification failed") from None
 
 
 def prepare_one_unsigned_plan(
@@ -224,7 +274,13 @@ def prepare_one_unsigned_plan(
             plan_passphrase=plan_passphrase,
         )
         _write_private_pending(pending, state, capsule)
+        # Only a complete matched encrypted capsule + receipt releases lock.
+        if not _existing_entries_while_locked(pending, state, lock, capsule):
+            raise PlanOnlyHold("private plan persistence proof failed")
+        lock.unlink()
     except Exception:
+        # Keep abandoned lock to require owner manual reconciliation, never
+        # silently retry after an ambiguous provider or local disk failure.
         raise PlanOnlyHold("private GFS plan preparation/inventory/recovery HOLD") from None
     return {
         "status": "PENDING_SEPARATE_OWNER_APPROVAL",

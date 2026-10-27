@@ -70,3 +70,28 @@ Source blob pins at acceptance: plan-only queue `1708fe412a98d501768c79941a2641d
 **Acceptance conclusion:** the exact-head **synthetic plan-only development test milestone is CLOSED PASS** (103 passed, 0 failed). The source remains in **DRAFT PR #91**, stacked on draft PR #90 (and prerequisite draft PR #87). The original PR90 69/69 verification remains separately historical. This acceptance is **not** evidence that a new recurring planner task is installed, that Windows ACLs are hardened, that newer natural backup runs have been recovered, or that a real plan was generated. No owner approval signature, delete IAM/B2 key, or cloud pruning capability exists in the plan-only workflow.
 
 **Next release checks before enabling even read-only scheduled preparation:** independently verify fresh natural S02 backup execution and operator review latch; inspect Windows ACL/privileged account isolation and Credential Manager secret custody; verify a separate plan-only owner secret, pinned milestones file and ProgramData directory with an exact-source, isolated Windows rehearsal; accept reader audit/restore costs; and explicitly authorize new **plan-only** scheduler installation. Before any destructive operation, a separately verifiable >=7-day plan-fingerprint anchor and owner Ed25519 signature, restricted deletion identity and one-candidate pilot remain mandatory. The after-first-prune completed-deletion reconciliation ledger is still not implemented. **No step in this evidence authorizes enabling automatic cloud deletion.**
+
+
+## 2026-10-27 — Native scheduled S02 backup local-health checkpoint: PASS
+
+**Owner-observed read-only VPS PowerShell execution; this is NOT a cloud API or new cold-restore audit.** VPS production repository `main` was clean and pinned to `d5a139e87a0ee90d5a70f5aa040220fffa7af82a`. Existing Task Scheduler job `VowSig S02 Encrypted Dual Cloud Backup` returned:
+
+```text
+PRODUCTION_SOURCE=VERIFIED
+TASK_STATE=Ready
+LAST_TASK_RESULT=0
+LAST_TASK_RUN_UTC=2026-10-26T04:15:15.0000000Z
+NEXT_TASK_RUN_UTC=2026-10-27T04:15:15.0000000Z
+VERIFIED_BACKUP_RECORDS=3
+LATEST_VERIFIED_BACKUP_UTC=2026-10-26T04:15:12.0000000+00:00
+LATEST_BACKUP_AGE_HOURS=22.27
+HISTORICAL_HOLD_RECORDS=0
+OPERATOR_REVIEW_LATCH=False
+S02_NATURAL_BACKUP_HEALTH=PASS
+CLOUD_REQUESTS_PERFORMED=0
+TASK_CHANGES_PERFORMED=0
+```
+
+**Interpretation:** As of this observed snapshot (approximately 2026-10-27 02:31 UTC), the current scheduled backup journal recorded **three** independently AWS/B2-recovered success statuses; latest successful cycle occurred at 2026-10-26 04:15:12 UTC, within the existing **30-hour stale-backup safety limit**. The scheduler reported zero exit status for the latest Oct26 run, next due Oct27 04:15:15 UTC, no historical failed/hold history entries, and no `operator-review-required.json` file. The VPS had **not yet** reached its next scheduled 04:15 UTC cycle at the moment of this check. This supports **local recurrence HEALTH PASS**, not a newly performed AWS/B2 independent restore, version inventory proof, or confirmation of a future scheduled run. The earlier October 24 independent real AWS/B2 cold-restores remain the most recently directly observed provider exercise in the current thread.
+
+**Release-gate update:** `NATURAL_S02_SCHEDULED_RECURRENCE_LOCAL=PASS` at this timestamp. The owner-approved automatic *plan-only* functionality remains in **OPEN/DRAFT PR #91**, with 103 synthetic tests previously passing; its isolated Windows task is still **NOT INSTALLED**, no owner-only ACL directory or extra plan-vault secret was created, and no actual GFS candidate plan exists. PR #90 real deletion fence remains `PRODUCTION_CLOUD_DELETE_ENABLED=False`; no cloud deletes or task changes occurred. Next pre-installation steps are read-only Windows task principal/ProgramData ACL and planner-identity isolation audit, independent retained AWS+B2 recovery as necessary, and owner-only plan-secret and protected-backup pins setup under separate explicit approval. Never equate normal recurring backup success with authorization to delete versions or with a trusted >=7-day deletion-plan approval anchor.

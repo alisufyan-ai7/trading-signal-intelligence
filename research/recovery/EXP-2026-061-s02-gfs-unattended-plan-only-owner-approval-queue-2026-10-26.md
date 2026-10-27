@@ -45,3 +45,28 @@ Repeat job: If one validated plan already exists, return `PENDING_OWNER_REVIEW`,
 ## Recovery and provenance
 
 Read [Issue #67](https://github.com/alisufyan-ai7/trading-signal-intelligence/issues/67), [source PR #90](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/90), [S02 operating status](../../docs/vowsig-operational-status-2026-10-24.md), and EXP053–EXP060 retained evidence. The GitHub-only feature branch is intentionally **DRAFT, stacked onto #90**; it does not modify repo `main`, installed ProgramData daily backup, any Windows task, GitHub Actions workflow or any AWS/B2 bucket/IAM/cloud object.
+
+
+## 2026-10-27 — OWNER-VERIFIED 103/103 NATIVE WINDOWS SYNTHETIC PASS
+
+**Executable source/test commit exactly tested:** `5af3563f4f07b2cfb890330099320c6bcb88a0f5` on `implementation/s02-gfs-plan-only-approval-queue-20261026`. The owner executed the read-only isolated Windows test wrapper with five exact Git blob pins verified and received the following unchanged output:
+
+```text
+GFS_PLAN_ONLY_SOURCE=VERIFIED
+LOCAL_CHECK_NO_CLOUD_OR_LOCK=PASS
+LOCK_BEFORE_PROVIDER_AUDIT=PASS
+REAL_CLOUD_DELETION_FENCE=CLOSED
+103 passed in 13.63s
+GFS_PLAN_ONLY_REGRESSION=PASS
+REAL_CLOUD_DELETIONS_PERFORMED=0
+NEW_SCHEDULED_TASKS_INSTALLED=0
+PRODUCTION_UNCHANGED=PASS
+```
+
+Five Python pytest files were explicitly included: `test_s02_gfs_plan_only_queue_v0_1.py`, `test_s02_gfs_owner_signed_single_delete_v0_1.py`, `test_s02_gfs_retention_policy_v0_1.py`, `test_s02_gfs_cloud_inventory_v0_1.py`, and `test_s02_gfs_retained_restore_audit_v0_1.py`. The exact tested source includes the corrected placement of the exclusive lock in `prepare_one_unsigned_plan` **before** provider inventory, and excludes it from the zero-network `check_eligibility` path. The hard-coded production deletion fence remained OFF. **Zero live AWS/B2 cloud operations or task installation were performed by this synthetic run**, and the pinned VPS production Git tree remained clean/unchanged.
+
+Source blob pins at acceptance: plan-only queue `1708fe412a98d501768c79941a2641d8e587424d`, vault `04ffbd42725d583df2908957fa2ef58e22ec4feb`, CLI `bf05e31009041ae3da98e01ba0f382fcad073505`, focused plan-only tests `315098b96f1abb9c4ddcaa1e2b2b073a7052d0f2`, and parent destructive executor `1b4c1fce2147a7ac61616f97f03e95a53441504d`.
+
+**Acceptance conclusion:** the exact-head **synthetic plan-only development test milestone is CLOSED PASS** (103 passed, 0 failed). The source remains in **DRAFT PR #91**, stacked on draft PR #90 (and prerequisite draft PR #87). The original PR90 69/69 verification remains separately historical. This acceptance is **not** evidence that a new recurring planner task is installed, that Windows ACLs are hardened, that newer natural backup runs have been recovered, or that a real plan was generated. No owner approval signature, delete IAM/B2 key, or cloud pruning capability exists in the plan-only workflow.
+
+**Next release checks before enabling even read-only scheduled preparation:** independently verify fresh natural S02 backup execution and operator review latch; inspect Windows ACL/privileged account isolation and Credential Manager secret custody; verify a separate plan-only owner secret, pinned milestones file and ProgramData directory with an exact-source, isolated Windows rehearsal; accept reader audit/restore costs; and explicitly authorize new **plan-only** scheduler installation. Before any destructive operation, a separately verifiable >=7-day plan-fingerprint anchor and owner Ed25519 signature, restricted deletion identity and one-candidate pilot remain mandatory. The after-first-prune completed-deletion reconciliation ledger is still not implemented. **No step in this evidence authorizes enabling automatic cloud deletion.**

@@ -1,0 +1,97 @@
+# EXP-2026-061 — Unattended GFS eligibility and private unsigned plan-only queue (2026-10-26)
+
+**Status: DEVELOPMENT DRAFT / NOT INSTALLED / NO CLOUD DELETE PERMISSIONS.** This is a small proposed follow-up to draft PR #90 and its prerequisite draft PR #87, solely in `alisufyan-ai7/trading-signal-intelligence`. It implements the owner's selected **first-release workflow**: automatically check which S02 backups are eligible for GFS expiration; for one eligible candidate at a time, prepare an encrypted private plan using existing read-only AWS/B2 credentials and recoverability evidence; **require separate owner approval before ANY deletion**. Do not conflate planned future automation with an installed Windows scheduled task.
+
+## Release boundaries
+
+- **Installed and previously owner-proven:** existing interactive `VowSig S02 Encrypted Dual Cloud Backup` task at 04:15 VPS-local, isolated `C:\ProgramData\VowSig-S02-AutoBackup` runtime, manual baseline + first scheduled AES-GCM S02 backups independently cold-restored from AWS S3/B2. Dated real cloud inventory Oct24 contained just two protected IDs; do not assume later scheduled backups unless reverified by operator.
+- **Draft only:** GFS 30 daily / 8 weekly / 12 monthly selector, exact AWS/B2 version inventory and retained cold restore; owner-signed seven-day delete executor with source constant `PRODUCTION_CLOUD_DELETE_ENABLED = False` in PR #90; this EXP061 independent read-only, unsigned queue.
+- **Never in scope for unattended plan-only task:** Ed25519 owner private signing key, three delete-role credentials, any `DeleteObject` / S3 lifecycle / Backblaze B2 deleteFiles API, scheduled deletion, broker execution, uploading private capsules to GitHub, modifying the current automatic backup task or automatically granting owner approval.
+- **Immediate caution:** A local capsule `not_before_utc` is **not itself a trusted seven-day timestamp anchor**. Future release must publish the nonsecret SHA-256/plan creation timestamp to independently verifiable, protected owner review evidence (for example a new immutable private GitHub issue comment) and verify the >=7 full-day cooling-off from that trusted anchor **before** the owner can sign and execute a deletion. Owner must manually inspect and approve EACH candidate, even when multiple expire in the same week. Do not count an untrusted local timestamp as authorization.
+- No normal scheduled recovery point aged beyond 30 days in the last real Oct24 audit; original first manual and first scheduled IDs remain protected. No real expired ID has been verified in this PR.
+
+## New source and flow
+
+| Component | Function | Cloud write/delete? |
+| --- | --- | --- |
+| `src/.../s02_gfs_plan_only_queue_v0_1.py` | Deterministic, bounded **local-only** eligibility check. In prepare mode, fail closed on stale 30-hour backup, any unresolved history/review latch, malformed extra pins, unexpected cloud version, or nonrestorable retained snapshot. Exactly one eligible ID at a time; never encrypt or queue if any necessary audit fails. | No |
+| `src/.../s02_gfs_plan_only_vault_v0_1.py` | Windows Generic Credential read of **one additional plan-only encryption passphrase**; fixed target, no enumeration/mutation. Existing vault recovery phrase remains separately required. | No |
+| `scripts/vowsig_s02_gfs_plan_only_v0_1.py` | Safe CLI: `--mode check` **default** = local-only, no vault, provider or disk write. `--mode prepare` = consented read-only cloud inspection and owner-only encrypted capsule creation **only when an eligible backup exists**. `--mode status --plan-root <owner-only path>` = credential-free read-only pending review status (backup ID, fingerprint, local review dates; **no VersionIds or secrets**). Native Windows only accepts the fixed `%ProgramData%\\VowSig-S02-GFS-PlanOnly` path. No `--as-of` override can falsify UTC age. | No |
+| `scripts/run_vowsig_s02_gfs_plan_only_v0_1.ps1` | Prepared source for a prospective independent scheduled task, under its own ProgramData runtime. **Not registered or invoked automatically** by this PR. | No |
+| `tests/test_s02_gfs_plan_only_queue_v0_1.py` | Synthetic-only default check/no-key/no-cost, stale history and incident latch, extra owner pins, real-looking synthetic complete inventory and retained restore gates, **lock held before provider calls**, private AES capsule, no signature/delete, read-only review status, one pending owner queue, abandoned lock and retry holds. | No |
+
+**Order:** scheduled backup finishes (unchanged); the separately approved new planner job (future) reads `C:\ProgramData\VowSig-S02-AutoBackup\state\history.jsonl` using only its CurrentUser permissions and no modification; `choose_gfs` selects 30 daily/8 weekly/12 monthly; if no eligible candidate or safety HOLD, stop with sanitized check status and **zero cloud requests**. If eligible and owner-pin configuration exists, check there are NO queued unresolved files, then require the distinct Windows Generic plan phrase, the existing AWS/B2 **reader-only** credentials, and the existing S02 recovery phrase (all separately validated). Acquire an exclusive owner-only lock **before** contacting any provider; list all four S02 data/manifest prefixes to exact VersionIds, reject missing/duplicate/delete-marker/extra versions, and independently authenticate/recover **all retained backups from both providers**. Freeze only the first eligible backup to a private AES-GCM encrypted **UNSIGNED** capsule, store it once under an owner-only private directory, and fsync a separate sanitized public receipt: backup ID, sealed SHA256 fingerprint, proposed local not-before/expiry, signed:false, authorized:false, deleted:0. Verify saved ciphertext/receipt bytes, then release exclusive lock. **No provider mutations happen.**
+
+Repeat job: If one validated plan already exists, return `PENDING_OWNER_REVIEW`, do not read vault or charge for repeated cloud restores, do not overwrite its salt/nonce or generate another review plan. On unexpected files, partial receipt, symlink, absent owner pins, provider failure or ambiguous write, fail closed and preserve the lock so that a human must reconcile. Never automatically reapprove an expired plan, clear a hold or auto-retry cloud deletion.
+
+## Required owner setup BEFORE scheduling (NOT done by this PR)
+
+1. **Verify current backup health:** task actually invoked naturally since Oct24, recent `history.jsonl` successes and no `operator-review-required.json` latch, plus actual dual-provider recovery from a recent backup. The initial manual/scheduled protected IDs must survive.
+2. **Security boundary:** owner-reviewed **separate** Windows runtime `C:\ProgramData\VowSig-S02-GFS-PlanOnly\current`, owner-only `pending\` and `state\` directories, hard ACL verified on the real Windows VPS (inheritance disabled, no general Users/Everyone read/write), an independently controlled local history reader, and **no AWS/B2 write/delete privileges** beyond existing dedicated readers. The code intentionally refuses to create parent directories or assume ACLs are safe. A Windows ACL review/drill remains a release gate.
+3. Owner adds ONE new **Generic Credential** via the Windows GUI (never paste into chat/script/Git): target `VowSig.S02.GFS.Plan.Passphrase.v1`, user `VowSigGFSPlanner`, password a strong **new and distinct** plan encryption secret. Retain it in owner-controlled recovery custody off VPS. The existing `VowSig.S02.Recovery.Passphrase.v1` and four AWS/B2 writer/reader entries remain unchanged. Plan-only runtime only reads AWS and B2 **reader** entries.
+4. Owner creates an ACL-protected, syntactically exact JSON file `C:\ProgramData\VowSig-S02-GFS-PlanOnly\owner-protected-ids.json` (source template below). Example with no extra pins: `{"schema":"vowsig-s02-gfs-owner-extra-pins-v1","extra_pinned_ids":[]}`. Add any permanently protected `backup-[32 lowercase hex]` IDs before enabling automatic preparation. **Missing/invalid file HOLDs** when eligible rather than assuming `[]`. The GFS selector also always protects original manual baseline and latest two confirmed scheduled backups. No external backup ID can be silently pruned if the extra-pins file is configured accurately.
+5. Owner accepts small reader-version-list and retained cold-restore request costs. The plan-only CLI needs explicit `--acknowledge-read-cost I_ACCEPT_READ_ONLY_CLOUD_RESTORE_COST` in prepare mode and has **no** delete capability. No auto cloud costs while no expired eligible backup or one plan is already queued.
+6. After targeted native Windows tests, prepare an owner-approved **separate** interactive task schedule (choose time after daily 04:15 backup; do **not** modify that existing task); original four scheduled tasks remain untouched. The runner script is a source template only, **no installer/deployment/schedule has been run**. Full sign-out disables Interactive task runs unless separately engineered/reapproved.
+7. Future approval after accepted 7-day independent owner-visible anchor: owner securely signs the **specific sealed capsule SHA** using separately held off-VPS Ed25519 signing private key; an authorized release runner on a different account, with narrowly scoped temporary AWS+B2 delete-only credentials, revalidates fresh inventory/GFS/retained cold restore and calls the hard-gated executor for **one** approved candidate. The executor currently remains disabled, unmerged and not installed. No plan-only task should ever have a signing key or deletion permissions.
+
+## Source-bound safety contracts and known future limitations
+
+- The local snapshot hash is not a real-time, trusted owner authorization anchor. Enforce external immutable timestamps and genuine owner confirmation before expiry.
+- The current exact-version cloud inventory requires **all previously successful history IDs** to still exist in provider buckets. After the first future actual manual deletion, re-running raw `history.jsonl` without a separately verified durable **completed-deletion/tombstone reconciliation ledger** will naturally HOLD on missing provider objects. **Do not implement repeated real pruning until this ledger and its fail-closed mismatch tests are complete.** This missing future gate must not be hidden by filtering history ad hoc or ignoring extra cloud versions.
+- Cloud data and manifest versions are permanently deleted, not recycled; even a signed plan must pass full two-provider retained restores and a complete exact version inventory again after waiting seven days. No cloud deletion IAM is installed and no retained points are purged by preparation.
+- Multi-recipient alerts / remote notifications remain a separate engineering item. The private pending encrypted capsule and sanitized receipt are **on the VPS only**, not automatically sent to the owner. Plan review requires checking the owner-only queue, or separately approved alert delivery.
+- All test cases are **synthetic**; the new source has not yet been accepted by a native Windows exact-SHA run. Previous 69/69 PASS at PR90 head pertains to its earlier code only. Do not upgrade historic CI failures to PASS. A source review, Windows restricted-directory/credential rehearsal, and owner sign-off are required before installing even the *plan-only* scheduled task.
+
+## Recovery and provenance
+
+Read [Issue #67](https://github.com/alisufyan-ai7/trading-signal-intelligence/issues/67), [source PR #90](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/90), [S02 operating status](../../docs/vowsig-operational-status-2026-10-24.md), and EXP053–EXP060 retained evidence. The GitHub-only feature branch is intentionally **DRAFT, stacked onto #90**; it does not modify repo `main`, installed ProgramData daily backup, any Windows task, GitHub Actions workflow or any AWS/B2 bucket/IAM/cloud object.
+
+
+## 2026-10-27 — OWNER-VERIFIED 103/103 NATIVE WINDOWS SYNTHETIC PASS
+
+**Executable source/test commit exactly tested:** `5af3563f4f07b2cfb890330099320c6bcb88a0f5` on `implementation/s02-gfs-plan-only-approval-queue-20261026`. The owner executed the read-only isolated Windows test wrapper with five exact Git blob pins verified and received the following unchanged output:
+
+```text
+GFS_PLAN_ONLY_SOURCE=VERIFIED
+LOCAL_CHECK_NO_CLOUD_OR_LOCK=PASS
+LOCK_BEFORE_PROVIDER_AUDIT=PASS
+REAL_CLOUD_DELETION_FENCE=CLOSED
+103 passed in 13.63s
+GFS_PLAN_ONLY_REGRESSION=PASS
+REAL_CLOUD_DELETIONS_PERFORMED=0
+NEW_SCHEDULED_TASKS_INSTALLED=0
+PRODUCTION_UNCHANGED=PASS
+```
+
+Five Python pytest files were explicitly included: `test_s02_gfs_plan_only_queue_v0_1.py`, `test_s02_gfs_owner_signed_single_delete_v0_1.py`, `test_s02_gfs_retention_policy_v0_1.py`, `test_s02_gfs_cloud_inventory_v0_1.py`, and `test_s02_gfs_retained_restore_audit_v0_1.py`. The exact tested source includes the corrected placement of the exclusive lock in `prepare_one_unsigned_plan` **before** provider inventory, and excludes it from the zero-network `check_eligibility` path. The hard-coded production deletion fence remained OFF. **Zero live AWS/B2 cloud operations or task installation were performed by this synthetic run**, and the pinned VPS production Git tree remained clean/unchanged.
+
+Source blob pins at acceptance: plan-only queue `1708fe412a98d501768c79941a2641d8e587424d`, vault `04ffbd42725d583df2908957fa2ef58e22ec4feb`, CLI `bf05e31009041ae3da98e01ba0f382fcad073505`, focused plan-only tests `315098b96f1abb9c4ddcaa1e2b2b073a7052d0f2`, and parent destructive executor `1b4c1fce2147a7ac61616f97f03e95a53441504d`.
+
+**Acceptance conclusion:** the exact-head **synthetic plan-only development test milestone is CLOSED PASS** (103 passed, 0 failed). The source remains in **DRAFT PR #91**, stacked on draft PR #90 (and prerequisite draft PR #87). The original PR90 69/69 verification remains separately historical. This acceptance is **not** evidence that a new recurring planner task is installed, that Windows ACLs are hardened, that newer natural backup runs have been recovered, or that a real plan was generated. No owner approval signature, delete IAM/B2 key, or cloud pruning capability exists in the plan-only workflow.
+
+**Next release checks before enabling even read-only scheduled preparation:** independently verify fresh natural S02 backup execution and operator review latch; inspect Windows ACL/privileged account isolation and Credential Manager secret custody; verify a separate plan-only owner secret, pinned milestones file and ProgramData directory with an exact-source, isolated Windows rehearsal; accept reader audit/restore costs; and explicitly authorize new **plan-only** scheduler installation. Before any destructive operation, a separately verifiable >=7-day plan-fingerprint anchor and owner Ed25519 signature, restricted deletion identity and one-candidate pilot remain mandatory. The after-first-prune completed-deletion reconciliation ledger is still not implemented. **No step in this evidence authorizes enabling automatic cloud deletion.**
+
+
+## 2026-10-27 — Native scheduled S02 backup local-health checkpoint: PASS
+
+**Owner-observed read-only VPS PowerShell execution; this is NOT a cloud API or new cold-restore audit.** VPS production repository `main` was clean and pinned to `d5a139e87a0ee90d5a70f5aa040220fffa7af82a`. Existing Task Scheduler job `VowSig S02 Encrypted Dual Cloud Backup` returned:
+
+```text
+PRODUCTION_SOURCE=VERIFIED
+TASK_STATE=Ready
+LAST_TASK_RESULT=0
+LAST_TASK_RUN_UTC=2026-10-26T04:15:15.0000000Z
+NEXT_TASK_RUN_UTC=2026-10-27T04:15:15.0000000Z
+VERIFIED_BACKUP_RECORDS=3
+LATEST_VERIFIED_BACKUP_UTC=2026-10-26T04:15:12.0000000+00:00
+LATEST_BACKUP_AGE_HOURS=22.27
+HISTORICAL_HOLD_RECORDS=0
+OPERATOR_REVIEW_LATCH=False
+S02_NATURAL_BACKUP_HEALTH=PASS
+CLOUD_REQUESTS_PERFORMED=0
+TASK_CHANGES_PERFORMED=0
+```
+
+**Interpretation:** As of this observed snapshot (approximately 2026-10-27 02:31 UTC), the current scheduled backup journal recorded **three** independently AWS/B2-recovered success statuses; latest successful cycle occurred at 2026-10-26 04:15:12 UTC, within the existing **30-hour stale-backup safety limit**. The scheduler reported zero exit status for the latest Oct26 run, next due Oct27 04:15:15 UTC, no historical failed/hold history entries, and no `operator-review-required.json` file. The VPS had **not yet** reached its next scheduled 04:15 UTC cycle at the moment of this check. This supports **local recurrence HEALTH PASS**, not a newly performed AWS/B2 independent restore, version inventory proof, or confirmation of a future scheduled run. The earlier October 24 independent real AWS/B2 cold-restores remain the most recently directly observed provider exercise in the current thread.
+
+**Release-gate update:** `NATURAL_S02_SCHEDULED_RECURRENCE_LOCAL=PASS` at this timestamp. The owner-approved automatic *plan-only* functionality remains in **OPEN/DRAFT PR #91**, with 103 synthetic tests previously passing; its isolated Windows task is still **NOT INSTALLED**, no owner-only ACL directory or extra plan-vault secret was created, and no actual GFS candidate plan exists. PR #90 real deletion fence remains `PRODUCTION_CLOUD_DELETE_ENABLED=False`; no cloud deletes or task changes occurred. Next pre-installation steps are read-only Windows task principal/ProgramData ACL and planner-identity isolation audit, independent retained AWS+B2 recovery as necessary, and owner-only plan-secret and protected-backup pins setup under separate explicit approval. Never equate normal recurring backup success with authorization to delete versions or with a trusted >=7-day deletion-plan approval anchor.

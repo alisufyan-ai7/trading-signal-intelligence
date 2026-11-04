@@ -23,6 +23,16 @@ The owner explicitly requires a SINGLE coordinated VowSig production release. Do
 **Timing:** No certified production date until actual TLS/backup/source-ledger evidence is available. No second release is planned and no safety gates may be silently weakened to force the date.
 
 ---
+## 2026-11-04 parallel engineering tracks: free owner MFA + real growth aggregates
+
+Two technically independent implementation tracks have advanced within draft PR #93. We cannot dispatch separate autonomous coding agents directly from this conversation; the shared branch remains the only integration point and GitHub Actions runs Python/PostgreSQL and browser QA jobs concurrently.
+
+**Track A — security:** owner TOTP step-up without paid Auth0 MFA. A 160-bit offline-provisioned authenticator secret is encrypted with AES-256-GCM bound to account UUID, with a 256-bit Railway private master key, monotonic one-time counter anti-replay, PostgreSQL cross-worker row locks, five-failure/fifteen-minute lockout, exact-session MFA timestamp, CSRF/verified-account checks and existing 15-minute owner freshness guard. SQL migration 008 is applied before SQL grant policy 007. The runtime can update challenge counters only, not create/replace the encrypted owner factor. Owner role promotion, factor provisioning, recovery and independent UAT remain out-of-band release requirements; no public self-enrollment. See `docs/vowsig-free-owner-totp-stepup-review-2026-11-04.md`. Auth0 remains Free $0.
+
+**Track B — owner analytics:** privacy-safe PostgreSQL aggregates for 24-hour/7-day/30-day signups, verified/unverified account counts, member watchlists, saved research, research-update consent, deletion queue, unrevoked/unexpired sessions, issued sessions and owner authenticator enrollment. No email/name rows, no marketing exports, no invented D7 retention or revenue. The owner dashboard explicitly labels the independent PostgreSQL restore as *unverified*, consistent with the owner-approved post-launch backup task.
+
+**Integration gates:** disposable PG18 schema (15 account/research/MFA tables), actual encrypted-factor replay/lockout, negative API access/CSRF, restricted role tests and Chromium UI must all pass on the exact final PR SHA. Neither branch workstream is an authorization to merge or deploy. Live Postgres roles/schema and website remain unchanged.
+
 ## Scope and order
 
 | Priority | Workstream | Implementation status in consolidated PR #93 | Independent work remaining | Owner/infrastructure gate at end |

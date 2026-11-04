@@ -28,3 +28,7 @@ Launch status must distinguish `FEATURES_LIVE` from `POSTGRES_RECOVERY_VERIFIED`
 PR #93 contains fail-closed account APIs, preliminary member UX and an owner-only `/api/v2/admin/evidence` that displays projection inventory but explicitly marks it **not independently verified**. All other owner dashboards, real owner MFA, source-ledger ingestion/validation and full after-cost history remain under active work, not yet production-ready.
 
 **This change records a conscious owner risk decision; it does not mean the current draft is approved for launch.**
+
+## Latest engineering scope (2026-11-04)
+
+Owner-specific free TOTP step-up and privacy-safe owner growth/security reporting have been prepared as independent review tracks in PR #93. The implementation still requires verified external owner bootstrap, real authenticator enrollment/recovery testing, signed original-ledger research auditing and actual production DB authentication before launch. A complete one-time customer-facing release remains the directive; PostgreSQL offsite backup is the first post-launch task with `DATABASE_RECOVERY_UNVERIFIED` explicitly acknowledged until a real restore.

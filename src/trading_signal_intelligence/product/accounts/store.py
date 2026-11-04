@@ -561,32 +561,96 @@ class PostgresAccountStore:
         }
 
     def admin_growth(self) -> dict[str, Any]:
-        """Verified account and watchlist counts only; privacy-safe aggregates."""
+        """Privacy-safe *observed* owner growth/security metrics from actual SQL.
+
+        Returning login events are NOT complete D7 retention when session
+        records may be purged. No dollar revenue or subscription claims.
+        """
         with self._connect() as conn:
             accounts=conn.execute(
                 """SELECT count(*) AS total,
                           count(*) FILTER (WHERE email_verified_at IS NOT NULL)
-                            AS verified
-                   FROM vowsig_accounts WHERE disabled_at IS NULL""",
+                            AS verified,
+                          count(*) FILTER (WHERE created_at >= now()-interval '24 hours')
+                            AS created_24h,
+                          count(*) FILTER (WHERE created_at >= now()-interval '7 days')
+                            AS created_7d,
+                          count(*) FILTER (WHERE created_at >= now()-interval '30 days')
+                            AS created_30d
+                   FROM vowsig_accounts WHERE disabled_at IS NULL"""
             ).fetchone()
             watchlists=conn.execute(
                 """SELECT count(DISTINCT w.account_id) AS with_watchlist
                    FROM vowsig_watchlist_items w
                    JOIN vowsig_accounts a ON a.id=w.account_id
                    WHERE a.email_verified_at IS NOT NULL
-                     AND a.disabled_at IS NULL""",
+                     AND a.disabled_at IS NULL"""
             ).fetchone()
-        verified=accounts["verified"]
+            saved=conn.execute(
+                """SELECT count(DISTINCT r.account_id) AS with_saved
+                   FROM vowsig_saved_research r
+                   JOIN vowsig_accounts a ON a.id=r.account_id
+                   WHERE a.email_verified_at IS NOT NULL
+                     AND a.disabled_at IS NULL"""
+            ).fetchone()
+            consent=conn.execute(
+                """SELECT count(*) AS opted_in
+                   FROM vowsig_account_preferences p
+                   JOIN vowsig_accounts a ON a.id=p.account_id
+                   WHERE p.research_updates_opt_in=TRUE
+                     AND a.email_verified_at IS NOT NULL
+                     AND a.disabled_at IS NULL"""
+            ).fetchone()
+            deletions=conn.execute(
+                """SELECT count(*) AS pending
+                   FROM vowsig_account_deletion_requests d
+                   JOIN vowsig_accounts a ON a.id=d.account_id
+                   WHERE d.status IN ('pending_reverification','under_review')
+                     AND a.disabled_at IS NULL"""
+            ).fetchone()
+            sessions=conn.execute(
+                """SELECT count(*) FILTER (
+                            WHERE s.revoked_at IS NULL AND s.expires_at>now()
+                          ) AS currently_valid,
+                          count(*) FILTER (
+                            WHERE s.created_at >= now()-interval '7 days'
+                          ) AS issued_7d
+                   FROM vowsig_account_sessions s
+                   JOIN vowsig_accounts a ON a.id=s.account_id
+                   WHERE a.disabled_at IS NULL"""
+            ).fetchone()
+            owner_factors=conn.execute(
+                """SELECT count(*) AS enrolled_owner_count
+                   FROM vowsig_owner_totp_credentials m
+                   JOIN vowsig_accounts a ON a.id=m.account_id
+                   WHERE a.role='owner' AND a.email_verified_at IS NOT NULL
+                     AND a.disabled_at IS NULL"""
+            ).fetchone()
+        verified=int(accounts["verified"])
+        total=int(accounts["total"])
+        with_watchlist=int(watchlists["with_watchlist"])
         return {
             "source":"account_database_aggregate",
-            "registered_accounts":accounts["total"],
+            "registered_accounts":total,
             "verified_accounts":verified,
-            "accounts_with_watchlist":watchlists["with_watchlist"],
-            "activation_rate": (
-                watchlists["with_watchlist"] / verified if verified else None
-            ),
-            "retention_7d":None,"revenue":None,
-            "retention_notice":"No privacy-reviewed D7 cohort collection or billing enabled.",
+            "unverified_accounts":total-verified,
+            "new_accounts_24h":int(accounts["created_24h"]),
+            "new_accounts_7d":int(accounts["created_7d"]),
+            "new_accounts_30d":int(accounts["created_30d"]),
+            "verified_rate":verified/total if total else None,
+            "accounts_with_watchlist":with_watchlist,
+            "accounts_with_saved_research":int(saved["with_saved"]),
+            "research_updates_opted_in_accounts":int(consent["opted_in"]),
+            "pending_deletion_requests":int(deletions["pending"]),
+            "valid_account_sessions_now":int(sessions["currently_valid"]),
+            "issued_sessions_last_7d":int(sessions["issued_7d"]),
+            "owner_totp_enrolled_accounts":int(owner_factors["enrolled_owner_count"]),
+            "activation_rate":with_watchlist/verified if verified else None,
+            "retention_7d":None,
+            "revenue":None,
+            "retention_notice":"D7 user retention is NOT yet instrumented; session issue counts are not retention.",
+            "backup_restore_proven":False,
+            "backup_notice":"Railway PostgreSQL backup and independent restore remain unverified; owner accepted post-launch integration.",
         }
 
     def watchlist(self, account_id: str) -> list[str]:

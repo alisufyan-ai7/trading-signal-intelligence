@@ -377,9 +377,28 @@
             ["Independent source proof","Not provided"]])))):
         msg("No historical source projections",
           "The owner dashboard will populate only from reconciled evidence. No performance statistics are fabricated.")));
-    main.append(panel("Growth & customer research",
-      msg("Database-only account aggregates","Verified signups and watchlist totals come from the account database. D7 retention and revenue are not instrumented."),
-      compact([["Verified accounts",growth.verified_accounts],["Watchlist accounts",growth.accounts_with_watchlist],["Activation ratio",growth.activation_rate],["D7 retention",growth.retention_7d]])));
+    main.append(panel("Growth, access security & recovery",
+      msg("Database-observed counts · not invented retention",
+        "Only privacy-safe verified-account, session and consent aggregates are reported. D7 retention and revenue remain unmeasured."),
+      compact([["Registered accounts",growth.registered_accounts],
+        ["Verified accounts",growth.verified_accounts],
+        ["Unverified accounts",growth.unverified_accounts],
+        ["New accounts · 24h",growth.new_accounts_24h],
+        ["New accounts · 7d",growth.new_accounts_7d],
+        ["New accounts · 30d",growth.new_accounts_30d],
+        ["Verified percentage",growth.verified_rate==null?"N/A":(100*growth.verified_rate).toFixed(1)+"%"],
+        ["Accounts with watchlists",growth.accounts_with_watchlist],
+        ["Accounts with saved research",growth.accounts_with_saved_research],
+        ["Research updates opt-in",growth.research_updates_opted_in_accounts],
+        ["Deletion requests pending review",growth.pending_deletion_requests],
+        ["Unrevoked unexpired sessions",growth.valid_account_sessions_now],
+        ["Login sessions issued · 7d",growth.issued_sessions_last_7d],
+        ["Owner authenticators enrolled",growth.owner_totp_enrolled_accounts],
+        ["D7 retention","Not yet measured"],
+        ["Revenue","Not enabled"],
+        ["Independent Postgres restore",growth.backup_restore_proven?"Verified":"Not yet verified"]]),
+      E("p",{class:"helper",text:growth.backup_notice||
+        "PostgreSQL recovery integration is the first post-launch operational task."})));
   }
   async function render(){
     clear(); error.hidden=true;

@@ -131,6 +131,13 @@ class Store:
             "source":"account_database_aggregate","registered_accounts":1,
             "verified_accounts":1,"accounts_with_watchlist":1,
             "activation_rate":1.0,"retention_7d":None,"revenue":None,
+            "unverified_accounts":0,"new_accounts_24h":1,
+            "new_accounts_7d":1,"new_accounts_30d":1,
+            "verified_rate":1.0,"accounts_with_saved_research":0,
+            "research_updates_opted_in_accounts":0,"pending_deletion_requests":0,
+            "valid_account_sessions_now":1,"issued_sessions_last_7d":1,
+            "owner_totp_enrolled_accounts":1,"backup_restore_proven":False,
+            "backup_notice":"PostgreSQL recovery unverified",
         }
     def verify_owner_totp(self,*,token_sha256,account_id,code,master_key_b64):
         from trading_signal_intelligence.product.accounts.owner_mfa import (

@@ -198,7 +198,15 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     assert export_a["email"]=="owner-a@example.test"
     assert len(export_a["consent_events"])==1
     assert export_a["consent_events"][0]["opted_in"] is True
-    assert store.admin_growth()["verified_accounts"]==2
+    growth=store.admin_growth()
+    assert growth["verified_accounts"]==2
+    assert growth["registered_accounts"]==2
+    assert growth["unverified_accounts"]==0
+    assert growth["owner_totp_enrolled_accounts"]==1
+    assert growth["pending_deletion_requests"]==0
+    assert growth["new_accounts_7d"]==2
+    assert growth["retention_7d"] is None
+    assert growth["backup_restore_proven"] is False
 
     store.save_research(str(id_a),"XAUUSD","core-signal-A")
     assert store.saved_research(str(id_a))[0]["signal_id"]=="core-signal-A"

@@ -181,8 +181,22 @@ def ui(browser):
                 }]
             }
         elif path=="/api/v2/admin/growth":
-            result={"registered_accounts":1,"verified_accounts":1,
-                    "accounts_with_watchlist":0,"retention_7d":None}
+            result={
+                "registered_accounts":1,"verified_accounts":1,
+                "unverified_accounts":0,"new_accounts_24h":1,
+                "new_accounts_7d":1,"new_accounts_30d":1,
+                "verified_rate":1.0,
+                "accounts_with_watchlist":0,
+                "accounts_with_saved_research":0,
+                "research_updates_opted_in_accounts":0,
+                "pending_deletion_requests":0,
+                "valid_account_sessions_now":1,
+                "issued_sessions_last_7d":1,
+                "owner_totp_enrolled_accounts":1,
+                "retention_7d":None,"revenue":None,
+                "backup_restore_proven":False,
+                "backup_notice":"Postgres backup and cold restore not yet verified.",
+            }
         elif path=="/api/v2/me/deletion-request":
             result={"status":"pending_reverification"}
         elif path=="/api/v2/me/owner-mfa/verify" and method=="POST":
@@ -269,6 +283,9 @@ def test_owner_analytics_do_not_imply_verified_history(ui):
     assert page.get_by_text("Original-ledger verification still required").count()==1
     assert page.get_by_text("VPS runtime independently verified",exact=False).count()>=1
     assert "VPS runtime independently verified: No" in page.locator("#app-content").inner_text()
+    assert page.get_by_text("Growth, access security & recovery").count()==1
+    assert page.get_by_text("D7 retention",exact=False).count()>=1
+    assert page.get_by_text("Independent Postgres restore",exact=False).count()==1
     assert not any("/api/internal" in path for _,path in state["http_calls"])
 
 

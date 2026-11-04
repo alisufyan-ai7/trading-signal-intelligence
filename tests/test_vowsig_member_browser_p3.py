@@ -161,6 +161,23 @@ def ui(browser):
         elif path=="/api/v2/admin/performance":
             result={"performance":None,"verified_full_history":False,
                     "notice":"No complete source evidence."}
+        elif path=="/api/v2/admin/evidence":
+            result={
+                "source":"research_projection_database",
+                "verified_full_history":False,
+                "source_ledger_independently_reconciled":False,
+                "historical_performance_publishing_permitted":False,
+                "inventory_truncated":False,
+                "next_evidence_required":"Independent original-ledger verification required",
+                "snapshots":[{
+                    "source_program_id":"core-ai-shadow","model_version":"AI-v1.1",
+                    "ingest_status":"quarantined","projected_records":2,
+                    "projected_closed":1,"projected_open":0,
+                    "projected_no_trade":1,"projected_rejected":0,
+                    "projected_error":0,"projected_closed_after_costs":1,
+                    "independently_verified":False,
+                }]
+            }
         elif path=="/api/v2/admin/growth":
             result={"registered_accounts":1,"verified_accounts":1,
                     "accounts_with_watchlist":0,"retention_7d":None}
@@ -237,6 +254,9 @@ def test_owner_analytics_do_not_imply_verified_history(ui):
     open_page(page,"/admin/")
     assert page.locator("h1").inner_text()=="Owner research overview"
     assert page.get_by_text("Source-reconciled performance unavailable").count()==1
+    assert page.get_by_text("Independent history evidence & reconciliation").count()==1
+    assert page.get_by_text("Independent source proof",exact=False).count()>=1
+    assert page.get_by_text("Original-ledger verification still required").count()==1
     assert page.get_by_text("VPS runtime independently verified",exact=False).count()>=1
     assert "VPS runtime independently verified: No" in page.locator("#app-content").inner_text()
     assert not any("/api/internal" in path for _,path in state["http_calls"])

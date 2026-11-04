@@ -21,6 +21,7 @@ MIGRATIONS = [
     "006_oidc_auth_transactions.sql",
     "007_restricted_roles_and_grants.sql",
     "008_owner_mfa_stepup.sql",
+    "009_owner_offline_provisioning_audit.sql",
 ]
 
 
@@ -69,8 +70,8 @@ def main() -> None:
             "SELECT count(*) FROM pg_catalog.pg_tables "
             "WHERE schemaname='vowsig' AND left(tablename,7)='vowsig_'"
         ).fetchone()[0]
-        if cnt != 15:
-            raise AssertionError("Expected 14 scoped account/research tables")
+        if cnt != 16:
+            raise AssertionError("Expected 16 scoped account/research tables")
         assert admin.execute(
             "SELECT has_schema_privilege('vowsig_app','vowsig','CREATE')"
         ).fetchone()[0] is False
@@ -129,6 +130,14 @@ def main() -> None:
             "'vowsig.vowsig_owner_totp_credentials', "
             "'last_accepted_step','UPDATE')"
         ).fetchone()[0] is True
+        _deny(app, "INSERT INTO vowsig_owner_provisioning_audit "
+              "(operation_id,account_id,operation,reviewer_id,operator_id,"
+              "approved_payload_sha256,revoked_sessions) VALUES "
+              "('ffffffff-ffff-4fff-8fff-ffffffffffff',"
+              "'00000000-0000-4000-8000-000000000001',"
+              "'first_owner','reviewer.ci','operator.ci',repeat('a',64),0)")
+        _deny(app, "UPDATE vowsig_owner_provisioning_audit "
+              "SET operation='rotate_factor'")
         _deny(app, "SET ROLE vowsig_migrator")
 
     with psycopg.connect(target, autocommit=True) as backup:
@@ -141,7 +150,7 @@ def main() -> None:
         _deny(backup, "CREATE TABLE vowsig.cannot_create (n integer)")
         _deny(backup, "DELETE FROM vowsig.vowsig_accounts")
 
-    print("PG18_ISOLATED_ROLE_BOUNDARIES=PASS; tables=15; "
+    print("PG18_ISOLATED_ROLE_BOUNDARIES=PASS; tables=16; "
           "runtime_schema_ddl_denied=YES; runtime_history_dml_denied=YES; "
           "runtime_owner_promotion_denied=YES; backup_read_only=YES")
 

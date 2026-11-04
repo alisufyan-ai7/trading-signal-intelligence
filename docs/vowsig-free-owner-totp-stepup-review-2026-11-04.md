@@ -28,3 +28,17 @@ Do NOT merge draft PR #93 or change the live Railway database/app as an effect o
 ## Session rotation security correction
 
 A successful TOTP response atomically replaces the original session token SHA-256 with a new unpredictable 32-byte token and sets `mfa_verified_at`. The backend returns the replacement in a `Secure; HttpOnly; SameSite=Lax; Path=/` `__Host-` cookie; the old token cannot fetch a session or enter admin. The member settings UI refreshes `/api/v2/me` to obtain the new session-specific CSRF value. The production owner still needs an independently tested offline bootstrap and recovery procedure.
+
+
+## 2026-11-04 — next engineering priority: signed offline owner identity bootstrap & recovery
+
+Draft PR #93 now includes an offline-only, **independently signed** first-owner bootstrap / owner-factor recovery workflow, to close the prior unimplemented owner enrollment/recovery gap:
+
+- Separate human reviewer signs a short-lived Ed25519 approval pinning the **exact existing Auth0 issuer and immutable subject digest**, reviewer identity, explicit owner re-verification/consent and a random one-time operation UUID. Reviewer's signing key stays OFFLINE and is not part of the web app or this repository.
+- Separate database migrator/operator must use the strict Railway private hostname with `sslmode=verify-full`, an independently pinned public reviewer key and a two-person approval. Script defaults to **read-only preview**; apply additionally requires an interactive unrecorded terminal, fresh TOTP code and explicit session-revocation acknowledgment. No public owner enrollment/promotion is exposed.
+- Migration `009_owner_offline_provisioning_audit.sql` adds a migrator-only single-use audit and enforces different reviewer/operator IDs. The action checks global first-owner uniqueness, the exact existing identity, the approved factor, performs an atomic factor enrollment/rotation and role change only where permitted, and revokes all existing sessions. New login and TOTP are mandatory.
+- New disposable PG18 tests must prove exact-source identity, replay denial, first-owner invariants, factor rotation, separation, and no runtime audit DML. These operations have **not been executed on Railway**, and no genuine signing key, verified owner or real account PII was provisioned. This is code/test implementation, not operational acceptance.
+- Canonical runbook: `docs/vowsig-owner-bootstrap-recovery-signed-operator-2026-11-04.md`. Still required: owner/security-reviewed real identity verification, secret custody, independent reviewer trust setup, actual Auth0 owner onboarding and recovery drill, CI exact-HEAD success.
+
+**Release scope unchanged:** one complete enabled public release; PostgreSQL S3/B2 automated backup/recovery is first post-launch work by explicit owner risk acceptance. Real original ledger reconciliation, full admin and Auth0 + SQL role integration remain distinct release gates.
+

@@ -40,6 +40,18 @@ Two technically independent implementation tracks have advanced within draft PR 
 
 **Integration gates:** disposable PG18 schema (15 account/research/MFA tables), actual encrypted-factor replay/lockout, negative API access/CSRF, restricted role tests and Chromium UI must all pass on the exact final PR SHA. Neither branch workstream is an authorization to merge or deploy. Live Postgres roles/schema and website remain unchanged.
 
+## 2026-11-04 — next engineering priority: signed offline owner identity bootstrap & recovery
+
+Draft PR #93 now includes an offline-only, **independently signed** first-owner bootstrap / owner-factor recovery workflow, to close the prior unimplemented owner enrollment/recovery gap:
+
+- Separate human reviewer signs a short-lived Ed25519 approval pinning the **exact existing Auth0 issuer and immutable subject digest**, reviewer identity, explicit owner re-verification/consent and a random one-time operation UUID. Reviewer's signing key stays OFFLINE and is not part of the web app or this repository.
+- Separate database migrator/operator must use the strict Railway private hostname with `sslmode=verify-full`, an independently pinned public reviewer key and a two-person approval. Script defaults to **read-only preview**; apply additionally requires an interactive unrecorded terminal, fresh TOTP code and explicit session-revocation acknowledgment. No public owner enrollment/promotion is exposed.
+- Migration `009_owner_offline_provisioning_audit.sql` adds a migrator-only single-use audit and enforces different reviewer/operator IDs. The action checks global first-owner uniqueness, the exact existing identity, the approved factor, performs an atomic factor enrollment/rotation and role change only where permitted, and revokes all existing sessions. New login and TOTP are mandatory.
+- New disposable PG18 tests must prove exact-source identity, replay denial, first-owner invariants, factor rotation, separation, and no runtime audit DML. These operations have **not been executed on Railway**, and no genuine signing key, verified owner or real account PII was provisioned. This is code/test implementation, not operational acceptance.
+- Canonical runbook: `docs/vowsig-owner-bootstrap-recovery-signed-operator-2026-11-04.md`. Still required: owner/security-reviewed real identity verification, secret custody, independent reviewer trust setup, actual Auth0 owner onboarding and recovery drill, CI exact-HEAD success.
+
+**Release scope unchanged:** one complete enabled public release; PostgreSQL S3/B2 automated backup/recovery is first post-launch work by explicit owner risk acceptance. Real original ledger reconciliation, full admin and Auth0 + SQL role integration remain distinct release gates.
+
 ## Scope and order
 
 | Priority | Workstream | Implementation status in consolidated PR #93 | Independent work remaining | Owner/infrastructure gate at end |

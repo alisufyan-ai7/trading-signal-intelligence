@@ -205,7 +205,8 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     assert store.find_bound_account(cfg.issuer,"fresh-subject")==issued.account_id
 
     from dataclasses import replace
-    with pytest.raises(errors.UniqueViolation):
+    from trading_signal_intelligence.product.accounts.store import AccountLinkConflict
+    with pytest.raises(AccountLinkConflict):
         issue_verified_session(
             claims=replace(claim,subject="other-subject"),
             configuration=cfg,expected_nonce="server-nonce",store=store,now=now,
@@ -316,3 +317,136 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
         )
         with pytest.raises(ProjectionReplayError):
             replay_quarantined_bundle(db,raw,**pins)
+
+
+    # P1B real HTTP -> PostgreSQL verified signup -> protected API -> logout
+    # uses an in-memory mock OIDC provider, never an external service.
+    import time
+    import httpx
+    import jwt
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from urllib.parse import parse_qs, urlsplit
+    from trading_signal_intelligence.product.accounts.auth_api import create_auth_router
+    from trading_signal_intelligence.product.accounts.api import create_router
+    from trading_signal_intelligence.product.accounts.oidc_provider import (
+        OidcSettings, VerifiedOidcProvider,
+    )
+    oidc_settings=OidcSettings(
+        issuer="https://mocked-identity.example.test",
+        client_id="test-vowsig-app",
+        authorization_endpoint="https://mocked-identity.example.test/authorize",
+        token_endpoint="https://mocked-identity.example.test/token",
+        jwks_uri="https://mocked-identity.example.test/jwks",
+        app_origin="https://vowsig.example",
+    )
+    priv=rsa.generate_private_key(public_exponent=65537,key_size=2048)
+    pub=json.loads(jwt.algorithms.RSAAlgorithm.to_jwk(priv.public_key()))
+    pub.update({"kid":"integration-test-key","alg":"RS256","use":"sig"})
+    exchange_context={"nonce":None, "verifier":None, "subject":"customer-one",
+                      "email":"new-synthetic-user@example.test"}
+    def mocked_provider(req: httpx.Request):
+        assert str(req.url) in (oidc_settings.token_endpoint,oidc_settings.jwks_uri)
+        if str(req.url)==oidc_settings.jwks_uri:
+            return httpx.Response(200,json={"keys":[pub]})
+        from urllib.parse import parse_qs
+        form=parse_qs(req.content.decode())
+        assert form["code"]==["synthetic-valid-code"]
+        assert form["redirect_uri"]==[oidc_settings.redirect_uri]
+        assert form["code_verifier"]==[exchange_context["verifier"]]
+        now_s=int(time.time())
+        claims={
+            "iss":oidc_settings.issuer,"sub":exchange_context["subject"],
+            "aud":oidc_settings.client_id,
+            "iat":now_s-20,"exp":now_s+300,"auth_time":now_s-30,
+            "nonce":exchange_context["nonce"],"email":exchange_context["email"],
+            "email_verified":True,
+        }
+        token=jwt.encode(claims,priv,algorithm="RS256",
+                         headers={"kid":"integration-test-key"})
+        return httpx.Response(200,json={"id_token":token})
+    with httpx.Client(transport=httpx.MockTransport(mocked_provider)) as mock_client:
+        verifier=VerifiedOidcProvider(oidc_settings,http_client=mock_client)
+        app=FastAPI()
+        app.include_router(create_auth_router(
+            make_store=lambda:store,settings=oidc_settings,
+            csrf_secret="test-only-integrated-auth-secret-at-least-32-chars",
+            verifier=verifier,
+        ))
+        app.include_router(create_router(
+            read_snapshot=lambda:None,make_store=lambda:store,
+            csrf_secret="test-only-integrated-auth-secret-at-least-32-chars",
+            app_origin=oidc_settings.app_origin,
+        ))
+        with TestClient(app,base_url=oidc_settings.app_origin) as browser:
+            started=browser.get("/auth/start",follow_redirects=False)
+            assert started.status_code==302
+            state=parse_qs(urlsplit(started.headers["location"]).query)["state"][0]
+            state_sha=hashlib.sha256(state.encode()).hexdigest()
+            with psycopg.connect(dsn,row_factory=dict_row) as db:
+                pending=db.execute(
+                    """SELECT nonce,code_verifier FROM vowsig_oidc_authorizations
+                       WHERE state_sha256=%s""",(state_sha,),
+                ).fetchone()
+            assert pending and len(pending["nonce"])==43
+            exchange_context.update(pending)
+            authorized=browser.get("/auth/callback",params={
+                "state":state,"code":"synthetic-valid-code",
+            },follow_redirects=False)
+            assert authorized.status_code==303 and authorized.headers["location"]=="/app/"
+            assert "no-store" in authorized.headers["cache-control"]
+            current=browser.get("/api/v2/me")
+            assert current.status_code==200
+            assert current.json()["role"]=="member"
+            assert current.json()["access_tier"]=="research_free"
+            assert current.json()["commercial_customer_eligible"] is False
+            assert browser.get("/api/v2/admin/performance").status_code==403
+            assert browser.get("/api/v2/me/signals?symbol=BTCUSDT").status_code==403
+            assert browser.put("/api/v2/me/watchlist/BTCUSDT").status_code==403
+            csrf_token=current.json()["csrf_token"]
+            own={"Origin":oidc_settings.app_origin,"X-VowSig-CSRF":csrf_token}
+            assert browser.put("/api/v2/me/watchlist/BTCUSDT",headers=own).status_code==200
+            assert browser.get("/api/v2/me/watchlist").json()["markets"]==["BTCUSDT"]
+            assert browser.post("/api/v2/me/logout",headers=own).status_code==200
+            assert browser.get("/api/v2/me").status_code==401
+            # Same verified email under a distinct provider subject must not
+            # silently attach an existing account or leak a PostgreSQL error.
+            exchange_context["subject"]="impostor-other-subject"
+            started2=browser.get("/auth/start",follow_redirects=False)
+            assert started2.status_code==302
+            state2=parse_qs(urlsplit(started2.headers["location"]).query)["state"][0]
+            with psycopg.connect(dsn,row_factory=dict_row) as db:
+                pending2=db.execute(
+                    """SELECT nonce,code_verifier FROM vowsig_oidc_authorizations
+                       WHERE state_sha256=%s""",
+                    (hashlib.sha256(state2.encode()).hexdigest(),),
+                ).fetchone()
+            exchange_context.update(pending2)
+            collision=browser.get("/auth/callback",params={
+                "state":state2,"code":"synthetic-valid-code",
+            },follow_redirects=False)
+            assert collision.status_code==401
+            assert collision.json()["detail"]=="Verified sign-in rejected"
+            assert store.find_bound_account(oidc_settings.issuer,"impostor-other-subject") is None
+            assert browser.get("/api/v2/me").status_code==401
+            # Returning immutable issuer+subject cannot silently switch its
+            # originally verified email; it requires a separate account review.
+            exchange_context["subject"]="customer-one"
+            exchange_context["email"]="changed-verified-email@example.test"
+            started3=browser.get("/auth/start",follow_redirects=False)
+            assert started3.status_code==302
+            state3=parse_qs(urlsplit(started3.headers["location"]).query)["state"][0]
+            with psycopg.connect(dsn,row_factory=dict_row) as db:
+                pending3=db.execute(
+                    """SELECT nonce,code_verifier FROM vowsig_oidc_authorizations
+                       WHERE state_sha256=%s""",
+                    (hashlib.sha256(state3.encode()).hexdigest(),),
+                ).fetchone()
+            exchange_context.update(pending3)
+            changed=browser.get("/auth/callback",params={
+                "state":state3,"code":"synthetic-valid-code",
+            },follow_redirects=False)
+            assert changed.status_code==401
+            assert changed.json()["detail"]=="Verified sign-in rejected"
+            assert browser.get("/api/v2/me").status_code==401

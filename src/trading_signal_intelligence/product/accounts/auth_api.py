@@ -22,6 +22,7 @@ from trading_signal_intelligence.product.accounts.oidc_provider import (
 from trading_signal_intelligence.product.accounts.session_lifecycle import (
     issue_verified_session, set_secure_session_cookie,
 )
+from trading_signal_intelligence.product.accounts.store import AccountLinkConflict
 
 _AUTH_COOKIE = "__Host-vowsig_oidc"
 _VALID = re.compile(r"^[A-Za-z0-9_-]{43}$")
@@ -114,7 +115,8 @@ def create_auth_router(
                 configuration=settings_identity(settings),
                 expected_nonce=auth["nonce"], store=store,
             )
-        except IdentityContractError as exc:
+        except (IdentityContractError, AccountLinkConflict) as exc:
+            # Email collision and unverified identity have the same opaque user response.
             raise HTTPException(status_code=401, detail="Verified sign-in rejected") from exc
         # No untrusted redirect_uri or return_to: always relative /app/.
         response = RedirectResponse("/app/", status_code=303)

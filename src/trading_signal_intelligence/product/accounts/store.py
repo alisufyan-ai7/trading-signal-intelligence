@@ -20,6 +20,10 @@ class AccountStore(Protocol):
     def delete_market(self, account_id: str, symbol: str) -> list[str]: ...
 
 
+class AccountLinkConflict(ValueError):
+    """A verified identity cannot be silently linked to an occupied email."""
+
+
 class PostgresAccountStore:
     def __init__(self, dsn: str):
         if not dsn or not dsn.startswith(("postgresql://", "postgres://")):
@@ -134,56 +138,63 @@ class PostgresAccountStore:
             or len(token_sha256) != 64
         ):
             raise ValueError("Invalid session TTL or token digest")
-        with self._connect() as conn:
-            existing = conn.execute(
-                """SELECT a.id::text AS account_id, a.email
-                   FROM vowsig_account_identities i
-                   JOIN vowsig_accounts a ON a.id=i.account_id
-                   JOIN vowsig_account_entitlements e ON e.account_id=a.id
-                   WHERE i.issuer=%s AND i.subject=%s
-                     AND a.email_verified_at IS NOT NULL
-                     AND a.disabled_at IS NULL AND e.status='active'
-                   FOR UPDATE OF a""",
-                (issuer, subject),
-            ).fetchone()
-            if existing:
-                if existing["email"].strip().casefold() != verified_email.strip().casefold():
-                    raise ValueError("Verified identity email changed; account review required")
-                account_id = existing["account_id"]
-            else:
-                # Existing email with different issuer+subject raises unique violation
-                # instead of silently binding a second identity.
-                account_id = str(uuid4())
+        from psycopg import errors
+
+        try:
+            with self._connect() as conn:
+                existing = conn.execute(
+                    """SELECT a.id::text AS account_id, a.email
+                       FROM vowsig_account_identities i
+                       JOIN vowsig_accounts a ON a.id=i.account_id
+                       JOIN vowsig_account_entitlements e ON e.account_id=a.id
+                       WHERE i.issuer=%s AND i.subject=%s
+                         AND a.email_verified_at IS NOT NULL
+                         AND a.disabled_at IS NULL AND e.status='active'
+                       FOR UPDATE OF a""",
+                    (issuer, subject),
+                ).fetchone()
+                if existing:
+                    if existing["email"].strip().casefold() != verified_email.strip().casefold():
+                        raise AccountLinkConflict("Verified identity email changed; manual review required")
+                    account_id = existing["account_id"]
+                else:
+                    # Existing email with different issuer+subject raises unique violation
+                    # instead of silently binding a second identity.
+                    account_id = str(uuid4())
+                    conn.execute(
+                        """INSERT INTO vowsig_accounts
+                           (id,email,role,email_verified_at)
+                           VALUES (%s::uuid,%s,'member',%s)""",
+                        (account_id, verified_email, issued_at),
+                    )
+                    conn.execute(
+                        """INSERT INTO vowsig_account_entitlements
+                           (account_id, access_tier, status)
+                           VALUES (%s::uuid,'research_free','active')""",
+                        (account_id,),
+                    )
+                    conn.execute(
+                        """INSERT INTO vowsig_account_identities
+                           (account_id,issuer,subject,last_verified_at)
+                           VALUES (%s::uuid,%s,%s,%s)""",
+                        (account_id, issuer, subject, issued_at),
+                    )
+                # Revoking previous sessions limits fixation and multi-device replay.
                 conn.execute(
-                    """INSERT INTO vowsig_accounts
-                       (id,email,role,email_verified_at)
-                       VALUES (%s::uuid,%s,'member',%s)""",
-                    (account_id, verified_email, issued_at),
+                    """UPDATE vowsig_account_sessions SET revoked_at=%s
+                       WHERE account_id=%s::uuid AND revoked_at IS NULL""",
+                    (issued_at, account_id),
                 )
                 conn.execute(
-                    """INSERT INTO vowsig_account_entitlements
-                       (account_id, access_tier, status)
-                       VALUES (%s::uuid,'research_free','active')""",
-                    (account_id,),
+                    """INSERT INTO vowsig_account_sessions
+                       (token_sha256,account_id,created_at,expires_at)
+                       VALUES (%s,%s::uuid,%s,%s)""",
+                    (token_sha256, account_id, issued_at, expires_at),
                 )
-                conn.execute(
-                    """INSERT INTO vowsig_account_identities
-                       (account_id,issuer,subject,last_verified_at)
-                       VALUES (%s::uuid,%s,%s,%s)""",
-                    (account_id, issuer, subject, issued_at),
-                )
-            # Revoking previous sessions limits fixation and multi-device replay.
-            conn.execute(
-                """UPDATE vowsig_account_sessions SET revoked_at=%s
-                   WHERE account_id=%s::uuid AND revoked_at IS NULL""",
-                (issued_at, account_id),
-            )
-            conn.execute(
-                """INSERT INTO vowsig_account_sessions
-                   (token_sha256,account_id,created_at,expires_at)
-                   VALUES (%s,%s::uuid,%s,%s)""",
-                (token_sha256, account_id, issued_at, expires_at),
-            )
+        except errors.UniqueViolation as exc:
+            # Unique issuer+subject, one-issuer-per-account or casefolded email
+            # collisions must not reveal whether an email exists.
+            raise AccountLinkConflict("Verified account link conflict") from exc
         return account_id
 
     def revoke_session(self, token_sha256: str, account_id: str) -> bool:

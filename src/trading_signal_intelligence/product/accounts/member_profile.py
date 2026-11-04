@@ -22,10 +22,12 @@ def validate_preference_patch(body: Any) -> dict[str, Any]:
             raise InvalidMemberPreference("Invalid time zone")
         try:
             ZoneInfo(tz)
-        except (ZoneInfoNotFoundError, ValueError, KeyError) as exc:
+        except (ZoneInfoNotFoundError, ValueError, KeyError, OSError) as exc:
             raise InvalidMemberPreference("Unknown time zone") from exc
-    if "educational_level" in body and body["educational_level"] not in LEVELS:
-        raise InvalidMemberPreference("Unknown education level")
+    if "educational_level" in body:
+        level = body["educational_level"]
+        if not isinstance(level, str) or level not in LEVELS:
+            raise InvalidMemberPreference("Unknown education level")
     if "research_updates_opt_in" in body:
         if type(body["research_updates_opt_in"]) is not bool:
             raise InvalidMemberPreference("Consent must be an explicit boolean")

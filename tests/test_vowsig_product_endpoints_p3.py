@@ -180,6 +180,9 @@ def test_profile_preferences_export_and_csrf(ctx):
                         json={"timezone":"Not/A/Zone"}).status_code==400
     assert client.patch("/api/v2/me/preferences",headers=csrf(),
                         json={"research_updates_opt_in":"yes"}).status_code==400
+    for wrong in ([], {}, 12, False, None):
+        assert client.patch("/api/v2/me/preferences",headers=csrf(),
+                            json={"educational_level":wrong}).status_code==400
     ok=client.patch("/api/v2/me/preferences",headers=csrf(),
                     json={"timezone":"Asia/Karachi","educational_level":"advanced"})
     assert ok.status_code==200 and ok.json()["timezone"]=="Asia/Karachi"

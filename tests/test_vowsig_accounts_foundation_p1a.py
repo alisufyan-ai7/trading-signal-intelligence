@@ -9,13 +9,13 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from trading_signal_intelligence.product.free_foundation.api import create_router
-from trading_signal_intelligence.product.free_foundation.policy import (
+from trading_signal_intelligence.product.accounts.api import create_router
+from trading_signal_intelligence.product.accounts.policy import (
     CORE,
     market_directory,
     permitted_core_recent_signals,
 )
-from trading_signal_intelligence.product.free_foundation.security import (
+from trading_signal_intelligence.product.accounts.security import (
     COOKIE, Identity, csrf_for_session,
 )
 
@@ -83,15 +83,15 @@ def sample_snapshot(*, stale=False, core=True):
 
 
 def identity(
-    user: str = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa",
-    role: str = "free",
+    account: str = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa",
+    role: str = "member",
     verified=True,
     valid=True,
     mfa=False,
 ):
     now = datetime.now(timezone.utc)
     return Identity(
-        user_id=user, role=role,
+        account_id=account, role=role, access_tier="research_free",
         email_verified_at=now if verified else None,
         expires_at=now + (timedelta(hours=1) if valid else -timedelta(minutes=1)),
         revoked_at=None, disabled_at=None,
@@ -99,7 +99,7 @@ def identity(
     )
 
 
-class FakeStore:
+class FakeAccountStore:
     def __init__(self):
         self.sessions = {
             hashlib.sha256(TOKEN_A.encode()).hexdigest(): identity(),
@@ -112,21 +112,21 @@ class FakeStore:
     def find_session(self, hashed):
         return self.sessions.get(hashed)
 
-    def watchlist(self, user_id):
-        return sorted(self.saved.get(user_id, set()))
+    def watchlist(self, account_id):
+        return sorted(self.saved.get(account_id, set()))
 
-    def save_market(self, user_id, symbol):
-        self.saved.setdefault(user_id, set()).add(symbol)
-        return self.watchlist(user_id)
+    def save_market(self, account_id, symbol):
+        self.saved.setdefault(account_id, set()).add(symbol)
+        return self.watchlist(account_id)
 
-    def delete_market(self, user_id, symbol):
-        self.saved.setdefault(user_id, set()).discard(symbol)
-        return self.watchlist(user_id)
+    def delete_market(self, account_id, symbol):
+        self.saved.setdefault(account_id, set()).discard(symbol)
+        return self.watchlist(account_id)
 
 
 @pytest.fixture
 def env():
-    store = FakeStore()
+    store = FakeAccountStore()
     state = {"snapshot": sample_snapshot()}
     app = FastAPI()
     app.include_router(create_router(
@@ -283,12 +283,39 @@ def test_restricted_program_cannot_claim_detail_release_in_catalog():
     )
 
 
+
+
+def test_access_tier_changes_do_not_change_signal_publication_permissions(env):
+    """Future paid tier value must not unlock the six restricted programs."""
+    store, _, client = env
+    _login(client)
+    digest = hashlib.sha256(TOKEN_A.encode()).hexdigest()
+    store.sessions[digest] = Identity(**{
+        **identity().__dict__, "access_tier": "paid_example"
+    })
+    profile = client.get("/api/v2/me")
+    assert profile.status_code == 200
+    assert profile.json()["access_tier"] == "paid_example"
+    assert profile.json()["commercial_customer_eligible"] is False
+    for symbol in ("EURUSD", "XAGUSD", "USOIL", "BTCUSDT", "ETHUSDT", "SOLUSDT"):
+        assert client.get("/api/v2/me/signals", params={"symbol": symbol}).status_code == 403
+
+
+def test_missing_entitlement_value_is_not_an_authenticated_member(env):
+    store, _, client = env
+    _login(client)
+    digest = hashlib.sha256(TOKEN_A.encode()).hexdigest()
+    store.sessions[digest] = Identity(**{
+        **identity().__dict__, "access_tier": ""
+    })
+    assert client.get("/api/v2/me").status_code == 401
+
 def test_plaintext_database_dsn_not_accepted_without_any_db_call():
-    from trading_signal_intelligence.product.free_foundation.store import PostgresMemberStore
+    from trading_signal_intelligence.product.accounts.store import PostgresAccountStore
     with pytest.raises(ValueError, match="verify-full"):
-        PostgresMemberStore("postgresql://user:pass@example.com/db?sslmode=disable")
+        PostgresAccountStore("postgresql://user:pass@example.com/db?sslmode=disable")
     # No connection is opened by constructor; actual TLS/migration integration needs P1B.
-    assert PostgresMemberStore(
+    assert PostgresAccountStore(
         "postgresql://user:pass@example.com/db?sslmode=verify-full"
     ) is not None
 
@@ -302,18 +329,18 @@ def test_router_rejects_invalid_production_origin(origin):
     with pytest.raises(ValueError, match="HTTPS origin"):
         create_router(
             read_snapshot=lambda: None,
-            make_store=lambda: FakeStore(),
+            make_store=lambda: FakeAccountStore(),
             csrf_secret=SECRET,
             app_origin=origin,
         )
 
 
 def test_cloud_public_v1_routes_are_unchanged_when_flag_off(monkeypatch):
-    monkeypatch.setenv("VOWSIG_FREE_FOUNDATION_ENABLED", "0")
+    monkeypatch.setenv("VOWSIG_ACCOUNTS_FOUNDATION_ENABLED", "0")
     from trading_signal_intelligence.product import cloud_app
 
     previous = [route.path for route in cloud_app.app.routes]
-    cloud_app._attach_free_foundation_if_approved()
+    cloud_app._attach_accounts_foundation_if_approved()
     assert [route.path for route in cloud_app.app.routes] == previous
     assert "/api/health" in previous
     assert "/api/ai/insights" in previous
@@ -322,13 +349,13 @@ def test_cloud_public_v1_routes_are_unchanged_when_flag_off(monkeypatch):
 
 
 def test_invalid_feature_flag_fails_closed_without_registering_routes(monkeypatch):
-    monkeypatch.setenv("VOWSIG_FREE_FOUNDATION_ENABLED", "0")
+    monkeypatch.setenv("VOWSIG_ACCOUNTS_FOUNDATION_ENABLED", "0")
     from trading_signal_intelligence.product import cloud_app
-    monkeypatch.setenv("VOWSIG_FREE_FOUNDATION_ENABLED", "not-approved")
+    monkeypatch.setenv("VOWSIG_ACCOUNTS_FOUNDATION_ENABLED", "not-approved")
 
     previous = [route.path for route in cloud_app.app.routes]
     with pytest.raises(RuntimeError, match="feature flag"):
-        cloud_app._attach_free_foundation_if_approved()
+        cloud_app._attach_accounts_foundation_if_approved()
     assert [route.path for route in cloud_app.app.routes] == previous
 
 

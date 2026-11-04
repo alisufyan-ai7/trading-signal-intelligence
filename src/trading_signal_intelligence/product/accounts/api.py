@@ -12,19 +12,19 @@ from urllib.parse import urlsplit
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
-from trading_signal_intelligence.product.free_foundation.policy import (
+from trading_signal_intelligence.product.accounts.policy import (
     CORE,
     MARKETS,
     market_directory,
     permitted_core_recent_signals,
 )
-from trading_signal_intelligence.product.free_foundation.security import (
+from trading_signal_intelligence.product.accounts.security import (
     csrf_for_session,
     current_identity,
     require_csrf,
     require_owner,
 )
-from trading_signal_intelligence.product.free_foundation.store import MemberStore
+from trading_signal_intelligence.product.accounts.store import AccountStore
 
 
 def _private(data: dict[str, Any]) -> JSONResponse:
@@ -38,7 +38,7 @@ def _private(data: dict[str, Any]) -> JSONResponse:
 def create_router(
     *,
     read_snapshot: Callable[[], dict[str, Any] | None],
-    make_store: Callable[[], MemberStore],
+    make_store: Callable[[], AccountStore],
     csrf_secret: str,
     app_origin: str,
 ) -> APIRouter:
@@ -52,7 +52,7 @@ def create_router(
         or origin.query or origin.fragment
     ):
         raise ValueError("CSRF secret (>=32 bytes) and exact HTTPS origin required")
-    router = APIRouter(prefix="/api/v2", tags=["Free account foundation"])
+    router = APIRouter(prefix="/api/v2", tags=["Accounts foundation"])
 
     def _auth(request: Request):
         store = make_store()
@@ -70,10 +70,10 @@ def create_router(
     def me(request: Request) -> JSONResponse:
         _, user, token = _auth(request)
         return _private({
-            "user_id": user.user_id,
+            "account_id": user.account_id,
             "role": user.role,
             "email_verified": True,
-            "plan": "FREE_RESEARCH",
+            "access_tier": user.access_tier,
             "csrf_token": csrf_for_session(token, csrf_secret),
             "commercial_customer_eligible": False,
         })
@@ -81,7 +81,7 @@ def create_router(
     @router.get("/me/watchlist")
     def get_watchlist(request: Request) -> JSONResponse:
         store, user, _ = _auth(request)
-        return _private({"markets": store.watchlist(user.user_id)})
+        return _private({"markets": store.watchlist(user.account_id)})
 
     @router.put("/me/watchlist/{symbol}")
     def add_market(symbol: str, request: Request) -> JSONResponse:
@@ -89,7 +89,7 @@ def create_router(
         require_csrf(request, token, csrf_secret, app_origin)
         if symbol not in MARKETS:
             raise HTTPException(status_code=404, detail="Unsupported market")
-        return _private({"markets": store.save_market(user.user_id, symbol)})
+        return _private({"markets": store.save_market(user.account_id, symbol)})
 
     @router.delete("/me/watchlist/{symbol}")
     def remove_market(symbol: str, request: Request) -> JSONResponse:
@@ -97,7 +97,7 @@ def create_router(
         require_csrf(request, token, csrf_secret, app_origin)
         if symbol not in MARKETS:
             raise HTTPException(status_code=404, detail="Unsupported market")
-        return _private({"markets": store.delete_market(user.user_id, symbol)})
+        return _private({"markets": store.delete_market(user.account_id, symbol)})
 
     @router.get("/me/signals")
     def member_signals(symbol: str, request: Request) -> JSONResponse:

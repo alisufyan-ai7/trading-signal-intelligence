@@ -1,4 +1,4 @@
-"""Fixed P0 market permissions, independent of user role or UI filtering.
+"""Fixed P0 market permissions, independent of account role, access tier or UI filtering.
 
 This module must never infer permission from a market being cataloged, a user's
 watchlist, a model's confidence, or an observed internal inference.

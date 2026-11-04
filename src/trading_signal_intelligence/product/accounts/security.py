@@ -21,8 +21,9 @@ _TOKEN = re.compile(r"^[A-Za-z0-9_-]{43}$")  # 32 random bytes, base64url no pad
 
 @dataclass(frozen=True)
 class Identity:
-    user_id: str
+    account_id: str
     role: str
+    access_tier: str
     email_verified_at: datetime | None
     expires_at: datetime
     revoked_at: datetime | None
@@ -54,7 +55,9 @@ def current_identity(request: Request, store: SessionLookup) -> tuple[Identity, 
         or identity.revoked_at is not None
         or identity.disabled_at is not None
         or identity.expires_at <= datetime.now(timezone.utc)
-        or identity.role not in ("free", "owner")
+        or identity.role not in ("member", "owner")
+        or not isinstance(identity.access_tier, str)
+        or not re.fullmatch(r"[a-z][a-z0-9_]{1,63}", identity.access_tier)
     ):
         raise _unauthorized()
     return identity, token

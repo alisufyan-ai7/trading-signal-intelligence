@@ -210,13 +210,19 @@ def create_router(
         store, user, _ = _auth(request)
         return _private({
             "schema_version": 1,
-            "account_id": user.account_id,
+            **store.account_export(user.account_id),
             "access_tier": user.access_tier,
             "preferences": store.preferences(user.account_id),
             "watchlist": store.watchlist(user.account_id),
             "saved_research": store.saved_research(user.account_id),
-            "notice": "Account data only, not broker or research ledger export.",
+            "notice": "Account data excerpt (max 200 consent events); not complete legal export.",
         })
+
+    @router.post("/me/deletion-request")
+    def deletion_request(request: Request) -> JSONResponse:
+        store, user, token = _auth(request)
+        require_csrf(request, token, csrf_secret, app_origin)
+        return _private(store.request_deletion(user.account_id))
 
     @router.post("/me/logout")
     def logout(request: Request) -> JSONResponse:
@@ -252,11 +258,8 @@ def create_router(
     def admin_growth(request: Request) -> JSONResponse:
         _, user, _ = _auth(request)
         require_owner(user)
-        return _private({
-            "status": "privacy_consent_and_analytics_not_enabled",
-            "registered_accounts": None, "activation_rate": None,
-            "retention_7d": None, "revenue": None,
-        })
+        store, _, _ = _auth(request)
+        return _private(store.admin_growth())
 
     @router.get("/admin/overview")
     def admin_overview(request: Request) -> JSONResponse:

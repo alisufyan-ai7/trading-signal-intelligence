@@ -82,7 +82,8 @@
       E("div",{class:"row-head"},heading(m.name),pill(m.research_status.replaceAll("_"," "),
         m.research_signal_detail_available ? "closed":"restricted")),
       E("p",{class:"helper",text:m.research_signal_detail_available ?
-        "Core shadow research: recent permitted details may be available." :
+        (m.current_signal_present ? "Current validated SHADOW_ONLY observation in source snapshot." :
+          "Core research available; no verified current shadow signal.") :
         "Research validation / availability only. No detailed signal exposure."}),
       compact([["Symbol",m.symbol],["Source","Research only"],
         ["Snapshot",m.snapshot_fresh ? "Fresh" : "Unavailable / delayed"]]));
@@ -102,8 +103,9 @@
     const symbol=signal.source_symbol;
     const el=E("article",{class:"list-row"},
       E("div",{class:"row-head"},heading(symbol+" · "+text(signal.direction)),
-        pill(signal.status === "closed" ? "Closed research record":"Active SHADOW ONLY",
-             signal.status==="closed"?"closed":"")),
+        pill(signal.status === "closed" ? "Closed research record" :
+             signal.current_signal_eligible === true ? "Active SHADOW ONLY" :
+             "Activity unverified · historical", signal.status==="closed"?"closed":"unavailable")),
       compact([["Issued",date(signal.issued_at_utc)],["Entry",signal.entry],
         ["Stop",signal.stop],["TP1",signal.tp1],["TP2",signal.tp2]]),
       E("p",{class:"reason",text:signal.rationale || "No published rationale."}),
@@ -255,6 +257,13 @@
         document.body.append(a);a.click();a.remove();URL.revokeObjectURL(url);
       }catch(e){fail(e.message);}
     },true);
+    const deleteRequest=btn("Request account deletion (requires verification)",async()=>{
+      if (!window.confirm("Record a request for identity-reverified account deletion? This does not erase data immediately.")) return;
+      try {
+        const outcome=await mutation("POST","/api/v2/me/deletion-request");
+        fail("Deletion request status: "+outcome.status+". Data remains until verified processing.");
+      }catch(e){fail(e.message);}
+    },true);
     main.append(panel("Your account",
       compact([["Role",state.me.role],["Tier",state.me.access_tier],
         ["Verified email","Yes"],["Commercial trade execution","Disabled"]])));
@@ -264,7 +273,7 @@
         E("label",{}, "Educational level",level),
         E("label",{class:"checkbox-label"},consent,"I consent to research product updates (no trading alerts)")),
       E("p",{class:"helper",text:"Notification delivery is not enabled in this release. Consent can be changed later."}),
-      save,download)));
+      save,download,deleteRequest)));
   }
   async function showAdmin() {
     if (state.me.role!=="owner")throw new Error("Owner-only dashboard");
@@ -286,8 +295,8 @@
         "A truncated public snapshot cannot support complete net-R, drawdown, win rate or a verified historical track record."),
       E("p",{class:"helper",text:perf.notice})));
     main.append(panel("Growth & customer research",
-      msg("Not instrumented","No fabricated signups, retention or revenue. Consent-first events require a later approved release."),
-      compact([["Verified signups",growth.registered_accounts],["D7 retention",growth.retention_7d]])));
+      msg("Database-only account aggregates","Verified signups and watchlist totals come from the account database. D7 retention and revenue are not instrumented."),
+      compact([["Verified accounts",growth.verified_accounts],["Watchlist accounts",growth.accounts_with_watchlist],["Activation ratio",growth.activation_rate],["D7 retention",growth.retention_7d]])));
   }
   async function render(){
     clear(); error.hidden=true;

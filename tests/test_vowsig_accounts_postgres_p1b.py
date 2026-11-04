@@ -55,6 +55,7 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
             "002_verified_identity_binding.sql",
             "003_preferences_and_saved_research.sql",
             "004_research_read_model_contract.sql",
+            "005_consent_audit_deletion_requests.sql",
         ):
             sql = (ROOT / "sql" / "accounts" / name).read_text(encoding="utf-8")
             db.execute(sql, prepare=False)
@@ -137,6 +138,12 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     })
     assert updated["timezone"] == "Asia/Karachi"
     assert store.preferences(str(id_b))["research_updates_opt_in"] is False
+    export_a=store.account_export(str(id_a))
+    assert export_a["email"]=="owner-a@example.test"
+    assert len(export_a["consent_events"])==1
+    assert export_a["consent_events"][0]["opted_in"] is True
+    assert store.admin_growth()["verified_accounts"]==2
+
     store.save_research(str(id_a),"XAUUSD","core-signal-A")
     assert store.saved_research(str(id_a))[0]["signal_id"]=="core-signal-A"
     assert store.saved_research(str(id_b))==[]
@@ -212,3 +219,8 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
         hashlib.sha256(issued2.token.encode()).hexdigest(),issued2.account_id
     )
     assert store.find_session(hashlib.sha256(issued2.token.encode()).hexdigest()) is None
+    deletion=store.request_deletion(issued2.account_id)
+    assert deletion["status"]=="pending_reverification"
+    assert store.account_export(issued2.account_id)["deletion_request"]["status"]=="pending_reverification"
+    assert store.admin_growth()["registered_accounts"]==3
+

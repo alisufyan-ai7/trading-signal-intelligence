@@ -1,0 +1,48 @@
+# VowSig integrated customer-product execution plan — P1 through P5
+
+**2026-11-04. Owner direction:** Complete all owner-independent work before requesting infrastructure/production decisions. Use one draft PR (#93) and few coordinated production deployments. Keep project evidence in this repository; do not depend on other conversations/repositories. This plan documents deliverables honestly, not a blanket release approval.
+
+## Scope and order
+
+| Priority | Workstream | Implementation status in consolidated PR #93 | Independent work remaining | Owner/infrastructure gate at end |
+| --- | --- | --- | --- | --- |
+| P0 | Nine-market/three-permitted-core contract, entitlement and metrics definitions | Implemented in docs + backend negative tests | Regression checks and traceability review | Any market release permission expansion is separately owner-controlled |
+| P1A | Permanent account identity, verified sessions, isolated watchlist, entitlements | Implemented, feature OFF; PostgreSQL schema and integration tests | Complete operational safeguards, session expiry/revoke/error paths, account data handling | Railway service credentials/region/TLS and security release |
+| P1B | OIDC verified identity and onboarding | Immutable issuer+subject, strict verified-claims contract; provider-neutral backend session issue/rotation and logout tested | Generic OIDC adapter tests and provider-specific mapping after identity provider selected | Managed identity provider/verified email, redirect URI, actual JWT/PKCE/state/nonce configuration, owner MFA, Railway connection |
+| P2 | Evidence-safe read models, Performance Lab, operations | Complete-population after-cost net R calculator, strict finite denominators, source projection schema, read-only owner diagnostics; strict off-line sanitized-source bundle validation | Reconciliation protocol and read-model ingestion adapter prepared for *verified authorized source*; negative/DB tests | Production-origin immutable source hashes, source-rights/publisher permissions, source/count reconcilability, exact performance owner signoff |
+| P3 | Customer-facing Signal Center | Server-filtered nine-market directory, bounded permitted core signal/history and NO_TRADE; responsive /app shell, signal cards, watchlist, saved research, protected /admin UI | UX/manual browser/accessibility reviews, adjust display to actual live source fields | Real signup identity provider and Railway persistence + privacy/security before enabling route |
+| P4 | Learning, feedback, preferences, adoption | Public Learn articles linked; member timezone/education/preferences, opt-in captured (no outbound sending); account export/deletion-request queue; read-only owner signup/watchlist aggregates | Consent analytics schema and real user-cohort data only with privacy approval; email deliverability test after provider hookup | Legal copy, opt-in processing policy, D1/D7/D30 consent/retention, abuse controls and deletion/reverification processor |
+| P5 (deferred) | Paid trading signals, subscriptions, alerts or broker execution | **NOT implemented or authorized** | None is required for research-only Free signup | Separate legal/commercial/reliability/rights evidence, owner release, billing/taxes/refunds and alert security; broker execution remains disabled |
+
+## Parallel engineering tracks, without parallel open PRs
+
+**Track A — Account / privacy:** P1A/B verified-login plumbing, session rotation/revocation, account isolation, CSRF, saved preferences/bookmarks, export and deletion intents. It remains feature OFF until provider and security gates. Provider-specific OIDC/email integration is last, not prerequisite for research UI work.
+
+**Track B — Research data:** P2 static, deterministic metrics and offline, source-hash-enforced read models; fail closed if source coverage/record hashes/combined net R missing. No fabricated win rate, cash equity, profits or model precision. Expose only "source incomplete" in owner dashboard until legitimate full-history reconciliation. Protect S02 as a separate benchmark, not part of AI signal feed.
+
+**Track C — Customer:** P3 accessible responsive Signals -> Market -> History -> Learn -> Watchlist pathways; all nine discoverable; only XAUUSD/USTEC/US30 currently allow sanitized per-signal details, only when snapshot permission/health/freshness gates pass. Enforce before returning any data, not just CSS. NO_TRADE/blocked/failed/expired signal never rendered as an active market trade; record adverse cases.
+
+**Track D — Growth / learning:** P4 preferences and research learning; no outbound trading alerts, phantom traffic, subscriber revenue or invented analytics. Account aggregates when database is live; D7 retention/real funnel remain N/A until consent-approved event capture.
+
+All tracks converge into **one customer-product release candidate** on PR #93. No unrelated AWS/B2/GFS backup code, immutable Windows scanners, guarded publisher or separate freeze-safety PR is modified. Issue #92 health, publication stability and source-rights gates are independent of customer UI.
+
+## Planned acceptance, in order
+
+1. Static/unit tests, synthetic negative permission checks, JavaScript syntax, database migrations on disposable PostgreSQL; no live credentials. Confirm exact SHA and no old Free-named database entities.
+2. Integration: exact immutable verified IDP issuer/subject; successful first-signup/returning-login, duplicate-email collision (no auto-link), verification pending/expired/revoked/disabled, CSRF, secure __Host cookie, logout/session rotation, owner MFA; Rails/Postgres connection SSL verified and least privileges.
+3. UI: nine discoverable, six forbidden details even on paid tier; only eligible core research, NO_TRADE, negative outcomes, missing/stale source, no unverified active signal, accessibility on mobile/desktop; signed-out and forbidden routes private/noindex.
+4. P2: independently review source data rights/coverage/immutable-head pins; verify full cohort hashes, event/exit uniqueness, after-cost partial attribution, time window and denominators; release full histories only after source corroboration. No public inference of full history from capped snapshots.
+5. Operations: Railway region/TLS/CA, least privilege, backups/restore, secret rotation; IDP email sender/domain/MFA/abuse throttling, privacy+deletion obligations; canary/staging tests; no broker execution.
+6. Owner review exact tested SHA, provider selections/cost and one coordinated production deployment, with disabled flag/reversible cutover and rollout monitor. Treat this as a *single gated customer release*, not a series of live experiments.
+
+## One consolidated production cutover target
+
+Build/test/review on isolated GitHub runners and disposable PostgreSQL now; then one dry-run in a separately approved nonproduction environment for real Railway connection and auth provider; then one production release with all code, DB migrations and frontend assets. Provisioning or test deployments need not hold up independent development. Start with feature disabled until external identity/prod verification succeeds. Publish a separate explicit enablement approval; don't automatically unlock all markets, alerts, paid plans or trading.
+
+### Handoff information to ask the owner only after independent work is verified
+
+- The existing Railway project/environment to host accounts, selected geographic region, budget cap and whether to provision a new isolated Postgres service (no credentials shared in chat).
+- The identity provider choice (or allow recommendation after vetted current provider comparison), verified email sender domain, redirect URL and allowed app hostname; owner MFA enrollment path.
+- Approve data-retention/privacy wording and exact production release SHA, deployment rollback window, monitoring and source-hash access for complete history. These are not daily coding blockers; collect once near launch.
+
+**Operational honesty:** No Railway service has been provisioned here, no real login, verified email or production registration is active. CI tests against a disposable local PostgreSQL do not prove real Railway TLS/CA and restore behavior. Full-history/performance source reconciliation requires approved evidence, not just software code. P5 is intentionally not part of this research-only release.

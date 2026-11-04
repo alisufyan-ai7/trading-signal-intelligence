@@ -122,6 +122,12 @@ def market_directory(
             ),
             "snapshot_fresh": fresh,
             "research_signal_detail_available": detailed,
+            "current_signal_present": (
+                any(s.get("current_signal_eligible") is True
+                    for s in permitted_core_recent_signals(
+                        snapshot, symbol, now=now,
+                    )["signals"]) if detailed else False
+            ),
             "commercial_customer_eligible": False,
             "research_only": True,
         })
@@ -164,7 +170,28 @@ def permitted_core_recent_signals(
             continue
         if signal.get("status") not in ("active", "closed"):
             continue
-        rows.append({key: signal.get(key) for key in allowed})
+        public = {key: signal.get(key) for key in allowed}
+        # An "active" ledger row alone cannot prove a current/eligible setup.
+        # Verify issuance time and declared H1 maximum hold; do not reinterpret
+        # a stale/unknown lifetime as a current customer signal.
+        public["current_signal_eligible"] = False
+        if signal["status"] == "active":
+            try:
+                issued_raw = signal.get("issued_at_utc")
+                hold = signal.get("max_hold_h1_bars")
+                if not isinstance(issued_raw, str) or type(hold) is not int or not 1 <= hold <= 720:
+                    raise ValueError("Missing bounded hold or issued time")
+                issued = datetime.fromisoformat(issued_raw.replace("Z", "+00:00"))
+                if issued.tzinfo is None:
+                    raise ValueError("Naive signal issuance time")
+                current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+                seconds = (current - issued.astimezone(timezone.utc)).total_seconds()
+                if not 0 <= seconds < hold * 3600:
+                    raise ValueError("Signal lifetime expired or future")
+                public["current_signal_eligible"] = True
+            except (TypeError, ValueError, OverflowError):
+                public["status"] = "activity_unverified"
+        rows.append(public)
     return {
         "symbol": symbol, "research_only": True, "status": "shadow_only",
         "snapshot_generated_at_utc": snapshot.get("generated_at_utc"),

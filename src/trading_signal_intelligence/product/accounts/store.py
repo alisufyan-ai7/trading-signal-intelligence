@@ -187,6 +187,13 @@ class PostgresAccountStore:
                  patch.get("timezone"),patch.get("educational_level"),
                  patch.get("research_updates_opt_in")),
             )
+            if "research_updates_opt_in" in patch:
+                conn.execute(
+                    """INSERT INTO vowsig_account_consent_events
+                       (account_id,purpose,opted_in)
+                       VALUES (%s::uuid,'research_product_updates',%s)""",
+                    (account_id,patch["research_updates_opt_in"]),
+                )
         return self.preferences(account_id)
 
     def saved_research(self, account_id: str) -> list[dict[str, Any]]:
@@ -215,6 +222,90 @@ class PostgresAccountStore:
                    WHERE account_id=%s::uuid AND signal_id=%s""",
                 (account_id,signal_id),
             )
+
+    def account_export(self, account_id: str) -> dict[str, Any]:
+        """Own account's basic data only; never a substitute for legal full export."""
+        with self._connect() as conn:
+            row=conn.execute(
+                """SELECT id::text AS account_id,email,created_at,
+                          email_verified_at,role FROM vowsig_accounts
+                   WHERE id=%s::uuid AND disabled_at IS NULL""",
+                (account_id,),
+            ).fetchone()
+            consent=conn.execute(
+                """SELECT purpose,opted_in,recorded_at FROM vowsig_account_consent_events
+                   WHERE account_id=%s::uuid ORDER BY recorded_at DESC LIMIT 200""",
+                (account_id,),
+            ).fetchall()
+            deletion=conn.execute(
+                """SELECT status,requested_at FROM vowsig_account_deletion_requests
+                   WHERE account_id=%s::uuid""", (account_id,),
+            ).fetchone()
+        if row is None:
+            raise ValueError("Account unavailable")
+        return {
+            "account_id": row["account_id"], "email": row["email"],
+            "role": row["role"], "created_at_utc": row["created_at"].isoformat(),
+            "email_verified_at_utc": (
+                row["email_verified_at"].isoformat() if row["email_verified_at"] else None
+            ),
+            "consent_events": [{
+                "purpose":x["purpose"],"opted_in":x["opted_in"],
+                "recorded_at_utc":x["recorded_at"].isoformat(),
+            } for x in consent],
+            "consent_history_complete": len(consent) < 200,
+            "deletion_request": ({
+                "status":deletion["status"],
+                "requested_at_utc":deletion["requested_at"].isoformat(),
+            } if deletion else None),
+        }
+
+    def request_deletion(self, account_id: str) -> dict[str, str]:
+        """Record an intent for reverified deletion; do NOT actually erase data."""
+        with self._connect() as conn:
+            row=conn.execute(
+                """INSERT INTO vowsig_account_deletion_requests
+                   (account_id,status) VALUES (%s::uuid,'pending_reverification')
+                   ON CONFLICT (account_id) DO UPDATE SET
+                     status=CASE WHEN vowsig_account_deletion_requests.status='cancelled'
+                                 THEN 'pending_reverification'
+                                 ELSE vowsig_account_deletion_requests.status END
+                   RETURNING status,requested_at""",
+                (account_id,),
+            ).fetchone()
+        return {
+            "status":row["status"], "requested_at_utc":row["requested_at"].isoformat(),
+            "notice":"Request recorded. No data is erased until verified owner-reviewed processing.",
+        }
+
+    def admin_growth(self) -> dict[str, Any]:
+        """Verified account and watchlist counts only; privacy-safe aggregates."""
+        with self._connect() as conn:
+            accounts=conn.execute(
+                """SELECT count(*) AS total,
+                          count(*) FILTER (WHERE email_verified_at IS NOT NULL)
+                            AS verified
+                   FROM vowsig_accounts WHERE disabled_at IS NULL""",
+            ).fetchone()
+            watchlists=conn.execute(
+                """SELECT count(DISTINCT w.account_id) AS with_watchlist
+                   FROM vowsig_watchlist_items w
+                   JOIN vowsig_accounts a ON a.id=w.account_id
+                   WHERE a.email_verified_at IS NOT NULL
+                     AND a.disabled_at IS NULL""",
+            ).fetchone()
+        verified=accounts["verified"]
+        return {
+            "source":"account_database_aggregate",
+            "registered_accounts":accounts["total"],
+            "verified_accounts":verified,
+            "accounts_with_watchlist":watchlists["with_watchlist"],
+            "activation_rate": (
+                watchlists["with_watchlist"] / verified if verified else None
+            ),
+            "retention_7d":None,"revenue":None,
+            "retention_notice":"No privacy-reviewed D7 cohort collection or billing enabled.",
+        }
 
     def watchlist(self, account_id: str) -> list[str]:
         with self._connect() as conn:

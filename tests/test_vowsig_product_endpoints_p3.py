@@ -89,6 +89,26 @@ class Store:
         self.saved[signal_id]={"signal_id":signal_id,"symbol":symbol,
                                "saved_at_utc":NOW.isoformat()}
     def unsave_research(self,account_id,signal_id):self.saved.pop(signal_id,None)
+    def account_export(self,account_id):
+        return {
+            "account_id":account_id,"email":"member@example.test",
+            "role":"owner" if self.owner else "member",
+            "created_at_utc":NOW.isoformat(),"email_verified_at_utc":NOW.isoformat(),
+            "consent_events":[],"consent_history_complete":True,
+            "deletion_request": getattr(self,"deletion_request",None),
+        }
+    def request_deletion(self,account_id):
+        self.deletion_request={
+            "status":"pending_reverification","requested_at_utc":NOW.isoformat(),
+            "notice":"Request recorded; no data erased",
+        }
+        return self.deletion_request
+    def admin_growth(self):
+        return {
+            "source":"account_database_aggregate","registered_accounts":1,
+            "verified_accounts":1,"accounts_with_watchlist":1,
+            "activation_rate":1.0,"retention_7d":None,"revenue":None,
+        }
     def revoke_session(self,token_sha256,account_id):
         if token_sha256!=HASH:return False
         self.revoked=True;return True
@@ -212,7 +232,8 @@ def test_html_not_public_and_admin_mfa_enforced(ctx):
     ops=client.get("/api/v2/admin/operations")
     assert ops.status_code==200 and ops.json()["broker_execution_enabled"] is False
     growth=client.get("/api/v2/admin/growth")
-    assert growth.json()["registered_accounts"] is None
+    assert growth.json()["registered_accounts"] == 1
+    assert growth.json()["retention_7d"] is None
 
 
 def test_missing_snapshot_never_invents_entries_or_health(ctx):
@@ -223,3 +244,45 @@ def test_missing_snapshot_never_invents_entries_or_health(ctx):
     assert result["signals"]==[] and result["decisions"]==[]
     assert result["status"]=="unavailable"
     assert client.get("/api/v2/admin/growth").status_code==403
+
+
+def test_deletion_request_is_explicit_non_destructive_and_csrf_protected(ctx):
+    store,_,client=ctx
+    login(client)
+    assert client.post("/api/v2/me/deletion-request").status_code==403
+    result=client.post("/api/v2/me/deletion-request",headers=csrf())
+    assert result.status_code==200
+    assert result.json()["status"]=="pending_reverification"
+    assert client.get("/api/v2/me").status_code==200
+    export=client.get("/api/v2/me/export").json()
+    assert export["email"]=="member@example.test"
+    assert export["deletion_request"]["status"]=="pending_reverification"
+    assert store.revoked is False
+
+
+def test_active_shadow_lifecycle_requires_current_issued_at_and_h1_hold(ctx):
+    _,state,client=ctx
+    login(client)
+    record={
+        "entity_id":"active-core","source_symbol":"USTEC","status":"active",
+        "direction":"BUY","entry":120,"stop":119,
+        "issued_at_utc":datetime.now(timezone.utc).isoformat(),
+        "max_hold_h1_bars":2,
+    }
+    state["snapshot"]["ai_v1"]["shadow_signals"].append(record)
+    directory=client.get("/api/v2/public/markets").json()["markets"]
+    assert next(x for x in directory if x["symbol"]=="USTEC")["current_signal_present"]
+    data=client.get("/api/v2/me/signals?symbol=USTEC").json()
+    assert data["signals"][0]["current_signal_eligible"] is True
+    # Freshly generated *snapshot* is NOT enough when the active row is old.
+    record["issued_at_utc"]="2026-01-01T00:00:00Z"
+    directory=client.get("/api/v2/public/markets").json()["markets"]
+    assert not next(x for x in directory if x["symbol"]=="USTEC")["current_signal_present"]
+    data=client.get("/api/v2/me/signals?symbol=USTEC").json()
+    assert data["signals"][0]["status"]=="activity_unverified"
+    assert data["signals"][0]["current_signal_eligible"] is False
+    # Missing declared lifetime must never silently produce an active setup.
+    record["issued_at_utc"]=datetime.now(timezone.utc).isoformat()
+    record.pop("max_hold_h1_bars")
+    data=client.get("/api/v2/me/signals?symbol=USTEC").json()
+    assert data["signals"][0]["status"]=="activity_unverified"

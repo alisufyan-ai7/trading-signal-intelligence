@@ -53,6 +53,8 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
         for name in (
             "001_accounts_sessions_entitlements_watchlist.sql",
             "002_verified_identity_binding.sql",
+            "003_preferences_and_saved_research.sql",
+            "004_research_read_model_contract.sql",
         ):
             sql = (ROOT / "sql" / "accounts" / name).read_text(encoding="utf-8")
             db.execute(sql, prepare=False)
@@ -122,3 +124,91 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     assert store.find_bound_account(issuer, "opaque-a") is None
     # Different account remains linked by its own immutable subject.
     assert store.find_bound_account(issuer, "opaque-b") == str(id_b)
+
+
+    # P1/P4 saved research and preferences must be isolated by account ID.
+    assert store.preferences(str(id_a)) == {
+        "timezone": "UTC", "educational_level": "beginner",
+        "research_updates_opt_in": False,
+    }
+    updated=store.update_preferences(str(id_a),{
+        "timezone":"Asia/Karachi","educational_level":"intermediate",
+        "research_updates_opt_in": True,
+    })
+    assert updated["timezone"] == "Asia/Karachi"
+    assert store.preferences(str(id_b))["research_updates_opt_in"] is False
+    store.save_research(str(id_a),"XAUUSD","core-signal-A")
+    assert store.saved_research(str(id_a))[0]["signal_id"]=="core-signal-A"
+    assert store.saved_research(str(id_b))==[]
+    store.unsave_research(str(id_a),"core-signal-A")
+    assert store.saved_research(str(id_a))==[]
+
+    # P2 source projection cannot insert nonfinite/non-costed "closed" results.
+    with psycopg.connect(dsn, autocommit=True, row_factory=dict_row) as db:
+        snap=db.execute(
+            """INSERT INTO vowsig_research_source_snapshots
+               (source_program_id,model_version,source_snapshot_sha256,observed_at_utc)
+               VALUES ('core-ai-shadow','AI-v1.1',%s,now()) RETURNING id""",
+            ("a"*64,),
+        ).fetchone()["id"]
+        with pytest.raises(errors.CheckViolation):
+            db.execute(
+                """INSERT INTO vowsig_research_outcome_facts
+                   (source_snapshot_id,source_program_id,model_version,cohort,
+                    entity_id,state,source_record_sha256,exit_at_utc,combined_net_r,
+                    cost_model_version,after_costs_verified)
+                   VALUES (%s,'core-ai-shadow','AI-v1.1','forward','bad','closed',%s,
+                           now(), 'NaN'::float8,'cost-v1',TRUE)""",
+                (snap,"b"*64),
+            )
+        db.execute(
+            """INSERT INTO vowsig_research_outcome_facts
+               (source_snapshot_id,source_program_id,model_version,cohort,
+                entity_id,state,source_record_sha256,exit_at_utc,combined_net_r,
+                cost_model_version,after_costs_verified)
+               VALUES (%s,'core-ai-shadow','AI-v1.1','forward','good','closed',%s,
+                       now(), -1.0,'cost-v1',TRUE)""",
+            (snap,"c"*64),
+        )
+
+    # A verified OIDC identity can create a real account+session atomically;
+    # an unbound subject with an existing email must fail, never auto-link.
+    from datetime import datetime, timedelta, timezone
+    from trading_signal_intelligence.product.accounts.identity_contract import (
+        IdentityProviderConfig, TrustedOidcClaims,
+    )
+    from trading_signal_intelligence.product.accounts.session_lifecycle import (
+        issue_verified_session,
+    )
+    now=datetime.now(timezone.utc)
+    cfg=IdentityProviderConfig("https://idp.example.test","client-vowsig")
+    claim=TrustedOidcClaims(
+        issuer=cfg.issuer,subject="fresh-subject",audience=cfg.client_id,
+        nonce="server-nonce",email="newuser@example.test",email_verified=True,
+        issued_at_utc=now-timedelta(seconds=20),expires_at_utc=now+timedelta(minutes=5),
+        auth_time_utc=now-timedelta(seconds=30),
+    )
+    issued=issue_verified_session(claims=claim,configuration=cfg,
+        expected_nonce="server-nonce",store=store,now=now)
+    signed=store.find_session(hashlib.sha256(issued.token.encode()).hexdigest())
+    assert signed is not None
+    assert signed.account_id==issued.account_id and signed.access_tier=="research_free"
+    assert signed.role=="member"
+    assert store.find_bound_account(cfg.issuer,"fresh-subject")==issued.account_id
+
+    from dataclasses import replace
+    with pytest.raises(errors.UniqueViolation):
+        issue_verified_session(
+            claims=replace(claim,subject="other-subject"),
+            configuration=cfg,expected_nonce="server-nonce",store=store,now=now,
+        )
+    assert store.find_bound_account(cfg.issuer,"other-subject") is None
+
+    issued2=issue_verified_session(claims=claim,configuration=cfg,
+        expected_nonce="server-nonce",store=store,now=now+timedelta(seconds=30))
+    assert issued2.account_id==issued.account_id
+    assert store.find_session(hashlib.sha256(issued.token.encode()).hexdigest()) is None
+    assert store.revoke_session(
+        hashlib.sha256(issued2.token.encode()).hexdigest(),issued2.account_id
+    )
+    assert store.find_session(hashlib.sha256(issued2.token.encode()).hexdigest()) is None

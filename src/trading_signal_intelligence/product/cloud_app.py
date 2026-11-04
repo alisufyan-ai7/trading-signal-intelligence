@@ -732,6 +732,7 @@ def _attach_accounts_foundation_if_approved() -> None:
 
     from trading_signal_intelligence.product.accounts.api import create_router
     from trading_signal_intelligence.product.accounts.store import PostgresAccountStore
+    from trading_signal_intelligence.product.accounts.ui import create_ui_router
 
     # Establishing accounts, applying SQL migrations and issuing session cookies
     # are intentionally outside P1A. No DB connection is made at app startup.
@@ -740,6 +741,10 @@ def _attach_accounts_foundation_if_approved() -> None:
         make_store=lambda: PostgresAccountStore(dsn),
         csrf_secret=secret,
         app_origin=origin,
+    ))
+    app.include_router(create_ui_router(
+        make_store=lambda: PostgresAccountStore(dsn),
+        html_path=WEB / "member" / "index.html",
     ))
 
 

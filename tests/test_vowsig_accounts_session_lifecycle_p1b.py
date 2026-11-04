@@ -68,8 +68,9 @@ def test_cookie_is_host_only_secure_http_only_no_store():
     assert "samesite=lax" in cookie.lower()
     assert "domain=" not in cookie.lower()
     assert response.headers["cache-control"]=="private, no-store"
-    clear_session_cookie(response)
-    assert "max-age=0" in response.headers["set-cookie"].lower()
+    logout_response=Response()
+    clear_session_cookie(logout_response)
+    assert "max-age=0" in logout_response.headers["set-cookie"].lower()
 
 
 def test_unverified_provider_result_never_touches_store():

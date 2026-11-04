@@ -711,3 +711,36 @@ async def ingest_snapshot(
         "markets": len(payload.get("markets", [])),
         "raw_market_data_included": False,
     }
+
+
+# P1A optional Free foundation: stays absent from production unless explicitly
+# enabled after identity provider, DB, security and privacy release approvals.
+# This adds no signup/login/session issuance, changes no v1 API and never reads
+# the Windows research ledgers.
+def _attach_free_foundation_if_approved() -> None:
+    enabled = os.getenv("VOWSIG_FREE_FOUNDATION_ENABLED", "0")
+    if enabled == "0":
+        return
+    if enabled != "1":
+        raise RuntimeError("Invalid VowSig Free foundation feature flag")
+
+    dsn = os.getenv("VOWSIG_FREE_DATABASE_URL", "")
+    secret = os.getenv("VOWSIG_FREE_CSRF_SECRET", "")
+    origin = os.getenv("VOWSIG_FREE_APP_ORIGIN", "")
+    if not dsn or len(secret.encode("utf-8")) < 32 or not origin:
+        raise RuntimeError("Free foundation configuration incomplete; fail closed")
+
+    from trading_signal_intelligence.product.free_foundation.api import create_router
+    from trading_signal_intelligence.product.free_foundation.store import PostgresMemberStore
+
+    # Establishing accounts, applying SQL migrations and issuing session cookies
+    # are intentionally outside P1A. No DB connection is made at app startup.
+    app.include_router(create_router(
+        read_snapshot=_load_snapshot,
+        make_store=lambda: PostgresMemberStore(dsn),
+        csrf_secret=secret,
+        app_origin=origin,
+    ))
+
+
+_attach_free_foundation_if_approved()

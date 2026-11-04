@@ -285,6 +285,29 @@
         E("label",{class:"checkbox-label"},consent,"I consent to research product updates (no trading alerts)")),
       E("p",{class:"helper",text:"Notification delivery is not enabled in this release. Consent can be changed later."}),
       save,download,deleteRequest)));
+    if(state.me.role==="owner"){
+      const code=E("input",{type:"text",id:"owner-code","inputmode":"numeric",
+        autocomplete:"one-time-code",maxlength:"6","aria-label":"Six-digit authenticator code",
+        pattern:"[0-9]{6}"});
+      const verify=btn("Verify owner authenticator code",async()=>{
+        try{
+          verify.disabled=true;
+          const proof=await mutation("POST","/api/v2/me/owner-mfa/verify",{code:code.value});
+          code.value="";
+          if(proof.verified!==true)throw new Error("Owner verification was not confirmed.");
+          fail("Owner verification completed. Admin access is time-limited.");
+        }catch(e){
+          code.value="";
+          fail("Owner verification not confirmed. Check your code or request secure recovery.");
+        }finally{verify.disabled=false;}
+      });
+      main.append(panel("Owner MFA · authenticator app",
+        msg("Independent owner verification",
+          "Enter the six-digit code from the pre-enrolled authenticator. Enrollment and recovery are handled offline; Auth0 premium MFA is not used."),
+        E("label",{}, "Current one-time code",code),
+        verify,
+        E("a",{href:"/admin/"},"Open owner dashboard after verification")));
+    }
   }
   async function showAdmin() {
     if (state.me.role!=="owner")throw new Error("Owner-only dashboard");

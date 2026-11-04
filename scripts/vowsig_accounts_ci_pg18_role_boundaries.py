@@ -19,6 +19,7 @@ MIGRATIONS = [
     "004_research_read_model_contract.sql",
     "005_consent_audit_deletion_requests.sql",
     "006_oidc_auth_transactions.sql",
+    "008_owner_mfa_stepup.sql",
     "007_restricted_roles_and_grants.sql",
 ]
 
@@ -68,7 +69,7 @@ def main() -> None:
             "SELECT count(*) FROM pg_catalog.pg_tables "
             "WHERE schemaname='vowsig' AND left(tablename,7)='vowsig_'"
         ).fetchone()[0]
-        if cnt != 14:
+        if cnt != 15:
             raise AssertionError("Expected 14 scoped account/research tables")
         assert admin.execute(
             "SELECT has_schema_privilege('vowsig_app','vowsig','CREATE')"
@@ -116,6 +117,18 @@ def main() -> None:
               "('00000000-0000-4000-8000-000000000003',"
               "'forbidden@example.test','owner',now())")
         _deny(app, "UPDATE vowsig.vowsig_accounts SET role='owner'")
+        # A compromised runtime role may check owner MFA but cannot install
+        # or replace a factor, nor update its encrypted secret.
+        _deny(app, "INSERT INTO vowsig_owner_totp_credentials "
+              "(account_id,secret_ciphertext) VALUES "
+              "('00000000-0000-4000-8000-000000000001',repeat('x',48)::bytea)")
+        _deny(app, "UPDATE vowsig_owner_totp_credentials "
+              "SET secret_ciphertext=repeat('x',48)::bytea")
+        assert app.execute(
+            "SELECT has_column_privilege('vowsig_app', "
+            "'vowsig.vowsig_owner_totp_credentials', "
+            "'last_accepted_step','UPDATE')"
+        ).fetchone()[0] is True
         _deny(app, "SET ROLE vowsig_migrator")
 
     with psycopg.connect(target, autocommit=True) as backup:
@@ -128,7 +141,7 @@ def main() -> None:
         _deny(backup, "CREATE TABLE vowsig.cannot_create (n integer)")
         _deny(backup, "DELETE FROM vowsig.vowsig_accounts")
 
-    print("PG18_ISOLATED_ROLE_BOUNDARIES=PASS; tables=14; "
+    print("PG18_ISOLATED_ROLE_BOUNDARIES=PASS; tables=15; "
           "runtime_schema_ddl_denied=YES; runtime_history_dml_denied=YES; "
           "runtime_owner_promotion_denied=YES; backup_read_only=YES")
 

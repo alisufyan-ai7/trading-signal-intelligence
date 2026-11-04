@@ -6,6 +6,8 @@ commercial signal entitlement is implemented. Production flag defaults OFF.
 from __future__ import annotations
 
 from collections.abc import Callable
+from datetime import datetime, timedelta, timezone
+import os
 import hashlib
 from typing import Any
 from urllib.parse import urlsplit
@@ -37,6 +39,9 @@ from trading_signal_intelligence.product.accounts.performance import (
 )
 from trading_signal_intelligence.product.accounts.session_lifecycle import (
     clear_session_cookie,
+)
+from trading_signal_intelligence.product.accounts.owner_mfa import (
+    OwnerMfaRejected, OwnerMfaConfigurationError,
 )
 
 
@@ -89,6 +94,13 @@ def create_router(
             "access_tier": user.access_tier,
             "csrf_token": csrf_for_session(token, csrf_secret),
             "commercial_customer_eligible": False,
+            "owner_mfa_required": user.role == "owner",
+            "owner_mfa_active": (
+                user.role == "owner" and user.mfa_verified_at is not None
+                and user.mfa_verified_at.tzinfo is not None
+                and timedelta(0) <= datetime.now(timezone.utc)-user.mfa_verified_at
+                <= timedelta(minutes=15)
+            ),
         })
 
     @router.get("/me/watchlist")
@@ -163,6 +175,41 @@ def create_router(
         if record is None:
             raise HTTPException(status_code=404, detail="Permitted research signal not found")
         return _private(record)
+
+    @router.post("/me/owner-mfa/verify")
+    async def owner_mfa_step_up(request: Request) -> JSONResponse:
+        """Free independent TOTP step-up; owner factor provisioned OFFLINE only."""
+        store, user, token = _auth(request)
+        require_csrf(request, token, csrf_secret, app_origin)
+        if user.role != "owner":
+            raise HTTPException(status_code=403, detail="Owner verification rejected")
+        try:
+            body = await request.json()
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail="Invalid owner verification request") from exc
+        if (not isinstance(body, dict) or set(body) != {"code"}
+                or not isinstance(body["code"], str)):
+            raise HTTPException(status_code=400, detail="Invalid owner verification request")
+        try:
+            verified = store.verify_owner_totp(
+                account_id=user.account_id,
+                token_sha256=hashlib.sha256(token.encode("ascii")).hexdigest(),
+                code=body["code"],
+                master_key_b64=os.environ.get("VOWSIG_OWNER_TOTP_MASTER_KEY_B64",""),
+            )
+        except OwnerMfaConfigurationError as exc:
+            raise HTTPException(
+                status_code=503, detail="Owner verification configuration unavailable"
+            ) from exc
+        except OwnerMfaRejected as exc:
+            raise HTTPException(
+                status_code=403, detail="Owner verification rejected or temporarily locked"
+            ) from exc
+        return _private({
+            "verified": True,
+            "verified_until_utc": (verified + timedelta(minutes=15)).isoformat(),
+            "owner_admin_route": "/admin/",
+        })
 
     @router.get("/me/preferences")
     def preferences(request: Request) -> JSONResponse:

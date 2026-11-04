@@ -57,6 +57,7 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
             "004_research_read_model_contract.sql",
             "005_consent_audit_deletion_requests.sql",
             "006_oidc_auth_transactions.sql",
+            "008_owner_mfa_stepup.sql",
         ):
             sql = (ROOT / "sql" / "accounts" / name).read_text(encoding="utf-8")
             db.execute(sql, prepare=False)
@@ -108,6 +109,60 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     assert identity.account_id == str(id_a)
     assert identity.role == "member"
     assert identity.access_tier == "research_free"
+
+    # CI-only offline-migrator owner assignment + encrypted owner authenticator.
+    # The actual runtime has NO owner promotion or enrollment endpoint.
+    from datetime import datetime, timezone
+    from trading_signal_intelligence.product.accounts.owner_mfa import (
+        OwnerMfaRejected, encrypt_for_owner, totp_at,
+    )
+    synthetic_key=bytes(range(32))
+    synthetic_secret=b"12345678901234567890"
+    base64_key=base64.urlsafe_b64encode(synthetic_key).decode().rstrip("=")
+    with psycopg.connect(dsn,autocommit=True) as db:
+        db.execute("UPDATE vowsig_accounts SET role='owner' WHERE id=%s",(id_a,))
+        db.execute(
+            """INSERT INTO vowsig_owner_totp_credentials
+               (account_id,secret_ciphertext) VALUES (%s,%s)""",
+            (id_a,encrypt_for_owner(synthetic_secret,str(id_a),synthetic_key)),
+        )
+    now=datetime.now(timezone.utc)
+    code=totp_at(synthetic_secret,int(now.timestamp())//30)
+    verified=store.verify_owner_totp(
+        token_sha256=token_sha,account_id=str(id_a),
+        code=code,master_key_b64=base64_key,now=now,
+    )
+    assert verified==now
+    elevated=store.find_session(token_sha)
+    assert elevated.role=="owner" and elevated.mfa_verified_at is not None
+    with pytest.raises(OwnerMfaRejected):
+        store.verify_owner_totp(
+            token_sha256=token_sha,account_id=str(id_a),
+            code=code,master_key_b64=base64_key,now=now,
+        )
+    invalid_code="000000" if code!="000000" else "999999"
+    for _ in range(4):
+        with pytest.raises(OwnerMfaRejected):
+            store.verify_owner_totp(
+                token_sha256=token_sha,account_id=str(id_a),
+                code=invalid_code,master_key_b64=base64_key,now=now,
+            )
+    # Replay + four incorrect codes trigger the five-failure account lock.
+    with psycopg.connect(dsn,autocommit=True) as db:
+        locked=db.execute(
+            "SELECT failed_attempts,locked_until,last_accepted_step "
+            "FROM vowsig_owner_totp_credentials WHERE account_id=%s",
+            (id_a,),
+        ).fetchone()
+    assert locked[0]==0 and locked[1]>now
+    assert locked[2]==int(now.timestamp())//30
+    with pytest.raises(OwnerMfaRejected):
+        store.verify_owner_totp(
+            token_sha256=token_sha,account_id=str(id_a),
+            code=totp_at(synthetic_secret,int(now.timestamp())//30+1),
+            master_key_b64=base64_key,now=now,
+        )
+
 
     assert store.save_market(str(id_a), "BTCUSDT") == ["BTCUSDT"]
     assert store.watchlist(str(id_b)) == []

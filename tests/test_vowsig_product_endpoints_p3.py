@@ -132,6 +132,15 @@ class Store:
             "verified_accounts":1,"accounts_with_watchlist":1,
             "activation_rate":1.0,"retention_7d":None,"revenue":None,
         }
+    def verify_owner_totp(self,*,token_sha256,account_id,code,master_key_b64):
+        from trading_signal_intelligence.product.accounts.owner_mfa import (
+            OwnerMfaRejected, OwnerMfaConfigurationError,
+        )
+        if not master_key_b64:
+            raise OwnerMfaConfigurationError("Offline setup required")
+        if token_sha256!=HASH or not self.owner or code!="123456":
+            raise OwnerMfaRejected("Synthetic challenge rejected")
+        return datetime.now(timezone.utc)
     def revoke_session(self,token_sha256,account_id):
         if token_sha256!=HASH:return False
         self.revoked=True;return True
@@ -268,6 +277,29 @@ def test_html_not_public_and_admin_mfa_enforced(ctx):
     growth=client.get("/api/v2/admin/growth")
     assert growth.json()["registered_accounts"] == 1
     assert growth.json()["retention_7d"] is None
+
+
+def test_owner_totp_stepup_requires_owner_session_csrf_and_provisioned_key(ctx,monkeypatch):
+    from trading_signal_intelligence.product.accounts.owner_mfa import OwnerMfaRejected
+    store,_,client=ctx
+    route="/api/v2/me/owner-mfa/verify"
+    assert client.post(route,json={"code":"123456"},headers=csrf()).status_code==401
+    login(client)
+    assert client.post(route,json={"code":"123456"},headers=csrf()).status_code==403
+    store.owner=True
+    assert client.post(route,json={"code":"123456"}).status_code==403
+    assert client.post(route,json={"code":123456},headers=csrf()).status_code==400
+    assert client.post(route,json={"code":"123456","enroll":True},
+                       headers=csrf()).status_code==400
+    assert client.post(route,json={"code":"123456"},headers=csrf()).status_code==503
+    monkeypatch.setenv("VOWSIG_OWNER_TOTP_MASTER_KEY_B64","synthetic-test-key")
+    bad=client.post(route,json={"code":"000000"},headers=csrf())
+    assert bad.status_code==403 and "no-store" not in bad.headers.get("cache-control","")
+    ok=client.post(route,json={"code":"123456"},headers=csrf())
+    assert ok.status_code==200 and ok.json()["verified"] is True
+    assert ok.json()["owner_admin_route"]=="/admin/"
+    assert "no-store" in ok.headers["cache-control"]
+    assert "VOWSIG_OWNER_TOTP_MASTER_KEY_B64" not in ok.text
 
 
 def test_missing_snapshot_never_invents_entries_or_health(ctx):

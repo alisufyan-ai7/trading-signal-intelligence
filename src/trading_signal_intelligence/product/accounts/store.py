@@ -197,6 +197,90 @@ class PostgresAccountStore:
             raise AccountLinkConflict("Verified account link conflict") from exc
         return account_id
 
+    def verify_owner_totp(
+        self, *, token_sha256: str, account_id: str, code: str,
+        master_key_b64: str, now: datetime | None = None,
+    ) -> datetime:
+        """Atomic, cross-worker replay-safe MFA; no online enrollment.
+
+        Return a fresh MFA timestamp only after a provisioned, encrypted
+        independent owner factor is validated. Failed attempts are persisted
+        in the database before raising to the HTTP caller.
+        """
+        from trading_signal_intelligence.product.accounts.owner_mfa import (
+            OwnerMfaConfigurationError, OwnerMfaRejected, decrypt_for_owner,
+            load_master_key, match_step, MFA_LOCK_AFTER, MFA_LOCK_SECONDS,
+        )
+        if not isinstance(token_sha256, str) or len(token_sha256) != 64:
+            raise OwnerMfaRejected("Owner verification rejected")
+        key = load_master_key(master_key_b64)
+        current = now or datetime.now(timezone.utc)
+        if current.tzinfo is None:
+            raise OwnerMfaConfigurationError("MFA clock must be timezone-aware")
+        current = current.astimezone(timezone.utc)
+        verified = False
+        with self._connect() as conn:
+            row = conn.execute(
+                """SELECT c.secret_ciphertext,c.last_accepted_step,
+                          c.failed_attempts,c.locked_until
+                   FROM vowsig_owner_totp_credentials c
+                   JOIN vowsig_accounts a ON a.id=c.account_id
+                   JOIN vowsig_account_sessions s ON s.account_id=a.id
+                   JOIN vowsig_account_entitlements e ON e.account_id=a.id
+                   WHERE a.id=%s::uuid AND a.role='owner'
+                     AND a.email_verified_at IS NOT NULL
+                     AND a.disabled_at IS NULL
+                     AND e.status='active'
+                     AND s.token_sha256=%s
+                     AND s.revoked_at IS NULL AND s.expires_at>%s
+                   FOR UPDATE OF c,s""",
+                (account_id,token_sha256,current),
+            ).fetchone()
+            if row is None:
+                raise OwnerMfaRejected("Owner verification rejected")
+            if row["locked_until"] is not None and row["locked_until"] > current:
+                raise OwnerMfaRejected("Owner verification temporarily locked")
+            secret = decrypt_for_owner(
+                bytes(row["secret_ciphertext"]), account_id, key,
+            )
+            step = match_step(
+                code, secret, now=current, last_step=int(row["last_accepted_step"]),
+            )
+            if step is None:
+                attempts = int(row["failed_attempts"]) + 1
+                locked = (
+                    current + timedelta(seconds=MFA_LOCK_SECONDS)
+                    if attempts >= MFA_LOCK_AFTER else None
+                )
+                conn.execute(
+                    """UPDATE vowsig_owner_totp_credentials
+                       SET failed_attempts=%s, locked_until=%s
+                       WHERE account_id=%s::uuid""",
+                    (0 if locked is not None else attempts, locked, account_id),
+                )
+            else:
+                conn.execute(
+                    """UPDATE vowsig_owner_totp_credentials
+                       SET last_accepted_step=%s, failed_attempts=0,
+                           locked_until=NULL
+                       WHERE account_id=%s::uuid""",
+                    (step, account_id),
+                )
+                changed = conn.execute(
+                    """UPDATE vowsig_account_sessions
+                       SET mfa_verified_at=%s
+                       WHERE token_sha256=%s AND account_id=%s::uuid
+                         AND revoked_at IS NULL AND expires_at>%s
+                       RETURNING token_sha256""",
+                    (current,token_sha256,account_id,current),
+                ).fetchone()
+                if changed is None:
+                    raise OwnerMfaRejected("Owner session expired")
+                verified = True
+        if not verified:
+            raise OwnerMfaRejected("Owner verification rejected")
+        return current
+
     def revoke_session(self, token_sha256: str, account_id: str) -> bool:
         with self._connect() as conn:
             row = conn.execute(

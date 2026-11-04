@@ -185,6 +185,14 @@ def ui(browser):
                     "accounts_with_watchlist":0,"retention_7d":None}
         elif path=="/api/v2/me/deletion-request":
             result={"status":"pending_reverification"}
+        elif path=="/api/v2/me/owner-mfa/verify" and method=="POST":
+            code=json.loads(request.post_data or "{}").get("code")
+            if state["member_role"] != "owner" or code != "123456":
+                route.fulfill(status=403,content_type="application/json",body="{}")
+                return
+            state["owner_mfa_verified"]=True
+            result={"verified":True,"verified_until_utc":"2026-11-04T16:00:00Z",
+                    "owner_admin_route":"/admin/"}
         elif path=="/api/v2/me/logout":
             result={"signed_out":True}
         if result is None:
@@ -291,6 +299,24 @@ def test_owner_attested_cohort_metrics_never_claim_platform_or_cash_profit(ui):
     assert "Not available" in txt
     assert "Source-reconciled performance unavailable" not in txt
     assert "other lineages are not certified" in txt.lower()
+
+
+def test_owner_free_totp_step_up_ui_is_owner_only_and_not_auth0_upgrade(ui):
+    page,state=ui
+    open_page(page,"/app/settings/")
+    assert page.get_by_text("Owner MFA · authenticator app").count()==0
+    state["member_role"]="owner"
+    open_page(page,"/app/settings/")
+    assert page.get_by_text("Owner MFA · authenticator app").count()==1
+    code=page.locator("#owner-code")
+    code.fill("123456")
+    page.get_by_role("button",name="Verify owner authenticator code").click()
+    page.get_by_text("Owner verification completed",exact=False).wait_for()
+    assert state["owner_mfa_verified"] is True
+    assert code.input_value()==""
+    assert page.get_by_text("Open owner dashboard after verification").count()==1
+    assert not any("/auth0" in path or "/billing" in path or "/upgrade" in path
+                   for _,path in state["http_calls"])
 
 
 def test_expired_session_does_not_render_private_research(ui):

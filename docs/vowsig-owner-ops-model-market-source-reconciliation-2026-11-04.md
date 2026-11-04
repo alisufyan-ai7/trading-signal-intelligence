@@ -34,3 +34,11 @@ Synthetic negative/positive tests cover stale/future/duplicate reports, sensitiv
 **Still not completed:** real VPS source file inventory and independent external pins; AI-v1.1, AI-v1.2.1 and AI-v1.3 crypto K5 full histories and causal-timing verification; confirmed broker-neutral after-cost net R, all lineage/market/model cohort coverage and source rights; independently signed post-audit SQL projection promotion; live authenticated owner and customer Auth0/Resend UAT; full observability from live Windows schedulers; complete incident/alert workflow and production deployment approval. PostgreSQL offsite recovery is still scheduled immediately *after* launch by binding owner choice.
 
 This milestone is a credible, reviewable foundation for a full Command Center, not a claim that all original historical analytics have been certified or production released.
+
+
+## Read-only original-source inventory (12 fixed runtime ledgers)
+
+Added a **preliminary evidence inventory** for the core AI-v1.1 XAUUSD/USTEC/US30, expansion AI-v1.2.1 EURUSD/XAGUSD/USOIL, crypto AI-v1.3 BTCUSDT/ETHUSDT/SOLUSDT, and separate S02 XAUUSD/USTEC/US30 SQLite sources. The source path list is pinned in CI to the exact original runtime/path contracts; the scanner opens them `mode=ro` without constructors, mutation, feature execution or raw payload export. It emits only presence, observed count, sequence/head and allowlisted event-type counts with explicit `PRELIMINARY_LIVE_SOURCE_INVENTORY_UNVERIFIED` status. It does not create a frozen copy or prove any history.
+
+**VPS originals are not in the repo.** Owner-authorized read-only evidence collection is needed on the Windows VPS, followed by a separately approved consistent frozen copy and independently pinned file SHA256/count/head for original-chain/terminal-event checks. Crypto K5, complete market-cohort universe, source rights and cost audit are additional requirements. Runbook: `docs/vowsig-private-original-source-inventory-and-vps-handoff-2026-11-04.md`.
+

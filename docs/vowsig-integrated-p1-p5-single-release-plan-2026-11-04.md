@@ -58,6 +58,12 @@ The P2/P3 review candidate adds owner-only runtime observation, all nine market 
 
 One full enabled public launch remains the binding owner requirement. The owner consciously accepts PostgreSQL offsite backups as the **first immediate post-launch activity**; no other security, customer or source-truth gate is waived. Draft PR #93 is unmerged and cannot auto-deploy.
 
+## Read-only original-source inventory (12 fixed runtime ledgers)
+
+Added a **preliminary evidence inventory** for the core AI-v1.1 XAUUSD/USTEC/US30, expansion AI-v1.2.1 EURUSD/XAGUSD/USOIL, crypto AI-v1.3 BTCUSDT/ETHUSDT/SOLUSDT, and separate S02 XAUUSD/USTEC/US30 SQLite sources. The source path list is pinned in CI to the exact original runtime/path contracts; the scanner opens them `mode=ro` without constructors, mutation, feature execution or raw payload export. It emits only presence, observed count, sequence/head and allowlisted event-type counts with explicit `PRELIMINARY_LIVE_SOURCE_INVENTORY_UNVERIFIED` status. It does not create a frozen copy or prove any history.
+
+**VPS originals are not in the repo.** Owner-authorized read-only evidence collection is needed on the Windows VPS, followed by a separately approved consistent frozen copy and independently pinned file SHA256/count/head for original-chain/terminal-event checks. Crypto K5, complete market-cohort universe, source rights and cost audit are additional requirements. Runbook: `docs/vowsig-private-original-source-inventory-and-vps-handoff-2026-11-04.md`.
+
 ## Scope and order
 
 | Priority | Workstream | Implementation status in consolidated PR #93 | Independent work remaining | Owner/infrastructure gate at end |

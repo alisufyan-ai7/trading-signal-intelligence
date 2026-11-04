@@ -332,6 +332,81 @@ class PostgresAccountStore:
             "notice":"Request recorded. No data is erased until verified owner-reviewed processing.",
         }
 
+    def admin_verified_performance(self) -> dict[str, Any]:
+        """Verify one independently attested cohort; never infer platform history.
+
+        Both the signed manifest AND a trusted reviewer public key fingerprint
+        must be configured through the application's private runtime settings.
+        Neither this method nor an API endpoint can sign, promote or ingest data.
+        """
+        import hashlib
+        import os
+        from pathlib import Path
+
+        from trading_signal_intelligence.product.accounts.verified_history import (
+            HistoryAttestationError, verify_signed_history_attestation,
+            reconcile_attested_history,
+        )
+
+        unavailable = {
+            "status": "awaiting_complete_source_reconciliation",
+            "verified_full_history": False,
+            "verified_full_cohort_history": False,
+            "source_ledger_independently_reconciled": False,
+            "performance": None,
+        }
+        document_path = os.environ.get("VOWSIG_HISTORY_SIGNED_ATTESTATION_PATH", "")
+        reviewer_path = os.environ.get("VOWSIG_HISTORY_REVIEWER_PUBLIC_KEY_PATH", "")
+        key_sha = os.environ.get("VOWSIG_HISTORY_REVIEWER_PUBLIC_KEY_SHA256", "")
+        if not any((document_path, reviewer_path, key_sha)):
+            return unavailable
+        if not all((document_path, reviewer_path, key_sha)):
+            return {**unavailable, "status": "independent_evidence_configuration_incomplete"}
+        try:
+            if len(key_sha) != 64 or any(c not in "0123456789abcdef" for c in key_sha):
+                raise HistoryAttestationError("Reviewer trust pin missing")
+            doc = Path(document_path)
+            key = Path(reviewer_path)
+            if doc.stat().st_size > 64_000 or key.stat().st_size > 4_096:
+                raise HistoryAttestationError("Invalid attestation/key size")
+            key_pem = key.read_bytes()
+            if hashlib.sha256(key_pem).hexdigest() != key_sha:
+                raise HistoryAttestationError("Reviewer public key not pinned")
+            att = verify_signed_history_attestation(
+                doc.read_bytes(), reviewer_public_key_pem=key_pem,
+            )
+            with self._connect() as conn:
+                snapshots = conn.execute(
+                    """SELECT source_program_id, model_version,
+                              source_snapshot_sha256, source_head_hash,
+                              ingest_status, completeness_verified, id
+                       FROM vowsig_research_source_snapshots
+                       WHERE source_program_id=%s AND model_version=%s
+                         AND source_snapshot_sha256=%s
+                       LIMIT 2""",
+                    (att["source_program_id"], att["model_version"],
+                     att["source_snapshot_sha256"]),
+                ).fetchall()
+                if len(snapshots) != 1:
+                    raise HistoryAttestationError("Missing unique source projection")
+                rows = conn.execute(
+                    """SELECT entity_id, source_record_sha256, state,
+                              exit_at_utc, combined_net_r, cost_model_version,
+                              after_costs_verified, cohort
+                       FROM vowsig_research_outcome_facts
+                       WHERE source_snapshot_id=%s ORDER BY entity_id
+                       LIMIT 250001""",
+                    (snapshots[0]["id"],),
+                ).fetchall()
+            result = reconcile_attested_history(
+                att, snapshot=snapshots[0], facts=[dict(row) for row in rows],
+            )
+            return result
+        except (HistoryAttestationError, OSError, ValueError):
+            # Never degrade to bounded public snapshot or trust a database
+            # completeness flag alone when the reviewer signature is invalid.
+            return {**unavailable, "status": "independent_evidence_rejected"}
+
     def admin_evidence_inventory(self) -> dict[str, Any]:
         """Owner-only projection inventory; never asserts independent verification.
 

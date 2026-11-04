@@ -319,6 +319,13 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
             replay_quarantined_bundle(db,raw,**pins)
 
 
+    # No out-of-band reviewer evidence file or trusted signer is configured.
+    # The live schema's database flags alone are not release authority.
+    unsigned = store.admin_verified_performance()
+    assert unsigned["verified_full_history"] is False
+    assert unsigned["performance"] is None
+    assert unsigned["status"] == "awaiting_complete_source_reconciliation"
+
     # Owner evidence inventory reports real SQL projection counts without
     # upgrading a quarantined synthetic bundle into verified historical P&L.
     inventory = store.admin_evidence_inventory()

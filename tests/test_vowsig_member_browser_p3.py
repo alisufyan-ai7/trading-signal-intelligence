@@ -159,8 +159,10 @@ def ui(browser):
         elif path=="/api/v2/admin/operations":
             result=state["operations"]
         elif path=="/api/v2/admin/performance":
-            result={"performance":None,"verified_full_history":False,
-                    "notice":"No complete source evidence."}
+            result=state.get("performance",{
+                "performance":None,"verified_full_history":False,
+                "notice":"No complete source evidence.",
+            })
         elif path=="/api/v2/admin/evidence":
             result={
                 "source":"research_projection_database",
@@ -260,6 +262,35 @@ def test_owner_analytics_do_not_imply_verified_history(ui):
     assert page.get_by_text("VPS runtime independently verified",exact=False).count()>=1
     assert "VPS runtime independently verified: No" in page.locator("#app-content").inner_text()
     assert not any("/api/internal" in path for _,path in state["http_calls"])
+
+
+def test_owner_attested_cohort_metrics_never_claim_platform_or_cash_profit(ui):
+    page,state=ui
+    state["member_role"]="owner"
+    state["performance"]={
+        "verified_full_history":False,
+        "verified_full_cohort_history":True,
+        "source_ledger_independently_reconciled":True,
+        "reviewed_at_utc":"2026-11-04T14:00:00Z",
+        "notice":"One source-attested cohort; not all lineages.",
+        "performance":{
+            "source_program_id":"core-ai-shadow","model_version":"AI-v1.1",
+            "cohort":"forward-shadow","total_outcomes":3,
+            "completed_count":2,"win_count":1,"loss_count":1,
+            "breakeven_count":0,"win_rate":0.5,
+            "sum_completed_net_r":1.0,"expectancy_net_r":0.5,
+            "max_normalized_r_drawdown":1.0,
+            "open_count":0,"no_trade_count":1,"rejected_count":0,
+            "error_count":0,"sample_warning":"small_forward_sample",
+        },
+    }
+    open_page(page,"/admin/")
+    txt=page.locator("#app-content").inner_text()
+    assert "Independently attested cohort" in txt
+    assert "Real-money returns" in txt
+    assert "Not available" in txt
+    assert "Source-reconciled performance unavailable" not in txt
+    assert "other lineages are not certified" in txt.lower()
 
 
 def test_expired_session_does_not_render_private_research(ui):

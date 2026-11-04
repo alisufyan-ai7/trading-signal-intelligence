@@ -302,9 +302,36 @@
         compact([["Reported healthy",text(p.reported_healthy)],
           ["Valid inferences",p.valid_inferences],["Errors",p.errors],
           ["Completed shadow",p.completed_shadow_trades]]))))));
+    const cohort=perf&&perf.verified_full_cohort_history===true&&perf.performance;
     main.append(panel("Performance Lab",
-      msg("Source-reconciled performance unavailable",
-        "A truncated public snapshot cannot support complete net-R, drawdown, win rate or a verified historical track record."),
+      cohort ?
+        E("div",{},
+          msg("Independently attested cohort · research-only",
+            "A signed, reviewer-approved original-ledger audit matched the entire named cohort. Other lineages are not certified by this result."),
+          compact([["Program",perf.performance.source_program_id],
+            ["Version",perf.performance.model_version],
+            ["Cohort",perf.performance.cohort],
+            ["Reviewed",date(perf.reviewed_at_utc)],
+            ["Source outcomes",perf.performance.total_outcomes],
+            ["Completed after-cost",perf.performance.completed_count],
+            ["Wins / losses / flat",[perf.performance.win_count,
+              perf.performance.loss_count,perf.performance.breakeven_count].join(" / ")],
+            ["Win rate · completed only",
+              perf.performance.win_rate==null?"N/A":(100*perf.performance.win_rate).toFixed(1)+"%"],
+            ["Net normalized R",perf.performance.sum_completed_net_r==null?
+              "N/A":perf.performance.sum_completed_net_r],
+            ["Average net R",perf.performance.expectancy_net_r==null?
+              "N/A":perf.performance.expectancy_net_r],
+            ["Max closed-R drawdown",perf.performance.max_normalized_r_drawdown==null?
+              "N/A":perf.performance.max_normalized_r_drawdown],
+            ["Unresolved / abstain / rejected / errors",
+              [perf.performance.open_count,perf.performance.no_trade_count,
+               perf.performance.rejected_count,perf.performance.error_count].join(" / ")],
+            ["Sample caveat",perf.performance.sample_warning||"None"],
+            ["Real-money returns","Not available"]]))
+        :
+        msg("Source-reconciled performance unavailable",
+          "A truncated public snapshot or a database verification flag alone cannot certify complete after-cost historical results."),
       E("p",{class:"helper",text:perf.notice})));
     const sourceRows=Array.isArray(evidence.snapshots)?evidence.snapshots:[];
     main.append(panel("Independent history evidence & reconciliation",

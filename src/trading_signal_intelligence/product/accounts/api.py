@@ -238,14 +238,26 @@ def create_router(
 
     @router.get("/admin/performance")
     def admin_performance(request: Request) -> JSONResponse:
-        _, user, _ = _auth(request)
+        store, user, _ = _auth(request)
         require_owner(user)
-        return _private({
+        verifier = getattr(store, "admin_verified_performance", None)
+        result = verifier() if callable(verifier) else {
             "status": "awaiting_complete_source_reconciliation",
             "verified_full_history": False,
+            "verified_full_cohort_history": False,
             "performance": None,
+        }
+        # A signed reviewed cohort does NOT certify the platform's other
+        # markets, model versions or unreconciled historical populations.
+        return _private({
+            **result,
             "preview": admin_snapshot_diagnostics(read_snapshot()),
-            "notice": "Partial public snapshot cannot certify historical net-R performance.",
+            "notice": (
+                "Signed reviewer proof is scoped to one complete cohort; "
+                "it is not evidence of all-platform historical coverage."
+                if result.get("verified_full_cohort_history") is True else
+                "Partial public snapshot cannot certify historical net-R performance."
+            ),
         })
 
     @router.get("/admin/evidence")

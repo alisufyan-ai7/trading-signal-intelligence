@@ -58,6 +58,7 @@ def inventory_expected_sources(root: str | Path) -> dict[str, Any]:
             "sequence_max":None,
             "last_record_hash":None,
             "event_counts":None,
+            "other_event_type_rows":None,
             "frozen_source_independently_verified":False,
         }
         file=root_path / spec.relative_path
@@ -94,27 +95,37 @@ def inventory_expected_sources(root: str | Path) -> dict[str, Any]:
                 (type(last) is not str or not _HASH.fullmatch(last))):
                 raise ValueError("Untrusted original source head")
             metrics={kind:0 for kind in _SAFE_TYPES}
+            other_event_type_rows=0
             for row in types:
                 if row["record_type"] in metrics:
                     metrics[row["record_type"]]=int(row["n"])
+                else:
+                    # Do not expose unexpected original event names or payloads.
+                    other_event_type_rows+=int(row["n"])
             item.update({
                 "status":"OBSERVED_UNFROZEN" if number else "EMPTY_LEDGER",
                 "record_count":number,
                 "sequence_max":int(counts["max_seq"]) if number else None,
                 "last_record_hash":last,
                 "event_counts":metrics,
+                "other_event_type_rows":other_event_type_rows,
             })
         except (sqlite3.Error, OSError,ValueError,OverflowError):
             item["status"]="READ_ONLY_SOURCE_UNAVAILABLE"
         result.append(item)
     found=sum(x["status"]=="OBSERVED_UNFROZEN" for x in result)
+    empty=sum(x["status"]=="EMPTY_LEDGER" for x in result)
+    unavailable=len(SOURCES)-found-empty
+    unknown=sum((x["other_event_type_rows"] or 0) for x in result)
     return {
         "schema_version":1,
         "status":"PRELIMINARY_LIVE_SOURCE_INVENTORY_UNVERIFIED",
         "source":"repository_defined_original_ledger_paths",
         "expected_ledger_files":len(SOURCES),
         "observed_nonempty_ledger_files":found,
-        "missing_or_unreadable_ledger_files":len(SOURCES)-found,
+        "empty_ledger_files":empty,
+        "missing_or_unreadable_ledger_files":unavailable,
+        "other_event_type_rows":unknown,
         "all_original_sources_independently_verified":False,
         "crypto_k5_provenance_verified":False,
         "historical_net_r_verified":False,

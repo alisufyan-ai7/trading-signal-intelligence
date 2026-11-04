@@ -124,3 +124,47 @@ def test_missing_originals_not_created_and_no_directory_glob(tmp_path):
     assert arbitrary.read_bytes()==b"FAKE CUSTOMER DB"
     assert not (data/"ai_v1_1_xauusd.sqlite").exists()
     assert "unrelated-customer.sqlite" not in str(inventory)
+
+
+def test_empty_ledger_does_not_count_as_missing_or_unreadable(tmp_path):
+    data=tmp_path/"data"
+    data.mkdir()
+    AILedger(data/"ai_v1_1_xauusd.sqlite")
+    result=inventory_expected_sources(tmp_path)
+    assert result["observed_nonempty_ledger_files"]==0
+    assert result["empty_ledger_files"]==1
+    assert result["missing_or_unreadable_ledger_files"]==11
+    assert result["other_event_type_rows"]==0
+    row=next(x for x in result["ledgers"] if x["symbol"]=="XAUUSD" and x["model_version"]=="AI-v1.1")
+    assert row["status"]=="EMPTY_LEDGER"
+    assert row["record_count"]==0
+    assert row["other_event_type_rows"]==0
+
+
+def test_unrecognized_event_type_is_counted_without_leaking_name(tmp_path):
+    data=tmp_path/"data"
+    data.mkdir()
+    path=data/"ai_v1_1_xauusd.sqlite"
+    now=datetime(2026,11,4,18,tzinfo=timezone.utc)
+    valid=AILedger(path).append(
+        record_type="NO_TRADE",entity_id="synthetic-known",
+        effective_at_utc=now,payload={"synthetic":True},
+    )
+    with sqlite3.connect(path) as conn:
+        conn.execute(
+            """INSERT INTO ai_records
+               (record_id,record_type,entity_id,recorded_at_utc,
+                effective_at_utc,payload_json,previous_hash,record_hash)
+               VALUES (?,?,?,?,?,?,?,?)""",
+            ("unexpected-row","SYNTHETIC_UNEXPECTED_KIND","synthetic-private",
+             now.isoformat(),now.isoformat(),"{}",valid["record_hash"],"b"*64),
+        )
+    result=inventory_expected_sources(tmp_path)
+    row=next(x for x in result["ledgers"] if x["symbol"]=="XAUUSD" and x["model_version"]=="AI-v1.1")
+    assert result["observed_nonempty_ledger_files"]==1
+    assert result["other_event_type_rows"]==1
+    assert row["record_count"]==2
+    assert row["event_counts"]["NO_TRADE"]==1
+    assert row["other_event_type_rows"]==1
+    assert "SYNTHETIC_UNEXPECTED_KIND" not in str(result)
+    assert "synthetic-private" not in str(result)

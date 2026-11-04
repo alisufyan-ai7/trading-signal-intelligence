@@ -56,18 +56,18 @@ def _docker(*args: str) -> str:
 def _snapshot(conn: psycopg.Connection) -> tuple[str, int, int]:
     """Fingerprint every vowsig_ table and its columns without printing rows."""
     with conn.cursor(row_factory=dict_row) as cur:
+        # Avoid SQL LIKE escape ambiguities across PostgreSQL and drivers.
+        # Select from the catalog, then do a literal prefix match in Python.
         tables = [
-            row["table_name"]
+            row["tablename"]
             for row in cur.execute(
-                """SELECT table_name FROM information_schema.tables
-                   WHERE table_schema='public'
-                     AND table_type='BASE TABLE'
-                     AND table_name LIKE 'vowsig\_%' ESCAPE '\'
-                   ORDER BY table_name"""
+                """SELECT tablename FROM pg_catalog.pg_tables
+                   WHERE schemaname='public' ORDER BY tablename"""
             ).fetchall()
+            if row["tablename"].startswith("vowsig_")
         ]
         if len(tables) < 8 or "vowsig_accounts" not in tables:
-            raise RuntimeError("Missing expected migrated account tables")
+            raise RuntimeError(f"Missing migrated account tables: found={len(tables)}; tables={tables}")
         digest = hashlib.sha256()
         total_rows = 0
         for table in tables:

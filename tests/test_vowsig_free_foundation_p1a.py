@@ -306,3 +306,33 @@ def test_router_rejects_invalid_production_origin(origin):
             csrf_secret=SECRET,
             app_origin=origin,
         )
+
+
+def test_cloud_public_v1_routes_are_unchanged_when_flag_off(monkeypatch):
+    monkeypatch.setenv("VOWSIG_FREE_FOUNDATION_ENABLED", "0")
+    from trading_signal_intelligence.product import cloud_app
+
+    previous = [route.path for route in cloud_app.app.routes]
+    cloud_app._attach_free_foundation_if_approved()
+    assert [route.path for route in cloud_app.app.routes] == previous
+    assert "/api/health" in previous
+    assert "/api/ai/insights" in previous
+    assert "/api/signals" in previous
+    assert "/api/v2/public/markets" not in previous
+
+
+def test_invalid_feature_flag_fails_closed_without_registering_routes(monkeypatch):
+    monkeypatch.setenv("VOWSIG_FREE_FOUNDATION_ENABLED", "0")
+    from trading_signal_intelligence.product import cloud_app
+    monkeypatch.setenv("VOWSIG_FREE_FOUNDATION_ENABLED", "not-approved")
+
+    previous = [route.path for route in cloud_app.app.routes]
+    with pytest.raises(RuntimeError, match="feature flag"):
+        cloud_app._attach_free_foundation_if_approved()
+    assert [route.path for route in cloud_app.app.routes] == previous
+
+
+def test_stale_validation_market_shows_delayed_not_active():
+    rows = market_directory(sample_snapshot(stale=True))["markets"]
+    assert all(r["research_status"] == "updates_delayed" for r in rows)
+    assert all(not r["research_signal_detail_available"] for r in rows)

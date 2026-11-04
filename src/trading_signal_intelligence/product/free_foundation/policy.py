@@ -116,6 +116,7 @@ def market_directory(
             "cataloged": True,
             "research_status": (
                 "core_shadow_research" if detailed else
+                "updates_delayed" if observed and not fresh else
                 "research_validation" if observed and symbol not in CORE else
                 "status_unavailable"
             ),

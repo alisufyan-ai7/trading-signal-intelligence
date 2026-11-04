@@ -36,6 +36,49 @@ class PostgresAccountStore:
 
         return psycopg.connect(self._dsn, row_factory=dict_row, connect_timeout=5)
 
+    def take_auth_budget(self, peer_digest: str) -> bool:
+        """Atomic 30-per-ten-minute coarse peer throttle, no raw IP stored."""
+        now = datetime.now(timezone.utc)
+        bucket = datetime.fromtimestamp(
+            int(now.timestamp()) // 600 * 600, timezone.utc,
+        )
+        with self._connect() as conn:
+            row = conn.execute(
+                """INSERT INTO vowsig_auth_rate_windows
+                   (subject_digest,bucket_start,attempts)
+                   VALUES (%s,%s,1)
+                   ON CONFLICT (subject_digest,bucket_start)
+                   DO UPDATE SET attempts=vowsig_auth_rate_windows.attempts+1
+                   WHERE vowsig_auth_rate_windows.attempts < 30
+                   RETURNING attempts""",
+                (peer_digest, bucket),
+            ).fetchone()
+        return row is not None
+
+    def begin_oidc(
+        self, *, state_sha256: str, browser_sha256: str,
+        code_verifier: str, nonce: str,
+    ) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """INSERT INTO vowsig_oidc_authorizations
+                   (state_sha256,browser_sha256,code_verifier,nonce,expires_at)
+                   VALUES (%s,%s,%s,%s,now()+interval '10 minutes')""",
+                (state_sha256,browser_sha256,code_verifier,nonce),
+            )
+
+    def consume_oidc(self, state_sha256: str, browser_sha256: str) -> dict[str, str] | None:
+        """Single-use consume is atomic even across concurrent app workers."""
+        with self._connect() as conn:
+            row = conn.execute(
+                """DELETE FROM vowsig_oidc_authorizations
+                   WHERE state_sha256=%s AND browser_sha256=%s
+                     AND expires_at>now()
+                   RETURNING code_verifier,nonce""",
+                (state_sha256,browser_sha256),
+            ).fetchone()
+        return dict(row) if row else None
+
     def find_session(self, token_sha256: str) -> Identity | None:
         with self._connect() as conn:
             record = conn.execute(

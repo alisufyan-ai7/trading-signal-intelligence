@@ -56,6 +56,7 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
             "003_preferences_and_saved_research.sql",
             "004_research_read_model_contract.sql",
             "005_consent_audit_deletion_requests.sql",
+            "006_oidc_auth_transactions.sql",
         ):
             sql = (ROOT / "sql" / "accounts" / name).read_text(encoding="utf-8")
             db.execute(sql, prepare=False)
@@ -224,3 +225,35 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     assert store.account_export(issued2.account_id)["deletion_request"]["status"]=="pending_reverification"
     assert store.admin_growth()["registered_accounts"]==3
 
+
+
+    # P1B-1: state and browser binding are single-use at SQL level.
+    state_hash="e"*64
+    browser_hash="f"*64
+    store.begin_oidc(
+        state_sha256=state_hash, browser_sha256=browser_hash,
+        code_verifier="v"*43, nonce="n"*43,
+    )
+    assert store.consume_oidc(state_hash, "a"*64) is None
+    recovered=store.consume_oidc(state_hash, browser_hash)
+    assert recovered=={"code_verifier":"v"*43,"nonce":"n"*43}
+    assert store.consume_oidc(state_hash, browser_hash) is None
+
+    # Expired auth states must fail closed even if the state and browser match.
+    store.begin_oidc(
+        state_sha256="a"*64,browser_sha256=browser_hash,
+        code_verifier="v"*43,nonce="n"*43,
+    )
+    with psycopg.connect(dsn,autocommit=True) as db:
+        # Mutation is confined to this throwaway CI DB.
+        db.execute(
+            "UPDATE vowsig_oidc_authorizations SET expires_at=now()-interval '1 second' "
+            "WHERE state_sha256=%s",("a"*64,),
+        )
+    assert store.consume_oidc("a"*64,browser_hash) is None
+
+    # Concurrent-safe SQL counter rejects request 31 in the same 10-min bucket.
+    peer="3"*64
+    assert all(store.take_auth_budget(peer) for _ in range(30))
+    assert store.take_auth_budget(peer) is False
+    assert store.take_auth_budget("4"*64) is True

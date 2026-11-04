@@ -747,5 +747,28 @@ def _attach_accounts_foundation_if_approved() -> None:
         html_path=WEB / "member" / "index.html",
     ))
 
+    # Independent ON switch; providing OIDC env vars does NOT enable auth.
+    # Real provider endpoints, TLS, email verification and MFA must be reviewed
+    # before a human explicitly authorizes this setting in production.
+    oidc_enabled = os.getenv("VOWSIG_OIDC_AUTH_ENABLED", "0")
+    if oidc_enabled not in ("0", "1"):
+        raise RuntimeError("Invalid OIDC auth feature flag")
+    if oidc_enabled == "1":
+        from trading_signal_intelligence.product.accounts.auth_api import create_auth_router
+        from trading_signal_intelligence.product.accounts.oidc_provider import OidcSettings
+        settings = OidcSettings(
+            issuer=os.getenv("VOWSIG_OIDC_ISSUER", ""),
+            client_id=os.getenv("VOWSIG_OIDC_CLIENT_ID", ""),
+            authorization_endpoint=os.getenv("VOWSIG_OIDC_AUTHORIZATION_ENDPOINT", ""),
+            token_endpoint=os.getenv("VOWSIG_OIDC_TOKEN_ENDPOINT", ""),
+            jwks_uri=os.getenv("VOWSIG_OIDC_JWKS_URI", ""),
+            app_origin=origin,
+            client_secret=os.getenv("VOWSIG_OIDC_CLIENT_SECRET") or None,
+        )
+        app.include_router(create_auth_router(
+            make_store=lambda: PostgresAccountStore(dsn),
+            settings=settings, csrf_secret=secret,
+        ))
+
 
 _attach_accounts_foundation_if_approved()

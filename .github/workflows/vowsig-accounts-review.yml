@@ -10,6 +10,7 @@ on:
       - 'tests/test_vowsig_product_endpoints_p3.py'
       - 'tests/test_vowsig_performance_p2.py'
       - 'tests/test_vowsig_read_model_p2.py'
+      - 'tests/test_vowsig_oidc_p1b.py'
       - 'web/member/**'
       - 'sql/accounts/**'
       - 'pyproject.toml'
@@ -63,6 +64,7 @@ jobs:
             tests/test_vowsig_product_endpoints_p3.py \
             tests/test_vowsig_performance_p2.py \
             tests/test_vowsig_read_model_p2.py \
+            tests/test_vowsig_oidc_p1b.py \
             tests/test_cloud_snapshot_durability.py \
             tests/test_product_ai_insights.py \
             tests/test_cloud_ai_runtime_validation.py \

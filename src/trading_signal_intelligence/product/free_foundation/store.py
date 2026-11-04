@@ -6,6 +6,7 @@ the database. Auth issuance is intentionally absent in P1A.
 from __future__ import annotations
 
 from typing import Protocol
+from urllib.parse import parse_qs, urlsplit
 
 from trading_signal_intelligence.product.free_foundation.security import Identity
 
@@ -21,6 +22,9 @@ class PostgresMemberStore:
     def __init__(self, dsn: str):
         if not dsn or not dsn.startswith(("postgresql://", "postgres://")):
             raise ValueError("An explicit PostgreSQL connection string is required")
+        # Reject plaintext or hostname-unverified PostgreSQL connections.
+        if parse_qs(urlsplit(dsn).query).get("sslmode") != ["verify-full"]:
+            raise ValueError("PostgreSQL connection must use sslmode=verify-full")
         self._dsn = dsn
 
     def _connect(self):

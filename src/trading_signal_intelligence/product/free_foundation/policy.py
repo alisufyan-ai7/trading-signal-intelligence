@@ -105,6 +105,7 @@ def market_directory(
         observed = (
             p.get("mode") == "SHADOW_ONLY"
             and p.get("public_research_observability") is True
+            and (symbol in CORE or p.get("public_signal_exposure") is False)
         )
         # Status/availability cannot grant detail rights to restricted markets.
         detailed = symbol in CORE and core_ready

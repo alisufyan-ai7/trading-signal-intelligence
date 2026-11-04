@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from typing import Any
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -41,8 +42,16 @@ def create_router(
     csrf_secret: str,
     app_origin: str,
 ) -> APIRouter:
-    if len(csrf_secret.encode("utf-8")) < 32 or not app_origin.startswith("https://"):
-        raise ValueError("CSRF secret (>=32 bytes) and explicit HTTPS origin required")
+    origin = urlsplit(app_origin)
+    if (
+        len(csrf_secret.encode("utf-8")) < 32
+        or origin.scheme != "https"
+        or not origin.netloc
+        or origin.username is not None
+        or origin.path not in ("", "/")
+        or origin.query or origin.fragment
+    ):
+        raise ValueError("CSRF secret (>=32 bytes) and exact HTTPS origin required")
     router = APIRouter(prefix="/api/v2", tags=["Free account foundation"])
 
     def _auth(request: Request):

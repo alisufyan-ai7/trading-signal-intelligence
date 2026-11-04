@@ -252,3 +252,57 @@ def test_policy_does_not_infer_permission_from_catalog_or_internal_payload():
     assert all(not r["research_signal_detail_available"] for r in market_directory(payload)["markets"])
     with pytest.raises(PermissionError):
         permitted_core_recent_signals(payload, "SOLUSDT")
+
+
+def test_mfa_must_be_recent_and_owner_only(env):
+    store, _, client = env
+    _login(client)
+    digest = hashlib.sha256(TOKEN_A.encode()).hexdigest()
+    old = datetime.now(timezone.utc) - timedelta(hours=1)
+    store.sessions[digest] = Identity(**{
+        **identity(role="owner", mfa=True).__dict__, "mfa_verified_at": old
+    })
+    assert client.get("/api/v2/admin/overview").status_code == 403
+
+
+def test_invalid_core_program_and_untrusted_program_health_fail_closed():
+    snapshot = sample_snapshot()
+    snapshot["validation_programs"][0]["health"] = None
+    rows = market_directory(snapshot)["markets"]
+    assert not any(r["research_signal_detail_available"] for r in rows)
+    assert permitted_core_recent_signals(snapshot, "XAUUSD")["signals"] == []
+
+
+def test_restricted_program_cannot_claim_detail_release_in_catalog():
+    snapshot = sample_snapshot()
+    snapshot["validation_programs"][1]["public_signal_exposure"] = True
+    rows = market_directory(snapshot)["markets"]
+    assert all(
+        r["research_status"] == "status_unavailable"
+        for r in rows if r["symbol"] in ("EURUSD", "XAGUSD", "USOIL")
+    )
+
+
+def test_plaintext_database_dsn_not_accepted_without_any_db_call():
+    from trading_signal_intelligence.product.free_foundation.store import PostgresMemberStore
+    with pytest.raises(ValueError, match="verify-full"):
+        PostgresMemberStore("postgresql://user:pass@example.com/db?sslmode=disable")
+    # No connection is opened by constructor; actual TLS/migration integration needs P1B.
+    assert PostgresMemberStore(
+        "postgresql://user:pass@example.com/db?sslmode=verify-full"
+    ) is not None
+
+
+@pytest.mark.parametrize("origin", [
+    "http://vowsig.example",
+    "https://vowsig.example/unsafe",
+    "https://vowsig.example?redirect=evil",
+])
+def test_router_rejects_invalid_production_origin(origin):
+    with pytest.raises(ValueError, match="HTTPS origin"):
+        create_router(
+            read_snapshot=lambda: None,
+            make_store=lambda: FakeStore(),
+            csrf_secret=SECRET,
+            app_origin=origin,
+        )

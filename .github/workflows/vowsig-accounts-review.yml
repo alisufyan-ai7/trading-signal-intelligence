@@ -16,6 +16,7 @@ on:
       - 'web/member/**'
       - 'sql/accounts/**'
       - 'scripts/vowsig_accounts_ci_pg18_recovery.py'
+      - 'scripts/vowsig_accounts_ci_pg18_role_boundaries.py'
       - 'pyproject.toml'
       - 'Dockerfile'
       - 'config/tls/**'
@@ -85,6 +86,11 @@ jobs:
           VOWSIG_EPHEMERAL_PG_TEST_CONFIRM: YES_THROWAWAY_DATABASE
           VOWSIG_EPHEMERAL_PG_TEST_DSN: postgresql://vowsig_test:local-ci-only-test-password@127.0.0.1:5432/vowsig_test?sslmode=disable
         run: python scripts/vowsig_accounts_ci_pg18_recovery.py
+      - name: PG18 isolated roles, runtime immutability and backup read-only proof
+        env:
+          VOWSIG_EPHEMERAL_PG_TEST_CONFIRM: YES_THROWAWAY_DATABASE
+          VOWSIG_EPHEMERAL_PG_TEST_DSN: postgresql://vowsig_test:local-ci-only-test-password@127.0.0.1:5432/vowsig_test?sslmode=disable
+        run: python scripts/vowsig_accounts_ci_pg18_role_boundaries.py
 
   browser-qa:
     runs-on: ubuntu-latest

@@ -13,19 +13,15 @@ Read-only inventory 2026-11-04:
 - **A pre-existing STAGED Railway environment patch** `a18c5bf5-3461-4ba1-a220-49b9cc5d2fd0`, adding `VOWSIG_ACCOUNTS_APP_ORIGIN` to the live app, was discovered. This was **not** applied, changed, accepted or discarded by this run. It must not be accidentally committed by any database/service operation. Before later release, the owner should reconcile this patch with the reviewed variable release plan.
 - Account/OIDC feature flags still default OFF in the **currently deployed code**; PR #93 remains separate from production.
 
-## 2. Proven limitation: Railway stock TLS certificate
+## 2. Railway TLS identity: database-container PASS; independent client proof pending
 
-PostgreSQL logs showed **`CN=localhost`** and the stock `postgres-ssl:18` image; that is not an exact match for `postgres.railway.internal`. The application store requires PostgreSQL `sslmode=verify-full`. The stock `DATABASE_URL` does not itself prove matching SAN or trusted CA, and Railway does not expose the internally generated root CA via this connected tool.
+**New 2026-11-04 owner-console evidence supersedes the prior CN-only hold.** PostgreSQL reported `ssl=on`. Its current server certificate has `subject=CN=localhost`, `issuer=CN=root-ca`, and **SAN `DNS:localhost, DNS:postgres.railway.internal`**. It expires 2029-02-01 12:51:47 UTC. The provided command's `PGSSLMODE=verify-full` and `PGSSLROOTCERT` check against `postgres.railway.internal` returned **`PRIVATE_DNS_TLS_VERIFY_FULL=PASS`** from within the database container. PostgreSQL libpq matches a DNS SAN before falling back to CN. The stock image **does provide the required SAN here**; do not create, rotate or replace a certificate to address a non-existent CN mismatch.
 
-**Fail closed.** No app `VOWSIG_ACCOUNTS_DATABASE_URL` secret, no `sslmode=require`/unverified TLS downgrade, no customer schema migrations or auth issuance.
+Recorded leaf SHA256 `42:57:4E:CA:8C:9A:FA:48:1B:EE:FB:2C:3E:A6:B5:08:BC:D3:E6:C2:7E:1B:28:7D:20:27:4D:72:45:8E:95:26`; root CA SHA256 `2D:E2:74:3A:F6:45:B4:EA:17:80:FF:9F:33:3B:C7:E2:5C:18:97:48:3A:C4:62:EB:C8:75:6B:4F:AB:11:BA:A8`. These are **public certificate fingerprints**, not private keys. The owner paste has some terminal line corruption; the positive reported result is evidence, not a verified application-side result.
 
-Review an isolated, recoverable database-side certificate solution where:
-- A controlled CA trust anchor and server cert are managed securely; server SAN covers the exact private hostname and is checked from the app network with `sslmode=verify-full`, `sslrootcert`, TLS protocol and cert expiry evidence.
-- A deterministic cert renewal/redeploy and client-CA rotation procedure is tested. Never distribute the CA private key or DB passwords.
-- The current unbacked DB server is not modified in place to fix TLS until a reversible restore-safe path is available.
-- The design can be validated on an isolated synthetic database before migration of actual accounts; no public TCP proxy required.
+**Remaining independent acceptance gate:** extract **only the public CA certificate** from the database container, validate its fingerprint against the above, and supply it as a trusted CA to a diagnostic performed in the VowSig application container or an isolated same-network test client. Connect using the exact `postgres.railway.internal` name, require hostname validation, inspect negotiated TLS protocol/certificate chain, and then repeat via application `psycopg` with `sslmode=verify-full` using a *non-superuser* DB role. Do not copy a private CA key or DB URL into chat/GitHub, disable TLS or expose the DB to the internet. Before the single release, provide a safe way to deploy the public CA and handle rotations/restarts. Database-container PASS is not enough to issue sessions.
 
-**Reference only:** Railway public provider documentation and discussions identify `CN=localhost` as a known property of their stock image. A `PGHOSTADDR` / `PGHOST=localhost` workaround is fragile due to private IP rotation; treat as an experiment, not the release certificate identity design.
+**Recovery gate unchanged:** independent encrypted offsite backups, retention and actual separate cold restore before real accounts; no SQL migrations or customer data on the new Railway database until recoverability and role policy are reviewed.
 
 ## 3. Independent low-cost recovery
 

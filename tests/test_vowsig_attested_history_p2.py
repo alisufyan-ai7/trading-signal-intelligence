@@ -117,7 +117,6 @@ def test_valid_signed_independent_source_and_exact_full_population():
     ("source_rights_approved", False),
     ("independent_source_reconciliation", False),
     ("source_snapshot_sha256", "wrong"),
-    ("outcome_population_sha256", "0"*64),
     ("expected_population_count", 0),
     ("expected_closed_count", 99),
     ("verified_at_utc", "2031-01-01T00:00:00Z"),
@@ -132,6 +131,18 @@ def test_reject_bad_attestation_even_when_signature_is_valid(change):
         verify_signed_history_attestation(
             signed(private, manifest), reviewer_public_key_pem=pub,
         )
+
+
+def test_valid_reviewer_signature_wrong_population_digest_fails_on_reconciliation():
+    facts=sample_facts()
+    private,pub=signer()
+    manifest=sample_attestation(facts)
+    manifest["outcome_population_sha256"]="0"*64
+    body=verify_signed_history_attestation(
+        signed(private,manifest),reviewer_public_key_pem=pub,
+    )
+    with pytest.raises(HistoryAttestationError, match="digest mismatch"):
+        reconcile_attested_history(body,snapshot=snapshot(),facts=facts)
 
 
 def test_unsigned_modified_or_wrong_reviewer_document_rejected():

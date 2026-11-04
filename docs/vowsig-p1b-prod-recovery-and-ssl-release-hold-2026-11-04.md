@@ -2,6 +2,9 @@
 
 **Owner directive:** Continue the next safety checks; Auth0 must remain on Free ($0). Do not imply that a CI database restoration is a production backup. Strict isolation: this chat and `alisufyan-ai7/trading-signal-intelligence` are the work record. Keep consolidated PR #93 in DRAFT; do not merge, deploy the VowSig app, enable account flags, or touch trading runtime until a separately accepted exact release.
 
+## Owner amendment: single full customer + owner + history launch
+
+**2026-11-04: superseding release scope.** The owner rejected a limited-signup first release. The one production launch MUST include free customer identity, full functional owner/admin dashboard with independent free-to-operate MFA, and independently source-reconciled historical analytics. The former suggestion to launch owner/admin or history later is withdrawn. Internal isolated tests/infrastructure rehearsal remain allowed, but no public signup or admin/history activation until all gates pass together.
 ## 1. Current live status and pending Railway change
 
 Read-only inventory 2026-11-04:
@@ -46,13 +49,11 @@ PR adds `scripts/vowsig_accounts_ci_pg18_recovery.py` and a step in `.github/wor
 - Resend `mail.vowsig.com` provider DNS verified, Auth0 test email delivered. This confirms delivery, not real customer verification / authorization-code flow into VowSig.
 - Actual Auth0 discovery/JWKS public endpoints, Auth0 login/user confirmation, session rotation, bad-callback denial and logout should be exercised from a **nonproduction test origin** after TLS, DB roles and recovery.
 
-## 5. Go/no-go by release scope
+## 5. One production go/no-go (no phased release)
 
-**Limited free customer signup beta** can go only after TLS identity proof, restricted DB credentials and account schema migration/audit, independent scheduled encrypted backups with real restore, Auth0 end-to-end verified email/session tests, real app/UI/CSRF/rate-limit smoke tests, and one controlled canary with documented rollback. Operator should approve the exact tested PR HEAD and staging-to-production plan. No payment collection or broker execution.
+The one joint release cannot proceed until: strict authenticated PostgreSQL identity on private DNS, minimal DB roles and migrations, real encrypted offsite cold restore, Auth0 and Resend user flows, owner/admin MFA and secure bootstrap, complete operations/growth/performance paths, independently authorized immutable-source historical reconciliation, adverse-outcome UI/permissions, staging/rollback and exact-SHA owner signoff. Fully unverified cohorts remain explicitly unavailable; never misrepresent partial history as complete. Paid/signal expansion/trading execution remain prohibited.
 
-**Owner/admin dashboard** additionally requires free-to-operate, security-reviewed step-up MFA and real owner role bootstrap, plus analytics provenance and private admin privacy controls. **Full-history performance** additionally requires independently reconciled immutable history, source pins and reporting accuracy signoff; quarantined replay is not completeness proof. These may launch *after* the limited free signup beta.
-
-**Date/time:** A release calendar can be set only after actual TLS/recovery/identity checks pass. No production completion date is certified or promised from CI alone.
+**No release calendar is yet proven.** The owner wants all features in one launch; treat remaining verification work as parallel implementation tracks and do not promise a second release. No production merge or staged Railway variable acceptance before the exact final review.
 
 ## 6. External choices still open
 

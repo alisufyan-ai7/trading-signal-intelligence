@@ -2,6 +2,25 @@
 
 **2026-11-04. Owner direction:** Complete all owner-independent work before requesting infrastructure/production decisions. Use one draft PR (#93) and few coordinated production deployments. Keep project evidence in this repository; do not depend on other conversations/repositories. This plan documents deliverables honestly, not a blanket release approval.
 
+## Binding scope amendment — ONE production launch (owner decision 2026-11-04)
+
+The owner explicitly requires a SINGLE coordinated VowSig production release. Do not defer the full owner/admin dashboard or independently source-verified historical analytics to a second launch. Earlier language proposing a limited signup beta and later owner/history releases is superseded. Internal CI, isolated staging, TLS probes, source audits and dress rehearsals may occur separately; they do not constitute customer-facing releases.
+
+**Required scope at the one launch:** Auth0 Free $0 verified customer signup/session/consent; Resend transactional email; Signal Center and nine-market directory (per-signal exposure still only for permitted XAUUSD/USTEC/US30 unless separately approved); fully functional authorized owner/admin operations, growth and Performance Lab; independently reconciled immutable-source historical results with costs, adverse outcomes and completeness reports; read-only operational controls. No paid Auth0 features, premium MFA, broker execution, trading alerts, payments or invented performance claims.
+
+**Admin is not complete today:** the /api/v2/admin/performance route deliberately returns performance=null and verified_full_history=false; /admin/operations is snapshot-limited; owner require_owner rejects sessions without a fresh MFA proof. Implement an independently tested and free-to-operate owner step-up MFA mechanism, secure owner bootstrap/recovery, admin audit and full read-model integration before the one release. Do not bypass the fresh-MFA guard.
+
+**Historical analytics are not complete today:** a hashed sanitized bundle in quarantine is NOT independently verified source history. Obtain authorized read-only source-ledger manifests, complete exact event/count coverage, immutable hashes and after-cost normalized R, independent replay/reconciliation and owner provenance acceptance before promoting any cohort. Missing or inconsistent cohorts must fail closed. The capped public snapshot is not a legitimate substitute.
+
+**Railway/TLS and recovery are release-blocking:** verify a private-hostname SAN and trusted CA with sslmode=verify-full from the application network; least-privilege DB identity and reversible migrations; encrypted automated offsite backups and an actual separate cold restore. The stock Railway postgres-ssl:18 template was observed logging CN=localhost, which does not establish private DNS identity. No downgrade to require, verify-ca or disable without a separately approved design.
+
+**Controlled release:** Final exact-SHA green CI + independent source verification + free owner MFA + actual Auth0 login testing + Railway TLS and recoverability + staged/rollback UAT are all PASS before one merge/deploy/feature enablement. Preserve the existing unrelated staged Railway VOWSIG_ACCOUNTS_APP_ORIGIN variable until explicitly reconciled. The live site and trading runtime stay unchanged until the single coordinated cutover.
+
+**What owner can do immediately:** In Railway > production > Postgres > Console, inspect the server's PUBLIC certificate subject/issuer/SAN/dates/fingerprint and report only the non-secret metadata. Never share database passwords, connection strings, CA private keys or client secrets. The actual Postgres private hostname and public root CA certificate must be validated later from an independent application-network probe.
+
+**Timing:** No certified production date until actual TLS/backup/source-ledger evidence is available. No second release is planned and no safety gates may be silently weakened to force the date.
+
+---
 ## Scope and order
 
 | Priority | Workstream | Implementation status in consolidated PR #93 | Independent work remaining | Owner/infrastructure gate at end |

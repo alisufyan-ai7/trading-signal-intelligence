@@ -1,0 +1,44 @@
+name: VowSig accounts foundation isolated review
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/vowsig-accounts-review.yml'
+      - 'src/trading_signal_intelligence/product/accounts/**'
+      - 'src/trading_signal_intelligence/product/cloud_app.py'
+      - 'tests/test_vowsig_accounts_foundation_p1a.py'
+      - 'sql/accounts/**'
+      - 'pyproject.toml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vowsig-accounts-p1a-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  accounts-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout untrusted review tree without credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install only reviewed application and test extras
+        run: python -m pip install -e ".[app,accounts,dev]"
+      - name: Compile account and cloud API sources
+        run: python -m compileall -q src/trading_signal_intelligence/product/accounts src/trading_signal_intelligence/product/cloud_app.py
+      - name: Targeted account policy and public contract regression
+        run: |
+          python -m pytest -q \
+            tests/test_vowsig_accounts_foundation_p1a.py \
+            tests/test_cloud_snapshot_durability.py \
+            tests/test_product_ai_insights.py \
+            tests/test_cloud_ai_runtime_validation.py \
+            tests/test_vowsig_multilineage_public_observability.py

@@ -1,5 +1,7 @@
 # VowSig P1B recovery and Railway release gates — 2026-11-04
 
+> **OWNER-APPROVED SUPERSEDING RELEASE POLICY (2026-11-04):** Full-feature public production go-live is approved **in principle without the new Railway Postgres automated offsite backups already complete**, with recovery implementation the **first activity immediately after launch**. This consciously creates temporary irreversible customer-data loss exposure; do not imply data is recoverable. No feature-disabled deployment. All other safety/functional/source-accuracy gates and exact-SHA owner deployment approval remain. **See** `docs/vowsig-one-release-backup-last-feature-first-2026-11-04.md` (binding D-01 to D-06). Statements below that call database backups a pre-launch hard gate are superseded; they remain requirements for post-launch completion. This does not authorize a merge or live deployment yet.
+
 **Owner directive:** Continue the next safety checks; Auth0 must remain on Free ($0). Do not imply that a CI database restoration is a production backup. Strict isolation: this chat and `alisufyan-ai7/trading-signal-intelligence` are the work record. Keep consolidated PR #93 in DRAFT; do not merge, deploy the VowSig app, enable account flags, or touch trading runtime until a separately accepted exact release.
 
 ## Owner amendment: single full customer + owner + history launch

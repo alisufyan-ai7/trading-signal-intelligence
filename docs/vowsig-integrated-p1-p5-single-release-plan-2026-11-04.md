@@ -1,5 +1,7 @@
 # VowSig integrated customer-product execution plan — P1 through P5
 
+> **OWNER-APPROVED SUPERSEDING RELEASE POLICY (2026-11-04):** Full-feature public production go-live is approved **in principle without the new Railway Postgres automated offsite backups already complete**, with recovery implementation the **first activity immediately after launch**. This consciously creates temporary irreversible customer-data loss exposure; do not imply data is recoverable. No feature-disabled deployment. All other safety/functional/source-accuracy gates and exact-SHA owner deployment approval remain. **See** `docs/vowsig-one-release-backup-last-feature-first-2026-11-04.md` (binding D-01 to D-06). Statements below that call database backups a pre-launch hard gate are superseded; they remain requirements for post-launch completion. This does not authorize a merge or live deployment yet.
+
 **2026-11-04. Owner direction:** Complete all owner-independent work before requesting infrastructure/production decisions. Use one draft PR (#93) and few coordinated production deployments. Keep project evidence in this repository; do not depend on other conversations/repositories. This plan documents deliverables honestly, not a blanket release approval.
 
 ## Binding scope amendment — ONE production launch (owner decision 2026-11-04)

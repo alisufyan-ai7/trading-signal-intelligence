@@ -82,7 +82,7 @@ def mock_provider():
         claims={
             "iss":CONFIG.issuer, "sub":"provider-opaque-001",
             "aud":CONFIG.client_id, "iat":now-20, "exp":now+300,
-            "auth_time":now-30, "nonce":"nonce-from-server-state",
+            "auth_time":now-30, "nonce":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
             "email":"person@example.test","email_verified":True,
         }
         claims.update(overrides)
@@ -99,7 +99,7 @@ def verify(state):
     return provider.verify_callback(
         authorization_code="one-use-test-code",
         code_verifier=base64.urlsafe_b64encode(bytes(range(32))).decode().rstrip("="),
-        expected_nonce="nonce-from-server-state",
+        expected_nonce="nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
     )
 
 

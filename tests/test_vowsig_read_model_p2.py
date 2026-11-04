@@ -80,3 +80,55 @@ def test_commercial_crypto_population_cannot_turn_into_customer_signal_release()
     b=load(m)
     assert b.source_program_id=="crypto-expansion-1"
     assert b.customer_signal_publication_permitted is False
+
+
+@pytest.mark.parametrize("state", ["NaN","Infinity","-Infinity"])
+def test_nonfinite_json_literals_rejected_even_when_bytes_are_hash_pinned(state):
+    valid=json.dumps(manifest(),sort_keys=True)
+    forged=valid.replace("-1.0",state)
+    raw=forged.encode()
+    with pytest.raises(ReadModelValidationError):
+        check_sanitized_bundle(
+            raw,pinned_artifact_sha256=hashlib.sha256(raw).hexdigest(),
+            expected_source_records=1,pinned_source_head_hash=SOURCE,
+        )
+
+
+def test_duplicate_json_keys_rejected_even_when_digest_matches():
+    s=json.dumps(manifest(),sort_keys=True)
+    duplicate=s.replace('"schema_version": 1,','"schema_version": 1, "schema_version": 99,')
+    raw=duplicate.encode()
+    with pytest.raises(ReadModelValidationError,match="Invalid JSON"):
+        check_sanitized_bundle(
+            raw,pinned_artifact_sha256=hashlib.sha256(raw).hexdigest(),
+            expected_source_records=1,pinned_source_head_hash=SOURCE,
+        )
+
+
+@pytest.mark.parametrize("case", [
+    {"combined_net_r":None},
+    {"combined_net_r":True},
+    {"combined_net_r":"1.0"},
+    {"after_costs_verified":False},
+    {"exit_at_utc":None},
+    {"cost_model_version":None},
+])
+def test_closed_facts_require_exact_utc_after_cost_combined_r(case):
+    m=manifest()
+    m["records"][0].update(case)
+    with pytest.raises(ReadModelValidationError):
+        load(m)
+
+
+def test_nonclosed_records_must_have_no_realized_net_r():
+    m=manifest()
+    m["records"][0]["state"]="open"
+    with pytest.raises(ReadModelValidationError):
+        load(m)
+    m["records"][0].update({
+        "combined_net_r":None,"exit_at_utc":None,
+        "after_costs_verified":False,"cost_model_version":None,
+    })
+    out=load(m)
+    assert out.record_count==1
+    assert out.source_ledger_independently_reconciled is False

@@ -257,3 +257,60 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     assert all(store.take_auth_budget(peer) for _ in range(30))
     assert store.take_auth_budget(peer) is False
     assert store.take_auth_budget("4"*64) is True
+
+
+    # P2 quarantine-only deterministic replay; no public signal release.
+    import json
+    from trading_signal_intelligence.product.accounts.read_model_replay import (
+        replay_quarantined_bundle, ProjectionReplayError,
+    )
+    from trading_signal_intelligence.product.accounts.read_model import (
+        ReadModelValidationError,
+    )
+    sample={
+        "schema_version":1,"source_program_id":"core-ai-shadow",
+        "model_version":"AI-v1.1","cohort":"forward-shadow",
+        "source_head_hash":"f"*64,
+        "records":[{
+            "entity_id":"replay-unique-001",
+            "source_record_sha256":"e"*64,
+            "state":"closed",
+            "combined_net_r":-1.25,"after_costs_verified":True,
+            "cost_model_version":"costs-v1",
+            "exit_at_utc":"2026-11-03T09:00:00Z",
+            "program_id":"core-ai-shadow","model_version":"AI-v1.1",
+            "cohort":"forward-shadow",
+        }],
+    }
+    raw=json.dumps(sample,sort_keys=True,separators=(",",":")).encode()
+    pins={
+        "pinned_artifact_sha256":hashlib.sha256(raw).hexdigest(),
+        "pinned_source_head_hash":"f"*64,
+        "expected_source_records":1,
+        "observed_at_utc":"2026-11-04T10:00:00Z",
+    }
+    with psycopg.connect(dsn,autocommit=True,row_factory=dict_row) as db:
+        first=replay_quarantined_bundle(db,raw,**pins)
+        second=replay_quarantined_bundle(db,raw,**pins)
+        assert first["source_snapshot_id"]==second["source_snapshot_id"]
+        assert not first["idempotent_replay"] and second["idempotent_replay"]
+        assert first["status"]=="quarantined"
+        assert first["source_ledger_independently_reconciled"] is False
+        assert first["customer_signal_publication_permitted"] is False
+        db_row=db.execute(
+            """SELECT ingest_status,completeness_verified
+               FROM vowsig_research_source_snapshots WHERE id=%s""",
+            (first["source_snapshot_id"],),
+        ).fetchone()
+        assert db_row["ingest_status"]=="quarantined"
+        assert db_row["completeness_verified"] is False
+
+        with pytest.raises(ReadModelValidationError):
+            replay_quarantined_bundle(db,raw,**{**pins,"expected_source_records":2})
+        # Same-count tampering must also fail rather than silently overwrite.
+        db.execute(
+            """UPDATE vowsig_research_outcome_facts SET combined_net_r=-9.9
+               WHERE source_snapshot_id=%s""",(first["source_snapshot_id"],),
+        )
+        with pytest.raises(ProjectionReplayError):
+            replay_quarantined_bundle(db,raw,**pins)

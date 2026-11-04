@@ -11,6 +11,7 @@ on:
       - 'tests/test_vowsig_performance_p2.py'
       - 'tests/test_vowsig_read_model_p2.py'
       - 'tests/test_vowsig_oidc_p1b.py'
+      - 'tests/test_vowsig_member_browser_p3.py'
       - 'web/member/**'
       - 'sql/accounts/**'
       - 'pyproject.toml'
@@ -74,3 +75,22 @@ jobs:
           VOWSIG_EPHEMERAL_PG_TEST_CONFIRM: YES_THROWAWAY_DATABASE
           VOWSIG_EPHEMERAL_PG_TEST_DSN: postgresql://vowsig_test:local-ci-only-test-password@127.0.0.1:5432/vowsig_test?sslmode=disable
         run: python -m pytest -q tests/test_vowsig_accounts_postgres_p1b.py
+
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout reviewed tree without credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install isolated browser QA dependencies
+        run: |
+          python -m pip install -e ".[app,accounts,dev]" "playwright>=1.56,<2"
+          python -m playwright install --with-deps chromium
+      - name: Test customer desktop/mobile and XSS/permissions UX
+        run: python -m pytest -q tests/test_vowsig_member_browser_p3.py

@@ -138,7 +138,18 @@
         "A model decision is not automatically a published signal."}));
   }
   async function ensureFeed() {
-    if (!state.feed) state.feed = await request("/api/v2/me/history");
+    if (!state.feed) {
+      const incoming = await request("/api/v2/me/history");
+      const core = new Set(["XAUUSD", "USTEC", "US30"]);
+      // Defense in depth only: the v2 server must also enforce this permission.
+      state.feed = {
+        ...incoming,
+        signals: Array.isArray(incoming.signals) ?
+          incoming.signals.filter(s => s && core.has(s.source_symbol)) : [],
+        decisions: Array.isArray(incoming.decisions) ?
+          incoming.decisions.filter(d => d && core.has(d.source_symbol)) : [],
+      };
+    }
     return state.feed;
   }
   function showDashboard() {

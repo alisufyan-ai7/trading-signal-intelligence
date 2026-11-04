@@ -179,7 +179,11 @@ def ui(browser):
 
 def open_page(page, path):
     page.goto(HOST+path,wait_until="load")
-    page.locator("#app-content .panel").first.wait_for(timeout=10000)
+    page.locator("#app-content .panel, #app-error:not([hidden])").first.wait_for(timeout=5000)
+    if page.locator("#app-content .panel").count()==0:
+        pytest.fail("Member browser render failed: " +
+            page.locator("#app-error").inner_text() + " | " +
+            page.locator("#app-content").inner_text())
 
 
 def test_signal_center_renders_losses_no_trade_and_no_xss(ui):

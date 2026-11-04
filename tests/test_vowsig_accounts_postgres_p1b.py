@@ -247,7 +247,9 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     with psycopg.connect(dsn,autocommit=True) as db:
         # Mutation is confined to this throwaway CI DB.
         db.execute(
-            "UPDATE vowsig_oidc_authorizations SET expires_at=now()-interval '1 second' "
+            "UPDATE vowsig_oidc_authorizations "
+            "SET created_at=now()-interval '20 minutes', "
+            "expires_at=now()-interval '11 minutes' "
             "WHERE state_sha256=%s",("a"*64,),
         )
     assert store.consume_oidc("a"*64,browser_hash) is None

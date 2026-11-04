@@ -344,7 +344,7 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     priv=rsa.generate_private_key(public_exponent=65537,key_size=2048)
     pub=json.loads(jwt.algorithms.RSAAlgorithm.to_jwk(priv.public_key()))
     pub.update({"kid":"integration-test-key","alg":"RS256","use":"sig"})
-    exchange_context={"nonce":None, "verifier":None, "subject":"customer-one",
+    exchange_context={"nonce":None, "code_verifier":None, "subject":"customer-one",
                       "email":"new-synthetic-user@example.test"}
     def mocked_provider(req: httpx.Request):
         assert str(req.url) in (oidc_settings.token_endpoint,oidc_settings.jwks_uri)
@@ -354,7 +354,7 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
         form=parse_qs(req.content.decode())
         assert form["code"]==["synthetic-valid-code"]
         assert form["redirect_uri"]==[oidc_settings.redirect_uri]
-        assert form["code_verifier"]==[exchange_context["verifier"]]
+        assert form["code_verifier"]==[exchange_context["code_verifier"]]
         now_s=int(time.time())
         claims={
             "iss":oidc_settings.issuer,"sub":exchange_context["subject"],

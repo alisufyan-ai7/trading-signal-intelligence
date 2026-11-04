@@ -68,7 +68,6 @@ class IdentityProviderConfig:
             or parsed.password is not None
             or parsed.query
             or parsed.fragment
-            or self.issuer.endswith("/")
             or not isinstance(self.client_id, str)
             or not self.client_id.strip()
         ):
@@ -111,6 +110,8 @@ def validate_verified_claims(
         not isinstance(claims.email, str)
         or len(claims.email) > 254
         or claims.email.count("@") != 1
+        or not claims.email.split("@", 1)[0]
+        or not claims.email.split("@", 1)[1]
         or any(c.isspace() or ord(c) < 32 for c in claims.email)
     ):
         raise IdentityContractError("Verified usable email required")

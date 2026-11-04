@@ -81,6 +81,8 @@ def test_email_address_change_does_not_change_bound_identity_key():
     {"email": ""},
     {"email": "not-an-email"},
     {"email": "two@@example.test"},
+    {"email": "@example.test"},
+    {"email": "person@"},
     {"subject": ""},
     {"subject": " "},
     {"subject": "\nsub"},
@@ -101,7 +103,6 @@ def test_untrusted_or_stale_claims_fail_closed(changes):
 
 @pytest.mark.parametrize("issuer", [
     "http://identity.example.test",
-    "https://identity.example.test/",
     "https://user:pass@identity.example.test",
     "https://identity.example.test?redirect=x",
     "https://identity.example.test#part",
@@ -137,3 +138,17 @@ def test_paid_tier_not_part_of_oidc_subject_proof():
     assert not hasattr(claim, "role")
     assert not hasattr(claim, "access_tier")
     assert check(claim) == (CFG.issuer, claim.subject)
+
+
+def test_issuer_trailing_slash_is_valid_only_when_exactly_configured():
+    # Some compliant OIDC providers publish a trailing-slash issuer.
+    config = IdentityProviderConfig(
+        issuer="https://identity.example.test/oidc/",
+        client_id=CFG.client_id,
+    )
+    claims = replace(valid_claims(), issuer=config.issuer)
+    assert validate_verified_claims(
+        claims, config, expected_nonce=claims.nonce, now=NOW
+    ) == (config.issuer, claims.subject)
+    with pytest.raises(IdentityContractError):
+        check(claims, config=CFG)

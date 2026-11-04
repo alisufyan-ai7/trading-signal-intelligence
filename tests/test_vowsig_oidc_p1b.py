@@ -241,3 +241,30 @@ def test_login_throttle_fails_before_creating_transaction(auth_client):
     store.budget=False
     result=client.get("/auth/start",follow_redirects=False)
     assert result.status_code==429 and store.states=={}
+
+
+def test_owner_auth0_public_config_exact_boundaries():
+    """Public tenant configuration only; no Auth0 HTTP call or client secret."""
+    domain = "dev-b1aqc523agud2k4p.us.auth0.com"
+    config = OidcSettings(
+        issuer=f"https://{domain}/",
+        client_id="FMhkJa8azUSjflmNBTDb3keWNCUv6b3w",
+        authorization_endpoint=f"https://{domain}/authorize",
+        token_endpoint=f"https://{domain}/oauth/token",
+        jwks_uri=f"https://{domain}/.well-known/jwks.json",
+        app_origin="https://vowsig.com",
+    )
+    assert config.redirect_uri == "https://vowsig.com/auth/callback"
+    auth = begin_authorization(config)
+    parsed = urlsplit(auth.authorization_url)
+    assert (parsed.scheme, parsed.hostname, parsed.path) == ("https", domain, "/authorize")
+    params = parse_qs(parsed.query)
+    assert params["client_id"] == ["FMhkJa8azUSjflmNBTDb3keWNCUv6b3w"]
+    assert params["redirect_uri"] == [config.redirect_uri]
+    assert params["response_type"] == ["code"]
+    assert params["code_challenge_method"] == ["S256"]
+    assert params["scope"] == ["openid email"]
+    assert "client_secret" not in params
+    assert "access_token" not in params
+    assert len(params["state"][0]) == 43
+    assert len(params["nonce"][0]) == 43

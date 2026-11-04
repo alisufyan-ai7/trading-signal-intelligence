@@ -6,7 +6,7 @@ on:
       - '.github/workflows/vowsig-accounts-review.yml'
       - 'src/trading_signal_intelligence/product/accounts/**'
       - 'src/trading_signal_intelligence/product/cloud_app.py'
-      - 'tests/test_vowsig_accounts_foundation_p1a.py'
+      - 'tests/test_vowsig_accounts_*.py'
       - 'sql/accounts/**'
       - 'pyproject.toml'
 
@@ -21,6 +21,20 @@ jobs:
   accounts-contracts:
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: vowsig_test
+          POSTGRES_PASSWORD: local-ci-only-test-password
+          POSTGRES_DB: vowsig_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vowsig_test -d vowsig_test"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 10
     steps:
       - name: Checkout untrusted review tree without credentials
         uses: actions/checkout@v4
@@ -38,7 +52,13 @@ jobs:
         run: |
           python -m pytest -q \
             tests/test_vowsig_accounts_foundation_p1a.py \
+            tests/test_vowsig_accounts_identity_p1b.py \
             tests/test_cloud_snapshot_durability.py \
             tests/test_product_ai_insights.py \
             tests/test_cloud_ai_runtime_validation.py \
             tests/test_vowsig_multilineage_public_observability.py
+      - name: Ephemeral loopback PostgreSQL schema and account-isolation proof
+        env:
+          VOWSIG_EPHEMERAL_PG_TEST_CONFIRM: YES_THROWAWAY_DATABASE
+          VOWSIG_EPHEMERAL_PG_TEST_DSN: postgresql://vowsig_test:local-ci-only-test-password@127.0.0.1:5432/vowsig_test?sslmode=disable
+        run: python -m pytest -q tests/test_vowsig_accounts_postgres_p1b.py

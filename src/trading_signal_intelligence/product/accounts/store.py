@@ -49,6 +49,27 @@ class PostgresAccountStore:
             ).fetchone()
         return Identity(**record) if record else None
 
+    def find_bound_account(self, issuer: str, subject: str) -> str | None:
+        """Exact OIDC issuer+subject lookup only, never automatic email linking.
+
+        This method is NOT a callback verifier. The caller must first use the
+        trusted identity adapter and validate_verified_claims to establish the
+        cryptographically verified identity.
+        """
+        with self._connect() as conn:
+            row = conn.execute(
+                """SELECT a.id::text AS account_id
+                   FROM vowsig_account_identities i
+                   JOIN vowsig_accounts a ON a.id = i.account_id
+                   JOIN vowsig_account_entitlements e ON e.account_id = a.id
+                   WHERE i.issuer = %s AND i.subject = %s
+                     AND a.email_verified_at IS NOT NULL
+                     AND a.disabled_at IS NULL
+                     AND e.status = 'active'""",
+                (issuer, subject),
+            ).fetchone()
+        return row["account_id"] if row else None
+
     def watchlist(self, account_id: str) -> list[str]:
         with self._connect() as conn:
             records = conn.execute(

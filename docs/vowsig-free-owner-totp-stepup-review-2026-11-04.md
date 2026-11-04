@@ -6,7 +6,7 @@
 
 Candidate files:
 - \`src/trading_signal_intelligence/product/accounts/owner_mfa.py\` — RFC6238 TOTP (SHA1/30-second/six-digit; ±1 time step), 160-bit random secret generator for an *offline* operator, AES-256-GCM encryption bound to the exact account UUID, 256-bit URL-safe master-key validation, monotonic counter replay protection.
-- \`sql/accounts/008_owner_mfa_stepup.sql\` — encrypted owner factor stored per owner account, accepted step/retries/lockout state. Apply migrations 001–006, then **008**, and **007 grants last**. Table must be owned by restricted migrator in \`vowsig\` schema.
+- \`sql/accounts/008_owner_mfa_stepup.sql\` — encrypted owner factor stored per owner account, accepted step/retries/lockout state. Apply migrations **001–008 in numeric order**. The 008 migration grants only owner-MFA challenge-state updates to the app and SELECT access to the backup role when installed in the approved migrator-owned schema. Table must be owned by restricted migrator in \`vowsig\` schema.
 - \`PostgresAccountStore.verify_owner_totp\` — performs cross-worker atomic row locking on credential+session, only for still-active verified owner accounts/sessions, checks encrypted factor, records per-account failed attempts with five-try/fifteen-minute lockout, rejects reuse of the same 30s counter, updates *that* session's \`mfa_verified_at\` only after success. The existing \`require_owner\` enforces the 15-minute freshness window for all admin endpoints.
 - \`POST /api/v2/me/owner-mfa/verify\` — verified session, owner role, exact HTTPS Origin, CSRF, strict JSON payload. No public enrollment endpoint; no owner role promotion; no bypass on missing/invalid key. Responds no-store.
 - The owner member settings screen provides a six-digit authenticator-code verification form and link to \`/admin/\`. Browser cannot retrieve enrollment secrets, migration credentials or the AES key.
@@ -24,3 +24,7 @@ This PR is *not* evidence of operational enrollment/recovery, nor permission to 
 ## Exact rollout boundary
 
 Do NOT merge draft PR #93 or change the live Railway database/app as an effect of this review. Only the owner can authorize the final exact tested SHA. Production site, broker execution (off), Auth0 Free plan and separately staged Railway variable patch remain unchanged.
+
+## Session rotation security correction
+
+A successful TOTP response atomically replaces the original session token SHA-256 with a new unpredictable 32-byte token and sets `mfa_verified_at`. The backend returns the replacement in a `Secure; HttpOnly; SameSite=Lax; Path=/` `__Host-` cookie; the old token cannot fetch a session or enter admin. The member settings UI refreshes `/api/v2/me` to obtain the new session-specific CSRF value. The production owner still needs an independently tested offline bootstrap and recovery procedure.

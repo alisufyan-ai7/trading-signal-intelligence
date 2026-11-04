@@ -1,7 +1,8 @@
 -- P1B-2 least privilege access policy. Apply ONLY AFTER:
 -- * PostgreSQL roles vowsig_app, vowsig_migrator, vowsig_backup exist;
 -- * schema vowsig is owned by vowsig_migrator;
--- * migrations 001-006 and 008 ran as vowsig_migrator with search_path vowsig,pg_catalog.
+-- * migrations 001-006 ran as vowsig_migrator with search_path vowsig,pg_catalog.
+-- * migration 008 applies its OWN grants for the later-created MFA table.
 -- This file never creates production roles or touches public tables.
 -- Runtime and backup permissions intentionally exclude every research write.
 -- Must be executed as vowsig_migrator within the vowsig schema.
@@ -58,10 +59,7 @@ GRANT INSERT, DELETE ON TABLE
   vowsig.vowsig_oidc_authorizations
 TO vowsig_app;
 
--- The application cannot insert/delete/rotate the offline MFA factor.
--- No UPDATE of secret_ciphertext or key_version is ever granted.
-GRANT UPDATE (last_accepted_step, failed_attempts, locked_until)
-  ON TABLE vowsig.vowsig_owner_totp_credentials TO vowsig_app;
+-- Owner MFA table is created LATER in migration 008 with explicit grants.
 
 -- NO runtime INSERT/UPDATE/DELETE on:
 -- vowsig_research_source_snapshots, vowsig_research_outcome_facts.

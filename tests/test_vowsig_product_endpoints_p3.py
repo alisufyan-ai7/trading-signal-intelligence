@@ -62,19 +62,21 @@ def snapshot():
 class Store:
     def __init__(self):
         self.owner = False
+        self.owner_mfa_active = False
+        self.active_hash = HASH
         self.revoked=False
         self.watch=["EURUSD"]
         self.saved={}
         self.prefs={"timezone":"UTC","educational_level":"beginner",
                     "research_updates_opt_in":False}
     def find_session(self,h):
-        if h != HASH or self.revoked:return None
+        if h != self.active_hash or self.revoked:return None
         return Identity(
             account_id="aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa",
             role="owner" if self.owner else "member",
             access_tier="research_free",
             email_verified_at=NOW, expires_at=NOW+timedelta(hours=1),
-            revoked_at=None,disabled_at=None,mfa_verified_at=NOW if self.owner else None,
+            revoked_at=None,disabled_at=None,mfa_verified_at=NOW if self.owner and self.owner_mfa_active else None,
         )
     def watchlist(self,account_id):return list(self.watch)
     def save_market(self,account_id,symbol):
@@ -145,11 +147,14 @@ class Store:
         )
         if not master_key_b64:
             raise OwnerMfaConfigurationError("Offline setup required")
-        if token_sha256!=HASH or not self.owner or code!="123456":
+        if token_sha256!=self.active_hash or not self.owner or code!="123456":
             raise OwnerMfaRejected("Synthetic challenge rejected")
-        return datetime.now(timezone.utc)
+        self.owner_mfa_active=True
+        rotated=base64.urlsafe_b64encode(bytes(reversed(range(32)))).decode().rstrip("=")
+        self.active_hash=hashlib.sha256(rotated.encode("ascii")).hexdigest()
+        return datetime.now(timezone.utc),rotated,NOW+timedelta(hours=1)
     def revoke_session(self,token_sha256,account_id):
-        if token_sha256!=HASH:return False
+        if token_sha256!=self.active_hash:return False
         self.revoked=True;return True
 
 
@@ -266,6 +271,8 @@ def test_html_not_public_and_admin_mfa_enforced(ctx):
     assert client.get("/api/v2/admin/performance").status_code==403
     assert client.get("/api/v2/admin/evidence").status_code==403
     store.owner=True
+    assert client.get("/admin/").status_code==403
+    store.owner_mfa_active=True
     admin=client.get("/admin/")
     assert admin.status_code==200
     assert "frame-ancestors 'none'" in admin.headers["content-security-policy"]
@@ -307,6 +314,18 @@ def test_owner_totp_stepup_requires_owner_session_csrf_and_provisioned_key(ctx,m
     assert ok.json()["owner_admin_route"]=="/admin/"
     assert "no-store" in ok.headers["cache-control"]
     assert "VOWSIG_OWNER_TOTP_MASTER_KEY_B64" not in ok.text
+    assert "__Host-vowsig_session=" in ok.headers["set-cookie"]
+    assert "httponly" in ok.headers["set-cookie"].lower()
+    assert "secure" in ok.headers["set-cookie"].lower()
+    new_token=ok.headers["set-cookie"].split(";",1)[0].split("=",1)[1]
+    assert new_token!=TOKEN and len(new_token)==43
+    client.cookies.clear()
+    client.cookies.set(COOKIE,TOKEN)
+    assert client.get("/api/v2/me").status_code==401
+    client.cookies.clear()
+    client.cookies.set(COOKIE,new_token)
+    assert client.get("/api/v2/me").status_code==200
+    assert client.get("/admin/").status_code==200
 
 
 def test_missing_snapshot_never_invents_entries_or_health(ctx):

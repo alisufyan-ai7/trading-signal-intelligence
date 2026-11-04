@@ -25,6 +25,13 @@ The owner explicitly requires a SINGLE coordinated VowSig production release. Do
 ---
 ## 2026-11-04 parallel engineering tracks: free owner MFA + real growth aggregates
 
+**Security review clarification:** successful owner TOTP now rotates the 32-byte session cookie token inside the database transaction, rather than merely elevating an existing potentially compromised cookie. The previous cookie and its CSRF token become invalid. Runtime owner-factor provisioning/rotation remain forbidden; exact role bootstrap and recovery still require offline approval. Normal SQL migration numeric order 001–008 is supported by granting new-table challenge-state privileges inside 008, after the 007 baseline grant policy.
+
+**Track C — independently audited source history:** added an offline read-only audit for the repository's existing AI-v1 and S02 SQLite hash chains; it requires an externally fixed record count and terminal hash, verifies all source record hashes and links without reading or writing through ledger constructors, and exposes only aggregate counts/digests. It does not verify crypto K5, after-cost completeness, source rights or all markets. The actual source files remain outside this GitHub review and must be checked under authorization. See `docs/vowsig-private-original-ledger-pin-audit-2026-11-04.md`.
+
+**CI requirement:** all three tracks must pass exact-HEAD Python, disposable PostgreSQL and Chromium checks before an approval is considered. At the time of these commits, the latest GitHub Actions review run was still **queued**; earlier green checks do not validate newer changes.
+
+
 Two technically independent implementation tracks have advanced within draft PR #93. We cannot dispatch separate autonomous coding agents directly from this conversation; the shared branch remains the only integration point and GitHub Actions runs Python/PostgreSQL and browser QA jobs concurrently.
 
 **Track A — security:** owner TOTP step-up without paid Auth0 MFA. A 160-bit offline-provisioned authenticator secret is encrypted with AES-256-GCM bound to account UUID, with a 256-bit Railway private master key, monotonic one-time counter anti-replay, PostgreSQL cross-worker row locks, five-failure/fifteen-minute lockout, exact-session MFA timestamp, CSRF/verified-account checks and existing 15-minute owner freshness guard. SQL migration 008 is applied before SQL grant policy 007. The runtime can update challenge counters only, not create/replace the encrypted owner factor. Owner role promotion, factor provisioning, recovery and independent UAT remain out-of-band release requirements; no public self-enrollment. See `docs/vowsig-free-owner-totp-stepup-review-2026-11-04.md`. Auth0 remains Free $0.

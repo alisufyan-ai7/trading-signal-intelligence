@@ -295,6 +295,10 @@
           const proof=await mutation("POST","/api/v2/me/owner-mfa/verify",{code:code.value});
           code.value="";
           if(proof.verified!==true)throw new Error("Owner verification was not confirmed.");
+          // Successful step-up rotates the HttpOnly cookie. Read the new
+          // session-bound CSRF token before permitting another mutation.
+          state.me=await request("/api/v2/me");
+          state.csrf=state.me.csrf_token;
           fail("Owner verification completed. Admin access is time-limited.");
         }catch(e){
           code.value="";

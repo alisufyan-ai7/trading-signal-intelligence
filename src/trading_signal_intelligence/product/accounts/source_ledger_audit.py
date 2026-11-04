@@ -7,6 +7,7 @@ or independently verified historical trading performance.
 """
 from __future__ import annotations
 
+from contextlib import closing
 import hashlib
 import json
 from pathlib import Path
@@ -42,7 +43,7 @@ def audit_pinned_source(
     during an audit. Never count unanchored new rows as verified history.
     """
     if (
-        profile not in _PROFILES
+        not isinstance(profile,str) or profile not in _PROFILES
         or not isinstance(expected_head_sha256, str)
         or not _HASH.fullmatch(expected_head_sha256)
         or type(expected_records) is not int
@@ -59,7 +60,7 @@ def audit_pinned_source(
     sequence = 0
     digest = hashlib.sha256()
     try:
-        with sqlite3.connect(uri, uri=True, timeout=5) as conn:
+        with closing(sqlite3.connect(uri, uri=True, timeout=5)) as conn:
             conn.row_factory = sqlite3.Row
             conn.execute("PRAGMA query_only=ON")
             conn.execute("BEGIN")

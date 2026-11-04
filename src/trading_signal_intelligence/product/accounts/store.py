@@ -200,12 +200,12 @@ class PostgresAccountStore:
     def verify_owner_totp(
         self, *, token_sha256: str, account_id: str, code: str,
         master_key_b64: str, now: datetime | None = None,
-    ) -> datetime:
+    ) -> tuple[datetime, str, datetime]:
         """Atomic, cross-worker replay-safe MFA; no online enrollment.
 
-        Return a fresh MFA timestamp only after a provisioned, encrypted
-        independent owner factor is validated. Failed attempts are persisted
-        in the database before raising to the HTTP caller.
+        Rotate the original session cookie token atomically with accepted MFA,
+        preventing theft of a pre-MFA session from inheriting the elevation.
+        Failed attempts are persisted before rejecting the HTTP request.
         """
         from trading_signal_intelligence.product.accounts.owner_mfa import (
             OwnerMfaConfigurationError, OwnerMfaRejected, decrypt_for_owner,
@@ -219,10 +219,13 @@ class PostgresAccountStore:
             raise OwnerMfaConfigurationError("MFA clock must be timezone-aware")
         current = current.astimezone(timezone.utc)
         verified = False
+        rotated_token = None
+        rotated_expires = None
         with self._connect() as conn:
             row = conn.execute(
                 """SELECT c.secret_ciphertext,c.last_accepted_step,
-                          c.failed_attempts,c.locked_until
+                          c.failed_attempts,c.locked_until,
+                          s.expires_at AS session_expires_at
                    FROM vowsig_owner_totp_credentials c
                    JOIN vowsig_accounts a ON a.id=c.account_id
                    JOIN vowsig_account_sessions s ON s.account_id=a.id
@@ -266,20 +269,28 @@ class PostgresAccountStore:
                        WHERE account_id=%s::uuid""",
                     (step, account_id),
                 )
+                import hashlib
+                import secrets
+                rotated_token = secrets.token_urlsafe(32)
+                if len(rotated_token) != 43:
+                    raise OwnerMfaConfigurationError("Invalid rotated session token")
+                new_hash = hashlib.sha256(rotated_token.encode("ascii")).hexdigest()
                 changed = conn.execute(
                     """UPDATE vowsig_account_sessions
-                       SET mfa_verified_at=%s
+                       SET token_sha256=%s, mfa_verified_at=%s
                        WHERE token_sha256=%s AND account_id=%s::uuid
                          AND revoked_at IS NULL AND expires_at>%s
-                       RETURNING token_sha256""",
-                    (current,token_sha256,account_id,current),
+                       RETURNING expires_at""",
+                    (new_hash,current,token_sha256,account_id,current),
                 ).fetchone()
                 if changed is None:
                     raise OwnerMfaRejected("Owner session expired")
+                rotated_expires = changed["expires_at"]
                 verified = True
         if not verified:
             raise OwnerMfaRejected("Owner verification rejected")
-        return current
+        assert rotated_token is not None and rotated_expires is not None
+        return current, rotated_token, rotated_expires
 
     def revoke_session(self, token_sha256: str, account_id: str) -> bool:
         with self._connect() as conn:

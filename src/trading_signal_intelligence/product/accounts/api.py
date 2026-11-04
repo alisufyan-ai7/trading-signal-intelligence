@@ -38,7 +38,7 @@ from trading_signal_intelligence.product.accounts.performance import (
     admin_snapshot_diagnostics,
 )
 from trading_signal_intelligence.product.accounts.session_lifecycle import (
-    clear_session_cookie,
+    clear_session_cookie, IssuedSession, set_secure_session_cookie,
 )
 from trading_signal_intelligence.product.accounts.owner_mfa import (
     OwnerMfaRejected, OwnerMfaConfigurationError,
@@ -191,7 +191,7 @@ def create_router(
                 or not isinstance(body["code"], str)):
             raise HTTPException(status_code=400, detail="Invalid owner verification request")
         try:
-            verified = store.verify_owner_totp(
+            verified, rotated_token, expires_at = store.verify_owner_totp(
                 account_id=user.account_id,
                 token_sha256=hashlib.sha256(token.encode("ascii")).hexdigest(),
                 code=body["code"],
@@ -205,11 +205,18 @@ def create_router(
             raise HTTPException(
                 status_code=403, detail="Owner verification rejected or temporarily locked"
             ) from exc
-        return _private({
+        response = _private({
             "verified": True,
             "verified_until_utc": (verified + timedelta(minutes=15)).isoformat(),
             "owner_admin_route": "/admin/",
         })
+        # A stolen pre-MFA cookie never inherits the verified owner privilege.
+        set_secure_session_cookie(response, IssuedSession(
+            account_id=user.account_id,
+            token=rotated_token,
+            expires_at=expires_at,
+        ))
+        return response
 
     @router.get("/me/preferences")
     def preferences(request: Request) -> JSONResponse:

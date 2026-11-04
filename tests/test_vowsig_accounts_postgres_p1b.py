@@ -128,16 +128,19 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
         )
     now=datetime.now(timezone.utc)
     code=totp_at(synthetic_secret,int(now.timestamp())//30)
-    verified=store.verify_owner_totp(
+    verified,rotated,expires=store.verify_owner_totp(
         token_sha256=token_sha,account_id=str(id_a),
         code=code,master_key_b64=base64_key,now=now,
     )
-    assert verified==now
-    elevated=store.find_session(token_sha)
+    assert verified==now and expires>now
+    rotated_sha=hashlib.sha256(rotated.encode("ascii")).hexdigest()
+    assert rotated_sha!=token_sha
+    assert store.find_session(token_sha) is None
+    elevated=store.find_session(rotated_sha)
     assert elevated.role=="owner" and elevated.mfa_verified_at is not None
     with pytest.raises(OwnerMfaRejected):
         store.verify_owner_totp(
-            token_sha256=token_sha,account_id=str(id_a),
+            token_sha256=rotated_sha,account_id=str(id_a),
             code=code,master_key_b64=base64_key,now=now,
         )
     invalid_code="000000" if code!="000000" else "999999"
@@ -178,6 +181,7 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
         )
     # Entitlement revocation invalidates the existing session access.
     assert store.find_session(token_sha) is None
+    assert store.find_session(rotated_sha) is None
     assert store.find_bound_account(issuer, "opaque-a") is None
     # Different account remains linked by its own immutable subject.
     assert store.find_bound_account(issuer, "opaque-b") == str(id_b)

@@ -19,8 +19,8 @@ MIGRATIONS = [
     "004_research_read_model_contract.sql",
     "005_consent_audit_deletion_requests.sql",
     "006_oidc_auth_transactions.sql",
-    "008_owner_mfa_stepup.sql",
     "007_restricted_roles_and_grants.sql",
+    "008_owner_mfa_stepup.sql",
 ]
 
 

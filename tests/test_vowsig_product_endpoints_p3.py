@@ -105,6 +105,27 @@ class Store:
             "notice":"Request recorded; no data erased",
         }
         return self.deletion_request
+    def admin_model_diagnostics(self):
+        return {
+            "source":"postgres_research_projection_only",
+            "model_version_history_verified":False,
+            "all_market_performance_verified":False,
+            "complete_historical_track_record_available":False,
+            "groups_truncated":False,
+            "groups":[{
+                "source_program_id":"core-ai-shadow",
+                "model_version":"AI-v1.1","cohort":"forward-shadow",
+                "projection_ingest_status":"quarantined",
+                "source_projection_count":1,"projected_outcomes":4,
+                "projected_closed":1,"projected_open":1,
+                "projected_no_trade":1,"projected_rejected":1,
+                "projected_error":0,"database_cost_flagged_closed":1,
+                "last_observed_at_utc":"2026-11-04T14:00:00Z",
+                "source_ledger_independently_audited":False,
+                "historical_return_metrics":None,
+            }],
+            "notice":"Projection counts, not historical returns.",
+        }
     def admin_evidence_inventory(self):
         return {
             "source": "research_projection_database",
@@ -270,6 +291,8 @@ def test_html_not_public_and_admin_mfa_enforced(ctx):
     assert client.get("/admin/").status_code==403
     assert client.get("/api/v2/admin/performance").status_code==403
     assert client.get("/api/v2/admin/evidence").status_code==403
+    assert client.get("/api/v2/admin/models").status_code==403
+    assert client.get("/api/v2/admin/market-reliability").status_code==403
     store.owner=True
     assert client.get("/admin/").status_code==403
     store.owner_mfa_active=True
@@ -288,6 +311,24 @@ def test_html_not_public_and_admin_mfa_enforced(ctx):
     assert "no-store" in evidence.headers["cache-control"]
     ops=client.get("/api/v2/admin/operations")
     assert ops.status_code==200 and ops.json()["broker_execution_enabled"] is False
+    diag=ops.json()["owner_operational_diagnostics"]
+    assert diag["vps_schedulers_independently_verified"] is False
+    assert diag["broker_execution_independently_verified"] is False
+    assert len(diag["programs"])==3
+    assert diag["snapshot_fresh"] is True
+    assert diag["programs"][0]["totals"]["valid_inferences"] is None
+    markets=client.get("/api/v2/admin/market-reliability")
+    assert markets.status_code==200
+    assert "no-store" in markets.headers["cache-control"]
+    assert markets.json()["market_count"]==9
+    assert markets.json()["all_market_performance_verified"] is False
+    assert all(x["after_costs_per_market_verified"] is False
+               for x in markets.json()["markets"])
+    models=client.get("/api/v2/admin/models")
+    assert models.status_code==200
+    assert models.json()["model_version_history_verified"] is False
+    assert models.json()["groups"][0]["historical_return_metrics"] is None
+    assert "no-store" in models.headers["cache-control"]
     growth=client.get("/api/v2/admin/growth")
     assert growth.json()["registered_accounts"] == 1
     assert growth.json()["retention_7d"] is None

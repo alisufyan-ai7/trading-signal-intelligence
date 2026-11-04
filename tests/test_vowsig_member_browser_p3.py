@@ -157,7 +157,76 @@ def ui(browser):
             result={"account_id":"mock-account","watchlist":state["watchlist"],
                     "preferences":state["preferences"]}
         elif path=="/api/v2/admin/operations":
-            result=state["operations"]
+            result={**state["operations"],
+                "owner_operational_diagnostics":{
+                    "snapshot_generated_at_utc":"2026-11-04T10:00:00Z",
+                    "snapshot_age_seconds":10800,
+                    "snapshot_fresh":False,
+                    "vps_schedulers_independently_verified":False,
+                    "publisher_last_success_independently_verified":False,
+                    "broker_execution_independently_verified":False,
+                    "programs":[{
+                        "program_id":"core-ai-shadow",
+                        "runtime_version":"AI-v1.1",
+                        "status":"snapshot_delayed",
+                        "reported_scheduler_healthy":None,
+                        "reported_ledgers_valid":None,
+                        "shadow_only_reported":True,
+                        "broker_execution_disabled_reported":True,
+                        "boundary_violation_reported":False,
+                        "totals":{
+                            "valid_inferences":3,"no_trade":2,
+                            "missed_inferences":2,"no_current_h1_tick_count":None,
+                            "processing_miss_count":None,
+                            "errors":1,"completed_shadow_trades":1,
+                        },
+                        "processing_miss_rate":None,
+                    }],
+                },
+            }
+        elif path=="/api/v2/admin/models":
+            result={
+                "source":"postgres_research_projection_only",
+                "groups_truncated":False,
+                "complete_historical_track_record_available":False,
+                "groups":[{
+                    "source_program_id":"core-ai-shadow","model_version":"AI-v1.1",
+                    "cohort":"forward-shadow","projection_ingest_status":"quarantined",
+                    "source_projection_count":1,"projected_outcomes":3,
+                    "projected_closed":1,"projected_open":1,
+                    "projected_no_trade":1,"projected_rejected":0,
+                    "projected_error":0,"database_cost_flagged_closed":1,
+                    "last_observed_at_utc":"2026-11-04T14:00:00Z",
+                    "source_ledger_independently_audited":False,
+                    "historical_return_metrics":None,
+                }],
+            }
+        elif path=="/api/v2/admin/market-reliability":
+            result={
+                "source":"public_snapshot_only",
+                "snapshot_fresh":False,
+                "market_count":9,
+                "notice":"Per-market raw missed cycles are not missed trades.",
+                "markets":[{
+                    "symbol":symbol,
+                    "program_id":("core-ai-shadow" if symbol in CORE else
+                        "market-expansion-1" if symbol in SIX[:3] else
+                        "crypto-expansion-1"),
+                    "catalog_research_status":"research_validation",
+                    "source_metrics_present":symbol=="XAUUSD",
+                    "reported_ledger_valid":True if symbol=="XAUUSD" else None,
+                    "reported_activation_anchor_match":True if symbol=="XAUUSD" else None,
+                    "reported_counts":{
+                        "valid_inferences":3 if symbol=="XAUUSD" else None,
+                        "completed_shadow_trades":1 if symbol=="XAUUSD" else None,
+                        "open_signals":0 if symbol=="XAUUSD" else None,
+                        "no_trade":2 if symbol=="XAUUSD" else None,
+                        "rejected_inferences":0 if symbol=="XAUUSD" else None,
+                        "missed_inferences":2 if symbol=="XAUUSD" else None,
+                        "errors":1 if symbol=="XAUUSD" else None,
+                    },
+                } for symbol in ALL],
+            }
         elif path=="/api/v2/admin/performance":
             result=state.get("performance",{
                 "performance":None,"verified_full_history":False,
@@ -286,6 +355,14 @@ def test_owner_analytics_do_not_imply_verified_history(ui):
     assert page.get_by_text("Growth, access security & recovery").count()==1
     assert page.get_by_text("D7 retention",exact=False).count()>=1
     assert page.get_by_text("Independent Postgres restore",exact=False).count()==1
+    assert page.get_by_text("Runtime observability & operating boundaries").count()==1
+    assert page.get_by_text("Model versions & projected lifecycle populations").count()==1
+    assert page.get_by_text("All-market reliability diagnostic").count()==1
+    assert page.get_by_text("Raw missed cycles (not trades)",exact=False).count()>=1
+    assert page.get_by_text("Source-audited returns").count()==1
+    assert page.get_by_text("No-current-tick cycles").count()==1
+    assert page.locator("#app-content").inner_text().count("Original-ledger independently audited")==9
+    assert not any("/api/internal" in path for _,path in state["http_calls"])
     assert not any("/api/internal" in path for _,path in state["http_calls"])
 
 

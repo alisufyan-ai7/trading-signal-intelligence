@@ -315,11 +315,13 @@
   }
   async function showAdmin() {
     if (state.me.role!=="owner")throw new Error("Owner-only dashboard");
-    const [ops,perf,growth,evidence]=await Promise.all([
+    const [ops,perf,growth,evidence,models,marketHealth]=await Promise.all([
       request("/api/v2/admin/operations"),
       request("/api/v2/admin/performance"),
       request("/api/v2/admin/growth"),
       request("/api/v2/admin/evidence"),
+      request("/api/v2/admin/models"),
+      request("/api/v2/admin/market-reliability"),
     ]);
     main.append(panel("Source-limited operational overview",
       compact([["Snapshot",date(ops.as_of_utc)],["Fresh",ops.snapshot_fresh?"Yes":"No"],
@@ -329,6 +331,76 @@
         compact([["Reported healthy",text(p.reported_healthy)],
           ["Valid inferences",p.valid_inferences],["Errors",p.errors],
           ["Completed shadow",p.completed_shadow_trades]]))))));
+    const runtime=ops.owner_operational_diagnostics||{};
+    const programReports=Array.isArray(runtime.programs)?runtime.programs:[];
+    main.append(panel("Runtime observability & operating boundaries",
+      msg("Snapshot observations, not a live VPS probe",
+        "Published counters can be delayed. No independent Windows scheduler, VPS ledger or broker-execution probe is available through this web session."),
+      compact([["Published snapshot",date(runtime.snapshot_generated_at_utc)],
+        ["Snapshot age (minutes)",runtime.snapshot_age_seconds==null?"Unknown":
+          Math.floor(runtime.snapshot_age_seconds/60)],
+        ["Publisher freshness",runtime.snapshot_fresh?"Within 90 minutes":"Unverified / delayed"],
+        ["VPS scheduler independently tested","No"],
+        ["Broker execution independently tested","No"],
+        ["PostgreSQL recovery verified","No"]]),
+      E("div",{class:"tiles"},...programReports.map(p=>E("article",{class:"tile"},
+        heading(p.program_id+" · "+(p.runtime_version||"Unknown model")),
+        compact([["Evidence state",p.status],
+          ["Reported scheduler health",text(p.reported_scheduler_healthy)],
+          ["Reported ledger chain",text(p.reported_ledgers_valid)],
+          ["Reported shadow mode",text(p.shadow_only_reported)],
+          ["Reported broker execution disabled",text(p.broker_execution_disabled_reported)],
+          ["Reported boundary issue",text(p.boundary_violation_reported)],
+          ["Inferences (snapshot)",p.totals.valid_inferences],
+          ["NO_TRADE decisions",p.totals.no_trade],
+          ["Raw missed cycles (not trades)",p.totals.missed_inferences],
+          ["No-current-tick cycles",p.totals.no_current_h1_tick_count],
+          ["Processing misses",p.totals.processing_miss_count],
+          ["Processing-miss rate",p.processing_miss_rate==null?"Unknown":
+            (100*p.processing_miss_rate).toFixed(2)+"%"],
+          ["Errors",p.totals.errors],
+          ["Completed shadows",p.totals.completed_shadow_trades]]))))));
+    const cohorts=Array.isArray(models.groups)?models.groups:[];
+    main.append(panel("Model versions & projected lifecycle populations",
+      msg("Version comparisons are source-status evidence only",
+        "These counts come from the isolated PostgreSQL projection, not from completed independent source-ledger audits. They are not win rates or profitability."),
+      compact([["Cohort groups listed",cohorts.length],
+        ["Result set truncated",models.groups_truncated?"Yes":"No"],
+        ["Complete historical track record","Not yet independently verified"]]),
+      cohorts.length?E("div",{class:"tiles"},...cohorts.slice(0,24).map(m=>E("article",{class:"tile"},
+        heading(m.source_program_id+" · "+m.model_version+" · "+m.cohort),
+        compact([["Projection state",m.projection_ingest_status],
+          ["Snapshots in cohort",m.source_projection_count],
+          ["Observed last",date(m.last_observed_at_utc)],
+          ["Projected outcomes",m.projected_outcomes],
+          ["Closed / open",String(m.projected_closed)+" / "+String(m.projected_open)],
+          ["No trade / rejected / error",
+            [m.projected_no_trade,m.projected_rejected,m.projected_error].join(" / ")],
+          ["Cost-flagged closed (unverified)",m.database_cost_flagged_closed],
+          ["Source-audited returns","Unavailable"]])))):
+        msg("No model cohort projections","Nothing to rank until source facts have been ingested and independently reviewed.")));
+    const watchedMarkets=Array.isArray(marketHealth.markets)?marketHealth.markets:[];
+    main.append(panel("All-market reliability diagnostic",
+      msg("Nine markets · published per-market counters only",
+        marketHealth.notice||"No market-level source validation or verified after-cost performance is available."),
+      compact([["Catalog markets",marketHealth.market_count],
+        ["Snapshot freshness",marketHealth.snapshot_fresh?"Current":"Delayed / unknown"],
+        ["Per-market no-tick breakdown","Unavailable"],
+        ["After-cost market performance","Unverified"]]),
+      E("div",{class:"tiles"},...watchedMarkets.map(m=>E("article",{class:"tile"},
+        heading(m.symbol+" · "+m.program_id),
+        compact([["Research status",m.catalog_research_status],
+          ["Market counters present",m.source_metrics_present?"Yes":"No"],
+          ["Reported ledger valid",text(m.reported_ledger_valid)],
+          ["Reported activation matched",text(m.reported_activation_anchor_match)],
+          ["Valid inferences",m.reported_counts.valid_inferences],
+          ["Closed shadows",m.reported_counts.completed_shadow_trades],
+          ["Open shadows",m.reported_counts.open_signals],
+          ["NO_TRADE",m.reported_counts.no_trade],
+          ["Rejected",m.reported_counts.rejected_inferences],
+          ["Raw missed cycles (not signals)",m.reported_counts.missed_inferences],
+          ["Errors",m.reported_counts.errors],
+          ["Original-ledger independently audited","No"]]))))));
     const cohort=perf&&perf.verified_full_cohort_history===true&&perf.performance;
     main.append(panel("Performance Lab",
       cohort ?

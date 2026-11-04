@@ -52,6 +52,12 @@ Draft PR #93 now includes an offline-only, **independently signed** first-owner 
 
 **Release scope unchanged:** one complete enabled public release; PostgreSQL S3/B2 automated backup/recovery is first post-launch work by explicit owner risk acceptance. Real original ledger reconciliation, full admin and Auth0 + SQL role integration remain distinct release gates.
 
+## 2026-11-04 owner model, market reliability and original-source cross-check milestone
+
+The P2/P3 review candidate adds owner-only runtime observation, all nine market reliability panels and PostgreSQL model/cohort lifecycle diagnostics with explicit source levels and no false historical win-rate claims. Refer to `docs/vowsig-owner-ops-model-market-source-reconciliation-2026-11-04.md` for read models, endpoints and synthetic acceptance tests. Existing source ledger hash-chain evidence and original-cost independent attestations are separate: the new read-only AI-v1/S02 ledger-to-projection cross-check proves exact event anchor membership only. Real Windows VPS immutable sources are not present in this chat/GitHub branch; full source history, crypto K5, rights and after-cost reconciliation remain P0 release blockers for historical accuracy. No UI metric may call these partial observations an independently verified performance track record.
+
+One full enabled public launch remains the binding owner requirement. The owner consciously accepts PostgreSQL offsite backups as the **first immediate post-launch activity**; no other security, customer or source-truth gate is waived. Draft PR #93 is unmerged and cannot auto-deploy.
+
 ## Scope and order
 
 | Priority | Workstream | Implementation status in consolidated PR #93 | Independent work remaining | Owner/infrastructure gate at end |

@@ -571,6 +571,73 @@ class PostgresAccountStore:
             ),
         }
 
+    def admin_model_diagnostics(self) -> dict[str, Any]:
+        """Actual database projection populations by program/version/cohort.
+
+        Stored 'verified' is a DATABASE flag, not independent original-ledger
+        approval. Never derive profitability/accuracy from these rows.
+        Cohorts lacking facts are explicitly reported as unclassified.
+        """
+        with self._connect() as conn:
+            rows=conn.execute(
+                """SELECT s.source_program_id,s.model_version,
+                          coalesce(f.cohort,'unclassified') AS cohort,
+                          s.ingest_status,
+                          count(DISTINCT s.id) AS source_projections,
+                          count(f.entity_id) AS projected_outcomes,
+                          count(f.entity_id) FILTER (WHERE f.state='closed')
+                            AS projected_closed,
+                          count(f.entity_id) FILTER (WHERE f.state='open')
+                            AS projected_open,
+                          count(f.entity_id) FILTER (WHERE f.state='no_trade')
+                            AS projected_no_trade,
+                          count(f.entity_id) FILTER (WHERE f.state='rejected')
+                            AS projected_rejected,
+                          count(f.entity_id) FILTER (WHERE f.state='error')
+                            AS projected_error,
+                          count(f.entity_id) FILTER (
+                            WHERE f.state='closed' AND f.after_costs_verified=TRUE
+                          ) AS projected_cost_flagged_closed,
+                          max(s.observed_at_utc) AS last_observed_at_utc
+                   FROM vowsig_research_source_snapshots s
+                   LEFT JOIN vowsig_research_outcome_facts f
+                     ON f.source_snapshot_id=s.id
+                   GROUP BY s.source_program_id,s.model_version,
+                            coalesce(f.cohort,'unclassified'),s.ingest_status
+                   ORDER BY max(s.observed_at_utc) DESC,
+                            s.source_program_id,s.model_version,cohort,s.ingest_status
+                   LIMIT 101"""
+            ).fetchall()
+        return {
+            "source":"postgres_research_projection_only",
+            "model_version_history_verified":False,
+            "all_market_performance_verified":False,
+            "complete_historical_track_record_available":False,
+            "groups_truncated":len(rows)>100,
+            "groups":[{
+                "source_program_id":r["source_program_id"],
+                "model_version":r["model_version"],
+                "cohort":r["cohort"],
+                "projection_ingest_status":r["ingest_status"],
+                "source_projection_count":int(r["source_projections"]),
+                "projected_outcomes":int(r["projected_outcomes"]),
+                "projected_closed":int(r["projected_closed"]),
+                "projected_open":int(r["projected_open"]),
+                "projected_no_trade":int(r["projected_no_trade"]),
+                "projected_rejected":int(r["projected_rejected"]),
+                "projected_error":int(r["projected_error"]),
+                "database_cost_flagged_closed":int(r["projected_cost_flagged_closed"]),
+                "last_observed_at_utc":r["last_observed_at_utc"].isoformat(),
+                "source_ledger_independently_audited":False,
+                "historical_return_metrics":None,
+            } for r in rows[:100]],
+            "notice":(
+                "These are exact PostgreSQL projection counts, NOT independently "
+                "verified trades, model accuracy, R returns or current VPS health. "
+                "An after-cost flag in the database is not an independent audit."
+            ),
+        }
+
     def admin_growth(self) -> dict[str, Any]:
         """Privacy-safe *observed* owner growth/security metrics from actual SQL.
 

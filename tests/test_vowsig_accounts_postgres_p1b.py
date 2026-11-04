@@ -393,6 +393,24 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     assert unsigned["performance"] is None
     assert unsigned["status"] == "awaiting_complete_source_reconciliation"
 
+    # Per-model source counts are real database observations and remain
+    # unverified even when a closed row has a true after-cost DB flag.
+    models=store.admin_model_diagnostics()
+    assert models["source"]=="postgres_research_projection_only"
+    assert models["model_version_history_verified"] is False
+    assert models["complete_historical_track_record_available"] is False
+    assert models["groups_truncated"] is False
+    named=[g for g in models["groups"] if g["cohort"]=="forward-shadow"]
+    assert len(named)==1
+    assert named[0]["source_program_id"]=="core-ai-shadow"
+    assert named[0]["projection_ingest_status"]=="quarantined"
+    assert named[0]["projected_outcomes"]==1
+    assert named[0]["projected_closed"]==1
+    assert named[0]["projected_open"]==0
+    assert named[0]["database_cost_flagged_closed"]==1
+    assert named[0]["historical_return_metrics"] is None
+    assert named[0]["source_ledger_independently_audited"] is False
+
     # Owner evidence inventory reports real SQL projection counts without
     # upgrading a quarantined synthetic bundle into verified historical P&L.
     inventory = store.admin_evidence_inventory()

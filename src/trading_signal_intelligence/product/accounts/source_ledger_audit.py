@@ -36,6 +36,7 @@ def audit_pinned_source(
     profile: str,
     expected_head_sha256: str,
     expected_records: int,
+    required_source_anchors: dict[str, tuple[str,str]] | None = None,
 ) -> dict[str, Any]:
     """Audit source in a frozen SQLite read transaction; emit counts only.
 
@@ -50,6 +51,21 @@ def audit_pinned_source(
         or not 1 <= expected_records <= _MAX_RECORDS
     ):
         raise SourceLedgerAuditError("Explicit independent ledger head and count required")
+    # Optional exact projection-to-ledger anchors. Each key is a source row
+    # record_hash, each value is the expected (entity_id, record_type).
+    # Never include those raw identities in the returned sanitized receipt.
+    required = required_source_anchors if required_source_anchors is not None else {}
+    if (not isinstance(required,dict) or len(required)>250_000
+            or any(
+                not isinstance(k,str) or not _HASH.fullmatch(k)
+                or not isinstance(v,tuple) or len(v)!=2
+                or not isinstance(v[0],str) or not v[0] or len(v[0])>128
+                or v[1] not in ("SIGNAL","EXIT","NO_TRADE","REJECTED_INFERENCE","ERROR")
+                for k,v in required.items()
+            )):
+        raise SourceLedgerAuditError("Invalid source projection anchor requirements")
+    matched: set[str] = set()
+    exited_entities: set[str] = set()
     file = Path(path)
     if file.is_symlink() or not file.is_file():
         raise SourceLedgerAuditError("Source must be an existing non-symlink SQLite file")
@@ -102,6 +118,13 @@ def audit_pinned_source(
                 if not isinstance(kind, str) or not kind or len(kind) > 64:
                     raise SourceLedgerAuditError("Invalid source record kind")
                 counts[kind] = counts.get(kind, 0) + 1
+                if kind == "EXIT":
+                    exited_entities.add(row["entity_id"])
+                expected = required.get(actual)
+                if expected is not None:
+                    if (row["entity_id"],kind) != expected:
+                        raise SourceLedgerAuditError("Projected outcome source identity/type mismatch")
+                    matched.add(actual)
                 digest.update(str(sequence).encode("ascii"))
                 digest.update(b":")
                 digest.update(actual.encode("ascii"))
@@ -109,6 +132,13 @@ def audit_pinned_source(
                 previous = actual
             if sequence != expected_records or previous != expected_head_sha256:
                 raise SourceLedgerAuditError("Source population/head does not match external pin")
+            if len(matched) != len(required):
+                raise SourceLedgerAuditError("Projected outcome absent from original source chain")
+            if any(
+                kind == "SIGNAL" and entity_id in exited_entities
+                for entity_id,kind in required.values()
+            ):
+                raise SourceLedgerAuditError("Projection falsely treats an exited signal as open")
     except sqlite3.Error as exc:
         # Never leak local path, raw payload or database error text.
         raise SourceLedgerAuditError("Read-only source database audit unavailable") from exc
@@ -119,6 +149,9 @@ def audit_pinned_source(
         "head_sha256": previous,
         "sequence_chain_sha256": digest.hexdigest(),
         "record_type_counts": dict(sorted(counts.items())),
+        "required_projection_anchors":len(required),
+        "matched_projection_anchors":len(matched),
+        "source_projected_outcome_lifecycle_complete":False,
         "source_rows_exported": False,
         "independent_original_source_pin_required": True,
         "source_costs_verified": False,

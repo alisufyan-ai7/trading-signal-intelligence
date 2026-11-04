@@ -8,12 +8,14 @@ on:
       - 'src/trading_signal_intelligence/product/cloud_app.py'
       - 'tests/test_vowsig_accounts_*.py'
       - 'tests/test_vowsig_product_endpoints_p3.py'
+      - 'tests/test_vowsig_owner_diagnostics_p3.py'
       - 'tests/test_vowsig_performance_p2.py'
       - 'tests/test_vowsig_attested_history_p2.py'
       - 'tests/test_vowsig_owner_totp_p1b.py'
       - 'tests/test_vowsig_owner_offline_provisioning_p1b.py'
       - 'tests/test_vowsig_read_model_p2.py'
       - 'tests/test_vowsig_source_ledger_audit_p2.py'
+      - 'tests/test_vowsig_source_projection_reconciliation_p2.py'
       - 'tests/test_vowsig_oidc_p1b.py'
       - 'tests/test_vowsig_railway_tls_p1b.py'
       - 'tests/test_vowsig_member_browser_p3.py'
@@ -24,6 +26,7 @@ on:
       - 'scripts/vowsig_accounts_ci_pg18_owner_bootstrap.py'
       - 'scripts/vowsig_owner_offline_operator.py'
       - 'scripts/vowsig_owner_review_sign_offline.py'
+      - 'scripts/vowsig_audit_original_ledger_vs_projection.py'
       - 'pyproject.toml'
       - 'Dockerfile'
       - 'config/tls/**'
@@ -68,6 +71,8 @@ jobs:
         run: python -m compileall -q src/trading_signal_intelligence/product/accounts src/trading_signal_intelligence/product/cloud_app.py
       - name: Parse responsive member JavaScript
         run: node --check web/member/member.js
+      - name: Compile independent source audit operator without running it
+        run: python -m py_compile scripts/vowsig_audit_original_ledger_vs_projection.py
       - name: Targeted account policy and public contract regression
         run: |
           python -m pytest -q \
@@ -75,12 +80,14 @@ jobs:
             tests/test_vowsig_accounts_identity_p1b.py \
             tests/test_vowsig_accounts_session_lifecycle_p1b.py \
             tests/test_vowsig_product_endpoints_p3.py \
+            tests/test_vowsig_owner_diagnostics_p3.py \
             tests/test_vowsig_performance_p2.py \
             tests/test_vowsig_attested_history_p2.py \
             tests/test_vowsig_owner_totp_p1b.py \
             tests/test_vowsig_owner_offline_provisioning_p1b.py \
             tests/test_vowsig_read_model_p2.py \
             tests/test_vowsig_source_ledger_audit_p2.py \
+            tests/test_vowsig_source_projection_reconciliation_p2.py \
             tests/test_vowsig_oidc_p1b.py \
             tests/test_vowsig_railway_tls_p1b.py \
             tests/test_cloud_snapshot_durability.py \

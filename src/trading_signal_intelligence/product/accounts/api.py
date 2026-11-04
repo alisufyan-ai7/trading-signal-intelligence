@@ -37,6 +37,9 @@ from trading_signal_intelligence.product.accounts.member_profile import (
 from trading_signal_intelligence.product.accounts.performance import (
     admin_snapshot_diagnostics,
 )
+from trading_signal_intelligence.product.accounts.owner_diagnostics import (
+    owner_operational_diagnostics, owner_market_reliability,
+)
 from trading_signal_intelligence.product.accounts.session_lifecycle import (
     clear_session_cookie, IssuedSession, set_secure_session_cookie,
 )
@@ -324,13 +327,28 @@ def create_router(
     def admin_operations(request: Request) -> JSONResponse:
         _, user, _ = _auth(request)
         require_owner(user)
-        return _private(admin_snapshot_diagnostics(read_snapshot()))
+        snapshot = read_snapshot()
+        return _private({
+            **admin_snapshot_diagnostics(snapshot),
+            "owner_operational_diagnostics":owner_operational_diagnostics(snapshot),
+        })
+
+    @router.get("/admin/models")
+    def admin_models(request: Request) -> JSONResponse:
+        store, user, _ = _auth(request)
+        require_owner(user)
+        return _private(store.admin_model_diagnostics())
+
+    @router.get("/admin/market-reliability")
+    def admin_market_reliability(request: Request) -> JSONResponse:
+        _, user, _ = _auth(request)
+        require_owner(user)
+        return _private(owner_market_reliability(read_snapshot()))
 
     @router.get("/admin/growth")
     def admin_growth(request: Request) -> JSONResponse:
-        _, user, _ = _auth(request)
+        store, user, _ = _auth(request)
         require_owner(user)
-        store, _, _ = _auth(request)
         return _private(store.admin_growth())
 
     @router.get("/admin/overview")

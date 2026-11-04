@@ -36,12 +36,16 @@ TO vowsig_app;
 
 -- Legitimate account/session/OIDC commands in accounts/store.py.
 GRANT INSERT ON TABLE
-  vowsig.vowsig_accounts,
   vowsig.vowsig_account_entitlements,
   vowsig.vowsig_account_identities,
   vowsig.vowsig_account_audit,
   vowsig.vowsig_account_consent_events
 TO vowsig_app;
+-- Only migration role may write accounts.role or promote an owner.
+-- Runtime relies on the database DEFAULT role='member'.
+GRANT INSERT (id, email, email_verified_at)
+  ON TABLE vowsig.vowsig_accounts TO vowsig_app;
+
 GRANT INSERT, UPDATE ON TABLE
   vowsig.vowsig_account_sessions,
   vowsig.vowsig_account_preferences,

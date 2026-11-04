@@ -109,6 +109,12 @@ def main() -> None:
               "(source_program_id,model_version,source_snapshot_sha256,observed_at_utc) "
               "VALUES ('source','model',repeat('a',64),now())")
         _deny(app, "DELETE FROM vowsig.vowsig_research_outcome_facts")
+        # Runtime credentials must not be allowed to seed an owner role, even
+        # via an INSERT that bypasses the normal application code.
+        _deny(app, "INSERT INTO vowsig_accounts "
+              "(id,email,role,email_verified_at) VALUES "
+              "('00000000-0000-4000-8000-000000000003',"
+              "'forbidden@example.test','owner',now())")
         _deny(app, "UPDATE vowsig.vowsig_accounts SET role='owner'")
         _deny(app, "SET ROLE vowsig_migrator")
 

@@ -163,8 +163,8 @@ class PostgresAccountStore:
                     account_id = str(uuid4())
                     conn.execute(
                         """INSERT INTO vowsig_accounts
-                           (id,email,role,email_verified_at)
-                           VALUES (%s::uuid,%s,'member',%s)""",
+                           (id,email,email_verified_at)
+                           VALUES (%s::uuid,%s,%s)""",
                         (account_id, verified_email, issued_at),
                     )
                     conn.execute(

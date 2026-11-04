@@ -288,10 +288,11 @@
   }
   async function showAdmin() {
     if (state.me.role!=="owner")throw new Error("Owner-only dashboard");
-    const [ops,perf,growth]=await Promise.all([
+    const [ops,perf,growth,evidence]=await Promise.all([
       request("/api/v2/admin/operations"),
       request("/api/v2/admin/performance"),
       request("/api/v2/admin/growth"),
+      request("/api/v2/admin/evidence"),
     ]);
     main.append(panel("Source-limited operational overview",
       compact([["Snapshot",date(ops.as_of_utc)],["Fresh",ops.snapshot_fresh?"Yes":"No"],
@@ -305,6 +306,27 @@
       msg("Source-reconciled performance unavailable",
         "A truncated public snapshot cannot support complete net-R, drawdown, win rate or a verified historical track record."),
       E("p",{class:"helper",text:perf.notice})));
+    const sourceRows=Array.isArray(evidence.snapshots)?evidence.snapshots:[];
+    main.append(panel("Independent history evidence & reconciliation",
+      msg("Original-ledger verification still required",
+        evidence.next_evidence_required ||
+        "Database projections are not proof that a historical cohort is complete."),
+      compact([["Full history independently verified","No"],
+        ["Source projections listed",sourceRows.length],
+        ["Performance publishing permitted","No"],
+        ["Inventory truncated",evidence.inventory_truncated?"Yes":"No"]]),
+      sourceRows.length?
+        E("div",{class:"tiles"},...sourceRows.slice(0,12).map(p=>E("article",{class:"tile"},
+          heading(p.source_program_id+" · "+p.model_version),
+          compact([["Stored projection status",p.ingest_status],
+            ["Projected records",p.projected_records],
+            ["Closed / open",String(p.projected_closed)+" / "+String(p.projected_open)],
+            ["NO_TRADE / rejected / errors",
+              [p.projected_no_trade,p.projected_rejected,p.projected_error].join(" / ")],
+            ["Cost-attributed closed",p.projected_closed_after_costs],
+            ["Independent source proof","Not provided"]])))):
+        msg("No historical source projections",
+          "The owner dashboard will populate only from reconciled evidence. No performance statistics are fabricated.")));
     main.append(panel("Growth & customer research",
       msg("Database-only account aggregates","Verified signups and watchlist totals come from the account database. D7 retention and revenue are not instrumented."),
       compact([["Verified accounts",growth.verified_accounts],["Watchlist accounts",growth.accounts_with_watchlist],["Activation ratio",growth.activation_rate],["D7 retention",growth.retention_7d]])));

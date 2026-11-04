@@ -332,6 +332,75 @@ class PostgresAccountStore:
             "notice":"Request recorded. No data is erased until verified owner-reviewed processing.",
         }
 
+    def admin_evidence_inventory(self) -> dict[str, Any]:
+        """Owner-only projection inventory; never asserts independent verification.
+
+        Only stored source projections are counted. A verified *database flag*
+        is not independent source authentication, population coverage, rights
+        clearance or proof of after-cost historical analytics. No source event
+        payload or customer PII is exposed by this method.
+        """
+        with self._connect() as conn:
+            rows = conn.execute(
+                """SELECT s.source_program_id, s.model_version,
+                          s.source_snapshot_sha256, s.source_head_hash,
+                          s.observed_at_utc, s.ingest_status,
+                          s.completeness_verified,
+                          count(f.entity_id) AS projected_records,
+                          count(f.entity_id) FILTER (WHERE f.state='closed')
+                            AS projected_closed,
+                          count(f.entity_id) FILTER (WHERE f.state='open')
+                            AS projected_open,
+                          count(f.entity_id) FILTER (WHERE f.state='no_trade')
+                            AS projected_no_trade,
+                          count(f.entity_id) FILTER (WHERE f.state='rejected')
+                            AS projected_rejected,
+                          count(f.entity_id) FILTER (WHERE f.state='error')
+                            AS projected_error,
+                          count(f.entity_id) FILTER
+                            (WHERE f.state='closed'
+                               AND f.after_costs_verified=TRUE)
+                            AS projected_closed_after_costs
+                   FROM vowsig_research_source_snapshots AS s
+                   LEFT JOIN vowsig_research_outcome_facts AS f
+                     ON f.source_snapshot_id=s.id
+                   GROUP BY s.id
+                   ORDER BY s.observed_at_utc DESC, s.id DESC
+                   LIMIT 101"""
+            ).fetchall()
+        truncated = len(rows) > 100
+        # A projection record count is NEVER silently treated as an independently
+        # verified complete source-ledger population.
+        return {
+            "source": "research_projection_database",
+            "source_ledger_independently_reconciled": False,
+            "historical_performance_publishing_permitted": False,
+            "verified_full_history": False,
+            "status": "awaiting_independent_source_reconciliation",
+            "snapshots": [{
+                "source_program_id": row["source_program_id"],
+                "model_version": row["model_version"],
+                "source_snapshot_sha256": row["source_snapshot_sha256"],
+                "source_head_hash": row["source_head_hash"],
+                "observed_at_utc": row["observed_at_utc"].isoformat(),
+                "ingest_status": row["ingest_status"],
+                "database_completeness_flag": row["completeness_verified"],
+                "projected_records": row["projected_records"],
+                "projected_closed": row["projected_closed"],
+                "projected_open": row["projected_open"],
+                "projected_no_trade": row["projected_no_trade"],
+                "projected_rejected": row["projected_rejected"],
+                "projected_error": row["projected_error"],
+                "projected_closed_after_costs": row["projected_closed_after_costs"],
+                "independently_verified": False,
+            } for row in rows[:100]],
+            "inventory_truncated": truncated,
+            "next_evidence_required": (
+                "Independent original-ledger source rights, immutable hashes, "
+                "full cohort counts, after-cost outcomes, and reviewer sign-off."
+            ),
+        }
+
     def admin_growth(self) -> dict[str, Any]:
         """Verified account and watchlist counts only; privacy-safe aggregates."""
         with self._connect() as conn:

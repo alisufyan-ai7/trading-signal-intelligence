@@ -248,6 +248,12 @@ def create_router(
             "notice": "Partial public snapshot cannot certify historical net-R performance.",
         })
 
+    @router.get("/admin/evidence")
+    def admin_evidence(request: Request) -> JSONResponse:
+        store, user, _ = _auth(request)
+        require_owner(user)
+        return _private(store.admin_evidence_inventory())
+
     @router.get("/admin/operations")
     def admin_operations(request: Request) -> JSONResponse:
         _, user, _ = _auth(request)

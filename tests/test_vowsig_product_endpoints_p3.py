@@ -103,6 +103,29 @@ class Store:
             "notice":"Request recorded; no data erased",
         }
         return self.deletion_request
+    def admin_evidence_inventory(self):
+        return {
+            "source": "research_projection_database",
+            "status": "awaiting_independent_source_reconciliation",
+            "verified_full_history": False,
+            "source_ledger_independently_reconciled": False,
+            "historical_performance_publishing_permitted": False,
+            "snapshots": [{
+                "source_program_id": "core-ai-shadow",
+                "model_version": "AI-v1.1",
+                "ingest_status": "quarantined",
+                "projected_records": 4,
+                "projected_closed": 1,
+                "projected_open": 1,
+                "projected_no_trade": 1,
+                "projected_rejected": 1,
+                "projected_error": 0,
+                "projected_closed_after_costs": 1,
+                "independently_verified": False,
+            }],
+            "inventory_truncated": False,
+            "next_evidence_required": "Independent original-ledger reconciliation required",
+        }
     def admin_growth(self):
         return {
             "source":"account_database_aggregate","registered_accounts":1,
@@ -225,6 +248,7 @@ def test_html_not_public_and_admin_mfa_enforced(ctx):
     assert "no-store" in client.get("/app/").headers["cache-control"]
     assert client.get("/admin/").status_code==403
     assert client.get("/api/v2/admin/performance").status_code==403
+    assert client.get("/api/v2/admin/evidence").status_code==403
     store.owner=True
     admin=client.get("/admin/")
     assert admin.status_code==200
@@ -232,6 +256,13 @@ def test_html_not_public_and_admin_mfa_enforced(ctx):
     p=client.get("/api/v2/admin/performance")
     assert p.status_code==200 and p.json()["performance"] is None
     assert p.json()["verified_full_history"] is False
+    evidence=client.get("/api/v2/admin/evidence")
+    assert evidence.status_code==200
+    assert evidence.json()["source_ledger_independently_reconciled"] is False
+    assert evidence.json()["historical_performance_publishing_permitted"] is False
+    assert evidence.json()["snapshots"][0]["projected_records"]==4
+    assert evidence.json()["snapshots"][0]["independently_verified"] is False
+    assert "no-store" in evidence.headers["cache-control"]
     ops=client.get("/api/v2/admin/operations")
     assert ops.status_code==200 and ops.json()["broker_execution_enabled"] is False
     growth=client.get("/api/v2/admin/growth")

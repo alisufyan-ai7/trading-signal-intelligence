@@ -319,6 +319,20 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
             replay_quarantined_bundle(db,raw,**pins)
 
 
+    # Owner evidence inventory reports real SQL projection counts without
+    # upgrading a quarantined synthetic bundle into verified historical P&L.
+    inventory = store.admin_evidence_inventory()
+    assert inventory["source"] == "research_projection_database"
+    assert inventory["source_ledger_independently_reconciled"] is False
+    assert inventory["historical_performance_publishing_permitted"] is False
+    assert inventory["verified_full_history"] is False
+    assert inventory["inventory_truncated"] is False
+    assert inventory["snapshots"][0]["source_program_id"] == "core-ai-shadow"
+    assert inventory["snapshots"][0]["ingest_status"] == "quarantined"
+    assert inventory["snapshots"][0]["projected_records"] == 1
+    assert inventory["snapshots"][0]["projected_closed"] == 1
+    assert inventory["snapshots"][0]["independently_verified"] is False
+
     # P1B real HTTP -> PostgreSQL verified signup -> protected API -> logout
     # uses an in-memory mock OIDC provider, never an external service.
     import time

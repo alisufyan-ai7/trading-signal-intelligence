@@ -46,7 +46,10 @@ class PostgresAccountStore:
                    JOIN vowsig_accounts a ON a.id = s.account_id
                    JOIN vowsig_account_entitlements e
                      ON e.account_id = a.id AND e.status = 'active'
-                   WHERE s.token_sha256 = %s""",
+                   WHERE s.token_sha256 = %s
+                     AND s.revoked_at IS NULL AND s.expires_at > now()
+                     AND a.disabled_at IS NULL
+                     AND a.email_verified_at IS NOT NULL""",
                 (token_sha256,),
             ).fetchone()
         return Identity(**record) if record else None

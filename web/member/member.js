@@ -42,7 +42,7 @@
   const date = v => {
     if (!v) return "Not available";
     const d = new Date(v);
-    return Number.isNaN(d.getTime()) ? "Not available" : d.toLocaleString(undefined, {dateStyle:"medium",timeStyle:"short",timeZoneName:"short"});
+    return Number.isNaN(d.getTime()) ? "Not available" : d.toLocaleString(undefined, {year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit",timeZoneName:"short"});
   };
   const panel = (title, ...kids) => E("section",{class:"panel"}, E("h2",{text:title}), ...kids);
   const msg = (title, body) => E("div",{class:"message"}, E("strong",{text:title}), E("p",{text:body}));

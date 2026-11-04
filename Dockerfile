@@ -7,7 +7,7 @@ COPY src ./src
 COPY web ./web
 COPY config ./config
 
-RUN pip install --no-cache-dir -e ".[app]"
+RUN pip install --no-cache-dir -e ".[app,accounts]"
 
 ENV PORT=8000
 ENV TRADINGTOP_SNAPSHOT_PATH=/data/public_snapshot.json

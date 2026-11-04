@@ -147,7 +147,7 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     for _ in range(4):
         with pytest.raises(OwnerMfaRejected):
             store.verify_owner_totp(
-                token_sha256=token_sha,account_id=str(id_a),
+                token_sha256=rotated_sha,account_id=str(id_a),
                 code=invalid_code,master_key_b64=base64_key,now=now,
             )
     # Replay + four incorrect codes trigger the five-failure account lock.
@@ -161,7 +161,7 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
     assert locked[2]==int(now.timestamp())//30
     with pytest.raises(OwnerMfaRejected):
         store.verify_owner_totp(
-            token_sha256=token_sha,account_id=str(id_a),
+            token_sha256=rotated_sha,account_id=str(id_a),
             code=totp_at(synthetic_secret,int(now.timestamp())//30+1),
             master_key_b64=base64_key,now=now,
         )

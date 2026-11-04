@@ -12,6 +12,7 @@ on:
       - 'tests/test_vowsig_attested_history_p2.py'
       - 'tests/test_vowsig_owner_totp_p1b.py'
       - 'tests/test_vowsig_read_model_p2.py'
+      - 'tests/test_vowsig_source_ledger_audit_p2.py'
       - 'tests/test_vowsig_oidc_p1b.py'
       - 'tests/test_vowsig_railway_tls_p1b.py'
       - 'tests/test_vowsig_member_browser_p3.py'
@@ -74,6 +75,7 @@ jobs:
             tests/test_vowsig_attested_history_p2.py \
             tests/test_vowsig_owner_totp_p1b.py \
             tests/test_vowsig_read_model_p2.py \
+            tests/test_vowsig_source_ledger_audit_p2.py \
             tests/test_vowsig_oidc_p1b.py \
             tests/test_vowsig_railway_tls_p1b.py \
             tests/test_cloud_snapshot_durability.py \

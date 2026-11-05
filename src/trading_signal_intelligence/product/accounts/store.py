@@ -6,6 +6,7 @@ the database. Auth issuance is intentionally absent in P1A.
 from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
+import hashlib
 from typing import Any, Protocol
 from uuid import uuid4
 from urllib.parse import parse_qs, urlsplit
@@ -142,6 +143,19 @@ class PostgresAccountStore:
 
         try:
             with self._connect() as conn:
+                # Serialize successful logins per immutable OIDC issuer+subject,
+                # without taking a row lock on vowsig_accounts. FOR UPDATE OF a
+                # required an UPDATE privilege that the restricted vowsig_app
+                # correctly does not have (migration 007).
+                #
+                # Transaction-scoped advisory locks also cover first sign-in
+                # before a corresponding account row exists. A hash collision
+                # can only serialize unrelated logins, never link identities.
+                lock_input = issuer.encode("utf-8") + b"\x00" + subject.encode("utf-8")
+                lock_key = int.from_bytes(
+                    hashlib.sha256(lock_input).digest()[:8], "big", signed=True,
+                )
+                conn.execute("SELECT pg_advisory_xact_lock(%s::bigint)", (lock_key,))
                 existing = conn.execute(
                     """SELECT a.id::text AS account_id, a.email
                        FROM vowsig_account_identities i
@@ -149,8 +163,7 @@ class PostgresAccountStore:
                        JOIN vowsig_account_entitlements e ON e.account_id=a.id
                        WHERE i.issuer=%s AND i.subject=%s
                          AND a.email_verified_at IS NOT NULL
-                         AND a.disabled_at IS NULL AND e.status='active'
-                       FOR UPDATE OF a""",
+                         AND a.disabled_at IS NULL AND e.status='active'""",
                     (issuer, subject),
                 ).fetchone()
                 if existing:

@@ -150,6 +150,76 @@ def main() -> None:
         _deny(backup, "CREATE TABLE vowsig.cannot_create (n integer)")
         _deny(backup, "DELETE FROM vowsig.vowsig_accounts")
 
+
+    # True runtime role acceptance must exercise the verified-login SQL, not
+    # merely inspect has_table_privilege() or seed data using admin credentials.
+    # Every connection below is an isolated PostgreSQL 18 CI role session.
+    from concurrent.futures import ThreadPoolExecutor
+    from datetime import datetime, timedelta, timezone
+    from psycopg.rows import dict_row
+    from trading_signal_intelligence.product.accounts.store import PostgresAccountStore
+
+    class RestrictedCiStore(PostgresAccountStore):
+        def __init__(self):
+            pass  # CI loopback is intentionally sslmode=disable, never production.
+
+        def _connect(self):
+            conn = psycopg.connect(target, row_factory=dict_row, connect_timeout=3)
+            conn.execute("SET SESSION AUTHORIZATION vowsig_app")
+            conn.execute("SET search_path TO vowsig, pg_catalog")
+            conn.commit()
+            assert conn.execute("SELECT current_user").fetchone()["current_user"] == "vowsig_app"
+            conn.commit()
+            return conn
+
+    role_store = RestrictedCiStore()
+    issuer = "https://idp.example.test"
+    signed_at = datetime.now(timezone.utc)
+    ttl = signed_at + timedelta(hours=1)
+    # First actual restricted-role login for an already-bound account.
+    bound_id = role_store.complete_verified_login(
+        issuer=issuer, subject="ci-identity", verified_email="ci-only@example.test",
+        token_sha256="a" * 64, issued_at=signed_at, expires_at=ttl,
+    )
+    assert bound_id == "00000000-0000-4000-8000-000000000001"
+
+    # First login of an independently verified new identity must INSERT only
+    # the permitted account columns, without account UPDATE or owner promotion.
+    registered_id = role_store.complete_verified_login(
+        issuer=issuer, subject="new-disposable-verified", verified_email="ci-new@example.test",
+        token_sha256="b" * 64, issued_at=signed_at, expires_at=ttl,
+    )
+    assert registered_id != bound_id
+    assert role_store.find_bound_account(issuer, "new-disposable-verified") == registered_id
+
+    # Two near-simultaneous returning logins for the same immutable subject
+    # serialize under the transaction advisory lock; only one session survives.
+    def relogin(digest: str) -> str:
+        return role_store.complete_verified_login(
+            issuer=issuer, subject="new-disposable-verified",
+            verified_email="ci-new@example.test",
+            token_sha256=digest, issued_at=signed_at, expires_at=ttl,
+        )
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        concurrent_ids = list(pool.map(relogin, ("c" * 64, "d" * 64)))
+    assert concurrent_ids == [registered_id, registered_id]
+    with psycopg.connect(target, row_factory=dict_row) as admin:
+        active = admin.execute(
+            "SELECT token_sha256 FROM vowsig.vowsig_account_sessions "
+            "WHERE account_id=%s::uuid AND revoked_at IS NULL", (registered_id,)
+        ).fetchall()
+        assert len(active) == 1
+        assert active[0]["token_sha256"] in ("c" * 64, "d" * 64)
+        assert admin.execute(
+            "SELECT role FROM vowsig.vowsig_accounts WHERE id=%s::uuid", (registered_id,)
+        ).fetchone()["role"] == "member"
+        assert admin.execute(
+            "SELECT has_table_privilege('vowsig_app','vowsig.vowsig_accounts','UPDATE')"
+        ).fetchone()[0] is False
+    print("PG18_VERIFIED_LOGIN_RESTRICTED_APP_AND_CONCURRENCY=PASS; "
+          "accounts_update_denied=YES; session_rotation_single_active=YES")
+
     print("PG18_ISOLATED_ROLE_BOUNDARIES=PASS; tables=16; "
           "runtime_schema_ddl_denied=YES; runtime_history_dml_denied=YES; "
           "runtime_owner_promotion_denied=YES; backup_read_only=YES")

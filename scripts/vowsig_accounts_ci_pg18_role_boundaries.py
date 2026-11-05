@@ -215,8 +215,8 @@ def main() -> None:
             "SELECT role FROM vowsig.vowsig_accounts WHERE id=%s::uuid", (registered_id,)
         ).fetchone()["role"] == "member"
         assert admin.execute(
-            "SELECT has_table_privilege('vowsig_app','vowsig.vowsig_accounts','UPDATE')"
-        ).fetchone()[0] is False
+            "SELECT has_table_privilege('vowsig_app','vowsig.vowsig_accounts','UPDATE') AS can_update"
+        ).fetchone()["can_update"] is False
     print("PG18_VERIFIED_LOGIN_RESTRICTED_APP_AND_CONCURRENCY=PASS; "
           "accounts_update_denied=YES; session_rotation_single_active=YES")
 

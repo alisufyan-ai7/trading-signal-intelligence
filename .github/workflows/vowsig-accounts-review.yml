@@ -42,6 +42,7 @@ on:
       - 'tests/test_vowsig_private_history_single_review_p2.py'
       - 'tests/test_vowsig_platform_history_universe_p2.py'
       - 'tests/test_vowsig_platform_history_runtime_p2.py'
+      - 'tests/test_vowsig_staging_http_acceptance_p5.py'
       - 'scripts/vowsig_private_history_single_review.py'
       - 'ops/handoffs/vowsig_public_staleness_readonly_v0_1.ps1'
       - 'tests/test_vowsig_inline_source_freeze_p2.py'
@@ -123,6 +124,7 @@ jobs:
             tests/test_vowsig_private_history_single_review_p2.py \
             tests/test_vowsig_platform_history_universe_p2.py \
             tests/test_vowsig_platform_history_runtime_p2.py \
+            tests/test_vowsig_staging_http_acceptance_p5.py \
             tests/test_vowsig_homepage_product_consistency.py \
             tests/test_vowsig_oidc_p1b.py \
             tests/test_vowsig_railway_tls_p1b.py \

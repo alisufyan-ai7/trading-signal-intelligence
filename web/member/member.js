@@ -523,9 +523,13 @@
         link("Back to public VowSig","/"));
     }
   }
-  document.querySelector("#signout").addEventListener("click",async ()=>{
-    try{await mutation("POST","/api/v2/me/logout");location.assign("/");}
-    catch(e){fail(e.message);}
+  // Mobile and desktop sign-out must use the same server-side session revocation.
+  document.querySelectorAll("#signout, #mobile-signout").forEach(control => {
+    control.addEventListener("click",async ()=>{
+      control.disabled = true;
+      try{await mutation("POST","/api/v2/me/logout");location.assign("/");}
+      catch(e){fail(e.message);control.disabled = false;}
+    });
   });
   render();
 })();

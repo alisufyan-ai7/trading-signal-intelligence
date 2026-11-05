@@ -310,6 +310,10 @@ def create_router(
             **result,
             "preview": admin_snapshot_diagnostics(read_snapshot()),
             "notice": (
+                "Two independently signed review scopes cover the original "
+                "nine AI markets. Research-only; no broker execution or "
+                "automatic production release is authorized."
+                if result.get("verified_full_history") is True else
                 "Signed reviewer proof is scoped to one complete cohort; "
                 "it is not evidence of all-platform historical coverage."
                 if result.get("verified_full_cohort_history") is True else

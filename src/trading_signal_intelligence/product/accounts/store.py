@@ -428,6 +428,18 @@ class PostgresAccountStore:
         }
 
     def admin_verified_performance(self) -> dict[str, Any]:
+        """Verify independent full-platform scope or one separately reviewed cohort.
+
+        The full-platform proof is preferred ONLY if every independently
+        configured reviewer/source gate passes. A partial or invalid platform
+        proof must not fall back to a weaker one-cohort profitability claim.
+        """
+        from trading_signal_intelligence.product.accounts.platform_history_runtime import (
+            load_owner_verified_platform_history,
+        )
+        platform=load_owner_verified_platform_history(self._connect)
+        if platform["status"]!="awaiting_independent_full_platform_source_review":
+            return platform
         """Verify one independently attested cohort; never infer platform history.
 
         Both the signed manifest AND a trusted reviewer public key fingerprint

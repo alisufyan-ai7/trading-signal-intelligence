@@ -401,9 +401,29 @@
           ["Raw missed cycles (not signals)",m.reported_counts.missed_inferences],
           ["Errors",m.reported_counts.errors],
           ["Original-ledger independently audited","No"]]))))));
-    const cohort=perf&&perf.verified_full_cohort_history===true&&perf.performance;
+    const platform=perf&&perf.verified_full_history===true&&perf.ai_market_count===9
+      &&Array.isArray(perf.market_cohorts)&&perf.market_cohorts.length===9;
+    const cohort=!platform&&perf&&perf.verified_full_cohort_history===true&&perf.performance;
     main.append(panel("Performance Lab",
-      cohort ?
+      platform ?
+        E("div",{},
+          msg("Nine-market independently attested research history",
+            "Two separately trusted reviewer signatures cover the named source cohorts. Results describe shadow research, never real-money returns."),
+          compact([["Original AI markets",perf.ai_market_count],
+            ["Independent source programs",perf.source_programs],
+            ["S02 kept separate",perf.s02_benchmark_is_not_ai_history?"Yes":"Review required"],
+            ["External crypto K5 review",perf.crypto_k5_externally_approved_by_signed_reviewer?"Signed":"Not verified"],
+            ["Real-money returns","Not available"],
+            ["Automatic production release","Not authorized"]]),
+          E("div",{class:"tiles"},...perf.market_cohorts.map(m=>
+            E("article",{class:"tile"},compact([
+              ["Market",m.market],["Program",m.program],
+              ["Model",m.model_version],["Cohort",m.cohort],
+              ["Full original outcomes",m.original_outcomes],
+              ["Closed after-cost outcomes",m.after_cost_closed_outcomes],
+              ["Independently reviewed",m.verified_cohort?"Yes":"No"]
+            ])))))
+        : cohort ?
         E("div",{},
           msg("Independently attested cohort · research-only",
             "A signed, reviewer-approved original-ledger audit matched the entire named cohort. Other lineages are not certified by this result."),
@@ -437,9 +457,9 @@
       msg("Original-ledger verification still required",
         evidence.next_evidence_required ||
         "Database projections are not proof that a historical cohort is complete."),
-      compact([["Full history independently verified","No"],
+      compact([["Full history independently verified",platform?"Nine AI cohorts only":"No"],
         ["Source projections listed",sourceRows.length],
-        ["Performance publishing permitted","No"],
+        ["Performance publishing permitted","Owner release approval required"],
         ["Inventory truncated",evidence.inventory_truncated?"Yes":"No"]]),
       sourceRows.length?
         E("div",{class:"tiles"},...sourceRows.slice(0,12).map(p=>E("article",{class:"tile"},

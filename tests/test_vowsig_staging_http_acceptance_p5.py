@@ -23,7 +23,10 @@ def _client(*, fault=None):
         assert not request.headers.get("cookie")
         paths.append(request.url.path)
         if request.url.path=="/healthz":
-            return httpx.Response(200,json={"ok":True,"service":"vowsig"})
+            headers=({"set-cookie":"__Host-session=not-allowed; Secure"}
+                     if fault=="set_cookie" else {})
+            return httpx.Response(200,json={"ok":True,"service":"vowsig"},
+                                  headers=headers)
         if request.url.path=="/api/health":
             freshness="stale" if fault=="stale" else "fresh"
             time=NOW-timedelta(minutes=4)
@@ -50,9 +53,6 @@ def _client(*, fault=None):
                                   headers={"content-type":"text/html"})
         if fault=="redirect" and request.url.path=="/admin/":
             return httpx.Response(302,headers={"location":"https://evil.example/"})
-        if fault=="set_cookie" and request.url.path=="/healthz":
-            return httpx.Response(200,json={"ok":True,"service":"vowsig"},
-                                  headers={"set-cookie":"__Host-session=not-allowed; Secure"})
         return httpx.Response(401,content=b'{"detail":"Verified sign-in required"}',
                               headers={"content-type":"application/json",
                                        "x-robots-tag":"noindex, nofollow, noarchive"})
@@ -102,8 +102,9 @@ def test_production_and_unsafe_origins_denied_before_http(bad_origin):
 
 def test_wrong_independent_stage_pin_or_unknown_phase_denied():
     client,paths=_client()
-    with client,pytest.raises(smoke.StagingHttpHold):
-        smoke.inspect_staging_public_surface(ORIGIN,"0"*64,client=client,now=NOW)
-    with client,pytest.raises(smoke.StagingHttpHold):
-        smoke.inspect_staging_public_surface(ORIGIN,PIN,client=client,phase="live",now=NOW)
+    with client:
+        with pytest.raises(smoke.StagingHttpHold):
+            smoke.inspect_staging_public_surface(ORIGIN,"0"*64,client=client,now=NOW)
+        with pytest.raises(smoke.StagingHttpHold):
+            smoke.inspect_staging_public_surface(ORIGIN,PIN,client=client,phase="live",now=NOW)
     assert paths==[]

@@ -435,3 +435,21 @@ def test_mobile_nav_is_reachable_on_small_screens(ui):
     page.get_by_role("button", name="Sign out securely").click()
     page.wait_for_timeout(100)
     assert ("POST", "/api/v2/me/logout") in state["http_calls"]
+
+def test_missing_snapshot_distinguishes_core_scope_from_fresh_detail(ui):
+    page, _state = ui
+    open_page(page, "/app/signals/")
+    visible = page.locator("#app-content").inner_text()
+    assert "Core research markets: 3" in visible
+    assert "Validation-only markets: 6" in visible
+    assert "Core details available now: 0" in visible
+    open_page(page, "/app/markets/")
+    assert page.locator("article.list-row").count() == 9
+    assert page.get_by_text("Core research · updates unavailable").count() == 3
+    assert page.get_by_text("Validation only · details restricted").count() == 6
+    assert page.get_by_text(
+        "No fresh eligible public snapshot; no current signal is implied.", exact=False
+    ).count() == 3
+    assert page.evaluate(
+        "document.documentElement.scrollWidth <= window.innerWidth + 1"
+    )

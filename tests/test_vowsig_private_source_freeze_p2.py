@@ -116,3 +116,30 @@ def test_unrecognized_s02_event_rejected_without_export(tmp_path,monkeypatch):
     with pytest.raises(freeze.PrivateSourceFreezeError):
         freeze.capture_private_frozen_sources(repo,private)
     assert not list(private.glob("*/manifest.preliminary.json"))
+
+
+def test_separate_manifest_pin_recovers_same_frozen_set(tmp_path,monkeypatch):
+    repo,private=_setup(tmp_path,monkeypatch)
+    snapshot=freeze.capture_private_frozen_sources(repo,private)
+    run=private/snapshot["run_id"]
+    verdict=freeze.verify_private_frozen_set(
+        repo,run,externally_recorded_manifest_sha256=snapshot["manifest_sha256"])
+    assert verdict["copy_count"]==12
+    assert verdict["total_event_rows"]==12
+    assert verdict["full_history_costs_rights_and_performance_verified"] is False
+    assert verdict["independently_reviewed_manifest_pin_proven"] is False
+
+
+def test_frozen_manifest_rejects_wrong_pin_and_modified_database(tmp_path,monkeypatch):
+    repo,private=_setup(tmp_path,monkeypatch)
+    snapshot=freeze.capture_private_frozen_sources(repo,private)
+    run=private/snapshot["run_id"]
+    with pytest.raises(freeze.PrivateSourceFreezeError):
+        freeze.verify_private_frozen_set(repo,run,externally_recorded_manifest_sha256="f"*64)
+    frozen=run/"ai_v1_1_xauusd.sqlite"
+    frozen.chmod(0o600)
+    with frozen.open("ab") as f:
+        f.write(b"tampered")
+    with pytest.raises(freeze.PrivateSourceFreezeError):
+        freeze.verify_private_frozen_set(
+            repo,run,externally_recorded_manifest_sha256=snapshot["manifest_sha256"])

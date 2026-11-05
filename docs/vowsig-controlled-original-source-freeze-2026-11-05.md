@@ -24,3 +24,7 @@ Do NOT promote self-consistent copied counts into verified profitability. No pub
 - `.github/workflows/vowsig-accounts-review.yml`: isolated review includes these tests. GitHub CI uses disposable synthetic SQLite only.
 
 No raw ledger source, live database bytes or owner credentials are committed. This is engineering readiness for later authorized local capture, not evidence that the VPS has been frozen.
+
+## Separately pinned offline recheck (draft)
+
+Added `verify_private_frozen_set` and `scripts/vowsig_verify_frozen_sources.py`: takes the completed private run path and an **externally recorded** expected manifest SHA256. It verifies manifest byte hash, each exact approved filename, frozen file SHA256, prior prefix, complete hash-chain and crypto activation bridge, under read-only transactions; it does not sign source rights, verify crypto K5 epochs or validate after-cost outcomes. Supplying the just-computed manifest digest from the same environment is only self-consistency, not independent custody. Neither this tool nor the capture tool should be run on production until the owner reviews a separate one-paste operator procedure.

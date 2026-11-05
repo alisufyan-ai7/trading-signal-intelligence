@@ -221,3 +221,82 @@ def capture_private_frozen_sources(repo_root: str | Path, private_root: str | Pa
         # No manifest is written on failure. Any partial copies remain PRIVATE,
         # not approved; do not erase potentially forensic-sensitive evidence.
         raise PrivateSourceFreezeError("Private snapshot set INCOMPLETE; never promote") from exc
+
+
+def verify_private_frozen_set(repo_root: str | Path, private_run_dir: str | Path,
+                              *, externally_recorded_manifest_sha256: str) -> dict[str,Any]:
+    """Separate read-only recertification of completed PRIVATE snapshots.
+
+    An independently supplied manifest digest binds the expected file
+    hashes. Matching it is not a human/source-rights/cost/K5 attestation.
+    """
+    import re
+    if not isinstance(externally_recorded_manifest_sha256,str) or not re.fullmatch(
+        r"[0-9a-f]{64}",externally_recorded_manifest_sha256
+    ):
+        raise PrivateSourceFreezeError("An independently supplied 64-hex manifest pin is required")
+    run=Path(private_run_dir)
+    if run.is_symlink() or not run.is_dir() or not run.name.startswith("source-freeze-"):
+        raise PrivateSourceFreezeError("Unrecognized private snapshot directory")
+    root, _ = _locations(repo_root,run.parent)
+    run=run.resolve(strict=True)
+    manifest=run/"manifest.preliminary.json"
+    if (manifest.is_symlink() or not manifest.is_file() or
+            _sha256(manifest)!=externally_recorded_manifest_sha256):
+        raise PrivateSourceFreezeError("Private manifest content changed or absent")
+    def unique(pairs):
+        obj={}
+        for key,val in pairs:
+            if key in obj:
+                raise PrivateSourceFreezeError("Duplicated manifest keys")
+            obj[key]=val
+        return obj
+    try:
+        obj=json.loads(manifest.read_text(encoding="utf-8"),
+                       object_pairs_hook=unique)
+        if (obj.get("schema_version")!=1 or obj.get("copy_count")!=12 or
+            obj.get("status")!="PRIVATE_FROZEN_COPIES_SELF_CHECKED_NOT_INDEPENDENTLY_PINNED"):
+            raise PrivateSourceFreezeError("Invalid manifest protocol")
+        rows=obj.get("rows")
+        if not isinstance(rows,list) or len(rows)!=12:
+            raise PrivateSourceFreezeError("Incomplete private source set")
+        mapped={row.get("source_relative_path"):row for row in rows}
+        if len(mapped)!=12 or set(mapped)!=set(OBSERVED_PREFIXES):
+            raise PrivateSourceFreezeError("Private copy universe mismatch")
+        total=0
+        for spec in SOURCES:
+            entry=mapped[spec.relative_path]
+            if (entry.get("program")!=spec.program or entry.get("market")!=spec.symbol
+                or entry.get("model_version")!=spec.model_version or
+                entry.get("private_copy_name")!=Path(spec.relative_path).name):
+                raise PrivateSourceFreezeError("Private ledger identity mismatch")
+            frozen=run/entry["private_copy_name"]
+            if frozen.is_symlink() or not frozen.is_file() or frozen.resolve().parent!=run:
+                raise PrivateSourceFreezeError("Private copy path unsafe")
+            frozen_sha=_sha256(frozen)
+            if frozen_sha != entry.get("frozen_file_sha256"):
+                raise PrivateSourceFreezeError("Private source bytes changed after manifest")
+            observed=_inspect_copy(
+                frozen,spec.table,OBSERVED_PREFIXES[spec.relative_path],
+                s02=spec.program=="s02-forward",
+            )
+            if any(observed[k]!=entry.get(k) for k in observed):
+                raise PrivateSourceFreezeError("Private source manifest population/hash mismatch")
+            if spec.program=="crypto-expansion-1":
+                if _crypto_activation_check(root,frozen,spec.symbol)!=entry.get("crypto_activation_bridge"):
+                    raise PrivateSourceFreezeError("Crypto activation bridge drift")
+            if _sha256(frozen)!=frozen_sha:
+                raise PrivateSourceFreezeError("Private snapshot changed during verification")
+            total+=observed["rows"]
+    except (KeyError,TypeError,ValueError,OSError,sqlite3.Error,SourceLedgerAuditError) as exc:
+        raise PrivateSourceFreezeError("Private offline source verification HELD") from exc
+    return {
+        "status":"PRIVATE_FROZEN_SET_RECHECKED_WITH_SUPPLIED_MANIFEST_PIN",
+        "copy_count":12,
+        "total_event_rows":total,
+        "matched_manifest_sha256":externally_recorded_manifest_sha256,
+        "original_source_bytes_transferred":False,
+        "independently_reviewed_manifest_pin_proven":False,
+        "crypto_k5_epoch_provenance_verified":False,
+        "full_history_costs_rights_and_performance_verified":False,
+    }

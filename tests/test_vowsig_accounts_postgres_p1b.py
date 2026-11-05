@@ -523,10 +523,12 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
                     "SELECT symbol FROM vowsig_watchlist_items WHERE account_id=%s::uuid",
                     (member_id,)
                 ).fetchall()]==["BTCUSDT"]
+                # An earlier test intentionally seeded other member watchlists;
+                # changing this member's watchlist must not erase those rows.
                 assert watch_db.execute(
                     "SELECT count(*) AS n FROM vowsig_watchlist_items "
-                    "WHERE account_id<>%s::uuid", (member_id,)
-                ).fetchone()["n"]==0
+                    "WHERE account_id=%s::uuid", (member_id,)
+                ).fetchone()["n"]==1
             # Repeated saves are idempotent; bad origins/CSRF cannot mutate.
             assert browser.put("/api/v2/me/watchlist/BTCUSDT",headers=own).json()["markets"]==["BTCUSDT"]
             assert browser.delete("/api/v2/me/watchlist/BTCUSDT").status_code==403

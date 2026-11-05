@@ -104,3 +104,15 @@ def test_homepage_hero_matches_ai_first_research_beta_posture() -> None:
         'content="AI market intelligence, validated in the open."'
         in html
     )
+
+
+def test_old_snapshot_cannot_report_real_time_ai_health_from_archived_payload() -> None:
+    app = (WEB / "app.js").read_text(encoding="utf-8")
+    assert "function renderAi(ai, publicHealth = {})" in app
+    assert "renderAi(ai, health);" in app
+    assert 'publicHealth.snapshot_freshness === "fresh"' in app
+    assert "SAVED SHADOW STATUS • NOT CURRENT" in app
+    assert "Historical scheduler state only" in app
+    assert "Historical public snapshot as of" in app
+    assert "Historical public data only" in app
+    assert "Current scanner and publisher health cannot be confirmed" in app

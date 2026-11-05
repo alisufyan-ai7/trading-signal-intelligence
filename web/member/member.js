@@ -454,9 +454,11 @@
       E("p",{class:"helper",text:perf.notice})));
     const sourceRows=Array.isArray(evidence.snapshots)?evidence.snapshots:[];
     main.append(panel("Independent history evidence & reconciliation",
-      msg("Original-ledger verification still required",
-        evidence.next_evidence_required ||
-        "Database projections are not proof that a historical cohort is complete."),
+      msg(platform?"Nine original AI market cohorts reviewed":"Original-ledger verification still required",
+        platform?
+        "Original AI research cohorts are individually and jointly reviewer-signed; S02 remains a separate benchmark. No broker execution or automatic publication is authorized.":
+        (evidence.next_evidence_required ||
+        "Database projections are not proof that a historical cohort is complete.")),
       compact([["Full history independently verified",platform?"Nine AI cohorts only":"No"],
         ["Source projections listed",sourceRows.length],
         ["Performance publishing permitted","Owner release approval required"],

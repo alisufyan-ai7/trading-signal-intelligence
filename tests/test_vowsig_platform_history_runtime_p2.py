@@ -133,3 +133,14 @@ def test_bad_platform_universe_fails_closed_even_if_nine_rows_exist(tmp_path,mon
         lambda:Connection(),settings=env)
     assert result["status"]=="independent_platform_source_evidence_rejected"
     assert result["verified_full_history"] is False
+
+
+def test_owner_performance_ui_only_displays_nine_market_pass_with_exact_signed_status():
+    page=(Path(__file__).resolve().parents[1]/"web/member/member.js").read_text(encoding="utf-8")
+    assert "perf.verified_full_history===true" in page
+    assert "perf.ai_market_count===9" in page
+    assert "perf.market_cohorts.length===9" in page
+    assert "Nine original AI market cohorts reviewed" in page
+    assert "Automatic production release" in page
+    assert "Not authorized" in page
+    assert "Source-reconciled performance unavailable" in page

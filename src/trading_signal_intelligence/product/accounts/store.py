@@ -440,12 +440,8 @@ class PostgresAccountStore:
         platform=load_owner_verified_platform_history(self._connect)
         if platform["status"]!="awaiting_independent_full_platform_source_review":
             return platform
-        """Verify one independently attested cohort; never infer platform history.
-
-        Both the signed manifest AND a trusted reviewer public key fingerprint
-        must be configured through the application's private runtime settings.
-        Neither this method nor an API endpoint can sign, promote or ingest data.
-        """
+        # With no platform-specific reviewer configuration, preserve the
+        # previously reviewed independent single-cohort read-only fallback.
         import hashlib
         import os
         from pathlib import Path

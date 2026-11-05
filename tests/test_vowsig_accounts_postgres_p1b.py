@@ -512,10 +512,53 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
             assert browser.put("/api/v2/me/watchlist/BTCUSDT").status_code==403
             csrf_token=current.json()["csrf_token"]
             own={"Origin":oidc_settings.app_origin,"X-VowSig-CSRF":csrf_token}
-            assert browser.put("/api/v2/me/watchlist/BTCUSDT",headers=own).status_code==200
+            assert browser.get("/api/v2/me/watchlist").json()["markets"]==[]
+            added=browser.put("/api/v2/me/watchlist/BTCUSDT",headers=own)
+            assert added.status_code==200 and added.json()["markets"]==["BTCUSDT"]
             assert browser.get("/api/v2/me/watchlist").json()["markets"]==["BTCUSDT"]
-            assert browser.post("/api/v2/me/logout",headers=own).status_code==200
+            # Real disposable PG18 persistence survives a separate connection.
+            member_id=current.json()["account_id"]
+            with psycopg.connect(dsn,row_factory=dict_row) as watch_db:
+                assert [x["symbol"] for x in watch_db.execute(
+                    "SELECT symbol FROM vowsig_watchlist_items WHERE account_id=%s::uuid",
+                    (member_id,)
+                ).fetchall()]==["BTCUSDT"]
+                assert watch_db.execute(
+                    "SELECT count(*) AS n FROM vowsig_watchlist_items "
+                    "WHERE account_id<>%s::uuid", (member_id,)
+                ).fetchone()["n"]==0
+            # Repeated saves are idempotent; bad origins/CSRF cannot mutate.
+            assert browser.put("/api/v2/me/watchlist/BTCUSDT",headers=own).json()["markets"]==["BTCUSDT"]
+            assert browser.delete("/api/v2/me/watchlist/BTCUSDT").status_code==403
+            assert browser.delete("/api/v2/me/watchlist/BTCUSDT",headers={
+                **own,"Origin":"https://hostile.invalid"
+            }).status_code==403
+            assert browser.get("/api/v2/me/watchlist").json()["markets"]==["BTCUSDT"]
+            removed=browser.delete("/api/v2/me/watchlist/BTCUSDT",headers=own)
+            assert removed.status_code==200 and removed.json()["markets"]==[]
+            assert browser.get("/api/v2/me/watchlist").json()["markets"]==[]
+            with psycopg.connect(dsn,row_factory=dict_row) as watch_db:
+                assert watch_db.execute(
+                    "SELECT count(*) AS n FROM vowsig_watchlist_items "
+                    "WHERE account_id=%s::uuid", (member_id,)
+                ).fetchone()["n"]==0
+                assert watch_db.execute(
+                    "SELECT action FROM vowsig_account_audit "
+                    "WHERE account_id=%s::uuid AND action IN ('watchlist_saved','watchlist_removed') "
+                    "ORDER BY id", (member_id,)
+                ).fetchall()
+            # Logout is a DB revocation, not merely clearing a browser cookie.
+            session_cookie=browser.cookies.get("__Host-vowsig_session")
+            assert session_cookie
+            logout=browser.post("/api/v2/me/logout",headers=own)
+            assert logout.status_code==200 and logout.json()["signed_out"] is True
             assert browser.get("/api/v2/me").status_code==401
+            assert browser.get("/api/v2/me/watchlist").status_code==401
+            # Even replaying the prior cookie in a new client is rejected.
+            with TestClient(app,base_url=oidc_settings.app_origin) as replay:
+                replay.cookies.set("__Host-vowsig_session",session_cookie)
+                assert replay.get("/api/v2/me").status_code==401
+                assert replay.get("/api/v2/me/watchlist").status_code==401
             # Same verified email under a distinct provider subject must not
             # silently attach an existing account or leak a PostgreSQL error.
             exchange_context["subject"]="impostor-other-subject"

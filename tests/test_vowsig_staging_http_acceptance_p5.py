@@ -108,3 +108,25 @@ def test_wrong_independent_stage_pin_or_unknown_phase_denied():
         with pytest.raises(smoke.StagingHttpHold):
             smoke.inspect_staging_public_surface(ORIGIN,PIN,client=client,phase="live",now=NOW)
     assert paths==[]
+
+def test_cloud_uvicorn_access_logging_excludes_oidc_callback_query():
+    """Do not emit OAuth code/state in default Uvicorn request-line logs.
+
+    Railway's edge HTTP telemetry remains available for method/status review.
+    This source/config contract is CI evidence, not proof of a deployed image.
+    """
+    import json
+    import shlex
+    from pathlib import Path
+
+    docker = (Path(__file__).resolve().parents[1] / "Dockerfile").read_text(
+        encoding="utf-8"
+    )
+    commands = [line for line in docker.splitlines() if line.startswith("CMD ")]
+    assert len(commands) == 1
+    launcher = json.loads(commands[0][4:])
+    assert launcher[:2] == ["sh", "-c"]
+    args = shlex.split(launcher[2])
+    assert args[0] == "uvicorn"
+    assert "trading_signal_intelligence.product.cloud_app:app" in args
+    assert "--no-access-log" in args

@@ -116,3 +116,19 @@ def test_old_snapshot_cannot_report_real_time_ai_health_from_archived_payload() 
     assert "Historical public snapshot as of" in app
     assert "Historical public data only" in app
     assert "Current scanner and publisher health cannot be confirmed" in app
+
+def test_public_nine_market_catalog_and_workspace_entry() -> None:
+    home = (WEB / "index.html").read_text(encoding="utf-8")
+    directory = (WEB / "markets" / "index.html").read_text(encoding="utf-8")
+    assert 'href="/auth/start">Open workspace</a>' in home
+    assert 'href="/auth/start">Open workspace</a>' in directory
+    assert 'href="/auth/start">Open my research workspace</a>' in directory
+    for symbol in (
+        "XAUUSD", "USTEC", "US30", "EURUSD", "XAGUSD", "USOIL",
+        "BTCUSDT", "ETHUSDT", "SOLUSDT",
+    ):
+        assert symbol in directory
+    assert directory.count('class="content-card catalog-only-market"') == 6
+    assert directory.count('class="content-card"') == 3
+    assert "Different research access." in directory
+    assert "Detailed signals, entry levels and alerts are not released" in directory

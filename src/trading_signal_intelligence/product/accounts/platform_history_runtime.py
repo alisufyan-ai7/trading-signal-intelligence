@@ -107,7 +107,11 @@ def load_owner_verified_platform_history(
             signed_documents[spec.symbol]=signed
         private={}
         with connect() as conn:
-            conn.execute("SET TRANSACTION READ ONLY")
+            # Each of the nine source population queries must see the same
+            # committed PostgreSQL snapshot. READ COMMITTED could otherwise
+            # mix pre/post-ingest data across markets during reconciliation.
+            # This is the FIRST statement in the transaction and never writes.
+            conn.execute("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY")
             for spec in requested:
                 att=cohort_claims[spec.symbol]
                 snapshots=conn.execute(

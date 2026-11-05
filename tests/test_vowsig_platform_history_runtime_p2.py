@@ -40,7 +40,7 @@ class Connection:
     def __exit__(self,*_):
         return False
     def execute(self,sql,params=None):
-        assert sql.startswith(("SELECT","SET TRANSACTION READ ONLY"))
+        assert sql.startswith(("SELECT","SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"))
         assert not any(w in sql.upper() for w in ("INSERT INTO","UPDATE ","DELETE FROM","CREATE TABLE"))
         self.statements.append((sql,params))
         self.current=(sql,params)
@@ -121,7 +121,7 @@ def test_exact_nine_scoped_readonly_database_queries_and_no_global_auto_release(
     assert result["performance"] is None
     assert result["production_performance_publishing_automatically_authorized"] is False
     assert len(conn.statements)==19
-    assert conn.statements[0][0]=="SET TRANSACTION READ ONLY"
+    assert conn.statements[0][0]=="SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"
     assert sum("vowsig_research_outcome_facts" in sql for sql,_ in conn.statements)==9
 
 
@@ -144,3 +144,123 @@ def test_owner_performance_ui_only_displays_nine_market_pass_with_exact_signed_s
     assert "Automatic production release" in page
     assert "Not authorized" in page
     assert "Source-reconciled performance unavailable" in page
+
+
+# A complete trusted-signature -> private files -> SQL rows -> real reconciliation
+# test, rather than a stubbed verify_all_nine_market_history result.
+def _real_signed_fixture(tmp_path):
+    from tests.test_vowsig_platform_history_universe_p2 import _make, _signed
+    from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+    universe, inputs, _, source_signer, universe_signer, source_pub, universe_pub = (
+        _make(include_signing_material=True)
+    )
+    from pathlib import Path
+    private = tmp_path / "review-private"
+    private.mkdir()
+    cohort_dir = private / "cohort-signatures"
+    cohort_dir.mkdir()
+    universe_path = private / "independently-reviewed-universe.signed.json"
+    universe_path.write_bytes(_signed(universe_signer, universe, "universe"))
+    upath = private / "universe-public.pem"
+    upath.write_bytes(universe_pub)
+    cpath = private / "cohort-public.pem"
+    cpath.write_bytes(source_pub)
+    for symbol, record in inputs.items():
+        (cohort_dir / (symbol + ".signed.json")).write_bytes(
+            record["signed_attestation"]
+        )
+    settings = {
+        mod._ENV[0]: str(universe_path),
+        mod._ENV[1]: str(upath),
+        mod._ENV[2]: hashlib.sha256(universe_pub).hexdigest(),
+        mod._ENV[3]: str(cpath),
+        mod._ENV[4]: hashlib.sha256(source_pub).hexdigest(),
+        mod._ENV[5]: str(cohort_dir),
+        mod._ENV[6]: universe["original_twelve_source_manifest_sha256"],
+    }
+    return settings, inputs
+
+
+class _SignedSourceDb:
+    def __init__(self, inputs, *, fault=None):
+        self.inputs = inputs
+        self.fault = fault
+        self.sql = []
+        self.active = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_):
+        return False
+
+    def execute(self, sql, params=None):
+        assert sql.startswith(
+            ("SELECT", "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY")
+        ), "A source-review request must never write to PostgreSQL"
+        self.sql.append((sql, params))
+        self.active = (sql, params)
+        return self
+
+    def fetchall(self):
+        sql, params = self.active
+        if "vowsig_research_source_snapshots" in sql:
+            matches = [
+                symbol for symbol, record in self.inputs.items()
+                if (record["source_snapshot"]["source_program_id"],
+                    record["source_snapshot"]["model_version"],
+                    record["source_snapshot"]["source_snapshot_sha256"]) == params
+            ]
+            if not matches:
+                return []
+            symbol = matches[0]
+            row = dict(self.inputs[symbol]["source_snapshot"], id=symbol)
+            if self.fault == ("duplicate_snapshot", symbol):
+                return [row, row]
+            return [row]
+        if "vowsig_research_outcome_facts" in sql:
+            symbol = params[0]
+            rows = [dict(r) for r in self.inputs[symbol]["facts"]]
+            if self.fault == ("alter_after_cost", symbol):
+                rows[0]["combined_net_r"] = 4.0
+            if self.fault == ("omit_full_population", symbol):
+                return []
+            return rows
+        raise AssertionError("Unexpected database query")
+
+
+def test_real_disposable_signatures_reconcile_all_nine_original_cohorts_in_one_snapshot(tmp_path):
+    settings, inputs = _real_signed_fixture(tmp_path)
+    connection = _SignedSourceDb(inputs)
+    result = mod.load_owner_verified_platform_history(
+        lambda: connection, settings=settings
+    )
+    assert result["status"] == "INDEPENDENTLY_SIGNED_NINE_AI_COHORT_UNIVERSE_RECONCILED"
+    assert result["verified_full_history"] is True
+    assert result["verified_full_cohort_history"] is True
+    assert result["ai_market_count"] == 9
+    assert len(result["market_cohorts"]) == 9
+    assert sum(m["after_cost_closed_outcomes"] for m in result["market_cohorts"]) == 9
+    assert result["production_performance_publishing_automatically_authorized"] is False
+    assert len(connection.sql) == 19
+    assert connection.sql[0][0] == (
+        "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"
+    )
+    assert "test-original" not in str(result)
+
+
+@pytest.mark.parametrize("fault", [
+    ("duplicate_snapshot", "BTCUSDT"),
+    ("alter_after_cost", "ETHUSDT"),
+    ("omit_full_population", "XAUUSD"),
+])
+def test_signed_history_rejects_changed_projection_even_with_valid_signatures(
+    tmp_path, fault
+):
+    settings, inputs = _real_signed_fixture(tmp_path)
+    connection = _SignedSourceDb(inputs, fault=fault)
+    result = mod.load_owner_verified_platform_history(lambda: connection, settings=settings)
+    assert result["status"] == "independent_platform_source_evidence_rejected"
+    assert result["verified_full_history"] is False
+    assert result["performance"] is None
+    assert result["production_performance_publishing_automatically_authorized"] is False

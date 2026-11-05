@@ -29,7 +29,7 @@ def _signed(private,body,label):
     return _canon({label:body,"signature_ed25519_b64u":base64.urlsafe_b64encode(raw).decode().rstrip("=")})
 
 
-def _make():
+def _make(*, include_signing_material=False):
     source_priv=Ed25519PrivateKey.generate()
     universe_priv=Ed25519PrivateKey.generate()
     source_pub=_pem(source_priv);universe_pub=_pem(universe_priv)
@@ -103,6 +103,8 @@ def _make():
             owner_recorded_original_manifest_sha256=EXPECTED,
             scoped_private_cohorts=inputs if cohorts is None else cohorts,
         )
+    if include_signing_material:
+        return universe,inputs,check,source_priv,universe_priv,source_pub,universe_pub
     return universe,inputs,check
 
 

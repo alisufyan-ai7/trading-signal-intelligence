@@ -236,7 +236,10 @@ def verify_private_frozen_set(repo_root: str | Path, private_run_dir: str | Path
     ):
         raise PrivateSourceFreezeError("An independently supplied 64-hex manifest pin is required")
     run=Path(private_run_dir)
-    if run.is_symlink() or not run.is_dir() or not run.name.startswith("source-freeze-"):
+    # Both reviewed operators exist: the package capture uses "source-freeze-";
+    # the owner-executed native Windows inline capture uses "freeze-".
+    if (run.is_symlink() or not run.is_dir() or
+        not run.name.startswith(("source-freeze-","freeze-"))):
         raise PrivateSourceFreezeError("Unrecognized private snapshot directory")
     root, _ = _locations(repo_root,run.parent)
     run=run.resolve(strict=True)

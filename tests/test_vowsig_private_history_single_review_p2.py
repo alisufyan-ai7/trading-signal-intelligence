@@ -76,3 +76,18 @@ def test_internal_arithmetic_pass_does_not_certify_human_rights(tmp_path,monkeyp
     assert result["external_crypto_market_data_opportunity_verified"] is False
     assert result["source_rights_and_human_independent_review_verified"] is False
     assert result["historical_performance_certified"] is False
+
+
+def test_accepts_both_reviewed_private_run_prefixes_and_rejects_unreviewed(tmp_path,monkeypatch):
+    repo,run,m=_frozen(tmp_path,monkeypatch)
+    renamed=run.with_name("freeze-"+run.name.removeprefix("source-freeze-"))
+    run.rename(renamed)
+    report=review.inspect_original_frozen_history(
+        repo,renamed,independently_recorded_manifest_sha256=m["manifest_sha256"])
+    assert report["source_files_sha256_and_chains_rechecked"]==12
+    assert report["historical_performance_certified"] is False
+    unapproved=renamed.with_name("random-"+renamed.name)
+    renamed.rename(unapproved)
+    with pytest.raises(review.PrivateHistoryReviewHold):
+        review.inspect_original_frozen_history(
+            repo,unapproved,independently_recorded_manifest_sha256=m["manifest_sha256"])

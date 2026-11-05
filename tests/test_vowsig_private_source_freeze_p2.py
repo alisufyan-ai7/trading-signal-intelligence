@@ -143,3 +143,17 @@ def test_frozen_manifest_rejects_wrong_pin_and_modified_database(tmp_path,monkey
     with pytest.raises(freeze.PrivateSourceFreezeError):
         freeze.verify_private_frozen_set(
             repo,run,externally_recorded_manifest_sha256=snapshot["manifest_sha256"])
+
+
+def test_pkg_and_inline_freeze_name_formats_both_allow_readonly_reverification(tmp_path,monkeypatch):
+    repo,private=_setup(tmp_path,monkeypatch)
+    m=freeze.capture_private_frozen_sources(repo,private)
+    orig=private/m["run_id"]
+    assert freeze.verify_private_frozen_set(
+        repo,orig,externally_recorded_manifest_sha256=m["manifest_sha256"]
+    )["copy_count"]==12
+    native=private/("freeze-"+orig.name.removeprefix("source-freeze-"))
+    orig.rename(native)
+    assert freeze.verify_private_frozen_set(
+        repo,native,externally_recorded_manifest_sha256=m["manifest_sha256"]
+    )["copy_count"]==12

@@ -51,7 +51,7 @@ def inspect_original_frozen_history(
     root=Path(repo_root)
     run=Path(private_run_dir)
     if (root.is_symlink() or run.is_symlink() or not run.is_dir()
-        or not run.name.startswith("freeze-")
+        or not run.name.startswith(("source-freeze-","freeze-"))
         or not run.parent.name.startswith("OriginalLedgerEvidence-")):
         raise PrivateHistoryReviewHold("Unrecognized private evidence path")
     root=root.resolve(strict=True)

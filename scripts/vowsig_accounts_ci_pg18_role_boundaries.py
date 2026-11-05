@@ -202,7 +202,7 @@ def main() -> None:
         )
 
     with ThreadPoolExecutor(max_workers=2) as pool:
-        concurrent_ids = list(pool.map(relogin, ("c" * 64, "d" * 64)))
+        concurrent_ids = list(pool.map(relogin, ("c" * 64, "f" * 64)))
     assert concurrent_ids == [registered_id, registered_id]
     with psycopg.connect(target, row_factory=dict_row) as admin:
         active = admin.execute(
@@ -210,13 +210,31 @@ def main() -> None:
             "WHERE account_id=%s::uuid AND revoked_at IS NULL", (registered_id,)
         ).fetchall()
         assert len(active) == 1
-        assert active[0]["token_sha256"] in ("c" * 64, "d" * 64)
+        assert active[0]["token_sha256"] in ("c" * 64, "f" * 64)
         assert admin.execute(
             "SELECT role FROM vowsig.vowsig_accounts WHERE id=%s::uuid", (registered_id,)
         ).fetchone()["role"] == "member"
         assert admin.execute(
             "SELECT has_table_privilege('vowsig_app','vowsig.vowsig_accounts','UPDATE') AS can_update"
         ).fetchone()["can_update"] is False
+        # This CI script shares a disposable database with the subsequent
+        # owner-bootstrap proof. Restore its original seeded account/session
+        # state, so an unrelated synthetic login cannot change owner
+        # revocation counts or collide with its fixed test-token digests.
+        admin.execute(
+            "DELETE FROM vowsig.vowsig_account_sessions "
+            "WHERE account_id='00000000-0000-4000-8000-000000000001'::uuid "
+            "AND token_sha256=%s", ("a" * 64,),
+        )
+        admin.execute(
+            "DELETE FROM vowsig.vowsig_accounts WHERE id=%s::uuid", (registered_id,)
+        )
+        assert admin.execute(
+            "SELECT count(*) AS n FROM vowsig.vowsig_account_sessions"
+        ).fetchone()["n"] == 0
+        assert admin.execute(
+            "SELECT count(*) AS n FROM vowsig.vowsig_accounts"
+        ).fetchone()["n"] == 1
     print("PG18_VERIFIED_LOGIN_RESTRICTED_APP_AND_CONCURRENCY=PASS; "
           "accounts_update_denied=YES; session_rotation_single_active=YES")
 

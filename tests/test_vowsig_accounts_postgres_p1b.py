@@ -556,3 +556,46 @@ def test_ephemeral_postgres_account_identity_and_entitlement_contract():
             assert changed.status_code==401
             assert changed.json()["detail"]=="Verified sign-in rejected"
             assert browser.get("/api/v2/me").status_code==401
+
+
+def test_ephemeral_pg18_nine_market_audit_uses_one_stable_readonly_snapshot():
+    """Real PG18 grammar/concurrency proof, solely on approved loopback test DB.
+
+    Confirms that a reviewer cannot observe market A before an ingest commit
+    and market B after it from the *same* read-only review transaction.
+    """
+    import psycopg
+    from psycopg import errors
+
+    dsn = _test_dsn()  # fail closed outside CI's exact disposable loopback
+    table = "public.vowsig_ci_review_snapshot_test"
+    with psycopg.connect(dsn, autocommit=True) as writer:
+        writer.execute(f"CREATE TABLE {table} (value INTEGER NOT NULL)")
+        try:
+            writer.execute(f"INSERT INTO {table} (value) VALUES (1)")
+            with psycopg.connect(dsn) as reviewer:
+                reviewer.execute(
+                    "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"
+                )
+                level, access = reviewer.execute(
+                    "SELECT current_setting('transaction_isolation'), "
+                    "current_setting('transaction_read_only')"
+                ).fetchone()
+                assert level == "repeatable read" and access == "on"
+                before = reviewer.execute(
+                    f"SELECT sum(value) FROM {table}"
+                ).fetchone()[0]
+                assert before == 1
+                # Independent connection writes ONLY the throwaway CI table.
+                writer.execute(f"INSERT INTO {table} (value) VALUES (2)")
+                after = reviewer.execute(
+                    f"SELECT sum(value) FROM {table}"
+                ).fetchone()[0]
+                assert after == before
+                with pytest.raises(errors.ReadOnlySqlTransaction):
+                    reviewer.execute("CREATE TEMP TABLE vowsig_ci_forbidden_mutation(x INT)")
+            assert writer.execute(
+                f"SELECT sum(value) FROM {table}"
+            ).fetchone()[0] == 3
+        finally:
+            writer.execute(f"DROP TABLE IF EXISTS {table}")

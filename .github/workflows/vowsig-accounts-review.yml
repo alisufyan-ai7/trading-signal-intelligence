@@ -36,6 +36,7 @@ on:
       - 'tests/test_vowsig_frozen_source_recheck_p2.py'
       - 'tests/test_vowsig_private_crypto_epoch_p2.py'
       - 'tests/test_vowsig_public_staleness_triage.py'
+      - 'tests/test_vowsig_private_after_cost_p2.py'
       - 'ops/handoffs/vowsig_public_staleness_readonly_v0_1.ps1'
       - 'tests/test_vowsig_inline_source_freeze_p2.py'
       - 'tests/test_vowsig_private_lifecycle_p2.py'
@@ -110,6 +111,7 @@ jobs:
             tests/test_vowsig_frozen_source_recheck_p2.py \
             tests/test_vowsig_private_crypto_epoch_p2.py \
             tests/test_vowsig_public_staleness_triage.py \
+            tests/test_vowsig_private_after_cost_p2.py \
             tests/test_vowsig_oidc_p1b.py \
             tests/test_vowsig_railway_tls_p1b.py \
             tests/test_cloud_snapshot_durability.py \

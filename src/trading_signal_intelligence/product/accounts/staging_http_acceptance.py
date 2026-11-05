@@ -84,14 +84,20 @@ def inspect_staging_public_surface(
     replies={}
     try:
         for path in _PROBE_PATHS:
+            if getattr(client,"cookies",None):
+                raise StagingHttpHold("Probe must not carry authentication cookies")
             response=client.get(origin+path,headers={
                 "Accept":"application/json" if path.startswith("/api/") or path=="/healthz"
                 else "text/html",
                 "Cache-Control":"no-store",
             })
-            if response.is_redirect or
-                response.status_code not in (200,401,403):
+            if (response.is_redirect or
+                response.status_code not in (200,401,403)):
                 raise StagingHttpHold("Unexpected staging response")
+            # This intentionally unauthenticated probe may not acquire or
+            # replay an application session from a public GET response.
+            if response.headers.get("set-cookie"):
+                raise StagingHttpHold("Unexpected unauthenticated Set-Cookie")
             replies[path]=response
     except StagingHttpHold:
         raise

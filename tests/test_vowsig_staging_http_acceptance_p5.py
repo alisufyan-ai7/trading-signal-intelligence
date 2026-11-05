@@ -50,6 +50,9 @@ def _client(*, fault=None):
                                   headers={"content-type":"text/html"})
         if fault=="redirect" and request.url.path=="/admin/":
             return httpx.Response(302,headers={"location":"https://evil.example/"})
+        if fault=="set_cookie" and request.url.path=="/healthz":
+            return httpx.Response(200,json={"ok":True,"service":"vowsig"},
+                                  headers={"set-cookie":"__Host-session=not-allowed; Secure"})
         return httpx.Response(401,content=b'{"detail":"Verified sign-in required"}',
                               headers={"content-type":"application/json",
                                        "x-robots-tag":"noindex, nofollow, noarchive"})
@@ -74,7 +77,7 @@ def test_staging_get_only_receipt_does_not_claim_actual_rollback(phase):
 
 
 @pytest.mark.parametrize("fault",[
-    "stale","future","missing_market","exposure","auth_exposed","redirect",
+    "stale","future","missing_market","exposure","auth_exposed","redirect","set_cookie",
 ])
 def test_readonly_staging_fails_closed_on_runtime_drift(fault):
     client,_=_client(fault=fault)

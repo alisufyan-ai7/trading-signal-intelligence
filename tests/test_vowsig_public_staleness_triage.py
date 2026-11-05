@@ -27,3 +27,16 @@ def test_operator_never_exposes_keys_or_mutates_production():
     assert "get-content -literalpath $log -tail 160" in body
     assert "raw_logs_or_secrets_exported=$false" in body
     assert "network_calls=0" in body and "task_changes=0" in body
+
+
+def test_single_readonly_operator_includes_sanitized_core_error_census():
+    body=SOURCE.read_text(encoding="utf-8")
+    assert "FROZEN_CORE_LAST_ERROR_CATEGORIES_ONLY" in body
+    assert 'mode=ro&immutable=1' in body
+    for expected in ("ai_v1_1_xauusd.sqlite","ai_v1_1_ustec.sqlite","ai_v1_1_us30.sqlite"):
+        assert expected in body
+    assert "OPENAI_AUTH_401" in body and "OPENAI_RATE_429" in body
+    assert '"raw_error_messages_exported":False' in body
+    assert "print(json.dumps(" in body
+    assert "print(raw)" not in body and "print(data)" not in body
+    assert "no_network" not in body.lower()

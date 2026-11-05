@@ -87,11 +87,76 @@ $ErrorActionPreference = "Stop"
       $Issues+="LOCAL_SNAPSHOT_UNREADABLE"
     }
   }
+  # Existing private frozen copies, never the mutable AI writer databases.
+  $Frozen=Join-Path $env:LOCALAPPDATA "VowSig\OriginalLedgerEvidence-20261105T031248Z-9bc9e41817b3\freeze-20261105T031251Z-de2b076d5d36"
+  $CoreErrorEvidence=[ordered]@{status="NOT_CHECKED";rows=@()}
+  $Python=Join-Path $Root ".venv\Scripts\python.exe"
+  if((Test-Path -LiteralPath $Frozen -PathType Container) -and
+     (Test-Path -LiteralPath $Python -PathType Leaf)) {
+    $Probe=@'
+import json,sqlite3,sys,re
+from contextlib import closing
+from pathlib import Path
+frozen=Path(sys.argv[1])
+sources=(("XAUUSD","ai_v1_1_xauusd.sqlite"),
+         ("USTEC","ai_v1_1_ustec.sqlite"),
+         ("US30","ai_v1_1_us30.sqlite"))
+allowed={"OpenAIHTTPError","TimeoutError","ConnectionError","HTTPError"}
+safe=[]
+try:
+    if frozen.is_symlink() or not frozen.is_dir():
+        raise ValueError()
+    for market,name in sources:
+        file=frozen/name
+        if file.is_symlink() or not file.is_file() or file.resolve().parent!=frozen.resolve():
+            raise ValueError()
+        with closing(sqlite3.connect(file.resolve().as_uri()+"?mode=ro&immutable=1",
+                                     uri=True,timeout=1)) as db:
+            db.execute("PRAGMA query_only=ON")
+            row=db.execute(
+                "SELECT recorded_at_utc,payload_json FROM ai_records "
+                "WHERE record_type='ERROR' ORDER BY sequence DESC LIMIT 1"
+            ).fetchone()
+        if not row:
+            safe.append({"market":market,"category":"NO_FROZEN_ERROR"})
+            continue
+        data=json.loads(row[1])
+        klass=data.get("error_class")
+        raw=str(data.get("sanitized_message") or "")
+        stage=data.get("stage")
+        if klass not in allowed: klass="OTHER"
+        if stage not in ("provider_inference","crypto_execution_cost_context"):
+            stage="OTHER"
+        if klass=="OpenAIHTTPError" and ("API_KEY_INVALID" in raw.upper() or
+            re.search(r"\b401\b",raw)):
+            category="OPENAI_AUTH_401"
+        elif klass=="OpenAIHTTPError" and re.search(r"\b429\b",raw):
+            category="OPENAI_RATE_429"
+        elif klass=="OpenAIHTTPError":
+            category="OPENAI_OTHER_HTTP"
+        elif klass=="TimeoutError":
+            category="TIMEOUT"
+        else:
+            category="OTHER"
+        safe.append({"market":market,"latest_frozen_error_utc":row[0],
+                     "stage":stage,"error_class":klass,"category":category})
+    print(json.dumps({"status":"FROZEN_CORE_LAST_ERROR_CATEGORIES_ONLY",
+                      "rows":safe,"raw_error_messages_exported":False},sort_keys=True))
+except Exception:
+    print(json.dumps({"status":"FROZEN_ERROR_PROBE_HELD",
+                      "rows":[],"raw_error_messages_exported":False}))
+'@
+    $Raw=$Probe | & $Python -B - $Frozen
+    if($LASTEXITCODE -eq 0) {
+      try { $CoreErrorEvidence=$Raw | ConvertFrom-Json -ErrorAction Stop }
+      catch { $CoreErrorEvidence=[ordered]@{status="BAD_PROBE_OUTPUT";rows=@()} }
+    }
+  }
   [ordered]@{
     schema="vowsig-staleness-triage-v0.1";observed_at_utc=$Now.ToString("o");
     read_only=$true;network_calls=0;task_changes=0;raw_logs_or_secrets_exported=$false;
     website_hosted_health_not_checked=$true;root_cause_verified=$false;
-    tasks=$Report;local_snapshot=$Local;issue_codes=@($Issues)
+    tasks=$Report;local_snapshot=$Local;frozen_core_errors=$CoreErrorEvidence;issue_codes=@($Issues)
   } | ConvertTo-Json -Depth 8 -Compress
   Write-Host "VOWSIG_PUBLIC_STALENESS_TRIAGE=COMPLETED_READ_ONLY"
 }

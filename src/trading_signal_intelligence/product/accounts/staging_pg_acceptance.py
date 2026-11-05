@@ -150,8 +150,15 @@ def inspect_staging(*, environ: dict[str,str], ca_file: Path=CA_FILE)->dict[str,
 def main()->int:
     try:
         receipt=inspect_staging(environ=dict(os.environ))
+    except StagingAcceptanceHold as exc:
+        # All custom messages are fixed code literals, never provider replies.
+        print("VOWSIG_STAGING_TLS_AND_RESTRICTED_SQL=HOLD")
+        print("HOLD_REASON="+str(exc))
+        print("ACCOUNT_FEATURES_MUST_REMAIN_DISABLED=YES")
+        return 1
     except Exception:
         print("VOWSIG_STAGING_TLS_AND_RESTRICTED_SQL=HOLD")
+        print("HOLD_REASON=Unexpected validation failure")
         print("ACCOUNT_FEATURES_MUST_REMAIN_DISABLED=YES")
         return 1
     print("VOWSIG_STAGING_TLS_AND_RESTRICTED_SQL=PASS")

@@ -77,3 +77,13 @@ def test_docker_image_packs_only_public_staging_certificate():
     assert "COPY config ./config" in content
     assert CA.is_file()
     assert "PRIVATE KEY" not in CA.read_text()
+
+def test_cli_emits_only_constant_rejection_categories(monkeypatch,capsys):
+    monkeypatch.setattr(st,"inspect_staging",lambda **_: (_ for _ in ()).throw(
+        st.StagingAcceptanceHold("Wrong Railway environment or account flags")
+    ))
+    assert st.main()==1
+    out=capsys.readouterr().out
+    assert "HOLD_REASON=Wrong Railway environment or account flags" in out
+    assert "ACCOUNT_FEATURES_MUST_REMAIN_DISABLED=YES" in out
+    assert "TEST_ONLY_NO_PROVIDER_SECRET" not in out

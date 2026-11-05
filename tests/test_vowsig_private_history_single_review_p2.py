@@ -91,3 +91,64 @@ def test_accepts_both_reviewed_private_run_prefixes_and_rejects_unreviewed(tmp_p
     with pytest.raises(review.PrivateHistoryReviewHold):
         review.inspect_original_frozen_history(
             repo,unapproved,independently_recorded_manifest_sha256=m["manifest_sha256"])
+
+
+def _convert_package_to_real_owner_inline_layout(run):
+    manifest=run/"manifest.preliminary.json"
+    package=json.loads(manifest.read_text())
+    rows=[]
+    for item in package["rows"]:
+        entry={
+            "model_version":item["model_version"],
+            "market":item["market"],
+            "source_path":item["source_relative_path"],
+            "private_file":item["private_copy_name"],
+            "frozen_file_sha256":item["frozen_file_sha256"],
+            "rows":item["rows"],
+            "terminal_sequence":item["terminal_sequence"],
+            "terminal_record_hash":item["terminal_record_hash"],
+            "event_counts":item["event_counts"],
+            "sequence_chain_sha256":item["sequence_chain_sha256"],
+            "prior_observed_prefix_match":True,
+            "self_consistent_full_chain":True,
+            "crypto_activation_match_not_k5":item["model_version"]=="AI-v1.3",
+        }
+        rows.append(entry)
+    converted={
+        "schema_version":1,
+        "status":"PRIVATE_FROZEN_COPIES_SELF_VERIFIED_EXTERNAL_REVIEW_REQUIRED",
+        "count":12,"synchronized_all_markets_at_one_instant":False,
+        "ledgers":rows,
+    }
+    manifest.chmod(0o600)
+    manifest.write_text(json.dumps(converted,sort_keys=True,separators=(",",":")))
+    return hashlib.sha256(manifest.read_bytes()).hexdigest()
+
+
+def test_actual_owner_native_windows_manifest_shape_reverifies_read_only(tmp_path,monkeypatch):
+    repo,run,m=_frozen(tmp_path,monkeypatch)
+    owner_run=run.with_name("freeze-"+run.name.removeprefix("source-freeze-"))
+    run.rename(owner_run)
+    sha=_convert_package_to_real_owner_inline_layout(owner_run)
+    monkeypatch.setattr(review,"NOV5_OWNER_MANIFEST_SHA256",sha)
+    result=review.inspect_original_frozen_history(
+        repo,owner_run,independently_recorded_manifest_sha256=sha)
+    assert result["source_files_sha256_and_chains_rechecked"]==12
+    assert result["total_original_event_rows"]==12
+    assert result["historical_performance_certified"] is False
+
+
+def test_owner_inline_manifest_false_crypto_anchor_check_refused(tmp_path,monkeypatch):
+    repo,run,m=_frozen(tmp_path,monkeypatch)
+    owner_run=run.with_name("freeze-"+run.name.removeprefix("source-freeze-"))
+    run.rename(owner_run)
+    _convert_package_to_real_owner_inline_layout(owner_run)
+    manifest=owner_run/"manifest.preliminary.json"
+    obj=json.loads(manifest.read_text())
+    obj["ledgers"][6]["crypto_activation_match_not_k5"]=False
+    manifest.write_text(json.dumps(obj,sort_keys=True,separators=(",",":")))
+    sha=hashlib.sha256(manifest.read_bytes()).hexdigest()
+    monkeypatch.setattr(review,"NOV5_OWNER_MANIFEST_SHA256",sha)
+    with pytest.raises(review.PrivateHistoryReviewHold):
+        review.inspect_original_frozen_history(
+            repo,owner_run,independently_recorded_manifest_sha256=sha)

@@ -257,39 +257,73 @@ def verify_private_frozen_set(repo_root: str | Path, private_run_dir: str | Path
     try:
         obj=json.loads(manifest.read_text(encoding="utf-8"),
                        object_pairs_hook=unique)
-        if (obj.get("schema_version")!=1 or obj.get("copy_count")!=12 or
-            obj.get("status")!="PRIVATE_FROZEN_COPIES_SELF_CHECKED_NOT_INDEPENDENTLY_PINNED"):
-            raise PrivateSourceFreezeError("Invalid manifest protocol")
-        rows=obj.get("rows")
-        if not isinstance(rows,list) or len(rows)!=12:
+        if obj.get("schema_version")!=1:
+            raise PrivateSourceFreezeError("Unsupported private snapshot protocol")
+        if (obj.get("status")=="PRIVATE_FROZEN_COPIES_SELF_CHECKED_NOT_INDEPENDENTLY_PINNED"
+            and obj.get("copy_count")==12 and
+            obj.get("synchronized_twelve_market_point_in_time") is False):
+            layout="package"
+            rows=obj.get("rows")
+            id_key="source_relative_path"
+            name_key="private_copy_name"
+        elif (obj.get("status")=="PRIVATE_FROZEN_COPIES_SELF_VERIFIED_EXTERNAL_REVIEW_REQUIRED"
+              and obj.get("count")==12 and
+              obj.get("synchronized_all_markets_at_one_instant") is False):
+            layout="owner_native_windows"
+            rows=obj.get("ledgers")
+            id_key="source_path"
+            name_key="private_file"
+        else:
+            raise PrivateSourceFreezeError("Unapproved private evidence layout")
+        if not isinstance(rows,list) or len(rows)!=12 or not all(isinstance(r,dict) for r in rows):
             raise PrivateSourceFreezeError("Incomplete private source set")
-        mapped={row.get("source_relative_path"):row for row in rows}
+        mapped={row.get(id_key):row for row in rows}
         if len(mapped)!=12 or set(mapped)!=set(OBSERVED_PREFIXES):
-            raise PrivateSourceFreezeError("Private copy universe mismatch")
+            raise PrivateSourceFreezeError("Private original source universe mismatch")
         total=0
         for spec in SOURCES:
             entry=mapped[spec.relative_path]
-            if (entry.get("program")!=spec.program or entry.get("market")!=spec.symbol
-                or entry.get("model_version")!=spec.model_version or
-                entry.get("private_copy_name")!=Path(spec.relative_path).name):
-                raise PrivateSourceFreezeError("Private ledger identity mismatch")
-            frozen=run/entry["private_copy_name"]
+            expected_name=Path(spec.relative_path).name
+            if (entry.get("market")!=spec.symbol
+                or entry.get("model_version")!=spec.model_version
+                or entry.get(name_key)!=expected_name or
+                entry.get(id_key)!=spec.relative_path):
+                raise PrivateSourceFreezeError("Private source identity mismatch")
+            if layout=="package" and entry.get("program")!=spec.program:
+                raise PrivateSourceFreezeError("Packaged source lineage mismatch")
+            frozen=run/expected_name
             if frozen.is_symlink() or not frozen.is_file() or frozen.resolve().parent!=run:
                 raise PrivateSourceFreezeError("Private copy path unsafe")
             frozen_sha=_sha256(frozen)
             if frozen_sha != entry.get("frozen_file_sha256"):
-                raise PrivateSourceFreezeError("Private source bytes changed after manifest")
+                raise PrivateSourceFreezeError("Frozen copy bytes changed after original pin")
             observed=_inspect_copy(
                 frozen,spec.table,OBSERVED_PREFIXES[spec.relative_path],
                 s02=spec.program=="s02-forward",
             )
-            if any(observed[k]!=entry.get(k) for k in observed):
-                raise PrivateSourceFreezeError("Private source manifest population/hash mismatch")
+            if layout=="package":
+                checked=all(observed[k]==entry.get(k) for k in observed)
+            else:
+                # The *executed* Windows inline operator has a different
+                # signed/owner-pinned manifest layout, not fewer checks.
+                checked=all(observed[k]==entry.get(k) for k in (
+                    "rows","terminal_sequence","terminal_record_hash",
+                    "event_counts","sequence_chain_sha256",
+                ))
+                checked=(checked and
+                    entry.get("prior_observed_prefix_match") is True and
+                    entry.get("self_consistent_full_chain") is True)
+            if not checked:
+                raise PrivateSourceFreezeError("Frozen manifest and source diverged")
             if spec.program=="crypto-expansion-1":
-                if _crypto_activation_check(root,frozen,spec.symbol)!=entry.get("crypto_activation_bridge"):
-                    raise PrivateSourceFreezeError("Crypto activation bridge drift")
+                anchor_receipt=_crypto_activation_check(root,frozen,spec.symbol)
+                if layout=="package":
+                    if entry.get("crypto_activation_bridge")!=anchor_receipt:
+                        raise PrivateSourceFreezeError("Crypto activation bridge mismatched")
+                elif entry.get("crypto_activation_match_not_k5") is not True:
+                    raise PrivateSourceFreezeError("Crypto activation anchor not matched")
             if _sha256(frozen)!=frozen_sha:
-                raise PrivateSourceFreezeError("Private snapshot changed during verification")
+                raise PrivateSourceFreezeError("Private source mutated during recheck")
             total+=observed["rows"]
     except (KeyError,TypeError,ValueError,OSError,sqlite3.Error,SourceLedgerAuditError) as exc:
         raise PrivateSourceFreezeError("Private offline source verification HELD") from exc

@@ -67,9 +67,20 @@ def inspect_original_frozen_history(
             (run/"manifest.preliminary.json").read_text(encoding="utf-8"),
             object_pairs_hook=_unique,
         )
-        if (base["copy_count"]!=12 or base["total_event_rows"]!=_EXPECTED_EVENT_RECORDS
-            or manifest.get("count")!=12 or len(manifest.get("ledgers",[]))!=12):
-            raise PrivateHistoryReviewHold("Frozen event population differs from owner pin")
+        if base["copy_count"]!=12 or base["total_event_rows"]!=_EXPECTED_EVENT_RECORDS:
+            raise PrivateHistoryReviewHold("Frozen event count differs from owner pin")
+        if (manifest.get("status")=="PRIVATE_FROZEN_COPIES_SELF_CHECKED_NOT_INDEPENDENTLY_PINNED"
+            and manifest.get("copy_count")==12):
+            manifest_rows=manifest.get("rows",[])
+            name_key="private_copy_name"
+        elif (manifest.get("status")=="PRIVATE_FROZEN_COPIES_SELF_VERIFIED_EXTERNAL_REVIEW_REQUIRED"
+              and manifest.get("count")==12):
+            manifest_rows=manifest.get("ledgers",[])
+            name_key="private_file"
+        else:
+            raise PrivateHistoryReviewHold("Unapproved native/private manifest protocol")
+        if not isinstance(manifest_rows,list) or len(manifest_rows)!=12:
+            raise PrivateHistoryReviewHold("Incomplete original market manifest")
         anchor=json.loads(
             (root/CRYPTO_ANCHOR_PATH).read_text(encoding="utf-8"),
             object_pairs_hook=_unique,
@@ -78,8 +89,8 @@ def inspect_original_frozen_history(
         if not isinstance(activated_at,str):
             raise PrivateHistoryReviewHold("Crypto activation anchor time absent")
         by_file={}
-        for entry in manifest["ledgers"]:
-            name=entry.get("private_file")
+        for entry in manifest_rows:
+            name=entry.get(name_key)
             if not isinstance(name,str) or name in by_file:
                 raise PrivateHistoryReviewHold("Private manifest filenames duplicated")
             by_file[name]=entry

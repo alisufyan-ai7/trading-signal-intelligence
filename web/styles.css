@@ -908,3 +908,14 @@ body{
 @media(prefers-reduced-motion:reduce){
   .button-link{transition:none!important}
 }
+
+/* PR93 member acquisition and nine-market discovery */
+.nav-workspace{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;background:var(--accent);color:#08271e;border:1px solid var(--accent);border-radius:12px;text-decoration:none;font-size:.87rem;font-weight:760;white-space:nowrap}
+.nav-workspace:hover,.nav-workspace:focus-visible{background:#b6f5d7;color:#08271e}
+.catalog-count{font-size:.72rem;font-weight:650;color:var(--muted);margin-left:8px;white-space:nowrap}
+.catalog-only-market{min-height:180px}
+.catalog-only-market h3{font-size:1.15rem;line-height:1.35;margin:13px 0 10px}
+.catalog-only-market p{font-size:.88rem;margin-top:14px}
+.catalog-access{display:inline-flex;padding:5px 10px;background:rgba(248,208,141,.055);border:1px solid #6b5c43;border-radius:999px;font-size:.7rem;font-weight:750;color:#ffdb9f}
+@media(max-width:820px){.nav-workspace{align-self:stretch}}
+@media(max-width:520px){.nav-workspace{width:100%}.catalog-count{display:block;margin:7px 0 0}}

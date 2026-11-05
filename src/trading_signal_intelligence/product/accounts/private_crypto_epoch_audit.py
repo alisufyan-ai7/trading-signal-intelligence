@@ -123,10 +123,18 @@ def audit_frozen_crypto_epoch(
                     raise FrozenCryptoEpochAuditError("Crypto event time/identity mismatch")
                 payload=_payload(payload_raw)
                 if (payload.get("runtime_version")!="AI-v1.3" or
-                    payload.get("source_symbol")!=symbol or
-                    payload.get("broker_execution_enabled") is not False or
-                    payload.get("public_signal_exposure_enabled") is not False):
-                    raise FrozenCryptoEpochAuditError("Crypto source/exposure identity invalid")
+                    payload.get("source_symbol")!=symbol):
+                    raise FrozenCryptoEpochAuditError("Crypto source identity invalid")
+                # NO_TRADE and REJECTED_INFERENCE terminal payloads do not
+                # repeat exposure flags in the original crypto engine. A
+                # missing flag is allowed ONLY on these two terminal types.
+                if kind in ("NO_TRADE","REJECTED_INFERENCE"):
+                    if (payload.get("broker_execution_enabled",False) is not False or
+                        payload.get("public_signal_exposure_enabled",False) is not False):
+                        raise FrozenCryptoEpochAuditError("Crypto terminal exposure enabled")
+                elif (payload.get("broker_execution_enabled") is not False or
+                      payload.get("public_signal_exposure_enabled") is not False):
+                    raise FrozenCryptoEpochAuditError("Crypto execution/exposure enabled")
                 if "source_bar_close_utc" in payload:
                     if _utc(str(payload["source_bar_close_utc"]))!=cycle:
                         raise FrozenCryptoEpochAuditError("Payload cycle close mismatch")

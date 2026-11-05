@@ -92,3 +92,42 @@ def test_postactivation_cycles_never_promote_profit(tmp_path):
     assert evidence["matched_inference_outcomes"]==1
     assert evidence["after_cost_returns_verified"] is False
     assert evidence["scheduler_receipts_verified"] is False
+
+
+def test_real_crypto_rejected_terminal_omits_exposure_flags(tmp_path):
+    file,ledger=make(tmp_path)
+    inferred=add(ledger,"INFERENCE",close(20),guard=False)
+    payload={
+        "runtime_version":"AI-v1.3","source_symbol":M,
+        "originating_inference_record_hash":inferred["record_hash"],
+    }
+    when=close(20)
+    ledger.append(
+        record_type="REJECTED_INFERENCE",
+        entity_id="AI-v1.3:"+M+":"+ts(when),
+        effective_at_utc=when,
+        recorded_at_utc=when+timedelta(minutes=2),
+        payload=payload,
+    )
+    result=audit_frozen_crypto_epoch(file,symbol=M,activated_at_utc=ts(ACT))
+    assert result["matched_inference_outcomes"]==1
+    assert result["status"]=="FROZEN_CRYPTO_INTERNAL_EPOCH_CONSISTENT_NOT_K5_CERTIFIED"
+
+
+def test_terminal_explicit_public_exposure_fails_closed(tmp_path):
+    file,ledger=make(tmp_path)
+    inferred=add(ledger,"INFERENCE",close(20),guard=False)
+    when=close(20)
+    ledger.append(
+        record_type="REJECTED_INFERENCE",
+        entity_id="AI-v1.3:"+M+":"+ts(when),
+        effective_at_utc=when,
+        recorded_at_utc=when+timedelta(minutes=2),
+        payload={
+            "runtime_version":"AI-v1.3","source_symbol":M,
+            "originating_inference_record_hash":inferred["record_hash"],
+            "public_signal_exposure_enabled":True,
+        },
+    )
+    with pytest.raises(FrozenCryptoEpochAuditError):
+        audit_frozen_crypto_epoch(file,symbol=M,activated_at_utc=ts(ACT))

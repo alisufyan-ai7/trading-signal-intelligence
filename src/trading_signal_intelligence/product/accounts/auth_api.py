@@ -80,13 +80,19 @@ def create_auth_router(
 
     @router.get("/auth/callback")
     def callback(request: Request) -> RedirectResponse:
-        # Disallow duplicated parameters, injection, fragments and provider errors.
+        # Auth0 sends the RFC 9207 `iss` authorization-server identifier.
+        # Permit it ONLY when byte-for-byte identical to our configured issuer,
+        # before consuming the single-use browser-bound state or exchanging a code.
+        # Reject duplicates, unknown parameters, and provider error callbacks.
         params = request.query_params
         if (
             len(params.getlist("code")) != 1
             or len(params.getlist("state")) != 1
+            or len(params.getlist("iss")) > 1
+            or len(params.getlist("session_state")) > 1
+            or ("iss" in params and params["iss"] != settings.issuer)
             or params.get("error")
-            or set(params) - {"code", "state", "session_state"}
+            or set(params) - {"code", "state", "session_state", "iss"}
         ):
             raise HTTPException(status_code=400, detail="Sign-in response rejected")
         code, state = params["code"], params["state"]

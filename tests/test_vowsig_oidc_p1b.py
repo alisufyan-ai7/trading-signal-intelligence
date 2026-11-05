@@ -268,3 +268,62 @@ def test_owner_auth0_public_config_exact_boundaries():
     assert "access_token" not in params
     assert len(params["state"][0]) == 43
     assert len(params["nonce"][0]) == 43
+
+
+def test_rfc9207_auth0_issuer_callback_completes_one_use_login(auth_client):
+    """Live Auth0 includes iss in the callback; correct exact issuer must pass."""
+    store,client=auth_client
+    started=client.get("/auth/start",follow_redirects=False)
+    state=parse_qs(urlsplit(started.headers["location"]).query)["state"][0]
+    finished=client.get("/auth/callback",params={
+        "code":"good-code","state":state,"iss":CONFIG.issuer
+    },follow_redirects=False)
+    assert finished.status_code==303
+    assert finished.headers["location"]=="/app/"
+    assert len(store.sessions)==1
+    assert store.consume_count==1
+    repeated=client.get("/auth/callback",params={
+        "code":"good-code","state":state,"iss":CONFIG.issuer
+    },follow_redirects=False)
+    assert repeated.status_code==400
+    assert len(store.sessions)==1
+
+
+@pytest.mark.parametrize("invalid_params",[
+    [("iss","https://impostor.example.test/tenant/")],
+    [("iss","https://identity.example.test/tenant")],  # slash matters
+    [("iss","")],
+    [("iss","https://identity.example.test/tenant/"),("iss","https://identity.example.test/tenant/")],
+    [("session_state","a"),("session_state","b")],
+    [("unexpected","injected")],
+    [("error","access_denied")],
+])
+def test_callback_issuer_mismatch_or_duplicate_rejected_before_state_consumption(
+    auth_client,invalid_params
+):
+    store,client=auth_client
+    started=client.get("/auth/start",follow_redirects=False)
+    state=parse_qs(urlsplit(started.headers["location"]).query)["state"][0]
+    callback=[("code","good-code"),("state",state),*invalid_params]
+    rejected=client.get("/auth/callback",params=callback,follow_redirects=False)
+    assert rejected.status_code==400
+    assert rejected.json()=={"detail":"Sign-in response rejected"}
+    assert store.consume_count==0
+    assert store.sessions==[]
+    # A rejected issuer must not burn a legitimate, browser-bound state.
+    valid=client.get("/auth/callback",params={
+        "code":"good-code","state":state,"iss":CONFIG.issuer
+    },follow_redirects=False)
+    assert valid.status_code==303
+    assert len(store.sessions)==1
+
+
+def test_legacy_provider_callback_without_issuer_remains_compatible(auth_client):
+    store,client=auth_client
+    started=client.get("/auth/start",follow_redirects=False)
+    state=parse_qs(urlsplit(started.headers["location"]).query)["state"][0]
+    done=client.get("/auth/callback",params={
+        "code":"good-code","state":state,"session_state":"opaque-session"
+    },follow_redirects=False)
+    assert done.status_code==303
+    assert len(store.sessions)==1

@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import hashlib
 import os
+import re
 from pathlib import Path
 import socket
 import ssl
@@ -81,7 +82,9 @@ def require_staging_runtime(environ: dict[str,str]) -> str:
         p=urlsplit(dsn)
         query=parse_qs(p.query,strict_parsing=True,keep_blank_values=True)
         if (p.scheme!="postgresql" or p.hostname!=HOST or p.port!=PORT
-            or p.username!="vowsig_app" or not p.password or p.path!="/"+_DB
+            or p.username!="vowsig_app" or not p.password
+            or not re.fullmatch(r"[A-Za-z0-9_-]{24,128}",p.password)
+            or p.path!="/"+_DB
             or p.fragment or p.query.count("sslmode=")!=1
             or p.query.count("sslrootcert=")!=1 or set(query)!={"sslmode","sslrootcert"}
             or query["sslmode"]!=["verify-full"]
@@ -125,11 +128,26 @@ def inspect_staging(*, environ: dict[str,str], ca_file: Path=CA_FILE)->dict[str,
         from trading_signal_intelligence.product.accounts.railway_pg_acceptance import (
             inspect_authenticated_app_connection,
         )
-        with psycopg.connect(dsn,connect_timeout=5) as conn:
+        conn=psycopg.connect(dsn,connect_timeout=5)
+    except Exception as exc:
+        # Classify fixed server errors without ever logging the DSN or the
+        # provider's raw exception, which may include connection credentials.
+        raw=str(exc).casefold()
+        if "password authentication failed" in raw:
+            reason="Restricted staging role password rejected"
+        elif "root certificate" in raw or "certificate verify failed" in raw:
+            reason="Restricted staging libpq TLS trust mismatch"
+        elif "could not translate host name" in raw or "connection refused" in raw:
+            reason="Restricted staging private-network connection rejected"
+        else:
+            reason="Authenticated restricted staging SQL connection unavailable"
+        raise StagingAcceptanceHold(reason) from None
+    try:
+        with conn:
             conn.execute("SET TRANSACTION READ ONLY")
             receipt=inspect_authenticated_app_connection(conn)
-    except Exception as exc:
-        raise StagingAcceptanceHold("Authenticated restricted staging SQL unavailable") from exc
+    except Exception:
+        raise StagingAcceptanceHold("Authenticated restricted SQL permission/read-only query rejected") from None
     if receipt.get("status")!="AUTHENTICATED_APP_ROLE_RESTRICTED_SQL_READ_ONLY_PASS":
         raise StagingAcceptanceHold("Restricted SQL role privileges not accepted")
     return {

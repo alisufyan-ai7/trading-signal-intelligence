@@ -87,3 +87,9 @@ def test_cli_emits_only_constant_rejection_categories(monkeypatch,capsys):
     assert "HOLD_REASON=Wrong Railway environment or account flags" in out
     assert "ACCOUNT_FEATURES_MUST_REMAIN_DISABLED=YES" in out
     assert "TEST_ONLY_NO_PROVIDER_SECRET" not in out
+
+def test_literal_unresolved_secret_reference_refused_without_leaking():
+    dsn=TEST_DSN.replace("TEST_ONLY_NO_PROVIDER_SECRET", "%24%7B%7Bplaceholder%7D%7D")
+    with pytest.raises(st.StagingAcceptanceHold) as err:
+        st.require_staging_runtime(env(dsn))
+    assert "placeholder" not in str(err.value)

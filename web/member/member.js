@@ -6,6 +6,7 @@
 (() => {
   const main = document.querySelector("#app-content");
   const error = document.querySelector("#app-error");
+  const CORE_MARKETS = new Set(["XAUUSD","USTEC","US30"]);
   const headings = {
     dashboard: "My research", signals: "Signal Center", history: "Recent history",
     markets: "All nine markets", watchlist: "My watchlist",
@@ -39,6 +40,10 @@
   };
   const clear = () => main.replaceChildren();
   const text = v => (v === null || v === undefined || v === "" ? "Not available" : String(v));
+  const researchScope = m => CORE_MARKETS.has(m.symbol) ? "Core shadow research" : "Validation only";
+  const marketStatus = m => CORE_MARKETS.has(m.symbol) ?
+    (m.snapshot_fresh && m.research_signal_detail_available ? "Core research available" : "Core research · updates unavailable") :
+    "Validation only · details restricted";
   const date = v => {
     if (!v) return "Not available";
     const d = new Date(v);
@@ -79,14 +84,16 @@
   function itemMarket(m) {
     const saved = state.watchlist.includes(m.symbol);
     const item = E("article",{class:"list-row"},
-      E("div",{class:"row-head"},heading(m.name),pill(m.research_status.replaceAll("_"," "),
-        m.research_signal_detail_available ? "closed":"restricted")),
-      E("p",{class:"helper",text:m.research_signal_detail_available ?
-        (m.current_signal_present ? "Current validated SHADOW_ONLY observation in source snapshot." :
-          "Core research available; no verified current shadow signal.") :
-        "Research validation / availability only. No detailed signal exposure."}),
-      compact([["Symbol",m.symbol],["Source","Research only"],
-        ["Snapshot",m.snapshot_fresh ? "Fresh" : "Unavailable / delayed"]]));
+      E("div",{class:"row-head"},heading(m.name),pill(marketStatus(m),
+        m.snapshot_fresh && m.research_signal_detail_available ? "closed":"restricted")),
+      E("p",{class:"helper",text:CORE_MARKETS.has(m.symbol) ?
+        (m.snapshot_fresh && m.research_signal_detail_available ?
+          (m.current_signal_present ? "Eligible shadow research in the current snapshot; no broker order." :
+            "Core research available; no verified current shadow signal.") :
+          "Core research market. No fresh eligible public snapshot; no current signal is implied.") :
+        "Validation-only market. Detailed signals and entry/stop/target levels are not released."}),
+      compact([["Symbol",m.symbol],["Research scope",researchScope(m)],
+        ["Source status",m.snapshot_fresh ? "Fresh" : "Unavailable / delayed"]]));
     const save = btn(saved?"Remove from watchlist":"Add to watchlist",async () => {
       save.disabled=true;
       try {
@@ -161,7 +168,7 @@
         E("div",{class:"tile"},E("div",{class:"amount",text:state.watchlist.length}),E("div",{class:"name",text:"My watched markets"}),E("p",{text:"Not a trading portfolio"})))));
     main.append(panel("My watchlist",followed.length ?
       E("div",{class:"tiles"},...followed.map(x=>E("div",{class:"tile"},heading(x.name),
-        E("p",{text:x.research_status.replaceAll("_"," ")})))) :
+        E("p",{text:marketStatus(x)})))) :
       msg("Start with a market","Open All Markets to follow any of the nine available research symbols."),
       link("Explore all markets","/app/markets/")));
     main.append(panel("Where to begin",
@@ -174,7 +181,8 @@
   }
   async function showSignals() {
     const feed=await ensureFeed();
-    const core=state.catalog.filter(m=>m.research_signal_detail_available);
+    const core=state.catalog.filter(m=>CORE_MARKETS.has(m.symbol));
+    const eligible=core.filter(m=>m.snapshot_fresh===true && m.research_signal_detail_available===true);
     main.append(panel("Permitted core research",
       E("p",{class:"helper",text:"These records come from the current bounded snapshot, not a complete track record. 'Active' means shadow research, never a customer trade alert."}),
       feed.status!=="shadow_only" ? msg("No fresh core research",
@@ -188,7 +196,8 @@
           [msg("No recent decisions","An unavailable inference is not a NO_TRADE.")]))));
     main.append(panel("Market scope",
       E("p",{class:"helper",text:"All nine markets can be followed; only currently permitted core research can show per-signal detail."}),
-      compact([["Core markets",core.length],["Validation-only markets",state.catalog.length-core.length]])));
+      compact([["Core research markets",core.length],["Validation-only markets",state.catalog.length-core.length],
+        ["Core details available now",eligible.length]])));
   }
   async function showHistory() {
     const feed=await ensureFeed();

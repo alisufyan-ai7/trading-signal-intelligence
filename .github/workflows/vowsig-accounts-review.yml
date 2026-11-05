@@ -31,6 +31,8 @@ on:
       - 'scripts/vowsig_readonly_source_inventory.py'
       - 'scripts/vowsig_freeze_original_sources.py'
       - 'scripts/vowsig_verify_frozen_sources.py'
+      - 'ops/handoffs/vowsig_original_source_freeze_inline_v0_1.py'
+      - 'tests/test_vowsig_inline_source_freeze_p2.py'
       - 'tests/test_vowsig_private_source_freeze_p2.py'
       - 'pyproject.toml'
       - 'Dockerfile'
@@ -77,7 +79,7 @@ jobs:
       - name: Parse responsive member JavaScript
         run: node --check web/member/member.js
       - name: Compile independent source audit operator without running it
-        run: python -m py_compile scripts/vowsig_audit_original_ledger_vs_projection.py scripts/vowsig_readonly_source_inventory.py scripts/vowsig_freeze_original_sources.py scripts/vowsig_verify_frozen_sources.py
+        run: python -m py_compile scripts/vowsig_audit_original_ledger_vs_projection.py scripts/vowsig_readonly_source_inventory.py scripts/vowsig_freeze_original_sources.py scripts/vowsig_verify_frozen_sources.py ops/handoffs/vowsig_original_source_freeze_inline_v0_1.py
       - name: Targeted account policy and public contract regression
         run: |
           python -m pytest -q \
@@ -95,6 +97,7 @@ jobs:
             tests/test_vowsig_source_projection_reconciliation_p2.py \
             tests/test_vowsig_source_inventory_p2.py \
             tests/test_vowsig_private_source_freeze_p2.py \
+            tests/test_vowsig_inline_source_freeze_p2.py \
             tests/test_vowsig_oidc_p1b.py \
             tests/test_vowsig_railway_tls_p1b.py \
             tests/test_cloud_snapshot_durability.py \

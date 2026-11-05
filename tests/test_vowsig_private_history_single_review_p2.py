@@ -13,6 +13,9 @@ from tests.test_vowsig_private_source_freeze_p2 import _setup
 
 def _frozen(tmp_path,monkeypatch):
     repo,private=_setup(tmp_path,monkeypatch)
+    # Synthetic fixture uses a generic "private" name; rename only the
+    # disposable test location to match the real owner-restricted path gate.
+    private=private.rename(tmp_path/"OriginalLedgerEvidence-synthetic")
     anchor=repo/freeze.CRYPTO_ANCHOR_PATH
     data=json.loads(anchor.read_text())
     data["activated_at_utc"]="2026-11-05T02:00:00Z"

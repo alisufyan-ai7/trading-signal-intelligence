@@ -91,6 +91,16 @@ def _signal(p: dict[str,Any], *, model_version: str, market: str) -> None:
         if midpoint<=0 or not _close(_finite(p.get("round_trip_fee_price")),
                                     0.002*midpoint):
             raise FrozenCostAuditHold("Crypto taker fee assumption mismatch")
+        # Frozen AI-v1.3 policy fixes BOTH round-trip spread crossing and
+        # slippage buffer to 1x the separately recorded top-of-book spread.
+        spread=_finite(p.get("spread_price"))
+        if (spread<0 or
+            not _close(_finite(p.get("spread_crossing_price")),spread) or
+            not _close(_finite(p.get("slippage_buffer_price")),spread)):
+            raise FrozenCostAuditHold("Crypto spread/slippage policy mismatch")
+        if (p.get("broker_execution_enabled") is not False or
+            p.get("public_signal_exposure_enabled") is not False):
+            raise FrozenCostAuditHold("Crypto broker/public exposure boundary mismatch")
     else:
         spread=_finite(p.get("spread_price"))
         multiplier=_finite(p.get("cost_multiplier"))

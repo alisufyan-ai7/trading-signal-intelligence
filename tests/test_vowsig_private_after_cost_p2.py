@@ -29,7 +29,14 @@ def sample(tmp_path,crypto=False,partial=True,tamper=None):
             "slippage_buffer_price":0.0,
             "reference_midpoint":100.0,
             "estimated_cost_r":0.02,
+            "spread_price":0.0,
+            "broker_execution_enabled":False,
+            "public_signal_exposure_enabled":False,
         })
+        if tamper=="crypto_spread":
+            sig["spread_price"]=0.05
+        if tamper=="crypto_exposure":
+            sig["public_signal_exposure_enabled"]=True
     else:
         sig.update({"spread_price":0.1,"cost_multiplier":2.0})
     signal=ledger.append(record_type="SIGNAL",entity_id="synthetic",
@@ -96,4 +103,13 @@ def test_changed_evidence_and_wrong_market_fail_closed(tmp_path):
         f.write(b"changed")
     with pytest.raises(FrozenCostAuditHold):
         audit_frozen_after_costs(file,model_version="AI-v1.1",market="XAUUSD",
+            expected_frozen_file_sha256=sha,expected_terminal_record_hash=head)
+
+
+@pytest.mark.parametrize("fault",["crypto_spread","crypto_exposure"])
+def test_crypto_spread_and_public_exposure_mismatch_hold(tmp_path,fault):
+    file,sha,head=sample(tmp_path,crypto=True,tamper=fault)
+    with pytest.raises(FrozenCostAuditHold):
+        audit_frozen_after_costs(file,
+            model_version="AI-v1.3",market="BTCUSDT",
             expected_frozen_file_sha256=sha,expected_terminal_record_hash=head)

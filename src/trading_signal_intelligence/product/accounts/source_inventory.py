@@ -40,8 +40,10 @@ SOURCES=(
 )
 
 _HASH=re.compile(r"^[0-9a-f]{64}$")
-_SAFE_TYPES=("ACTIVATION","INFERENCE","NO_TRADE","REJECTED_INFERENCE",
-             "SIGNAL","EXIT","PARTIAL_EXIT","MISSED_INFERENCE","ERROR")
+_AI_TYPES=("ACTIVATION","INFERENCE","NO_TRADE","REJECTED_INFERENCE",
+           "SIGNAL","EXIT","PARTIAL_EXIT","MISSED_INFERENCE","ERROR")
+# S02 forward is a separate ledger protocol, not the AI inference lifecycle.
+_S02_TYPES=("ACTIVATION","SIGNAL","EXIT","MISSED_SIGNAL","SKIPPED_SIGNAL")
 
 
 def inventory_expected_sources(root: str | Path) -> dict[str, Any]:
@@ -94,7 +96,8 @@ def inventory_expected_sources(root: str | Path) -> dict[str, Any]:
             if (number and
                 (type(last) is not str or not _HASH.fullmatch(last))):
                 raise ValueError("Untrusted original source head")
-            metrics={kind:0 for kind in _SAFE_TYPES}
+            safe_types=_S02_TYPES if spec.program=="s02-forward" else _AI_TYPES
+            metrics={kind:0 for kind in safe_types}
             other_event_type_rows=0
             for row in types:
                 if row["record_type"] in metrics:

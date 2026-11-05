@@ -168,3 +168,30 @@ def test_unrecognized_event_type_is_counted_without_leaking_name(tmp_path):
     assert row["other_event_type_rows"]==1
     assert "SYNTHETIC_UNEXPECTED_KIND" not in str(result)
     assert "synthetic-private" not in str(result)
+
+
+
+def test_s02_forward_native_events_are_classified_without_payload(tmp_path):
+    data=tmp_path/"data"
+    data.mkdir()
+    path=data/"forward.sqlite"
+    now=datetime(2026,11,5,2,tzinfo=timezone.utc)
+    ledger=ForwardLedger(path)
+    for kind,entity in (
+        ("ACTIVATION","activation"),
+        ("MISSED_SIGNAL","missed-cycle"),
+        ("SKIPPED_SIGNAL","skipped-cycle"),
+        ("SIGNAL","tracked-signal"),
+    ):
+        ledger.append(record_type=kind, entity_id=entity,
+                      effective_at_utc=now,
+                      payload={"private":"NEVER_PRINT_S02"})
+    result=inventory_expected_sources(tmp_path)
+    row=next(x for x in result["ledgers"]
+             if x["program"]=="s02-forward" and x["symbol"]=="XAUUSD")
+    assert row["record_count"]==4
+    assert row["event_counts"]["MISSED_SIGNAL"]==1
+    assert row["event_counts"]["SKIPPED_SIGNAL"]==1
+    assert row["other_event_type_rows"]==0
+    assert result["other_event_type_rows"]==0
+    assert "NEVER_PRINT_S02" not in str(result)

@@ -25,7 +25,7 @@ class Connection:
 
 def answers(role="vowsig_app",path="vowsig, pg_catalog",
             ssl=True,priv=(False,False,False,False),
-            grants=(True,False,True,True),writes=(False,False,False)):
+            grants=(True,False,True,False),writes=(False,False,False)):
     return [(role,path,ssl,"TLSv1.3"),priv,grants,writes]
 
 
@@ -42,6 +42,8 @@ def test_restricted_psycopg_facts_are_safe_and_read_only():
     answers(role="postgres"),answers(path="public"),
     answers(ssl=False),answers(priv=(True,False,False,False)),
     answers(grants=(True,True,True,True)),
+    # Accidental broad UPDATE grant to vowsig_accounts is a fail-closed denial.
+    answers(grants=(True,False,True,True)),
     answers(writes=(True,False,False)),
 ])
 def test_mismatched_target_or_role_privileges_never_pass(responses):

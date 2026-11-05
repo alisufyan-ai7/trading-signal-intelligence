@@ -76,7 +76,9 @@ def inspect_authenticated_app_connection(conn) -> dict[str,object]:
         encrypted is not True or
         tls_version not in ("TLSv1.2","TLSv1.3") or
         role_flags!=(False,False,False,False) or
-        (usage,create,select,update)!=(True,False,True,True) or
+        # Migration 007 intentionally grants INSERT columns only on accounts.
+        # The application MUST NOT UPDATE account roles or email directly.
+        (usage,create,select,update)!=(True,False,True,False) or
         prohibited!=(False,False,False)):
         raise PgAcceptanceError("Authenticated runtime privileges/TLS failed closed")
     return {

@@ -85,7 +85,8 @@
     const saved = state.watchlist.includes(m.symbol);
     const item = E("article",{class:"list-row"},
       E("div",{class:"row-head"},heading(m.name),pill(marketStatus(m),
-        m.snapshot_fresh && m.research_signal_detail_available ? "closed":"restricted")),
+        m.snapshot_fresh && m.research_signal_detail_available ? "closed":
+        CORE_MARKETS.has(m.symbol) ? "unavailable" : "restricted")),
       E("p",{class:"helper",text:CORE_MARKETS.has(m.symbol) ?
         (m.snapshot_fresh && m.research_signal_detail_available ?
           (m.current_signal_present ? "Eligible shadow research in the current snapshot; no broker order." :
@@ -163,7 +164,7 @@
     const followed=state.catalog.filter(m=>state.watchlist.includes(m.symbol));
     main.append(panel("At a glance",
       E("div",{class:"tiles"},
-        E("div",{class:"tile"},E("div",{class:"amount",text:state.catalog.length}),E("div",{class:"name",text:"Markets monitored"}),E("p",{text:"All nine research catalog symbols"})),
+        E("div",{class:"tile"},E("div",{class:"amount",text:state.catalog.length}),E("div",{class:"name",text:"Research markets cataloged"}),E("p",{text:"Catalog presence does not establish a current signal"})),
         E("div",{class:"tile"},E("div",{class:"amount",text:state.catalog.filter(x=>x.research_signal_detail_available).length}),E("div",{class:"name",text:"Core detail currently permitted"}),E("p",{text:"Research only, freshness gated"})),
         E("div",{class:"tile"},E("div",{class:"amount",text:state.watchlist.length}),E("div",{class:"name",text:"My watched markets"}),E("p",{text:"Not a trading portfolio"})))));
     main.append(panel("My watchlist",followed.length ?
@@ -514,7 +515,8 @@
       document.querySelector("#tier-label").textContent=state.me.access_tier.replaceAll("_"," ");
       const [cat,watch]=await Promise.all([request("/api/v2/public/markets"),request("/api/v2/me/watchlist")]);
       state.catalog=cat.markets;state.watchlist=watch.markets;
-      document.querySelector("#snapshot-status").textContent=cat.markets.every(m=>m.snapshot_fresh)?"Current snapshot":"Updates delayed / unavailable";
+      document.querySelector("#snapshot-status").textContent= !cat.snapshot_generated_at_utc ? "No published research snapshot" :
+        (cat.markets.length && cat.markets.every(m=>m.snapshot_fresh) ? "Research snapshot current" : "Research snapshot delayed / unavailable");
       if(page==="dashboard")showDashboard();
       else if(page==="markets")showMarkets();
       else if(page==="signals")await showSignals();

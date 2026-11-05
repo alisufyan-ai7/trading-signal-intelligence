@@ -420,3 +420,18 @@ def test_expired_session_does_not_render_private_research(ui):
     page.get_by_text("Research workspace not ready").wait_for()
     assert page.get_by_text("XAUUSD · SELL").count()==0
     assert page.get_by_text("Your verified account session is unavailable",exact=False).count()>=1
+
+def test_mobile_nav_is_reachable_on_small_screens(ui):
+    page, state = ui
+    for width in (320, 375, 768):
+        page.set_viewport_size({"width": width, "height": 812})
+        open_page(page, "/app/")
+        assert page.locator(".mobile-nav").is_visible()
+        assert not page.locator(".sidebar nav").is_visible()
+        assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1")
+        page.locator(".mobile-more > summary").click()
+        assert page.get_by_role("link", name="Account & settings").is_visible()
+        assert page.get_by_role("button", name="Sign out securely").is_visible()
+    page.get_by_role("button", name="Sign out securely").click()
+    page.wait_for_timeout(100)
+    assert ("POST", "/api/v2/me/logout") in state["http_calls"]

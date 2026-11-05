@@ -34,6 +34,7 @@ on:
       - 'ops/handoffs/vowsig_original_source_freeze_inline_v0_1.py'
       - 'tests/test_vowsig_inline_source_freeze_p2.py'
       - 'tests/test_vowsig_private_lifecycle_p2.py'
+      - 'tests/test_vowsig_railway_pg_acceptance_p1b.py'
       - 'tests/test_vowsig_private_source_freeze_p2.py'
       - 'pyproject.toml'
       - 'Dockerfile'
@@ -100,6 +101,7 @@ jobs:
             tests/test_vowsig_private_source_freeze_p2.py \
             tests/test_vowsig_inline_source_freeze_p2.py \
             tests/test_vowsig_private_lifecycle_p2.py \
+            tests/test_vowsig_railway_pg_acceptance_p1b.py \
             tests/test_vowsig_oidc_p1b.py \
             tests/test_vowsig_railway_tls_p1b.py \
             tests/test_cloud_snapshot_durability.py \

@@ -38,3 +38,7 @@ New file `sql/accounts/007_restricted_roles_and_grants.sql` explicitly requires:
 4. Reconcile the unrelated **pending** Railway app variable patch `VOWSIG_ACCOUNTS_APP_ORIGIN` before any accept-deploy: current production app must not change by accident.
 
 **Release scope:** single coordinated public release with verified customer accounts, Resend, complete owner/admin with secure free MFA, verified source history and accurate cost-normalized analytics, recovery, app+DB security and rollback; no paid Auth0 feature or broker execution.
+
+## Candidate authenticated app-role probe — 2026-11-05 (DRAFT ONLY)
+
+`src/trading_signal_intelligence/product/accounts/railway_pg_acceptance.py` prepares a nonmutating, fail-closed, authenticated SQL check from the **future approved** app image. It requires the exact private hostname, `vowsig_app` role, `sslmode=verify-full`, the pinned public CA bundle and secrets only in Railway's private environment; it runs only read-only SQL examining `current_user`, `search_path`, `pg_stat_ssl`, role flags and narrowly allowed/denied schema/table privileges. Its receipt contains no DSN or customer data. Synthetic negative tests run in PR #93 CI; **this is NOT a test on live Railway**. The actual restricted-role SQL, migrations, live Auth0 verified signup and owner TOTP remain separately owner-controlled operational acceptance gates. Database offsite backup/restore remains post-launch by binding D-01–D-06.

@@ -94,9 +94,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.solo_founder_first_owner:
             if (approval["operation"] != "first_owner_solo"
                 or not args.target_staging
-                or args.mode != "apply"
-                or args.acknowledge_solo != SOLO_ACK
-                or args.operator_id != approval["reviewer_id"]):
+                or args.operator_id != approval["reviewer_id"]
+                or (args.mode == "apply" and args.acknowledge_solo != SOLO_ACK)
+                or (args.mode == "preview" and args.acknowledge_solo)):
                 raise OwnerProvisioningDenied("Exact solo founder authorization required")
         elif (approval["operation"] == "first_owner_solo"
               or args.acknowledge_solo

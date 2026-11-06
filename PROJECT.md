@@ -1,5 +1,12 @@
 # Project Brief
 
+## CURRENT AUTHENTICATED VOWSIG RELEASE — November 6, 2026
+
+**This section controls interpretation of older product/PR/backup status below; preserve historical evidence in place.** Read [current release state and owner decisions](docs/VOWSIG_START_HERE_CURRENT_STATE.md), [product/user journey contract](docs/vowsig-product-contract-current.md), [complete Railway staging/production from-scratch runbook](docs/vowsig-railway-zero-to-production-rebuild-runbook.md), and [new-chat execution handoff](docs/vowsig-next-chat-execution-handoff.md). Draft PR [#93](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/93) introduces Free verified Auth0 member Signal Center, watchlist and nine-market directory plus TOTP-protected owner dashboard. Core three only may expose sanitized eligible fresh SHADOW_ONLY details; six noncore markets show status only. Live `vowsig.com` beta publisher and `/data` remain unchanged. Historical independent certification is explicitly **postlaunch**, with unverified returns N/A. Railway PostgreSQL backups/cold restore are **first immediate postlaunch** under owner-accepted risk; prior VPS S02-only backup is distinct. Production account schema 001–010 owner-executed PASS, four app secrets STAGED not deployed, exact private role/TLS check pending. **No merged or deployed authenticated release yet; no exact-SHA authorization.** Older headings and status dates below are historical.
+
+---
+
+
 ## 2026-10-26 repository PR governance update
 
 The full original 18-open-PR review is [preserved in GitHub](docs/pr-queue-review-2026-10-24.md) and leaves just two **unmerged drafts**: [PR #87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) (39 SHA-identical S02 AWS/B2+GFS implementation/test files needing native Windows validation) and [PR #50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) (frozen-dependency impact CI needing independent tests). Original #85 and #77–84 closed superseded, original 131-commit history preserved in `archive/pr85-original-stacked-backup-history-20261024`; historic evidence files EXP043–059 and customer-product documents are on `main` via preservation-only merges. Existing VPS daily S02 backup and cloud copies were not modified by this GitHub administrative cleanup.

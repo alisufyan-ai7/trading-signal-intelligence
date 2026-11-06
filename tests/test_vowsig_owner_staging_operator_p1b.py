@@ -87,6 +87,8 @@ def test_encrypted_handoff_rejects_wrong_password_and_wrong_operation():
 
 def test_staging_operator_fails_closed_without_private_operator_context(monkeypatch):
     op = _load("scripts/vowsig_owner_staging_operator.py", "railway_context")
+    monkeypatch.delenv("CI", raising=False)
+    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
     monkeypatch.setenv("RAILWAY_PROJECT_ID", "unrelated-project")
     monkeypatch.setenv("RAILWAY_ENVIRONMENT_ID", "unrelated-environment")
     with pytest.raises(RuntimeError, match="ISOLATED_STAGING_SERVICE_REQUIRED"):

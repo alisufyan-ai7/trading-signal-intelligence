@@ -1,5 +1,12 @@
 # Current Handoff / Operating Contract
 
+## CURRENT AUTHENTICATED RELEASE HANDOFF — November 6, 2026
+
+**Superseding navigation:** [VowSig current state](VOWSIG_START_HERE_CURRENT_STATE.md), [next-chat exact execution](vowsig-next-chat-execution-handoff.md), [from-scratch Railway runbook](vowsig-railway-zero-to-production-rebuild-runbook.md), [product scope](vowsig-product-contract-current.md). October PR governance and S02 evidence below remain dated historical checkpoints, not the present release plan. **Current draft PR #93** is unmerged, historical performance only N/A until independent postlaunch signoff; production PG roles/schema 001–010 PASS, four sensitive app config names STAGED but no Apply/Deploy, production app-role TLS private SELECT-only PASS **not yet owner-reported**. Staging owner/member PASS. Owner exact-SHA merge/deploy permission still required, live publisher/`/data` must survive intact. Do not repeat completed migrations or frozen VPS audits.
+
+---
+
+
 ## GitHub cleanup verification — 2026-10-26
 
 Only [PR #87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) and [PR #50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) are OPEN; both remain DRAFT and UNMERGED. #87 is the complete final 39-file S02 encrypted backup/GFS code + regression-test review surface, with all file blob SHAs identical to the preserved original #85. Original #85's **full 131-commit stacked lineage** and earlier #77–84 commits are pinned in `archive/pr85-original-stacked-backup-history-20261024`; old stage PRs were closed, not erased. All original offline-to-real backup evidence EXP043–059 and historic IAM/SDK artifacts are now on `main` via documentary merges #58/#86/#88. Consult [PR queue final disposition](pr-queue-review-2026-10-24.md) before further code merges. Owner-verified Oct24 AWS/B2 cold-restores and exact cloud inventories remain historical PASS; no Oct26 natural recurrence or active cloud pruning has been verified. No VPS, cloud or trading execution changes were part of GitHub housekeeping.

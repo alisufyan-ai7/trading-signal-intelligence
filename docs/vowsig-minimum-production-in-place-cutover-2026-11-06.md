@@ -1,5 +1,8 @@
 # VowSig — minimum in-place production cutover (2026-11-06)
 
+> **APPROVAL OBTAINED — 2026-11-06:** The owner has **explicitly approved** historical-performance certification **after launch**, with uncertified historical results N/A and the authenticated member/owner experience enabled. The former pending "owner scope decision" in this document is therefore **CLOSED / APPROVED**; the revised code-level signed receipt requires N/A and still denies publishing unreviewed history. See [binding owner policy amendment](docs/vowsig-owner-approved-first-launch-history-deferral-2026-11-06.md). Remaining operational release preconditions (production private PG/Auth0/Resend, MFA, real publisher, rollback and exact-SHA approval) remain mandatory.
+
+
 **Owner goal:** ship the existing authenticated VowSig product **as soon as safely possible**, with **no further product features**, no duplicate staging publisher and no repeat source-ledger/VPS audit scripts. **Status:** exact-SHA production cutover **NOT yet authorized**. Only this chat and `alisufyan-ai7/trading-signal-intelligence` supply engineering context; Railway projects and the current public `vowsig.com` were inspected read-only.
 
 ## Shortest approved technical architecture — reuse production, not another publisher

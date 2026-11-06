@@ -25,6 +25,7 @@ from trading_signal_intelligence.product.accounts.owner_offline_provisioning imp
 )
 
 ACK = "I_APPROVE_ONE_OFF_OWNER_SESSION_REVOCATION"
+SOLO_ACK = "I_ACCEPT_FIRST_OWNER_SELF_AUTHORIZATION_NO_INDEPENDENT_REVIEW"
 
 
 def _reviewed_dsn() -> str:
@@ -73,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--mode", choices=("preview", "apply"), default="preview")
     parser.add_argument("--operator-id", default="")
     parser.add_argument("--acknowledge", default="")
+    parser.add_argument("--solo-founder-first-owner", action="store_true")
+    parser.add_argument("--acknowledge-solo", default="")
     args = parser.parse_args(argv)
 
     try:
@@ -85,9 +88,19 @@ def main(argv: list[str] | None = None) -> int:
             trusted_key_sha256=expected_key,
         )
         dsn = _reviewed_dsn()
+        if args.solo_founder_first_owner:
+            if (approval["operation"] != "first_owner_solo"
+                or args.mode != "apply"
+                or args.acknowledge_solo != SOLO_ACK
+                or args.operator_id != approval["reviewer_id"]):
+                raise OwnerProvisioningDenied("Exact solo founder authorization required")
+        elif (approval["operation"] == "first_owner_solo"
+              or args.acknowledge_solo
+              or (args.mode == "apply" and args.operator_id == approval["reviewer_id"])):
+            raise OwnerProvisioningDenied("Founder exception requires explicit solo mode")
         if args.mode == "apply" and (
-            args.acknowledge != ACK or not sys.stdin.isatty() or not sys.stdout.isatty()
-            or not args.operator_id or args.operator_id == approval["reviewer_id"]
+            args.acknowledge != ACK or not sys.stdin.isatty()
+            or not sys.stdout.isatty() or not args.operator_id
         ):
             raise OwnerProvisioningDenied("Interactive owner approval is required")
         import psycopg

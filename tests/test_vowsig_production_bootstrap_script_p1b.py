@@ -54,3 +54,31 @@ def test_prod_pins_and_private_restricted_role_guards():
     assert "sslmode=disable" not in script
     assert "DROP TABLE" not in script.upper()
     assert "DROP SCHEMA" not in script.upper()
+
+
+def test_production_app_role_tls_acceptance_is_read_only_pinned_and_private():
+    script_path = ROOT / "ops/handoffs/vowsig_production_app_role_tls_readonly_20261106.sh"
+    script = script_path.read_text()
+    ca = (ROOT / "config/tls/railway-postgres-root-ca-20261104.pem").read_text().strip()
+    assert ca + "\\nVOWSIG_PINNED_PUBLIC_CA" not in script  # escaped literal cannot match
+    assert ca + "\nVOWSIG_PINNED_PUBLIC_CA" in script
+    assert "2de2743af645b4ea1780ff9f333bc7e25c1897483ac462ebc8756b4fab11baa8" in script
+    for required in (
+        "positioning-engine-cron",
+        "RAILWAY_ENVIRONMENT_NAME",
+        "RAILWAY_SERVICE_NAME",
+        '"Postgres"',
+        "postgres.railway.internal",
+        "sslmode=verify-full",
+        "user=vowsig_app",
+        "BEGIN READ ONLY;",
+        "ROLLBACK;",
+        "PRIVATE_DNS_VERIFY_FULL=PASS",
+        "PRODUCTION_DATABASE_WRITES=NONE",
+    ):
+        assert required in script
+    assert "read -r -s APP_ROLE_PASSWORD < /dev/tty" in script
+    assert "CREATE ROLE" not in script
+    assert "CREATE TABLE" not in script
+    assert "DROP TABLE" not in script
+    assert "PRODUCTION_WEB_APP_DEPLOYED=NO" in script

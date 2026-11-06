@@ -1,5 +1,27 @@
 # TODO
 
+## CURRENT PRODUCTION LAUNCH ACTIONS — 2026-11-06
+
+Read [current state](docs/VOWSIG_START_HERE_CURRENT_STATE.md) and [next-chat step](docs/vowsig-next-chat-execution-handoff.md), not the October backlog below, for current work. **ONE full authenticated release, no added features.**
+
+- [x] Implement/test current Free member Signal Center and owner dashboards on draft PR #93; real staging member login/watchlist and founder solo TOTP/admin PASS.
+- [x] Owner-approved policy: independent historic rights/cost/K5/full population certification **after** launch, **N/A** before real signature.
+- [x] Production PG18 restricted SQL roles/schema 001–010 owner-operated atomic PASS; **DO NOT RERUN**.
+- [x] Production Railway app 12 vars including OIDC/DB/CSRF/TOTP staged, both account flags **OFF**, **no production deployment**.
+- [x] Resend sender domain verified and existing API key present; Auth0 issuer discovery/JWKS verified publicly.
+- [x] Current exact-reviewed read-only app-role TLS acceptance script created/tested in PR.
+- [ ] Owner returns one sanitized `PRODUCTION_APP_ROLE_TLS_PRIVILEGE` check receipt from existing production Postgres Console (no SQL schema changes).
+- [ ] Verify production Auth0 allowed callback/logout/web origin and **real** email verification via Resend; check negative/replay cases.
+- [ ] One coordinated production candidate: verified-full **app-container** DB connection, real owner production MFA/rotation/recovery, market rights, member UX/mobile/security, snapshot, app-only rollback evidence.
+- [ ] Separate owner approval of **exact full release SHA** before PR merge/app live deployment.
+- [ ] **FIRST immediate postlaunch:** independently encrypted recurring Railway PostgreSQL S3/B2 backups, alerts, retention and actual cold restore; `DATABASE_RECOVERY_UNVERIFIED` until PASS.
+- [ ] Separately certify frozen nine-market historical source rights/costs/crypto K5/cohort before any return/win-rate/equity publication.
+
+**No new staging publisher, no source freeze/VPS chain reruns, no payment/alerts/broker execution or unauthorized six-market details.** Historical S02/GFS work below retains its original date-specific scope.
+
+---
+
+
 Current priorities are tracked by the four validation gates. See `docs/next-actions.md` for execution details.
 
 - [ ] G1 Data reliability

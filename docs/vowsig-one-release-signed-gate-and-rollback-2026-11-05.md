@@ -1,0 +1,38 @@
+# VowSig single coordinated fully enabled release — owner-signed preflight boundary
+
+> **NOVEMBER 6, 2026 — OWNER AMENDMENT / CURRENT SIGNED CONTRACT:** The signed release gate now **requires real evidence that uncertified performance is suppressed**, instead of falsely requiring independent full-source history certification before launch. History rights, crypto K5, after-cost validity and complete nine-market independent signatures remain mandatory **before history can be published**. A one-use, audited, self-authorized founder initial MFA ceremony was explicitly approved and performed in staging; it must not be presented as two-human review. All other provider, security, rollback and owner exact-SHA gates remain. See [binding owner decision](vowsig-owner-approved-first-launch-history-deferral-2026-11-06.md) and the amended `release_acceptance.py` for the actual field names. Historical two-person and full-history prelaunch wording below is superseded on these two narrow points.
+
+
+2026-11-05. Implementation in draft PR #93, NOT a launch or provider-verification claim.
+
+The owner explicitly rejects a feature-disabled live deployment. The only planned go-live includes Free Auth0 signup, verified sessions, Resend delivery, fully working Signal Center and owner diagnostics/Performance Lab with independently certified source histories. Broker execution remains off and six noncore markets cannot expose unapproved per-signal details. The separate new Railway PostgreSQL automatic encrypted offsite backup is **first immediate postlaunch** by explicit owner-accepted temporary data-loss risk; status stays `DATABASE_RECOVERY_UNVERIFIED`.
+
+## Strict one-signature evidence bundle
+
+`src/trading_signal_intelligence/product/accounts/release_acceptance.py` and its manual CLI reject any bundle unless:
+- an externally obtained **owner-trusted reviewer public Ed25519 PEM** has an independently pinned SHA256; signature over canonical JSON validates, reviewer cannot be the independent source-history reviewer; no signer private key is distributed in app/CI;
+- exact 40-character candidate Git SHA and existing `main` SHA match the reviewed bundle; PR #93, single full release, SHADOW_ONLY, original source independently reviewed, customer exposure and postlaunch recovery policy are all explicit;
+- every mandatory gate below has one private full receipt SHA256, timestamp, distinct human reviewer identity, exact candidate SHA, typed origin, `PASS` and independent evidence custody: exact-head CI, public Auth0 issuer/JWKS, real verified signup, unverified/collision/replay denial, real return login/logout, actual Resend delivery, real Railway app SQL verified-full/role and migration-role isolation, offline two-person owner factor enrollment and step-up/recovery, all nine original AI ledgers' complete after-cost rights review, natural crypto K5 H1/H4 opportunity census, independently signed full-universe manifest, actual owner/admin performance and nine market reliability, customer entitlements/privacy, fresh public publisher continuity, staging browser/security, and an exact-candidate rollback rehearsal;
+- evidence is recent and the reviewer signed **after** the newest receipt. Extra keys and unknown fields are refused to avoid accidentally embedding email, account identifiers, secrets or misleading flags.
+
+A PASS from this program certifies only *that a trusted named reviewer signed those complete declared evidence fields*, not the truth of providers or source rights. The reviewer must separately inspect the exact protected receipts and real running systems. The tool returns `production_release_automatically_authorized=false` and `owner_exact_sha_merge_deploy_approval_still_required=true` **unconditionally**.
+
+Run only after all underlying tests have occurred, with independently trusted public key and signed bytes stored privately:
+
+```text
+python -m trading_signal_intelligence.product.accounts.release_acceptance --signed-receipts <PRIVATE_SIGNED_JSON> --trusted-public-key <REVIEWED_PUBLIC_PEM> --trusted-public-key-sha256 <PIN_FROM_SEPARATE_CUSTODY> --expected-candidate-sha <EXACT_TESTED_PR_HEAD> --expected-main-sha <EXACT_UNCHANGED_MAIN_SHA>
+```
+
+No actual release manifests, reviewer key or credential is created by PR. The synthetic CI generates disposable Ed25519 keys and explicitly proves all safety/availability gates fail closed when missing, forged, stale, old HEAD or wrongly scoped. **Do not use CI's synthetic signatures to authorize production.**
+
+## Coordinated staging and rollback
+
+In one approved preproduction candidate deployment, verify immutable image digest and exact PR SHA, migrations with separate vowsig_migrator role, real Auth0 email/Resend flow, restricted PG SQL, signed owner MFA offline enrollment and live session rotation, original reviewed historical cohort ingestion (no public unapproved signals), all owner and Free member paths, publisher freshness and safe 429 diagnostics. Rehearse rollback restoring old public image and prior app behavior WITHOUT downgrading/rewriting database state or stopping Windows scanner/publisher tasks; make migration compatibility explicit. Test release/rollback against the **same** candidate digest. Then the human owner must approve an exact SHA and a single fully enabled go-live. Never interpret a signed test receipt as permission to merge/deploy.
+
+### What cannot be completed solely from GitHub
+
+Actual Auth0 signup/verified email, Resend delivery, authenticated private Railway app SQL, human identity attestation and authenticator enrollment, independent outside-source market data/rights review, and an actual staging+rollback session cannot be claimed from GitHub synthetic CI. They require the owner/provider-controlled test environment and confidential receipts. No provider account has been changed, migrations not applied to Railway, and no production features enabled here.
+
+## Staging-only passive HTTP continuity proof (2026-11-05)
+
+`python -m trading_signal_intelligence.product.accounts.staging_http_acceptance --staging-origin <EXACT_HTTPS_STAGING_ORIGIN> --staging-origin-sha256 <SHA256_FROM_INDEPENDENT_CUSTODY> --phase candidate` (and separately `--phase post_rollback` AFTER A HUMAN-AUTHORIZED REAL ROLLBACK) makes seven **GET-only** requests against the separately reviewed staging hostname. It refuses the production site and localhost, cross-origin redirects and any URL/host drift. It checks actual `/healthz`, fresh public `/api/health`, the exact nine-member public catalog, six restricted-market nonexposure, and denial/noindex for unauthenticated `/api/v2/me`, `/app/`, `/admin/`, `/api/v2/admin/performance`. Only compact categorical pass/failure flags are printed. No sessions, cookies, Auth0 start, Resend email, database writes, provider tokens, live broker or production endpoints are involved. CI uses synthetic httpx MockTransport and tests false green on stale feed, missing markets, leaked crypto detail, exposed owner routes, redirects and production hostname. **This proof deliberately cannot perform or attest rollback, cannot authenticate real members, and does not replace actual release acceptance.** Execute only in an owner-approved staging window, retain the relevant controlled receipts privately, and do not mistake green synthetic CI for green hosted acceptance.

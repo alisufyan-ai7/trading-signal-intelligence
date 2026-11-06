@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>VowSig · Signal Center</title>
+<link rel="icon" href="/static/vowsig-favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/member/member.css">
+<script src="/static/member/member.js" defer></script></head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<div class="layout">
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="VowSig home">VowSig <small>Research workspace</small></a>
+    <nav aria-label="Member navigation">
+      <a href="/app/" data-page="dashboard">Dashboard</a>
+      <a href="/app/signals/" data-page="signals">Signal Center</a>
+      <a href="/app/history/" data-page="history">History</a>
+      <a href="/app/markets/" data-page="markets">All Markets</a>
+      <a href="/app/watchlist/" data-page="watchlist">Watchlist</a>
+      <a href="/app/learn/" data-page="learn">Learn</a>
+      <a href="/app/settings/" data-page="settings">Account & Settings</a>
+    </nav>
+    <div class="sidebar-bottom"><span class="chip">SHADOW_ONLY · Research</span>
+    <p>Research observations are not live trades, broker execution or personalized financial advice.</p>
+    <button id="signout" class="subtle" type="button">Sign out</button>
+    <a href="/">Public research website</a></div>
+  </aside>
+  <main id="content" tabindex="-1">
+    <header class="topbar">
+      <div><p class="eyebrow">Member research workspace</p><h1 id="page-title">Signal Center</h1></div>
+      <div class="topmeta"><span id="snapshot-status" class="status">Checking snapshot…</span>
+      <span id="tier-label" class="chip">Research</span></div>
+    </header>
+    <section class="notice" aria-label="Research disclosure">
+      <strong>Forward shadow research, not an executable trade alert.</strong>
+      Market discovery covers nine symbols. Detailed observations are permitted only for the three core markets when the source is fresh and eligible.
+      Results include losses and unavailable states.
+    </section>
+    <div id="app-error" role="alert" hidden></div>
+    <div id="app-content" aria-live="polite"><p class="muted">Loading your research workspace…</p></div>
+    <footer><a href="/learn/shadow-validation/">Shadow methodology</a>
+    <a href="/learn/signal-lifecycle/">Signal lifecycle</a>
+    <a href="/evidence/">Evidence</a>
+    <span>Research beta · no broker execution</span></footer>
+  </main>
+</div>
+<nav class="mobile-nav" aria-label="Mobile member navigation">
+  <a href="/app/" data-page="dashboard"><span class="mobile-nav-icon" aria-hidden="true">⌂</span><span>Home</span></a>
+  <a href="/app/signals/" data-page="signals"><span class="mobile-nav-icon" aria-hidden="true">⌁</span><span>Signals</span></a>
+  <a href="/app/markets/" data-page="markets"><span class="mobile-nav-icon" aria-hidden="true">▦</span><span>Markets</span></a>
+  <a href="/app/watchlist/" data-page="watchlist"><span class="mobile-nav-icon" aria-hidden="true">☆</span><span>Saved</span></a>
+  <details class="mobile-more">
+    <summary aria-label="More member pages"><span class="mobile-nav-icon" aria-hidden="true">☰</span><span>More</span></summary>
+    <div class="mobile-more-menu">
+      <span class="mobile-more-heading">Your workspace</span>
+      <a href="/app/history/" data-page="history">Recent history</a>
+      <a href="/app/learn/" data-page="learn">Learn &amp; methodology</a>
+      <a href="/app/settings/" data-page="settings">Account &amp; settings</a>
+      <a href="/evidence/">Public evidence</a>
+      <button id="mobile-signout" type="button" class="subtle">Sign out securely</button>
+      <p>Research only · no broker execution</p>
+    </div>
+  </details>
+</nav>
+</body></html>

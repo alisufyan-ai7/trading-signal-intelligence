@@ -138,7 +138,7 @@ function aiUnavailable(ai) {
   return !ai || ["snapshot_pending", "temporarily_unavailable"].includes(ai.status);
 }
 
-function renderAi(ai) {
+function renderAi(ai, publicHealth = {}) {
   const statusHost = document.querySelector("#ai-status");
   const overviewHost = document.querySelector("#ai-overview");
   const marketHost = document.querySelector("#ai-market-grid");
@@ -160,19 +160,30 @@ function renderAi(ai) {
   }
 
   const h = ai.health || {};
+  // Archived snapshot health MUST NOT be presented as live process health.
+  const snapshotIsFresh = publicHealth.snapshot_freshness === "fresh" &&
+    publicHealth.snapshot_pending !== true;
+  const runtimeHealthyInSnapshot = h.healthy === true;
+  const statusText = !snapshotIsFresh
+    ? "SAVED SHADOW STATUS • NOT CURRENT"
+    : (runtimeHealthyInSnapshot ? "SHADOW RUNTIME HEALTHY" : "ATTENTION REQUIRED");
+  const snapshotNote = !snapshotIsFresh
+    ? `<p class="ai-notice">Historical public snapshot as of ${esc(fmtTime(publicHealth.snapshot_generated_at_utc))}. Current scanner and publisher health cannot be confirmed from these saved records.</p>`
+    : "";
   statusHost.innerHTML = `
-    <div class="ai-health ${h.healthy ? "" : "warn"}">
+    <div class="ai-health ${snapshotIsFresh && runtimeHealthyInSnapshot ? "" : "warn"}">
       <div>
-        <span class="eyebrow">${h.healthy ? "SHADOW RUNTIME HEALTHY" : "ATTENTION REQUIRED"}</span>
+        <span class="eyebrow">${statusText}</span>
         <strong>${esc(ai.runtime_version || ai.protocol_version)} • ${esc(ai.mode)}</strong>
         <span class="meta">Decision protocol ${esc(ai.decision_protocol_version || ai.protocol_version)}</span>
       </div>
       <div class="ai-health-flags">
-        <span>${h.ledgers_valid ? "Ledger chains verified" : "Ledger verification failed"}</span>
-        <span>${h.scheduler_healthy ? "Scheduler healthy" : "Scheduler issue"}</span>
-        <span>${h.broker_execution_disabled ? "Broker execution disabled" : "Broker execution boundary issue"}</span>
+        <span>${snapshotIsFresh ? (h.ledgers_valid ? "Ledger chains verified" : "Ledger verification failed") : "Ledger status from saved snapshot"}</span>
+        <span>${snapshotIsFresh ? (h.scheduler_healthy ? "Scheduler healthy at snapshot" : "Scheduler issue at snapshot") : "Historical scheduler state only"}</span>
+        <span>${h.broker_execution_disabled ? "Broker execution disabled in snapshot" : "Recorded broker boundary issue"}</span>
       </div>
     </div>
+    ${snapshotNote}
     <p class="ai-notice">${esc(ai.customer_notice)}</p>
     ${ai.lineage_notice ? `<p class="ai-notice">${esc(ai.lineage_notice)}</p>` : ""}
     ${ai.operational_miss_notice ? `<p class="ai-notice">${esc(ai.operational_miss_notice)}</p>` : ""}
@@ -529,7 +540,7 @@ async function boot() {
     dot.classList.add("warn");
   } else if (health.snapshot_freshness === "stale") {
     label.textContent = "Public AI data stale";
-    detail.textContent = `${aiDetail} • ${snapshotDetail}`;
+    detail.textContent = `Historical public data only • ${aiDetail} • ${snapshotDetail}`;
     dot.classList.add("warn");
   } else if (health.snapshot_freshness === "delayed") {
     label.textContent = "Public AI data delayed";
@@ -557,7 +568,7 @@ async function boot() {
   const live = markets.filter(m => m.product_status === "live_signal_market");
   const research = markets.filter(m => m.product_status === "research_monitoring");
 
-  renderAi(ai);
+  renderAi(ai, health);
   renderValidationPrograms(validation);
   document.querySelector("#live-grid").innerHTML = live.map(m => card(m, true)).join("");
   document.querySelector("#evidence-grid").innerHTML = live.map(evidenceCard).join("");

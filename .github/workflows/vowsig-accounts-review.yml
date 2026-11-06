@@ -1,0 +1,195 @@
+name: VowSig accounts foundation isolated review
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/vowsig-accounts-review.yml'
+      - 'src/trading_signal_intelligence/product/accounts/**'
+      - 'src/trading_signal_intelligence/product/cloud_app.py'
+      - 'tests/test_vowsig_accounts_*.py'
+      - 'tests/test_vowsig_product_endpoints_p3.py'
+      - 'tests/test_vowsig_owner_diagnostics_p3.py'
+      - 'tests/test_vowsig_performance_p2.py'
+      - 'tests/test_vowsig_attested_history_p2.py'
+      - 'tests/test_vowsig_owner_totp_p1b.py'
+      - 'tests/test_vowsig_owner_offline_provisioning_p1b.py'
+      - 'tests/test_vowsig_read_model_p2.py'
+      - 'tests/test_vowsig_source_ledger_audit_p2.py'
+      - 'tests/test_vowsig_source_projection_reconciliation_p2.py'
+      - 'tests/test_vowsig_source_inventory_p2.py'
+      - 'tests/test_vowsig_oidc_p1b.py'
+      - 'tests/test_vowsig_railway_tls_p1b.py'
+      - 'tests/test_vowsig_member_browser_p3.py'
+      - 'web/member/**'
+      - 'sql/accounts/**'
+      - 'scripts/vowsig_accounts_ci_pg18_recovery.py'
+      - 'scripts/vowsig_accounts_ci_pg18_role_boundaries.py'
+      - 'scripts/vowsig_accounts_ci_pg18_owner_bootstrap.py'
+      - 'scripts/vowsig_owner_offline_operator.py'
+      - 'scripts/vowsig_owner_review_sign_offline.py'
+      - 'scripts/vowsig_owner_founder_mac_prepare.py'
+      - 'scripts/vowsig_owner_staging_operator.py'
+      - 'Dockerfile.owner-operator'
+      - 'tests/test_vowsig_owner_staging_operator_p1b.py'
+      - 'tests/test_vowsig_owner_mac_prepare_p1b.py'
+      - 'scripts/vowsig_audit_original_ledger_vs_projection.py'
+      - 'scripts/vowsig_readonly_source_inventory.py'
+      - 'scripts/vowsig_freeze_original_sources.py'
+      - 'scripts/vowsig_verify_frozen_sources.py'
+      - 'ops/handoffs/vowsig_original_source_freeze_inline_v0_1.py'
+      - 'ops/handoffs/vowsig_frozen_source_recheck_inline_v0_1.py'
+      - 'tests/test_vowsig_frozen_source_recheck_p2.py'
+      - 'tests/test_vowsig_private_crypto_epoch_p2.py'
+      - 'tests/test_vowsig_public_staleness_triage.py'
+      - 'tests/test_vowsig_private_after_cost_p2.py'
+      - 'tests/test_vowsig_auth0_public_acceptance_p1b.py'
+      - 'tests/test_vowsig_release_acceptance_p5.py'
+      - 'tests/test_vowsig_private_history_single_review_p2.py'
+      - 'tests/test_vowsig_platform_history_universe_p2.py'
+      - 'tests/test_vowsig_platform_history_runtime_p2.py'
+      - 'tests/test_vowsig_staging_http_acceptance_p5.py'
+      - 'tests/test_vowsig_staging_pg18_migration_operator.py'
+      - 'tests/test_vowsig_staging_pg_acceptance_p1b.py'
+      - 'ops/handoffs/vowsig_staging_pg18_migrate_all_001_009_v0_1.sh'
+      - 'ops/handoffs/vowsig_production_pg18_readiness_single_pass_20261106.sh'
+      - 'ops/handoffs/vowsig_production_pg18_one_transaction_accounts_001_010_20261106.sh'
+      - 'ops/handoffs/vowsig_production_app_role_tls_readonly_20261106.sh'
+      - 'tests/test_vowsig_production_bootstrap_script_p1b.py'
+      - 'scripts/vowsig_private_history_single_review.py'
+      - 'ops/handoffs/vowsig_public_staleness_readonly_v0_1.ps1'
+      - 'tests/test_vowsig_inline_source_freeze_p2.py'
+      - 'tests/test_vowsig_private_lifecycle_p2.py'
+      - 'tests/test_vowsig_railway_pg_acceptance_p1b.py'
+      - 'tests/test_vowsig_private_source_freeze_p2.py'
+      - 'pyproject.toml'
+      - 'Dockerfile'
+      - 'config/tls/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vowsig-accounts-p1a-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  accounts-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: vowsig_test
+          POSTGRES_PASSWORD: local-ci-only-test-password
+          POSTGRES_DB: vowsig_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vowsig_test -d vowsig_test"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 10
+    steps:
+      - name: Checkout untrusted review tree without credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install only reviewed application and test extras
+        run: python -m pip install -e ".[app,accounts,dev,research]"
+      - name: Parse production read-only PG operator (do not execute against any DB)
+        run: |
+          bash -n ops/handoffs/vowsig_production_pg18_readiness_single_pass_20261106.sh
+          bash -n ops/handoffs/vowsig_production_pg18_one_transaction_accounts_001_010_20261106.sh
+          bash -n ops/handoffs/vowsig_production_app_role_tls_readonly_20261106.sh
+      - name: Compile account and cloud API sources
+        run: python -m compileall -q src/trading_signal_intelligence/product/accounts src/trading_signal_intelligence/product/cloud_app.py
+      - name: Parse responsive member and public-homepage JavaScript
+        run: node --check web/member/member.js && node --check web/app.js
+      - name: Compile independent source audit operator without running it
+        run: python -m py_compile scripts/vowsig_owner_founder_mac_prepare.py scripts/vowsig_owner_staging_operator.py scripts/vowsig_audit_original_ledger_vs_projection.py scripts/vowsig_readonly_source_inventory.py scripts/vowsig_freeze_original_sources.py scripts/vowsig_verify_frozen_sources.py ops/handoffs/vowsig_original_source_freeze_inline_v0_1.py ops/handoffs/vowsig_frozen_source_recheck_inline_v0_1.py scripts/vowsig_private_history_single_review.py
+      - name: Targeted account policy and public contract regression
+        run: |
+          python -m pytest -q \
+            tests/test_vowsig_accounts_foundation_p1a.py \
+            tests/test_vowsig_accounts_identity_p1b.py \
+            tests/test_vowsig_accounts_session_lifecycle_p1b.py \
+            tests/test_vowsig_product_endpoints_p3.py \
+            tests/test_vowsig_owner_diagnostics_p3.py \
+            tests/test_vowsig_performance_p2.py \
+            tests/test_vowsig_attested_history_p2.py \
+            tests/test_vowsig_owner_totp_p1b.py \
+            tests/test_vowsig_owner_offline_provisioning_p1b.py \
+            tests/test_vowsig_owner_mac_prepare_p1b.py \
+            tests/test_vowsig_owner_staging_operator_p1b.py \
+            tests/test_vowsig_read_model_p2.py \
+            tests/test_vowsig_source_ledger_audit_p2.py \
+            tests/test_vowsig_source_projection_reconciliation_p2.py \
+            tests/test_vowsig_source_inventory_p2.py \
+            tests/test_vowsig_private_source_freeze_p2.py \
+            tests/test_vowsig_inline_source_freeze_p2.py \
+            tests/test_vowsig_private_lifecycle_p2.py \
+            tests/test_vowsig_railway_pg_acceptance_p1b.py \
+            tests/test_vowsig_frozen_source_recheck_p2.py \
+            tests/test_vowsig_private_crypto_epoch_p2.py \
+            tests/test_vowsig_public_staleness_triage.py \
+            tests/test_vowsig_private_after_cost_p2.py \
+            tests/test_vowsig_auth0_public_acceptance_p1b.py \
+            tests/test_vowsig_release_acceptance_p5.py \
+            tests/test_vowsig_production_bootstrap_script_p1b.py \
+            tests/test_vowsig_private_history_single_review_p2.py \
+            tests/test_vowsig_platform_history_universe_p2.py \
+            tests/test_vowsig_platform_history_runtime_p2.py \
+            tests/test_vowsig_staging_http_acceptance_p5.py \
+            tests/test_vowsig_staging_pg18_migration_operator.py \
+            tests/test_vowsig_staging_pg_acceptance_p1b.py \
+            tests/test_vowsig_homepage_product_consistency.py \
+            tests/test_vowsig_oidc_p1b.py \
+            tests/test_vowsig_railway_tls_p1b.py \
+            tests/test_cloud_snapshot_durability.py \
+            tests/test_product_ai_insights.py \
+            tests/test_cloud_ai_runtime_validation.py \
+            tests/test_vowsig_multilineage_public_observability.py
+      - name: Ephemeral loopback PostgreSQL schema and account-isolation proof
+        env:
+          VOWSIG_EPHEMERAL_PG_TEST_CONFIRM: YES_THROWAWAY_DATABASE
+          VOWSIG_EPHEMERAL_PG_TEST_DSN: postgresql://vowsig_test:local-ci-only-test-password@127.0.0.1:5432/vowsig_test?sslmode=disable
+        run: python -m pytest -q tests/test_vowsig_accounts_postgres_p1b.py
+      - name: PG18 disposable logical backup, restore and runtime no-DDL permission proof
+        env:
+          VOWSIG_EPHEMERAL_PG_TEST_CONFIRM: YES_THROWAWAY_DATABASE
+          VOWSIG_EPHEMERAL_PG_TEST_DSN: postgresql://vowsig_test:local-ci-only-test-password@127.0.0.1:5432/vowsig_test?sslmode=disable
+        run: python scripts/vowsig_accounts_ci_pg18_recovery.py
+      - name: PG18 isolated roles, runtime immutability and backup read-only proof
+        env:
+          VOWSIG_EPHEMERAL_PG_TEST_CONFIRM: YES_THROWAWAY_DATABASE
+          VOWSIG_EPHEMERAL_PG_TEST_DSN: postgresql://vowsig_test:local-ci-only-test-password@127.0.0.1:5432/vowsig_test?sslmode=disable
+        run: python scripts/vowsig_accounts_ci_pg18_role_boundaries.py
+      - name: PG18 independent signed owner bootstrap and recovery proof
+        env:
+          VOWSIG_EPHEMERAL_PG_TEST_CONFIRM: YES_THROWAWAY_DATABASE
+          VOWSIG_EPHEMERAL_PG_TEST_DSN: postgresql://vowsig_test:local-ci-only-test-password@127.0.0.1:5432/vowsig_test?sslmode=disable
+        run: python scripts/vowsig_accounts_ci_pg18_owner_bootstrap.py
+
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout reviewed tree without credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install isolated browser QA dependencies
+        run: |
+          python -m pip install -e ".[app,accounts,dev]" "playwright>=1.56,<2"
+          python -m playwright install --with-deps chromium
+      - name: Test customer desktop/mobile and XSS/permissions UX
+        run: python -m pytest -q tests/test_vowsig_member_browser_p3.py

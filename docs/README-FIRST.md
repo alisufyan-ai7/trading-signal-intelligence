@@ -1,5 +1,12 @@
 # Read First
 
+## CURRENT START POINT — November 6, 2026
+
+**Use [canonical current release state](VOWSIG_START_HERE_CURRENT_STATE.md), [docs index](README.md), [full Railway rebuild/cutover](vowsig-railway-zero-to-production-rebuild-runbook.md), [product spec](vowsig-product-contract-current.md), and [new-chat handoff](vowsig-next-chat-execution-handoff.md) FIRST.** The October 26 PR/backup status preserved below is historical; PR #93 is the active DRAFT release branch and none of its authenticated features have yet been merged into production. Owner-approved deferral of historical certification (N/A until verified), initial solo founder MFA exception and immediate-postlaunch Railway PostgreSQL backup exception are current. The next owner action is ONE read-only existing production `vowsig_app` TLS/permissions receipt. No replay of production SQL 001–010 or prior staging owner ceremony.
+
+---
+
+
 ## Current GitHub handoff — 2026-10-26
 
 The original 18 PRs have been audited and safely reduced to **two remaining drafts**: [#87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) (39 exact preserved S02 backup/GFS code and test files, untested as a full native Windows release), and [#50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) (independent frozen-dependency CI guard). Historical #85 and #77–84 were closed **without deleting their source branches**; a dedicated `archive/pr85-original-stacked-backup-history-20261024` ref preserves their complete original commit ancestry. Preservation-only PR #86 (EXP051–059, Oct24 status, old SDK/IAM archive) and #88 (EXP043–050) merged into `main`; product evidence PR #58 merged separately. Read the [final GitHub PR audit](pr-queue-review-2026-10-24.md) and the [Oct24 owner-verified operational status](vowsig-operational-status-2026-10-24.md). **Do not misinterpret closed #85 as loss of backups or merge of its executable code.** No VPS/task/provider operations were performed by this cleanup.

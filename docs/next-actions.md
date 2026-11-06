@@ -1,5 +1,20 @@
 # Current Next Actions
 
+## TOP PRIORITY — VowSig production release, November 6, 2026
+
+**Always start at** [current-state index](VOWSIG_START_HERE_CURRENT_STATE.md) and [single next-chat execution guide](vowsig-next-chat-execution-handoff.md). The October PR queue / S02 backup next-actions below are historical and should not preempt the authorized VowSig customer launch.
+
+1. **DONE:** owner-reported real production Postgres Console `PRODUCTION_APP_ROLE_TLS_PRIVILEGE=PASS`, authenticated `vowsig_app`/`sslmode=verify-full` and restricted SQL permissions; **no writes or deploy**. **Do not rerun this check or SQL 001–010**. Separate released app-container connection remains mandatory.
+2. Check existing production Auth0 exact callback/origin/logout and **real** Resend verified email delivery. Four private production app variable names/DSN and OIDC values already staged, feature switches OFF, no deploy.
+3. One exact reviewed candidate/authenticated app role check from app network, production initial owner TOTP and separate factor recovery, restricted six-market privacy, N/A uncategorized historical numbers, small security/mobile and rollback acceptance.
+4. Seek **separate explicit exact-40-char SHA merge/deploy approval**. Preserve `vowsig.com`, current `/data` and Windows publisher; no duplicate staging publisher.
+5. **Immediately after launch:** recurring encrypted Railway PG S3/B2 backup + isolated cold restore under approved temporary-risk exception, followed by independent history source-rights, external cost, crypto K5 and complete cohort certification **before** any performance publication.
+
+**No new features/markets/payments/alerts/broker execution.** [Full staging and fresh production rebuild runbook](vowsig-railway-zero-to-production-rebuild-runbook.md).
+
+---
+
+
 ## 2026-10-26 — post-PR-cleanup next actions
 
 GitHub queue is down to **two DRAFT PRs**: [#87](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) for exact 39-file S02 encrypted backup/GFS code and tests, and [#50](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) for the independent frozen-dependency CI gate. Historic #85 and #77–84 were closed and pinned in an archive branch, while evidence EXP043–059 is now on `main` (merges #86/#88). See [complete audit register](pr-queue-review-2026-10-24.md). Next operator work: (1) observe actual latest natural 04:15 VPS backup result since Oct24, separately from already-proven first launch; (2) focused **native Windows** tests and security review on the exact #87 head before a new code-merge decision; (3) independent #50 rebase/CI failure-mode tests before any governance merge; (4) separately permissioned and approved cloud pruning design (no automatic deletes currently). PR cleanup did not deploy any new code or change installed tasks.

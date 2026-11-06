@@ -711,3 +711,64 @@ async def ingest_snapshot(
         "markets": len(payload.get("markets", [])),
         "raw_market_data_included": False,
     }
+
+
+# P1A optional accounts foundation: stays absent from production unless explicitly
+# enabled after identity provider, DB, security and privacy release approvals.
+# This adds no signup/login/session issuance, changes no v1 API and never reads
+# the Windows research ledgers.
+def _attach_accounts_foundation_if_approved() -> None:
+    enabled = os.getenv("VOWSIG_ACCOUNTS_FOUNDATION_ENABLED", "0")
+    if enabled == "0":
+        return
+    if enabled != "1":
+        raise RuntimeError("Invalid VowSig accounts foundation feature flag")
+
+    dsn = os.getenv("VOWSIG_ACCOUNTS_DATABASE_URL", "")
+    secret = os.getenv("VOWSIG_ACCOUNTS_CSRF_SECRET", "")
+    origin = os.getenv("VOWSIG_ACCOUNTS_APP_ORIGIN", "")
+    if not dsn or len(secret.encode("utf-8")) < 32 or not origin:
+        raise RuntimeError("accounts foundation configuration incomplete; fail closed")
+
+    from trading_signal_intelligence.product.accounts.api import create_router
+    from trading_signal_intelligence.product.accounts.store import PostgresAccountStore
+    from trading_signal_intelligence.product.accounts.ui import create_ui_router
+
+    # Establishing accounts, applying SQL migrations and issuing session cookies
+    # are intentionally outside P1A. No DB connection is made at app startup.
+    app.include_router(create_router(
+        read_snapshot=_load_snapshot,
+        make_store=lambda: PostgresAccountStore(dsn),
+        csrf_secret=secret,
+        app_origin=origin,
+    ))
+    app.include_router(create_ui_router(
+        make_store=lambda: PostgresAccountStore(dsn),
+        html_path=WEB / "member" / "index.html",
+    ))
+
+    # Independent ON switch; providing OIDC env vars does NOT enable auth.
+    # Real provider endpoints, TLS, email verification and MFA must be reviewed
+    # before a human explicitly authorizes this setting in production.
+    oidc_enabled = os.getenv("VOWSIG_OIDC_AUTH_ENABLED", "0")
+    if oidc_enabled not in ("0", "1"):
+        raise RuntimeError("Invalid OIDC auth feature flag")
+    if oidc_enabled == "1":
+        from trading_signal_intelligence.product.accounts.auth_api import create_auth_router
+        from trading_signal_intelligence.product.accounts.oidc_provider import OidcSettings
+        settings = OidcSettings(
+            issuer=os.getenv("VOWSIG_OIDC_ISSUER", ""),
+            client_id=os.getenv("VOWSIG_OIDC_CLIENT_ID", ""),
+            authorization_endpoint=os.getenv("VOWSIG_OIDC_AUTHORIZATION_ENDPOINT", ""),
+            token_endpoint=os.getenv("VOWSIG_OIDC_TOKEN_ENDPOINT", ""),
+            jwks_uri=os.getenv("VOWSIG_OIDC_JWKS_URI", ""),
+            app_origin=origin,
+            client_secret=os.getenv("VOWSIG_OIDC_CLIENT_SECRET") or None,
+        )
+        app.include_router(create_auth_router(
+            make_store=lambda: PostgresAccountStore(dsn),
+            settings=settings, csrf_secret=secret,
+        ))
+
+
+_attach_accounts_foundation_if_approved()

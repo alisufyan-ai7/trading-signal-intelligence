@@ -744,3 +744,49 @@ The completed offline package includes:
 **Outcome:** Exactly two open drafts remain: **#87** (S02 backup/GFS source and tests needing full focused native Windows and security gate) and **#50** (independent change-impact workflow needing governance/CI review). GitHub source clean-up **did not merge either implementation**, retarget the installed 04:15 Windows backup task, touch cloud provider objects/credentials, execute brokers, enable GFS physical deletion, or verify any new natural scheduled backup result after October 24. Historical observed real backup/cold-recovery and exact dual-provider inventory PASS remain preserved as observed, not extrapolated.
 
 **Governance:** Preserve the dedicated archival original-branch ref and all old PR page histories. Any PR can be reopened; to reinstate code, use original exact SHA, fresh diff and tests against the latest main, not force-push or undocumented replay. The [full original 18-PR audit](pr-queue-review-2026-10-24.md) and [current operating handoff](vowsig-operational-status-2026-10-24.md) control future continuation; external services/tasks are separate approval gates.
+
+## 2026-11-06 — D049: single coordinated authenticated Free VowSig release, feature freeze
+
+**Owner decision:** Finish existing Free customer, Signal Center, owner dashboard and secure integrated provider/database work and release it in **one coordinated production launch as quickly as safely possible**. No feature-disabled preliminary public release; no additional owner chart families, paid subscription/payment, alerts, new market signals, broker execution or second publisher to justify delay. User requested **minimum number of VPS/Console scripts and no repeat verification** after a valid existing scoped PASS.
+
+**Technical implementation:** Draft PR [#93](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/93) is the reviewed release surface, and the old `vowsig.com` public publisher/`/data` stays in place. CI, real staging/owner and single exact candidate rollback still apply. An owner-approved strategy is **not** approval to merge or deploy arbitrary SHA.
+
+**References:** [integrated plan](vowsig-integrated-p1-p5-single-release-plan-2026-11-04.md), [current owner status](VOWSIG_START_HERE_CURRENT_STATE.md), [rebuild/runbook](vowsig-railway-zero-to-production-rebuild-runbook.md).
+
+## 2026-11-06 — D050: explicitly defer independent historical performance certification, never fake history
+
+**Owner decision:** In direct response to the specific question, **"yes I approve"** moving independent full nine-market history certification **after** the first fully authenticated launch, while leaving the entire member/owner experience enabled and all uncertified Performance Lab/net-R/win-rate/equity/after-cost historical results **N/A / unavailable**. This supersedes only the earlier unconditional *prelaunch timing* of complete independent source-rights, external costs, crypto K5 H1/H4 natural opportunity census and signed cohort/universe review; it **does not** remove their mandatory sign-off before subsequent historical performance publication.
+
+**Implementation:** `src/trading_signal_intelligence/product/accounts/release_acceptance.py` now signs explicit `independent_history_certification_deferred_by_owner=true`, `uncertified_historical_performance_unavailable_at_launch=true`, `independent_source_review_required_before_history_publication=true`, with real `uncertified_historical_performance_suppressed` acceptance receipt. Historic 12 frozen SQLite chains/11,103 event hashes and 298 internal AI recorded-cost legs do not constitute independent rights/economic certification.
+
+**References:** [binding Nov 6 policy](vowsig-owner-approved-first-launch-history-deferral-2026-11-06.md), [current product](vowsig-product-contract-current.md), [release gate](vowsig-one-release-signed-gate-and-rollback-2026-11-05.md).
+
+## 2026-11-06 — D051: Railway PostgreSQL offsite backup deliberately first IMMEDIATE postlaunch task
+
+**Owner decision:** Publish the one full account/customer/owner product without blocking on installation of new independent **Railway PostgreSQL** encrypted offsite backup, accepting a temporary risk of permanent new customer/account identity/consent/watchlist data loss. Protect data by implementing dedicated recurring encrypted `pg_dump -Fc` S3/Backblaze B2 recovery, retention, alarms and real isolated cold restore as **the first immediate postlaunch engineering priority**. Display `DATABASE_RECOVERY_UNVERIFIED` until proven. The existing daily S02-only Windows SQLite backups do not protect Railway PostgreSQL.
+
+**Boundaries:** Not an exception to authentication, privacy, DB restricted-role TLS, owner MFA, signal exposure or signed exact-SHA release acceptance. No silent declaration that backups are already done.
+
+**Reference:** [owner-approved backup-last decision](vowsig-one-release-backup-last-feature-first-2026-11-04.md), [full recovery runbook](vowsig-railway-zero-to-production-rebuild-runbook.md).
+
+## 2026-11-06 — D052: audited first-owner solo bootstrap accepted, separate factor recovery control retained
+
+**Owner decision:** As the sole founder and operator of initial staging setup, the owner may self-authorize the **first-owner** identity promotion with fresh Google Authenticator, private Mac encrypted signing vault, immutable Auth0 issuer + hashed subject and one-time audited `first_owner_solo` approval. The owner performed staging promotion PASS and one session was revoked; actual fresh owner MFA/owner dashboard loaded and temporary operator was removed. A separate two-person **factor rotation/recovery** evidence gate remains independently required and should not be mislabeled as already passed.
+
+**Production boundary:** Production has its own independent MFA master key staged, but the production owner role/factor has NOT been promoted. Do not reuse staging owner keys or assume staging membership establishes production owner role.
+
+**References:** [founder procedure](vowsig-founder-mac-private-owner-mfa-workflow-2026-11-06.md), [single-founder policy](vowsig-single-founder-first-owner-self-authorization-2026-11-06.md), [product account security](vowsig-product-contract-current.md).
+
+## 2026-11-06 — D053: preserve existing public publisher and fixed nine-market permissions
+
+**Owner direction:** Preserve one upstream Windows VPS research/publisher path and existing Railway `/data/public_snapshot.json`. Do not create a staging snapshot publisher merely because isolated staging lacks a snapshot. Reuse approved public sanitized derived data on existing production app. Keep exactly **XAUUSD/USTEC/US30** eligible for bounded, fresh core shadow detail; **EURUSD/XAGUSD/USOIL/BTCUSDT/ETHUSDT/SOLUSDT** remain directory/validation-status only. No alerts, expansion/crypto per-signal details or broker execution. Do not equate legacy v1 `/api/markets` list with new authenticated nine-market policy list; research programs are separately attributed.
+
+**Reference:** [Signal Center contract](vowsig-p0-nine-market-signal-center-customer-access-contract-v0.1-2026-11-04.md), [product contract](vowsig-product-contract-current.md).
+
+## 2026-11-06 — D054: production setup executed in bounded phases, exact release approval still pending
+
+**Owner-supplied evidence:** Production PostgreSQL private 18 service had owner-operated guarded atomic `001..010` PASS with restricted `vowsig_app`, migrator and backup roles; **DO NOT RERUN**. Owner staged production app's restricted `VOWSIG_ACCOUNTS_DATABASE_URL` and three additional private auth/CSRF/TOTP secrets into existing Railway service, alongside public OIDC configuration, with feature flags OFF, **12 variable changes STAGED ONLY, none deployed**. Resend sending domain verified; OIDC public JWKS/issuer discovery verified; actual production callback and email delivery **not yet proven**. The one production SELECT-only app-role `sslmode=verify-full` acceptance script exists in repo and passed static/CI checks; its **real owner-run result remains pending** at this record.
+
+**Operational guard:** Existing successful `vowsig.com` image, publisher ingest token and `/data` volume remain protected; no rebuild, no database migration reruns, no role password disclosure or GitHub merge. Real production app-container connection, production first owner/rotation and rollback/real user security acceptance remain prelaunch. **Separate exact 40-char candidate SHA approval** remains mandatory to merge/deploy the fully enabled product.
+
+**Reference:** [current-state milestone table](VOWSIG_START_HERE_CURRENT_STATE.md), [next chat handoff](vowsig-next-chat-execution-handoff.md), [production deployment runbook](vowsig-railway-zero-to-production-rebuild-runbook.md).

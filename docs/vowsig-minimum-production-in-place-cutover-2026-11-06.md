@@ -1,0 +1,44 @@
+# VowSig — minimum in-place production cutover (2026-11-06)
+
+> **APPROVAL OBTAINED — 2026-11-06:** The owner has **explicitly approved** historical-performance certification **after launch**, with uncertified historical results N/A and the authenticated member/owner experience enabled. The former pending "owner scope decision" in this document is therefore **CLOSED / APPROVED**; the revised code-level signed receipt requires N/A and still denies publishing unreviewed history. See [binding owner policy amendment](vowsig-owner-approved-first-launch-history-deferral-2026-11-06.md). Remaining operational release preconditions (production private PG/Auth0/Resend, MFA, real publisher, rollback and exact-SHA approval) remain mandatory.
+
+
+**Owner goal:** ship the existing authenticated VowSig product **as soon as safely possible**, with **no further product features**, no duplicate staging publisher and no repeat source-ledger/VPS audit scripts. **Status:** exact-SHA production cutover **NOT yet authorized**. Only this chat and `alisufyan-ai7/trading-signal-intelligence` supply engineering context; Railway projects and the current public `vowsig.com` were inspected read-only.
+
+## Shortest approved technical architecture — reuse production, not another publisher
+
+**Decision:** Do **not** implement or schedule a second staging research producer. Use the existing VowSig Windows VPS -> sanitized public snapshot -> existing production Railway `tradingtop-early-access` ingest endpoint -> mounted `/data/public_snapshot.json` pipeline. The already-implemented PR #93 accounts/customer/owner routes read the very same file with `cloud_app._load_snapshot()` and do **not** need a new feed or separate publication code.
+
+**Current observed evidence (not perpetual guarantees):**
+- Production Railway project `positioning-engine-cron`, environment `production`, service `tradingtop-early-access` is **SUCCESS**, deployed `main=13aeb2bfe2560d3afef63019e4282361fd552faf`, has one persistent volume mounted at **`/data`**, `TRADINGTOP_SNAPSHOT_PATH` and `TRADINGTOP_INGEST_TOKEN` variable names present; publisher/storage unchanged.
+- On 2026-11-06 UTC ~11:05–11:17, anonymous `https://vowsig.com/api/health` reported `ok=true`, `launch_ready=true`, `snapshot_pending=false`, `snapshot_freshness=fresh`, `ready_collector_count=3`, `ledger_errors=[]`; published snapshot generated `2026-11-06T11:05:59.868708+00:00`.
+- `/api/ai/insights` reported `AI-v1.1` / `SHADOW_ONLY` / `broker_execution_disabled=true`. `/api/validation/programs` exposed **three** restricted/bounded research programs: `core-ai-shadow` for XAUUSD/USTEC/US30, `market-expansion-1` for EURUSD/XAGUSD/USOIL, and `crypto-expansion-1` for BTCUSDT/ETHUSDT/SOLUSDT; last two reported `public_signal_exposure=false`. All programs reported broker execution disabled.
+- **Important catalog distinction:** legacy public `/api/markets` has nine legacy market rows, including GBPUSD/USDJPY/US500; the NEW PR #93 `/api/v2/public/markets` catalog uses nine other approved members including BTCUSDT/ETHUSDT/SOLUSDT. The actual published validation-program population matches the new nine, but do not confuse it with the legacy `/api/markets` list. New member catalog permissions are independently bounded in `product/accounts/policy.py`.
+- Staging `vowsig-pr93-staging-app` at `52dadc0c9749e5488528c0bb5076fba8340fd21e` is stable, but **no staging snapshot** (`snapshot_pending=true`) and no staging snapshot volume/ingest token. Existing real owner MFA/owner UI acceptance is PASS and missing statistics correctly show N/A. No separate staging publisher is proposed.
+- Draft PR #93 HEAD at inspection: `86bac58e0517f7097361aaa4daae55ae4542d016`, green exact-HEAD Actions `42202537194`; `main` unchanged. Full user sign-in/session/watchlist desktop acceptance and staging owner Google Authenticator/actual admin panel acceptance already passed; do not repeat without a material regression.
+
+## What actually blocks single production go-live
+
+**P0 — production authenticated-app configuration/schema** (operational, not feature development):
+1. The **production** Railway web service currently has `TRADINGTOP_*`, beta and a `VOWSIG_ACCOUNTS_APP_ORIGIN` **PENDING staged variable** only. It lacks the other `VOWSIG_ACCOUNTS_FOUNDATION_ENABLED`, `VOWSIG_ACCOUNTS_DATABASE_URL`, `VOWSIG_ACCOUNTS_CSRF_SECRET`, `VOWSIG_OIDC_*` and `VOWSIG_OWNER_TOTP_MASTER_KEY_B64` configuration names. **Do not reuse staging-only DB DSN or signing/factor secrets in production**, and do not apply the pending production patch alone. Do not log/commit secrets.
+2. Production **PostgreSQL 18** exists and is deployed successfully, with its own persistent volume, but the actual `vowsig_app`, `vowsig_migrator`, `vowsig_backup` restricted roles, **001–010 schema**, tenant isolation, full `sslmode=verify-full` app DSN, current certificate chain and exact grants are **NOT independently proven in production**. Staging passes do not imply production. Perform one controlled production operator preflight + restricted schema setup with safeguards and rollback preparation only after explicit approval.
+3. Production Auth0 exact HTTPS callback/origin issuer and Resend delivery/domain settings must be validated without opening anonymous owner or paid Auth0 MFA paths. Turn on account/OIDC flags only with all private config and restricted DB access established, during one coordinated exact-SHA release.
+
+**P0 — historical-data governance / owner decision**:
+- Owner's 12 frozen original SQLite sources and all 11,103 event hashes, lifecycle links and 298 *internal* AI recorded-cost legs passed; **do not repeat** them.
+- Independent reviewer-signed nine-market full-history source-rights, broker-neutral external after-cost validity, crypto K5 H1/H4 natural opportunity coverage and full population/manifest **have NOT been obtained**. Historical performance in owner Performance Lab must remain N/A; existing source records or a working production public snapshot cannot certify these facts.
+- Existing binding `docs/vowsig-integrated-p1-p5-single-release-plan-2026-11-04.md` and `docs/vowsig-one-release-signed-gate-and-rollback-2026-11-05.md` **require** complete signed original historical results before a single full launch. Owner wanting speed does **not automatically** waive the gate. To launch with the complete authenticated UX and truthful **N/A** Performance Lab while source-signature work continues immediately after launch, obtain a **separate explicit owner scope-policy amendment** and update the release acceptance contract first. Do not pretend this is equivalent to a full-source-verified launch.
+
+**P0 — release controls**: final exact candidate CI, owner MFA/privilege protections and callback allowlist, representative mobile, one production-safe rollback rehearsal using compatible schema and retained previous deploy, last publisher freshness check, and **owner exact-40-char SHA merge/deploy authorization**. Production Railway's currently staged `VOWSIG_ACCOUNTS_APP_ORIGIN` variable must be reconciled as part of this authorized cutover, **not applied automatically now**.
+
+**Approved P0 immediately after launch, not prelaunch:** encrypted scheduled Railway PostgreSQL backups to S3/B2 and independent cold restore, with `DATABASE_RECOVERY_UNVERIFIED` until a real restore. This existing exception remains in force; do not introduce a new backup blocker.
+
+## Minimum next coordinated sequence (no repeat loops)
+
+1. Preserve current real publisher and `/data` volume. **Do not create a staging snapshot publisher, duplicate research ingester or new application**.
+2. Confirm explicit owner decision on full-history launch gate **only if** rapid launch would otherwise proceed with N/A histories. Independently prepare the existing production PG restricted roles/schema and app/private auth configuration once.
+3. Review/run single staged release package: current exact PR #93 SHA → merge approval → production Railway **existing** app Dockerfile at same commit, keep domain `vowsig.com`, `/data` mount and `TRADINGTOP_INGEST_TOKEN` unchanged. Reconcile pending app origin and privately provision production owner MFA; leave execution off and restricted six details blocked.
+4. Immediate hosted checks: existing production `/api/health` fresh, three programs/nine policy markets, verified Auth0 Free login/signup/Resend, one actual member watchlist, owner TOTP/admin, guest/nonowner 401/403, missing history honest N/A unless independently signed. Roll back application image only if needed, **without database downgrade or stopping VPS publisher**.
+5. Begin approved encrypted Railway PostgreSQL offsite recovery/cold restore immediately.
+
+**This is a fast-path handoff, not a production approval; no prod Railway, VPS, account, publisher, roles, GitHub merge, or user data were mutated to author it.**

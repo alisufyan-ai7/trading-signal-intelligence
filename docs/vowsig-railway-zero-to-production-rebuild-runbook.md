@@ -1,6 +1,6 @@
 # VowSig — Railway staging, production rebuild, in-place release and recovery runbook
 
-**2026-11-06; repository `alisufyan-ai7/trading-signal-intelligence`.** Read [START HERE](VOWSIG_START_HERE_CURRENT_STATE.md) before acting; old screenshots and commit pins are not necessarily current. **This is operational documentation, not owner consent to rebuild or deploy anything.**
+**2026-11-06; repository `alisufyan-ai7/trading-signal-intelligence`.** Read [START HERE](VOWSIG_START_HERE_CURRENT_STATE.md) before acting; old screenshots and commit pins are not necessarily current. **This is operational documentation, not owner consent to rebuild or deploy anything.** For the full seventeen real release gates, consult the [exact-candidate evidence matrix](vowsig-release-gate-evidence-matrix.md).
 
 ## 1. Four distinct operations — choose before touching Railway
 

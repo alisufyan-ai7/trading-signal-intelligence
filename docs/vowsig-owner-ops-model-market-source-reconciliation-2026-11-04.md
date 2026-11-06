@@ -1,6 +1,6 @@
 # VowSig P2/P3 owner operations, model and all-market reliability — review milestone 2026-11-04
 
-> **NOVEMBER 6, 2026 — NARROW OWNER APPROVED DEFERRAL:** The original nine-market independently signed Performance Lab certification remains a **mandatory prerequisite to publishing historical returns**, but is **no longer required to complete the first authenticated customer/owner production release**. Unverified owner Performance Lab metrics must stay N/A, and the other owner operations/reliability panels remain enabled and honest. See [binding owner decision](docs/vowsig-owner-approved-first-launch-history-deferral-2026-11-06.md).
+> **NOVEMBER 6, 2026 — NARROW OWNER APPROVED DEFERRAL:** The original nine-market independently signed Performance Lab certification remains a **mandatory prerequisite to publishing historical returns**, but is **no longer required to complete the first authenticated customer/owner production release**. Unverified owner Performance Lab metrics must stay N/A, and the other owner operations/reliability panels remain enabled and honest. See [binding owner decision](vowsig-owner-approved-first-launch-history-deferral-2026-11-06.md).
 
 
 ## Scope and owner commitments

@@ -28,19 +28,21 @@ ACK = "I_APPROVE_ONE_OFF_OWNER_SESSION_REVOCATION"
 SOLO_ACK = "I_ACCEPT_FIRST_OWNER_SELF_AUTHORIZATION_NO_INDEPENDENT_REVIEW"
 
 
-def _reviewed_dsn() -> str:
+def _reviewed_dsn(*, target_staging: bool = False) -> str:
     dsn = os.environ.get("VOWSIG_OWNER_MIGRATOR_DATABASE_URL", "")
     p = urlsplit(dsn)
     params = parse_qs(p.query, strict_parsing=True)
+    host = "vowsig-staging-pg18.railway.internal" if target_staging else "postgres.railway.internal"
+    ca = ("/app/config/tls/railway-staging-pg-root-ca-20261105.pem"
+          if target_staging else "/app/config/tls/railway-postgres-root-ca-20261104.pem")
     if (
         p.scheme != "postgresql"
-        or p.hostname != "postgres.railway.internal"
+        or p.hostname != host
         or p.username != "vowsig_migrator"
         or not p.password
         or params.get("sslmode") != ["verify-full"]
         or len(params.get("sslrootcert", [])) != 1
-        or params.get("sslrootcert", [""])[0] !=
-           "/app/config/tls/railway-postgres-root-ca-20261104.pem"
+        or params.get("sslrootcert", [""])[0] != ca
         or p.fragment
     ):
         raise OwnerProvisioningDenied("Verified private migrator connection required")
@@ -72,6 +74,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--approval-file", required=True)
     parser.add_argument("--reviewer-public-key-file", required=True)
     parser.add_argument("--mode", choices=("preview", "apply"), default="preview")
+    parser.add_argument("--target-staging", action="store_true")
     parser.add_argument("--operator-id", default="")
     parser.add_argument("--acknowledge", default="")
     parser.add_argument("--solo-founder-first-owner", action="store_true")
@@ -87,9 +90,10 @@ def main(argv: list[str] | None = None) -> int:
             trusted_reviewer_public_key_pem=public_key,
             trusted_key_sha256=expected_key,
         )
-        dsn = _reviewed_dsn()
+        dsn = _reviewed_dsn(target_staging=args.target_staging)
         if args.solo_founder_first_owner:
             if (approval["operation"] != "first_owner_solo"
+                or not args.target_staging
                 or args.mode != "apply"
                 or args.acknowledge_solo != SOLO_ACK
                 or args.operator_id != approval["reviewer_id"]):

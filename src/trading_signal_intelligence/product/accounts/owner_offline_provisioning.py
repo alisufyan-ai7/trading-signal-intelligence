@@ -129,7 +129,7 @@ def verify_owner_approval(
 
     if type(body["schema_version"]) is not int or body["schema_version"] != 1:
         raise OwnerProvisioningDenied("Unsupported offline authorization version")
-    if body["purpose"] != _PURPOSE or body["operation"] not in ("first_owner", "rotate_factor"):
+    if body["purpose"] != _PURPOSE or body["operation"] not in ("first_owner", "first_owner_solo", "rotate_factor"):
         raise OwnerProvisioningDenied("Unapproved operation type")
     _uuid(body["operation_id"])
     _uuid(body["account_id"])
@@ -196,7 +196,7 @@ def _identity_guard(conn: Any, body: dict[str, Any], *, lock: bool) -> dict[str,
         )
     ):
         raise OwnerProvisioningDenied("Verified owner identity mismatch")
-    if body["operation"] == "first_owner" and row["role"] != "member":
+    if body["operation"] in ("first_owner", "first_owner_solo") and row["role"] != "member":
         raise OwnerProvisioningDenied("First owner must begin as verified member")
     if body["operation"] == "rotate_factor" and row["role"] != "owner":
         raise OwnerProvisioningDenied("Recovery requires an existing owner")
@@ -219,7 +219,7 @@ def preflight_owner_operation(conn: Any, approval: dict[str, Any]) -> dict[str, 
     ).fetchone() is not None
     if used:
         raise OwnerProvisioningDenied("Owner authorization already used")
-    if approval["operation"] == "first_owner" and (owner_count != 0 or exists):
+    if approval["operation"] in ("first_owner", "first_owner_solo") and (owner_count != 0 or exists):
         raise OwnerProvisioningDenied("First-owner invariant failed")
     if approval["operation"] == "rotate_factor" and (owner_count < 1 or not exists):
         raise OwnerProvisioningDenied("Existing owner factor absent")
@@ -266,8 +266,13 @@ def apply_owner_operation(
         trusted_key_sha256=trusted_key_sha256,
         now=now,
     )
-    if operator_id == approval["reviewer_id"]:
-        raise OwnerProvisioningDenied("The reviewer cannot be their own operator")
+    # Explicit single-founder policy exception: first owner only, never recovery.
+    # Do not fabricate distinct human identities to satisfy separation controls.
+    if approval["operation"] == "first_owner_solo":
+        if operator_id != approval["reviewer_id"]:
+            raise OwnerProvisioningDenied("Solo founder must self-authorize truthfully")
+    elif operator_id == approval["reviewer_id"]:
+        raise OwnerProvisioningDenied("Independent operations need distinct people")
     if not isinstance(now, datetime) or now.tzinfo is None:
         raise OwnerProvisioningDenied("Untrusted owner confirmation clock")
     now = now.astimezone(timezone.utc)
@@ -289,7 +294,7 @@ def apply_owner_operation(
     _identity_guard(conn, approval, lock=True)
     preflight_owner_operation(conn, approval)
     ciphertext = encrypt_for_owner(enrolled_secret, approval["account_id"], master_key)
-    if approval["operation"] == "first_owner":
+    if approval["operation"] in ("first_owner", "first_owner_solo"):
         conn.execute(
             """INSERT INTO vowsig_owner_totp_credentials
                (account_id, secret_ciphertext) VALUES (%s::uuid,%s)""",
@@ -339,4 +344,6 @@ def apply_owner_operation(
         "revoked_sessions": len(revoked),
         "factor_ciphertext_disclosed": False,
         "fresh_login_required": True,
+        "independent_reviewer_involved": approval["operation"] != "first_owner_solo",
+        "solo_founder_exception": approval["operation"] == "first_owner_solo",
     }

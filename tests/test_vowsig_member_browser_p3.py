@@ -317,7 +317,7 @@ def test_mobile_directory_and_member_watchlist(ui):
     assert page.locator("h1").inner_text()=="All nine markets"
     assert page.locator("article.list-row").count()==9
     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 1")
-    assert page.get_by_text("No detailed signal exposure",exact=False).count()==6
+    assert page.get_by_text("Validation-only market.",exact=False).count()==6
     page.locator("article.list-row").first.get_by_role("button",name="Add to watchlist").click()
     page.get_by_role("button",name="Remove from watchlist").first.wait_for()
     assert state["watchlist"]==["XAUUSD"]

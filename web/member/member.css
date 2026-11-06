@@ -181,3 +181,14 @@ summary:focus-visible{outline:3px solid #98e5c8;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){
   .button,.subtle{transition:none}
 }
+
+/* PR93 release-blocking mobile market-card overflow correction */
+.tiles .list-row{min-width:0}
+.tiles .list-row .row-head > *{min-width:0}
+.tiles .list-row .pill{max-width:100%;white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+.tiles .list-row .metrics span{max-width:100%;min-width:0;overflow-wrap:anywhere}
+@media(max-width:639px){
+  /* Verbose market data needs full phone width, not two 160px columns. */
+  .tiles{grid-template-columns:minmax(0,1fr)}
+  .tiles>.tile:last-child:nth-child(odd){grid-column:auto}
+}

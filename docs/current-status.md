@@ -1,5 +1,12 @@
 # Current Status
 
+## VOWSIG CURRENT RELEASE STATUS — November 6, 2026
+
+**This is a dated status overlay, not a rewrite of the historic logs below.** For the **latest** VowSig PR #93 authenticated Free/owner release, read [START HERE](VOWSIG_START_HERE_CURRENT_STATE.md) and [next-chat handoff](vowsig-next-chat-execution-handoff.md). Real staging member + initial owner TOTP/UI PASS; owner-run production PG18 migrations 001–010 PASS and must not be rerun. Four production secrets and eight public/OIDC switch values STAGED only; account features not deployed. Owner working on one **SELECT-only** production restricted-app-role `verify-full` check (no PASS yet). Historical independent track-record certification **after launch**, owner Performance Lab N/A, Railway PG S3/B2 encrypted backup+cold restore first immediate postlaunch under explicit accepted risk; separate owner exact-SHA merge/deploy authority remains absent. Earlier Oct operations/PR notes below are historic.
+
+---
+
+
 ## 2026-10-26 — GitHub PR maintenance and preservation CLOSED PASS
 
 Original **18 open PRs → 2 open draft PRs**: [#87 backup/GFS exact 39-file code+test successor](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) and [#50 frozen-dependency CI safeguard](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50). The full original #85 + #77–84 source lineage is pinned in `archive/pr85-original-stacked-backup-history-20261024`; all final source/test Git blob SHAs were copied unchanged to #87, and historic EXP043–059 evidence and product reports were merged into `main` via documentation-only #58/#86/#88. Original #85 was closed **unmerged**; no code release or VPS cutover occurred. Consult [the PR audit](pr-queue-review-2026-10-24.md) for exact SHAs and safe reopening. All VPS execution assertions below remain dated October 24; subsequent daily natural recurrence has not been observed here, and cloud pruning is not active.

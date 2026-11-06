@@ -136,3 +136,44 @@ def test_cli_remains_preview_only_by_default_and_no_non_private_dsn():
     assert 'params.get("sslmode") != ["verify-full"]' in script
     assert 'getpass.getpass(' in script
     assert "print(json.dumps(receipt" in script
+
+
+def test_self_authorized_first_owner_is_distinct_signed_operation():
+    key, public, pin = signer()
+    body = approval(operation="first_owner_solo", reviewer_id="founder.owner")
+    verified = verify_owner_approval(signed(key, body),
+                                     trusted_reviewer_public_key_pem=public,
+                                     trusted_key_sha256=pin, now=NOW)
+    assert verified["operation"] == "first_owner_solo"
+    assert verified["owner_consent_confirmed"] is True
+    assert verified["account_id"] == OWNER
+    for bad in [
+        body | {"operation": "rotate_factor_solo"},
+        body | {"operation": "first_owner_solo", "owner_identity_reverified": False},
+        body | {"operation": "first_owner_solo", "owner_consent_confirmed": False},
+    ]:
+        with pytest.raises(OwnerProvisioningDenied):
+            verify_owner_approval(signed(key, bad),
+                                  trusted_reviewer_public_key_pem=public,
+                                  trusted_key_sha256=pin, now=NOW)
+
+
+def test_solo_exception_keeps_recovery_independent_and_offline_only():
+    root=Path(__file__).resolve().parents[1]
+    operator=(root/"scripts/vowsig_owner_offline_operator.py").read_text()
+    provisioning=(root/"src/trading_signal_intelligence/product/accounts/owner_offline_provisioning.py").read_text()
+    migration=(root/"sql/accounts/010_single_founder_first_owner_exception.sql").read_text()
+    assert '--solo-founder-first-owner' in operator
+    assert 'SOLO_ACK' in operator
+    assert 'args.mode != "apply"' in operator
+    assert 'args.operator_id != approval["reviewer_id"]' in operator
+    assert 'args.acknowledge != ACK' in operator
+    assert 'sys.stdin.isatty()' in operator
+    assert 'if approval["operation"] == "first_owner_solo":' in provisioning
+    assert 'elif operator_id == approval["reviewer_id"]:' in provisioning
+    assert 'if approval["operation"] in ("first_owner", "first_owner_solo")' in provisioning
+    assert 'LOCK TABLE vowsig_owner_provisioning_audit IN EXCLUSIVE MODE' in provisioning
+    assert "operator_id=reviewer_id" in migration
+    assert "operation='first_owner_solo'" in migration
+    assert "operation IN ('first_owner','rotate_factor')" in migration
+    assert 'GRANT ' not in migration

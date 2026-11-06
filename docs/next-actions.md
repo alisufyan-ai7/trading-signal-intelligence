@@ -4,7 +4,7 @@
 
 **Always start at** [current-state index](VOWSIG_START_HERE_CURRENT_STATE.md) and [single next-chat execution guide](vowsig-next-chat-execution-handoff.md). The October PR queue / S02 backup next-actions below are historical and should not preempt the authorized VowSig customer launch.
 
-1. Await only sanitized owner **`PRODUCTION_APP_ROLE_TLS_PRIVILEGE`** output from the reviewed single SELECT-only existing production Postgres role/TLS script. **Do NOT rerun SQL 001–010** (already owner PASS).
+1. **DONE:** owner-reported real production Postgres Console `PRODUCTION_APP_ROLE_TLS_PRIVILEGE=PASS`, authenticated `vowsig_app`/`sslmode=verify-full` and restricted SQL permissions; **no writes or deploy**. **Do not rerun this check or SQL 001–010**. Separate released app-container connection remains mandatory.
 2. Check existing production Auth0 exact callback/origin/logout and **real** Resend verified email delivery. Four private production app variable names/DSN and OIDC values already staged, feature switches OFF, no deploy.
 3. One exact reviewed candidate/authenticated app role check from app network, production initial owner TOTP and separate factor recovery, restricted six-market privacy, N/A uncategorized historical numbers, small security/mobile and rollback acceptance.
 4. Seek **separate explicit exact-40-char SHA merge/deploy approval**. Preserve `vowsig.com`, current `/data` and Windows publisher; no duplicate staging publisher.

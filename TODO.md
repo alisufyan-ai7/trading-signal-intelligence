@@ -11,7 +11,9 @@ Read [current state](docs/VOWSIG_START_HERE_CURRENT_STATE.md) and [next-chat ste
 - [x] Resend sender domain verified and existing API key present; Auth0 issuer discovery/JWKS verified publicly.
 - [x] Current exact-reviewed read-only app-role TLS acceptance script created/tested in PR.
 - [x] Owner supplied real `PRODUCTION_APP_ROLE_TLS_PRIVILEGE=PASS`, private DNS `verify-full` and `vowsig_app` restricted grants; zero writes/deployment/publisher change. **DO NOT REPEAT**. Final app-container DSN still needs release-time validation.
-- [ ] Verify production Auth0 allowed callback/logout/web origin and **real** email verification via Resend; check negative/replay cases.
+- [x] Owner screenshot confirms Auth0 production callback/logout/web origin and Auth0 Resend email provider configured using `accounts@mail.vowsig.com` + masked key; this is **not** email-delivery acceptance.
+- [ ] Check that the existing staging callback/logout/origin are preserved in the same Auth0 application if used by staging (screenshot showed **only production URLs**). Click Auth0 **Send Test Email** to owner-controlled mailbox and confirm actual receipt, without sharing private message/links.
+- [ ] Verify real production Auth0 verified signup/Resend email and negative/replay cases during authorized release candidate.
 - [ ] One coordinated production candidate: verified-full **app-container** DB connection, real owner production MFA/rotation/recovery, market rights, member UX/mobile/security, snapshot, app-only rollback evidence.
 - [ ] Separate owner approval of **exact full release SHA** before PR merge/app live deployment.
 - [ ] **FIRST immediate postlaunch:** independently encrypted recurring Railway PostgreSQL S3/B2 backups, alerts, retention and actual cold restore; `DATABASE_RECOVERY_UNVERIFIED` until PASS.

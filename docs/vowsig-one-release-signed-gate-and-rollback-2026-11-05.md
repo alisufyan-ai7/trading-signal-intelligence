@@ -1,5 +1,8 @@
 # VowSig single coordinated fully enabled release — owner-signed preflight boundary
 
+> **NOVEMBER 6, 2026 — OWNER AMENDMENT / CURRENT SIGNED CONTRACT:** The signed release gate now **requires real evidence that uncertified performance is suppressed**, instead of falsely requiring independent full-source history certification before launch. History rights, crypto K5, after-cost validity and complete nine-market independent signatures remain mandatory **before history can be published**. A one-use, audited, self-authorized founder initial MFA ceremony was explicitly approved and performed in staging; it must not be presented as two-human review. All other provider, security, rollback and owner exact-SHA gates remain. See [binding owner decision](docs/vowsig-owner-approved-first-launch-history-deferral-2026-11-06.md) and the amended `release_acceptance.py` for the actual field names. Historical two-person and full-history prelaunch wording below is superseded on these two narrow points.
+
+
 2026-11-05. Implementation in draft PR #93, NOT a launch or provider-verification claim.
 
 The owner explicitly rejects a feature-disabled live deployment. The only planned go-live includes Free Auth0 signup, verified sessions, Resend delivery, fully working Signal Center and owner diagnostics/Performance Lab with independently certified source histories. Broker execution remains off and six noncore markets cannot expose unapproved per-signal details. The separate new Railway PostgreSQL automatic encrypted offsite backup is **first immediate postlaunch** by explicit owner-accepted temporary data-loss risk; status stays `DATABASE_RECOVERY_UNVERIFIED`.

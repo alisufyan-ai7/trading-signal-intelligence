@@ -49,3 +49,16 @@ Next: use one real authenticated app-network `vowsig_app` verified-full TLS and 
 8. Independent complete nine-market historical source rights/cost/K5/census certification **after launch before any historical returns are published**. Owner Performance Lab honestly shows N/A until a distinct signed evidence release. No duplicated staging publisher.
 
 **Release feature freeze remains in effect.**
+
+
+## 2026-11-06 follow-up: production secrets staged, private role/TLS check prepared
+
+The owner confirmed the private production DSN, CSRF secret, separate production-only TOTP master key, and existing Auth0 client secret were added to Railway **pending** changes. The read-only Railway service inventory verifies all four **variable names**, 12 pending edits only on `tradingtop-early-access`, current production image still **SUCCESS** and `/data` mounted. **Secret values were never fetched, inspected or verified**. Feature switches remain OFF in the staged change.
+
+The production schema/roles SQL 001–010 **already returned owner-executed PASS; do not rerun**.
+
+Before live cutover, use **one** read-only private-role authentication check: [`ops/handoffs/vowsig_production_app_role_tls_readonly_20261106.sh`](../ops/handoffs/vowsig_production_app_role_tls_readonly_20261106.sh). It embeds the repository-pinned *public* root CA, checks private DNS + actual libpq `verify-full` trust/hostname, `vowsig_app` login and least-privilege `SELECT`-only SQL. It never reads customer records, alters roles, deploys a service, creates a key, remigrates a database or touches the Windows VPS.
+
+**One copy transfer to existing production Postgres Railway Console:** from the authorized Mac GitHub clone, `git fetch` the existing PR branch and use `git show <EXACT_GREEN_COMMIT>:ops/handoffs/vowsig_production_app_role_tls_readonly_20261106.sh | pbcopy` to copy the script. Paste it **only** in `positioning-engine-cron / production / Postgres / Console`, enter the **existing** `vowsig_app` password once in a hidden prompt and share **only** `PRODUCTION_APP_ROLE_TLS_PRIVILEGE=PASS` or a nonsecret failure label. There is no app restart, and it must not be used as evidence of *app-container* networking or the uninspected staged DSN's actual bytes; the final released app container must still authenticate with the configured DSN under `sslmode=verify-full`.
+
+**Remaining launch gates:** the Auth0 Regular Web Application must allow `https://vowsig.com/auth/callback`, origin `https://vowsig.com`, logout `https://vowsig.com/` alongside staging. Real verified signup/Resend email delivery and production owner MFA can only be evidenced on a running production-compatible candidate, then record session/security + read-only rollback and require separate owner exact-SHA authorization. Never deploy the current pending variable patch prematurely; the customer research publisher and snapshot `/data` volume are currently working. Historical performance remains N/A under the Nov 6 owner waiver; offsite PostgreSQL restore work is first immediate postlaunch.

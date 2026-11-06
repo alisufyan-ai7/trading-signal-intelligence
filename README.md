@@ -1,5 +1,12 @@
 # Trading Signal Intelligence
 
+## CURRENT VOWSIG LAUNCH HANDOFF — November 6, 2026
+
+**Read [current release status](docs/VOWSIG_START_HERE_CURRENT_STATE.md) before interpreting the October operational overlay below.** The canonical [documentation index](docs/README.md), [full Railway from-zero staging/production/rollback/recovery runbook](docs/vowsig-railway-zero-to-production-rebuild-runbook.md), [product contract](docs/vowsig-product-contract-current.md), and [lossless new-chat prompt](docs/vowsig-next-chat-execution-handoff.md) now cover the current owner-approved release. PR [#93](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/93) is the **DRAFT UNMERGED** authenticated Free member+owner release; production `main` and deployed beta are separate. The owner approved historical certification **after** launch only while all unverified metrics remain **N/A**, and Railway PostgreSQL encrypted S3/B2 backup+cold restore as **first immediate postlaunch work** with acknowledged risk. Latest owner-reported production account SQL 001–010 PASS, four auth secrets staged but **not deployed**, private app-role/TLS read-only acceptance pending. Do not rerun the migration, build another publisher or merge/deploy without exact-SHA owner approval.
+
+---
+
+
 ## GitHub PR queue reconciled — 2026-10-26
 
 The owner's 18-open-PR cleanup now leaves **only two DRAFT, UNMERGED PRs**: [#87 — exact 39-file S02 backup/GFS code-and-tests successor](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/87) (all Git blob SHAs verified identical to the original staged source, native Windows tests still required), and [#50 — frozen-dependency impact gate](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/50) (independent review required). Original [#85](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/85) and #77–84 are **closed superseded**, not deployed; their complete commit ancestry is retained in `archive/pr85-original-stacked-backup-history-20261024`. Product documentation and all EXP043–059 backup evidence were preserved in `main` via merged #58/#86/#88; 11 unique historical AWS/SDK files are in the inert research archive. Read [the final 18-PR audit register](docs/pr-queue-review-2026-10-24.md) and [verified October 24 VPS operating handoff](docs/vowsig-operational-status-2026-10-24.md). The last owner-observed VPS backup/recovery checkpoint remains October 24; don't assume next-day runs or GFS cloud deletions.

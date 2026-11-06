@@ -78,7 +78,8 @@ def test_all_signed_fixtures_bind_exact_shas_but_never_automatically_deploy():
     "auth0_verified_email_signup","resend_actual_delivery",
     "railway_authenticated_app_role_verify_full",
     "owner_initial_mfa_enrollment_solo_exception",
-    "owner_mfa_stepup_and_recovery_policy",
+    "owner_mfa_stepup_real_staging",
+    "owner_mfa_rotation_recovery",
     "uncertified_historical_performance_suppressed",
     "owner_admin_operational_market_reliability",
     "staging_rollback_rehearsal",
@@ -132,13 +133,19 @@ def test_untrusted_release_key_and_stale_receipts_hold():
         check(sign(obj))
 
 
-def test_no_false_independent_history_or_two_person_mfa_claims():
+def test_no_false_independent_history_or_first_owner_two_person_claims():
     obj,sign,check,_,_=fixture()
     assert not any("independent_private_source_review" == v
                    for v in gate.REQUIRED_GATES.values())
-    assert "owner_human_two_person" not in gate.REQUIRED_GATES.values()
+    # The approved first-owner bootstrap was solo; separate factor recovery
+    # still requires two distinct human operators and must NOT be silently waived.
+    assert gate.REQUIRED_GATES["owner_mfa_rotation_recovery"] == "owner_human_two_person"
+    assert gate.REQUIRED_GATES["owner_mfa_stepup_real_staging"] == "real_staging_security"
     assert obj["gates"]["owner_initial_mfa_enrollment_solo_exception"]["type"] == (
         "owner_self_authorized_initial"
+    )
+    assert obj["gates"]["owner_mfa_rotation_recovery"]["type"] == (
+        "owner_human_two_person"
     )
     assert obj["gates"]["uncertified_historical_performance_suppressed"]["type"] == (
         "real_staging_product"

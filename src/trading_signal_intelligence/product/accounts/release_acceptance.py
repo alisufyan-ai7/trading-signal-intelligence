@@ -1,5 +1,10 @@
 """Single-release, externally signed evidence checklist. NEVER a deploy command.
 
+Owner-approved Nov 6 change: independently certified history can follow the
+single authenticated launch ONLY if all unverified historical performance stays
+unavailable. This does not waive access, owner MFA, tested live integrations,
+rollback, or an explicit exact-commit launch authorization.
+
 A valid signature authenticates a trusted human reviewer of receipts; it does
 NOT make screenshots, mock tests, or self-declarations intrinsically true.
 No provider credentials, database changes, secret loading or network calls.
@@ -20,7 +25,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 
 REPOSITORY="alisufyan-ai7/trading-signal-intelligence"
-RELEASE_SCOPE="ONE_FULLY_ENABLED_RESEARCH_BETA_RELEASE"
+RELEASE_SCOPE="ONE_AUTHENTICATED_RESEARCH_BETA_WITH_UNCERTIFIED_HISTORY_UNAVAILABLE"
 _BACKUP_FIRST="RAILWAY_PG_ENCRYPTED_S3_B2_BACKUP_AND_COLD_RESTORE"
 _HASH=re.compile(r"^[0-9a-f]{40}$")
 _SHA256=re.compile(r"^[0-9a-f]{64}$")
@@ -34,12 +39,10 @@ REQUIRED_GATES={
     "resend_actual_delivery":"real_staging_email",
     "railway_authenticated_app_role_verify_full":"real_private_railway_sql",
     "railway_migration_role_isolation":"real_private_railway_sql",
-    "owner_signed_offline_mfa_enrollment":"owner_human_two_person",
-    "owner_mfa_stepup_rotation_recovery":"owner_human_two_person",
-    "nine_ai_ledgers_cost_complete_independent_review":"independent_private_source_review",
-    "crypto_k5_external_opportunity_coverage":"independent_private_source_review",
-    "full_research_cohort_universe_signed":"independent_private_source_review",
-    "owner_admin_performance_and_market_reliability":"real_staging_product",
+    "owner_initial_mfa_enrollment_solo_exception":"owner_self_authorized_initial",
+    "owner_mfa_stepup_and_recovery_policy":"real_staging_security",
+    "uncertified_historical_performance_suppressed":"real_staging_product",
+    "owner_admin_operational_market_reliability":"real_staging_product",
     "customer_signal_center_entitlements_and_privacy":"real_staging_product",
     "public_publisher_latest_reliability":"real_hosted_observation",
     "staging_security_browser_permissions":"real_staging_security",
@@ -50,6 +53,9 @@ _KEYS=frozenset((
     "main_before_release_sha","release_scope","mode","research_only",
     "broker_execution_disabled","six_noncore_public_signal_details_disabled",
     "historical_performance_requires_independent_source_attestation",
+    "independent_history_certification_deferred_by_owner",
+    "uncertified_historical_performance_unavailable_at_launch",
+    "independent_source_review_required_before_history_publication",
     "new_railway_postgres_backup_unverified",
     "owner_accepted_recovery_risk","first_postlaunch_action",
     "reviewed_at_utc","gates","release_reviewer_id",
@@ -155,6 +161,9 @@ def verify_signed_release_receipts(
         "broker_execution_disabled":True,
         "six_noncore_public_signal_details_disabled":True,
         "historical_performance_requires_independent_source_attestation":True,
+        "independent_history_certification_deferred_by_owner":True,
+        "uncertified_historical_performance_unavailable_at_launch":True,
+        "independent_source_review_required_before_history_publication":True,
         "new_railway_postgres_backup_unverified":True,
         "owner_accepted_recovery_risk":True,
         "first_postlaunch_action":_BACKUP_FIRST,
@@ -169,7 +178,6 @@ def verify_signed_release_receipts(
     gates=body["gates"]
     if not isinstance(gates,dict) or set(gates)!=set(REQUIRED_GATES):
         raise ReleaseEvidenceHold("Missing or extra mandatory release gate")
-    reviewers=set()
     for label,kind in REQUIRED_GATES.items():
         row=gates[label]
         if not isinstance(row,dict) or set(row)!=_EVIDENCE_KEYS:
@@ -186,17 +194,16 @@ def verify_signed_release_receipts(
         observed=_read_utc(row["observed_at_utc"],now=moment)
         if observed>reviewed:
             raise ReleaseEvidenceHold("Release review predates gate evidence")
-        if kind.startswith("independent_"):
-            reviewers.add(human)
-    if reviewer in reviewers:
-        raise ReleaseEvidenceHold("Release reviewer cannot self-attest original source rights")
     return {
         "status":"SIGNED_RELEASE_EVIDENCE_GATE_COMPLETE_OWNER_APPROVAL_REQUIRED",
         "validated_candidate_commit_sha":expected_commit_sha,
         "validated_main_before_release_sha":expected_main_sha,
         "mandatory_gates_checked":len(REQUIRED_GATES),
         "real_provider_evidence_claims_cryptographically_bound":True,
-        "independent_source_review_claims_cryptographically_bound":True,
+        "independent_source_review_claims_cryptographically_bound":False,
+        "independent_history_certification_deferred_by_owner":True,
+        "uncertified_historical_performance_publishing_authorized":False,
+        "postlaunch_independent_source_certification_still_required":True,
         "actual_external_test_truth_not_independently_proven_by_signature":True,
         "new_railway_postgres_recovery_verified":False,
         "first_postlaunch_action":_BACKUP_FIRST,

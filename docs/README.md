@@ -8,6 +8,7 @@
 - [**Complete Railway staging / from-zero production / in-place upgrade / disaster recovery runbook**](vowsig-railway-zero-to-production-rebuild-runbook.md) — network, volumes, TLS public CA pins, PG roles/migrations, secret matrix, Auth0/Resend, publisher, backup, rollback, DNS and verification.
 - [**Product specification**](vowsig-product-contract-current.md) — public, Free, owner, all nine markets, Signal Center, UX, data/privacy, permissible history and roadmap.
 - [**New-chat continuation + copy-ready prompt**](vowsig-next-chat-execution-handoff.md) — no lost progress and no redundant scripts.
+- [**Exact 17-gate release evidence matrix — current PASS vs HOLD**](vowsig-release-gate-evidence-matrix.md) — one final signed release proof checklist; no false source or recovery claims.
 - [**Owner-approved history policy amendment**](vowsig-owner-approved-first-launch-history-deferral-2026-11-06.md), [**one-release signed gate**](vowsig-one-release-signed-gate-and-rollback-2026-11-05.md), [**current minimal production setup**](vowsig-production-setup-shortest-path-2026-11-06.md).
 
 **Product release status:** PR #93 DRAFT/UNMERGED, existing `vowsig.com` publisher and `/data` preserved. Dated prior GitHub/VPS/restoration records below remain intact as history, not a claim that all backups or releases are current.

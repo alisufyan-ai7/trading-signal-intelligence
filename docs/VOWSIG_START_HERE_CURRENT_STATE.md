@@ -60,7 +60,7 @@ See [complete source-grounded product spec](vowsig-product-contract-current.md) 
 
 ## 5. Review hierarchy / document map
 
-1. **Current live handoff:** THIS file, [restart next chat](vowsig-next-chat-execution-handoff.md) and latest [PR #93](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/93) comments/CI.
+1. **Current live handoff:** THIS file, [17-gate release evidence matrix](vowsig-release-gate-evidence-matrix.md), [restart next chat](vowsig-next-chat-execution-handoff.md) and latest [PR #93](https://github.com/alisufyan-ai7/trading-signal-intelligence/pull/93) comments/CI.
 2. **Binding owner policy:** [history deferral](vowsig-owner-approved-first-launch-history-deferral-2026-11-06.md), [backup exception](vowsig-one-release-backup-last-feature-first-2026-11-04.md), [signed release gate](vowsig-one-release-signed-gate-and-rollback-2026-11-05.md).
 3. **Product boundaries:** [nine-market customer contract](vowsig-p0-nine-market-signal-center-customer-access-contract-v0.1-2026-11-04.md), [owner operational scope](vowsig-owner-ops-model-market-source-reconciliation-2026-11-04.md), [mobile UX](vowsig-mobile-first-experience-and-competitor-design-review-2026-11-06.md).
 4. **Operations:** [shortest in-place setup](vowsig-production-setup-shortest-path-2026-11-06.md), [complete recreate/recover runbook](vowsig-railway-zero-to-production-rebuild-runbook.md), [private certificate evidence](vowsig-railway-app-network-tls-ca-handoff-2026-11-04.md), [staging founder workflow](vowsig-founder-mac-private-owner-mfa-workflow-2026-11-06.md).

@@ -19,6 +19,7 @@ import platform
 import re
 import secrets
 import stat
+import subprocess
 import sys
 from uuid import UUID, uuid4
 
@@ -255,6 +256,76 @@ def sign():
     print("REVIEWER_PUBLIC_KEY_SHA256=" + hashlib.sha256(public).hexdigest())
     print("APPROVAL_EXPIRES_UTC=" + approval["expires_at_utc"])
     print("OWNER_ROLE_CHANGED=NO")
+    return path
+
+
+def _mac_clipboard(value: str):
+    if "\\n" in value or "\\r" in value:
+        raise RuntimeError("CLIPBOARD_SINGLE_LINE_REQUIRED")
+    process = subprocess.run(
+        ["/usr/bin/pbcopy"], input=value.encode("utf-8"),
+        capture_output=True, timeout=5, check=False
+    )
+    if process.returncode:
+        raise RuntimeError("PRIVATE_CLIPBOARD_UNAVAILABLE")
+
+
+def copy_master():
+    folder = _directory()
+    vault = _read_private(folder / VAULT)
+    materials = _unlock(vault, _passphrase())
+    key = materials["owner_master_b64u"]
+    _mac_clipboard(key)
+    print("STAGING_OWNER_MASTER_KEY_CLIPBOARD=READY")
+    print("ONLY_PASTE_TO=RAILWAY_STAGING_APP_SECRET_VARIABLE")
+    print("SECRET_PRINTED=NO")
+    print("AFTER_PASTE=CLEAR_MAC_CLIPBOARD")
+
+
+def handoff():
+    """Sign fresh approval, then seal signed document + phone factor for staging.
+
+    No private reviewer signing key is ever transferred to the operator.
+    Paste only encrypted bundle into isolated staging console via hidden input.
+    """
+    approval_path = sign()
+    folder = _directory()
+    passphrase = _passphrase()
+    vault = _unlock(_read_private(folder / VAULT), passphrase)
+    public = _read_private(folder / PUB)
+    approval = _read_private(approval_path)
+    from trading_signal_intelligence.product.accounts.owner_offline_provisioning import (
+        verify_owner_approval,
+    )
+    pin = hashlib.sha256(public).hexdigest()
+    body = verify_owner_approval(
+        approval, trusted_reviewer_public_key_pem=public,
+        trusted_key_sha256=pin
+    )
+    if body["operation"] != "first_owner_solo":
+        raise RuntimeError("SOLO_FIRST_OWNER_APPROVAL_REQUIRED")
+    transfer_pass = getpass.getpass("New transfer passphrase (hidden; 20+ chars): ")
+    if len(transfer_pass) < 20:
+        raise RuntimeError("TRANSFER_PASSPHRASE_MINIMUM_20")
+    if transfer_pass != getpass.getpass("Repeat transfer passphrase (hidden): "):
+        raise RuntimeError("TRANSFER_PASSPHRASE_CONFIRMATION_FAILED")
+    package = {
+        "schema": "VowSigSoloFounderStagingBundleV1",
+        "approval_b64u": _b64(approval),
+        "reviewer_public_pem_b64u": _b64(public),
+        "master_key_b64u": vault["owner_master_b64u"],
+        "totp_base32": vault["totp_base32"],
+    }
+    # Reuse AES256-GCM with an independent transfer password and AAD context.
+    sealed = _lock(package, transfer_pass)
+    _mac_clipboard(_b64(sealed))
+    print("STAGING_SIGNED_TRANSFER=READY")
+    print("ENCRYPTED_BUNDLE_IN_MAC_CLIPBOARD=YES")
+    print("TRANSFER_PASSPHRASE_REQUIRED_IN_PRIVATE_OPERATOR=YES")
+    print("APPROVAL_EXPIRES_UTC=" + body["expires_at_utc"])
+    print("SIGNING_PRIVATE_KEY_TRANSFERRED=NO")
+    print("OWNER_PROMOTED=NO")
+    print("AFTER_PASTE=CLEAR_MAC_CLIPBOARD")
 
 
 def status():
@@ -276,7 +347,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="VowSig staging-only, founder's offline Mac owner MFA prep"
     )
-    parser.add_argument("action", choices=("prepare", "status", "sign"))
+    parser.add_argument("action", choices=("prepare", "status", "sign", "handoff", "copy-master"))
     args = parser.parse_args()
     try:
         _local_only()
@@ -284,6 +355,10 @@ def main():
             prepare()
         elif args.action == "sign":
             sign()
+        elif args.action == "handoff":
+            handoff()
+        elif args.action == "copy-master":
+            copy_master()
         else:
             status()
         return 0

@@ -1,0 +1,9 @@
+# Frozen-dependency governance ownership.
+# Review enforcement REQUIRES an enabled GitHub branch protection / ruleset.
+# This file alone does not block merges.
+.github/CODEOWNERS @alisufyan-ai7
+.github/workflows/frozen-dependency-change-impact.yml @alisufyan-ai7
+scripts/check_frozen_dependency_impact.py @alisufyan-ai7
+research/forward/AI-v*-activation-*.json @alisufyan-ai7
+research/forward/AI-v*-public-surface-correction-*.json @alisufyan-ai7
+config/instruments.json @alisufyan-ai7

@@ -51,6 +51,7 @@ on:
       - 'tests/test_vowsig_staging_pg18_migration_operator.py'
       - 'tests/test_vowsig_staging_pg_acceptance_p1b.py'
       - 'ops/handoffs/vowsig_staging_pg18_migrate_all_001_009_v0_1.sh'
+      - 'ops/handoffs/vowsig_production_pg18_readiness_single_pass_20261106.sh'
       - 'scripts/vowsig_private_history_single_review.py'
       - 'ops/handoffs/vowsig_public_staleness_readonly_v0_1.ps1'
       - 'tests/test_vowsig_inline_source_freeze_p2.py'
@@ -97,6 +98,8 @@ jobs:
           python-version: '3.11'
       - name: Install only reviewed application and test extras
         run: python -m pip install -e ".[app,accounts,dev,research]"
+      - name: Parse production read-only PG operator (do not execute against any DB)
+        run: bash -n ops/handoffs/vowsig_production_pg18_readiness_single_pass_20261106.sh
       - name: Compile account and cloud API sources
         run: python -m compileall -q src/trading_signal_intelligence/product/accounts src/trading_signal_intelligence/product/cloud_app.py
       - name: Parse responsive member and public-homepage JavaScript

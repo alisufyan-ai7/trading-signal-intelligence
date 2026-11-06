@@ -1,0 +1,37 @@
+# VowSig — owner-approved first production launch historical-certification deferral
+
+**Binding owner policy amendment — November 6, 2026.**
+
+**Owner's explicit response:** "**yes I approve**" to the exact decision: "**moving independent historical-performance certification to after launch, while keeping the rest of the authenticated VowSig product enabled**."
+
+This document **supersedes ONLY** the earlier unconditional requirement in `docs/vowsig-integrated-p1-p5-single-release-plan-2026-11-04.md`, `docs/vowsig-one-release-signed-gate-and-rollback-2026-11-05.md`, `docs/vowsig-launch-first-release-freeze-and-postlaunch-backlog-2026-11-06.md` and follow-on prelaunch plans that independently certified full original-source history (rights, broker-neutral execution costs, crypto K5 H1/H4 opportunity coverage and signed all-nine-market universe) must be *finished before* production accounts/member/owner launch. **It is not a waiver of historical verification or approval to publish uncertified returns.**
+
+## Precise authorized first-launch scope
+
+- **One real, coordinated authenticated launch** of the existing member and owner product. Do not invent a separate feature-disabled beta release, paywall, trading execution, extra signals, new markets, new reports, new staging publisher or data relay. The site/app navigation, free Auth0 verified accounts, member Signal Center/watchlists, nine-market research status directory, owner operations/market reliability/Performance Lab *view*, read-only evidence/status diagnostics and privacy controls remain in release scope.
+- **Historical-performance displays:** Until an independently authorized and signed complete source-history attestation is actually available, owner Performance Lab, historical net-R summaries, win rates, comparative returns, equity curves, cost-adjusted performance claims and related derived results are **unavailable / N/A**. Do not construct artificial synthetic returns, assert that the existing capped public snapshot is a certified track record, load test data into production, expose source-private event records, or silently infer entire historical populations.
+- **Research and market restrictions:** existing three core research market permissions do not expand. EURUSD/XAGUSD/USOIL/BTCUSDT/ETHUSDT/SOLUSDT remain published-research-observability/status only with unapproved per-signal detail blocked. AI-v1 shadow-only mode, broker execution disabled, no alerts/payments/real trading; research-only notices preserved.
+- **Staging evidence:** owner-reported source hash chains 12/12, 11,103 original event records and 298 AI internal recorded-cost contribution checks PASS as *scoped technical audit*. This does NOT constitute independent validation of source rights, external spread/fee/slippage policy, crypto K5 natural H1/H4 census, reviewer custody, all-nine signed outcome universe, or profitability.
+- **Postlaunch:** after the already approved *first immediate priority* of encrypted recurring Railway PostgreSQL S3/B2 backups and real isolated cold restore, perform independent source rights/cost/K5/cohort/universe review and only then enable certified historical metrics through a separately reviewed, signed and owner-authorized release. Do not promise a verification date without evidence.
+- **Production execution still requires a separate explicit exact 40-character candidate SHA merge/deploy approval**. This policy approval does NOT authorize merging PR #93, turning on production accounts, changing Auth0 or Resend configs, deploying a new Railway image, modifying PostgreSQL roles/migrations, enabling broker calls, or touching the Windows publisher. Keep the live snapshot-ingest token and existing production `/data` volume unchanged and use the single in-place cutover.
+- **Existing PostgreSQL recovery exception unchanged:** newly created accounts temporarily carry acknowledged data-loss risk until encrypted offsite backups and verified restore are operational. The public/admin recovery state must remain `DATABASE_RECOVERY_UNVERIFIED` until actually proven.
+
+## Required updates to the signed release evidence contract
+
+`src/trading_signal_intelligence/product/accounts/release_acceptance.py` must preserve its exact-SHA, current timestamp, signed private receipt custody, real Auth0 verified-account/security, Resend delivery, restricted PostgreSQL verified-full TLS, owner MFA, restricted market access, publisher continuity, browser, rollback and owner-exact-SHA gates.
+
+For the amended first launch:
+1. Remove prelaunch **mandatory PASS** claims for `nine_ai_ledgers_cost_complete_independent_review`, `crypto_k5_external_opportunity_coverage`, and `full_research_cohort_universe_signed`; they remain required **before historical performance can later be published**.
+2. Add a **real staging and release smoke** required `uncertified_historical_performance_suppressed=PASS` receipt; this means actual N/A/fail-closed, NOT independent history success.
+3. Explicitly bind `independent_history_certification_deferred_by_owner=true`, `uncertified_historical_performance_unavailable_at_launch=true` and `independent_source_review_required_before_history_publication=true` into the owner's signed evidence payload. Any missing, false or unsigned field must HOLD.
+4. Reflect the already approved first-founder `first_owner_solo` enrollment truthfully; it was a one-use self-authorized initial bootstrap on staging with real TOTP, not a performed two-person ceremony or a waiver of separated recovery. The separate recovery policy must remain in place; do not claim a real recovery exercise unless tested.
+5. Never turn a synthetic signed test fixture into live source verification. Real release reviewer receipts and actual provider/staging acceptance are still necessary. The signed gate **never automatically authorizes deployment**.
+
+## Real readiness status at amendment
+
+- **Already real positive staging evidence:** verified member sessions, member watchlists/navigation and privacy restrictions; actual one-off owner `first_owner_solo` promotion and Google Authenticator MFA step-up; real owner dashboard loads and displays truthful N/A; temporary privileged staging bootstrap service deleted; guest /owner API denial; all evidence recorded in PR #93.
+- **Already verified published production research beta (read-only):** `vowsig.com/api/health` reported fresh publisher snapshot and three core collectors ready; published validation programs cover the nine approved symbols, while expansion and crypto signal detail remains blocked. Existing live public legacy `/api/markets` catalog differs from new authenticated nine-symbol catalog. Do not claim the signed complete historical results are published.
+- **Not yet cleared for live accounts:** production PG roles/001–010 migration/secret and verified-full app connection, production Auth0 exact callback and real Resend, first production owner bootstrap, small final security/mobile and rollback acceptance, last exact-commit CI, final owner exact SHA authorization.
+- **No staging research snapshot:** do not spend release time creating another staging publisher. A working production snapshot and owner UI N/A are legitimate observed facts, not a reason to duplicate VPS jobs.
+
+**Implementation path:** draft PR #93 in `alisufyan-ai7/trading-signal-intelligence`, no extra feature PRs. Prior release gates remain binding except where narrowly and explicitly amended here.

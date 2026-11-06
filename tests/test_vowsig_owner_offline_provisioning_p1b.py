@@ -132,7 +132,11 @@ def test_cli_remains_preview_only_by_default_and_no_non_private_dsn():
     assert 'default="preview"' in script
     assert 'args.acknowledge != ACK' in script
     assert "sys.stdin.isatty()" in script and "sys.stdout.isatty()" in script
-    assert 'p.hostname != "postgres.railway.internal"' in script
+    assert 'p.hostname != host' in script
+    assert 'vowsig-staging-pg18.railway.internal' in script
+    assert 'railway-staging-pg-root-ca-20261105.pem' in script
+    assert 'postgres.railway.internal' in script
+    assert '--target-staging' in script
     assert 'params.get("sslmode") != ["verify-full"]' in script
     assert 'getpass.getpass(' in script
     assert "print(json.dumps(receipt" in script

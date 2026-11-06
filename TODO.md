@@ -10,7 +10,7 @@ Read [current state](docs/VOWSIG_START_HERE_CURRENT_STATE.md) and [next-chat ste
 - [x] Production Railway app 12 vars including OIDC/DB/CSRF/TOTP staged, both account flags **OFF**, **no production deployment**.
 - [x] Resend sender domain verified and existing API key present; Auth0 issuer discovery/JWKS verified publicly.
 - [x] Current exact-reviewed read-only app-role TLS acceptance script created/tested in PR.
-- [ ] Owner returns one sanitized `PRODUCTION_APP_ROLE_TLS_PRIVILEGE` check receipt from existing production Postgres Console (no SQL schema changes).
+- [x] Owner supplied real `PRODUCTION_APP_ROLE_TLS_PRIVILEGE=PASS`, private DNS `verify-full` and `vowsig_app` restricted grants; zero writes/deployment/publisher change. **DO NOT REPEAT**. Final app-container DSN still needs release-time validation.
 - [ ] Verify production Auth0 allowed callback/logout/web origin and **real** email verification via Resend; check negative/replay cases.
 - [ ] One coordinated production candidate: verified-full **app-container** DB connection, real owner production MFA/rotation/recovery, market rights, member UX/mobile/security, snapshot, app-only rollback evidence.
 - [ ] Separate owner approval of **exact full release SHA** before PR merge/app live deployment.

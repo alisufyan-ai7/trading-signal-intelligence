@@ -27,6 +27,8 @@ on:
       - 'scripts/vowsig_accounts_ci_pg18_owner_bootstrap.py'
       - 'scripts/vowsig_owner_offline_operator.py'
       - 'scripts/vowsig_owner_review_sign_offline.py'
+      - 'scripts/vowsig_owner_founder_mac_prepare.py'
+      - 'tests/test_vowsig_owner_mac_prepare_p1b.py'
       - 'scripts/vowsig_audit_original_ledger_vs_projection.py'
       - 'scripts/vowsig_readonly_source_inventory.py'
       - 'scripts/vowsig_freeze_original_sources.py'
@@ -97,7 +99,7 @@ jobs:
       - name: Parse responsive member and public-homepage JavaScript
         run: node --check web/member/member.js && node --check web/app.js
       - name: Compile independent source audit operator without running it
-        run: python -m py_compile scripts/vowsig_audit_original_ledger_vs_projection.py scripts/vowsig_readonly_source_inventory.py scripts/vowsig_freeze_original_sources.py scripts/vowsig_verify_frozen_sources.py ops/handoffs/vowsig_original_source_freeze_inline_v0_1.py ops/handoffs/vowsig_frozen_source_recheck_inline_v0_1.py scripts/vowsig_private_history_single_review.py
+        run: python -m py_compile scripts/vowsig_owner_founder_mac_prepare.py scripts/vowsig_audit_original_ledger_vs_projection.py scripts/vowsig_readonly_source_inventory.py scripts/vowsig_freeze_original_sources.py scripts/vowsig_verify_frozen_sources.py ops/handoffs/vowsig_original_source_freeze_inline_v0_1.py ops/handoffs/vowsig_frozen_source_recheck_inline_v0_1.py scripts/vowsig_private_history_single_review.py
       - name: Targeted account policy and public contract regression
         run: |
           python -m pytest -q \
@@ -110,6 +112,7 @@ jobs:
             tests/test_vowsig_attested_history_p2.py \
             tests/test_vowsig_owner_totp_p1b.py \
             tests/test_vowsig_owner_offline_provisioning_p1b.py \
+            tests/test_vowsig_owner_mac_prepare_p1b.py \
             tests/test_vowsig_read_model_p2.py \
             tests/test_vowsig_source_ledger_audit_p2.py \
             tests/test_vowsig_source_projection_reconciliation_p2.py \

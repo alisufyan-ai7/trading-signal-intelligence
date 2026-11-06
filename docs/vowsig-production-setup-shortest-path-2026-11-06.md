@@ -35,7 +35,7 @@ On Railway dashboard, open **existing production** project `positioning-engine-c
 
 **Expected sanitized PASS receipt:** `PROD_VOWSIG_001_010_COMMITTED=PASS`, `PRODUCTION_PG18_ROLES_AND_SCHEMA=PASS`, `PRODUCTION_ACCOUNT_FEATURE_ENABLED=NO`, `PRODUCTION_OWNER_PROMOTED=NO`, `TRADING_PUBLISHER_OR_WEB_CHANGED=NO`.
 
-Next: use one real authenticated app-network `vowsig_app` verified-full TLS and least-privilege SQL check with the pinned public production CA and private DSN; add application-only secrets through the Railway secret store, under exact production cutover staging/approval. Do not reuse staging DB credentials or initial MFA key material in production.
+**2026-11-06 follow-up CLOSED:** owner executed the ONE production Postgres Console read-only `vowsig_app` role authentication, private DNS `sslmode=verify-full` and restricted privileges: `PRODUCTION_APP_ROLE_TLS_PRIVILEGE=PASS`, `PRIVATE_DNS_VERIFY_FULL=PASS`, `PRODUCTION_DATABASE_WRITES=NONE`, `PRODUCTION_WEB_APP_DEPLOYED=NO`, `LIVE_PUBLISHER_CHANGED=NO`. App-only DSN, CSRF, Auth0 confidential secret and distinct owner master key have already been staged (NOT applied). **Do not rerun production SQL 001–010 or this read-only Postgres Console check.** Real new application-container authenticated `psycopg` verification still required in the coordinated release; next external step is confirm Auth0 production callback/origin/logout and real Resend verification email.
 
 ## Remaining bounded release sequence
 

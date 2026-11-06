@@ -39,6 +39,9 @@ def fixture():
         "broker_execution_disabled":True,
         "six_noncore_public_signal_details_disabled":True,
         "historical_performance_requires_independent_source_attestation":True,
+        "independent_history_certification_deferred_by_owner":True,
+        "uncertified_historical_performance_unavailable_at_launch":True,
+        "independent_source_review_required_before_history_publication":True,
         "new_railway_postgres_backup_unverified":True,
         "owner_accepted_recovery_risk":True,
         "first_postlaunch_action":gate._BACKUP_FIRST,
@@ -65,15 +68,19 @@ def test_all_signed_fixtures_bind_exact_shas_but_never_automatically_deploy():
     assert result["owner_exact_sha_merge_deploy_approval_still_required"] is True
     assert result["new_railway_postgres_recovery_verified"] is False
     assert result["raw_receipts_or_credentials_exported"] is False
+    assert result["independent_history_certification_deferred_by_owner"] is True
+    assert result["uncertified_historical_performance_publishing_authorized"] is False
+    assert result["postlaunch_independent_source_certification_still_required"] is True
+    assert result["independent_source_review_claims_cryptographically_bound"] is False
 
 
 @pytest.mark.parametrize("gate_name",[
     "auth0_verified_email_signup","resend_actual_delivery",
     "railway_authenticated_app_role_verify_full",
-    "owner_signed_offline_mfa_enrollment",
-    "nine_ai_ledgers_cost_complete_independent_review",
-    "crypto_k5_external_opportunity_coverage",
-    "full_research_cohort_universe_signed",
+    "owner_initial_mfa_enrollment_solo_exception",
+    "owner_mfa_stepup_and_recovery_policy",
+    "uncertified_historical_performance_suppressed",
+    "owner_admin_operational_market_reliability",
     "staging_rollback_rehearsal",
 ])
 def test_missing_human_external_evidence_holds(gate_name):
@@ -104,6 +111,10 @@ def test_missing_rollback_and_wrong_exact_sha_and_unsigned_hold():
     ("owner_accepted_recovery_risk",False),
     ("first_postlaunch_action","NONE"),
     ("release_scope","EARLY_FEATURE_DISABLED_LAUNCH"),
+    ("historical_performance_requires_independent_source_attestation",False),
+    ("independent_history_certification_deferred_by_owner",False),
+    ("uncertified_historical_performance_unavailable_at_launch",False),
+    ("independent_source_review_required_before_history_publication",False),
 ])
 def test_release_scope_and_backup_exception_are_binding(field,value):
     obj,sign,check,_,_=fixture()
@@ -112,15 +123,49 @@ def test_release_scope_and_backup_exception_are_binding(field,value):
         check(sign(obj))
 
 
-def test_self_review_and_untrusted_key_and_stale_receipts_hold():
-    obj,sign,check,pem,sha=fixture()
-    obj["release_reviewer_id"]="independent-source-auditor"
-    with pytest.raises(gate.ReleaseEvidenceHold):
-        check(sign(obj))
+def test_untrusted_release_key_and_stale_receipts_hold():
     obj,sign,check,pem,sha=fixture()
     with pytest.raises(gate.ReleaseEvidenceHold):
         check(sign(obj),sha_="f"*64)
     obj["gates"]["auth0_verified_email_signup"]["observed_at_utc"]=(NOW-timedelta(days=31)).isoformat()
+    with pytest.raises(gate.ReleaseEvidenceHold):
+        check(sign(obj))
+
+
+def test_no_false_independent_history_or_two_person_mfa_claims():
+    obj,sign,check,_,_=fixture()
+    assert not any("independent_private_source_review" == v
+                   for v in gate.REQUIRED_GATES.values())
+    assert "owner_human_two_person" not in gate.REQUIRED_GATES.values()
+    assert obj["gates"]["owner_initial_mfa_enrollment_solo_exception"]["type"] == (
+        "owner_self_authorized_initial"
+    )
+    assert obj["gates"]["uncertified_historical_performance_suppressed"]["type"] == (
+        "real_staging_product"
+    )
+    # A cryptographic signature must bind the owner-approved unavailable state.
+    for key in (
+        "independent_history_certification_deferred_by_owner",
+        "uncertified_historical_performance_unavailable_at_launch",
+        "independent_source_review_required_before_history_publication",
+    ):
+        changed=dict(obj)
+        changed[key]=False
+        with pytest.raises(gate.ReleaseEvidenceHold):
+            check(sign(changed))
+    assert check(sign(obj))["uncertified_historical_performance_publishing_authorized"] is False
+
+
+def test_unauthorized_extra_history_claim_and_missing_suppression_receipt_hold():
+    obj,sign,check,_,_=fixture()
+    obj["gates"]["historical_history_independently_verified"] = {
+        **obj["gates"]["uncertified_historical_performance_suppressed"],
+        "type": "independent_private_source_review",
+    }
+    with pytest.raises(gate.ReleaseEvidenceHold):
+        check(sign(obj))
+    obj,sign,check,_,_=fixture()
+    del obj["gates"]["uncertified_historical_performance_suppressed"]
     with pytest.raises(gate.ReleaseEvidenceHold):
         check(sign(obj))
 

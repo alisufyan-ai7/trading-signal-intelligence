@@ -169,7 +169,7 @@ def test_solo_exception_keeps_recovery_independent_and_offline_only():
     migration=(root/"sql/accounts/010_single_founder_first_owner_exception.sql").read_text()
     assert '--solo-founder-first-owner' in operator
     assert 'SOLO_ACK' in operator
-    assert 'args.mode != "apply"' in operator
+    assert 'args.mode == "apply" and args.acknowledge_solo != SOLO_ACK' in operator
     assert 'args.operator_id != approval["reviewer_id"]' in operator
     assert 'args.acknowledge != ACK' in operator
     assert 'sys.stdin.isatty()' in operator

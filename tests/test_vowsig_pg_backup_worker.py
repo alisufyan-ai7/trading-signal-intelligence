@@ -61,6 +61,8 @@ def test_backup_dual_copy_and_restore_not_inferred(monkeypatch):
     manifests = [json.loads(blob) for key, blob in aws.objects.items() if key.endswith(".json")]
     assert len(manifests) == 1
     assert manifests[0]["production_restore_permitted"] is False
+    assert manifests[0]["scope"] == "vowsig_schema_logical_data_via_restricted_backup_role"
+    assert manifests[0]["dump_format"] == "pg_dump_-Fc_18_vowsig_schema_no-owner_no-acl"
 
 
 def test_corrupt_second_provider_fails_closed(monkeypatch):
@@ -101,3 +103,63 @@ def test_restore_target_requires_explicit_disposable_confirmation(monkeypatch):
     monkeypatch.setenv("VOWSIG_LOCAL_RESTORE_PASSWORD", "local-ci-secret")
     with pytest.raises(restore.RestoreFailure, match="disposable_database_name_guard"):
         restore._local_env("vowsig")
+
+
+def test_dump_includes_explicit_schema_and_does_not_write_plaintext(monkeypatch, tmp_path):
+    import io
+    calls = []
+    class DumpProcess:
+        stdout = io.BytesIO(b"pretend-pg-dump-content")
+        def wait(self, timeout):
+            return 0
+        def kill(self):
+            raise AssertionError("successful dump must not be killed")
+    def fake_popen(args, stdout, stderr, env):
+        calls.append(args)
+        return DumpProcess()
+    def fake_run(args, stdin, stdout, stderr, check, timeout):
+        assert args[0] == "age"
+        assert stdin.read() == b"pretend-pg-dump-content"
+        stdout.write(b"age-ciphertext" * 25)
+        return type("Result", (), {"returncode": 0})()
+    monkeypatch.setattr(backup.subprocess, "Popen", fake_popen)
+    monkeypatch.setattr(backup.subprocess, "run", fake_run)
+    out = tmp_path / "snapshot.age"
+    backup._encrypted_dump(out, {"PGUSER": "vowsig_backup"}, "age1" + "a" * 58)
+    assert calls[0] == ["pg_dump", "--format=custom", "--no-owner", "--no-acl", "--schema=vowsig"]
+    assert out.read_bytes().startswith(b"age-ciphertext")
+    assert not (tmp_path / "plaintext.dump").exists()
+
+
+def test_production_dsn_drops_inherited_libpq_redirects(monkeypatch, tmp_path):
+    ca = tmp_path / "ca.pem"
+    ca.write_text("CA")
+    monkeypatch.setattr(backup, "EXPECTED_CA", str(ca))
+    monkeypatch.setenv("VOWSIG_PG_BACKUP_DSN",
+        f"postgresql://vowsig_backup:pw@postgres.railway.internal:5432/vowsig"
+        f"?sslmode=verify-full&sslrootcert={ca}")
+    for key in ("PGHOSTADDR", "PGSERVICE", "PGSERVICEFILE", "PGOPTIONS", "PGPASSFILE"):
+        monkeypatch.setenv(key, "unsafe-inherited-setting")
+    env = backup._pg_env()
+    assert env["PGHOST"] == "postgres.railway.internal"
+    assert env["PGSSLMODE"] == "verify-full"
+    assert env["PGSSLROOTCERT"] == str(ca)
+    assert "PGHOSTADDR" not in env
+    for key in ("PGSERVICE", "PGSERVICEFILE", "PGOPTIONS", "PGPASSFILE"):
+        assert key not in env
+
+
+def test_throwaway_restore_pins_loopback_hostaddr(monkeypatch):
+    restorefile = Path(__file__).parents[1] / "ops" / "pg_recovery" / "verify_restore.py"
+    s = importlib.util.spec_from_file_location("vowsig_pg_restore_loopback", restorefile)
+    restore = importlib.util.module_from_spec(s)
+    s.loader.exec_module(restore)
+    monkeypatch.setenv("VOWSIG_LOCAL_RESTORE_CONFIRM", "YES_ISOLATED_THROWAWAY_PG18")
+    monkeypatch.setenv("VOWSIG_LOCAL_RESTORE_PASSWORD", "local-ci-password")
+    monkeypatch.setenv("PGHOSTADDR", "203.0.113.50")
+    monkeypatch.setenv("PGSERVICE", "production")
+    monkeypatch.setattr(restore, "_run", lambda args, env: "180001")
+    env = restore._local_env("vowsig_restore_verify_aws_11223344")
+    assert env["PGHOST"] == env["PGHOSTADDR"] == "127.0.0.1"
+    assert "PGSERVICE" not in env
+    assert env["PGDATABASE"] if "PGDATABASE" in env else True

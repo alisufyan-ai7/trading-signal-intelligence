@@ -1,0 +1,38 @@
+name: VowSig production first-owner offline enrollment review
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/vowsig-owner-production-review.yml'
+      - 'scripts/vowsig_owner_founder_mac_production.py'
+      - 'scripts/vowsig_owner_production_operator.py'
+      - 'Dockerfile.owner-production-operator'
+      - 'ops/handoffs/vowsig_production_first_owner_verified_member_readonly_20261107.sh'
+      - 'tests/test_vowsig_owner_production_first_owner_20261107.py'
+
+permissions:
+  contents: read
+
+jobs:
+  production-founder-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout isolated PR without git credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install account crypto and tests only
+        run: python -m pip install -e ".[accounts,dev]"
+      - name: Guard script syntax, no production access
+        run: |
+          python -m py_compile scripts/vowsig_owner_founder_mac_production.py scripts/vowsig_owner_production_operator.py
+          bash -n ops/handoffs/vowsig_production_first_owner_verified_member_readonly_20261107.sh
+      - name: Production/staging signer, role and worker separation tests
+        run: python -m pytest -q tests/test_vowsig_owner_production_first_owner_20261107.py
+      - name: Build temporary operator image only, do not deploy
+        run: docker build --file Dockerfile.owner-production-operator --tag vowsig-first-owner-production-review:local .

@@ -1,0 +1,10 @@
+FROM python:3.12-slim
+WORKDIR /app
+COPY pyproject.toml README.md ./
+COPY src ./src
+COPY config/tls/railway-postgres-root-ca-20261104.pem ./config/tls/railway-postgres-root-ca-20261104.pem
+COPY scripts/vowsig_owner_production_operator.py ./scripts/
+RUN pip install --no-cache-dir -e ".[accounts]"
+ENV PYTHONUNBUFFERED=1
+# Temporary private one-use operator, no public port or HTTP server.
+CMD ["sleep", "infinity"]

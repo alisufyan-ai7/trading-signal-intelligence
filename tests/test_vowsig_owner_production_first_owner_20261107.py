@@ -113,6 +113,8 @@ def test_dedicated_operator_no_public_app_and_private_role(monkeypatch):
     assert "railway-postgres-root-ca-20261104.pem" in op
     assert 'user="vowsig_migrator"' in op
     assert 'sslmode="verify-full"' in op
+    assert 'host="postgres.railway.internal"' in op
+    assert "vowsig-production-pg18.railway.internal" not in op
     assert "preflight_owner_operation(conn, body)" in op
     assert "apply_owner_operation(" in op
     assert "PROMOTE_PRODUCTION_FIRST_OWNER" in op

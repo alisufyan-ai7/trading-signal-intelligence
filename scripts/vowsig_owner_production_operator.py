@@ -28,7 +28,7 @@ from trading_signal_intelligence.product.accounts.owner_offline_provisioning imp
 _PROJECT = "af8ed976-9971-4f5a-a304-3d8984df1565"
 _ENV = "fb429ace-7b81-432f-a9d2-32e2044f4392"
 _SERVICE = "vowsig-owner-production-operator"
-_CA = Path("/app/config/tls/railway-production-pg-root-ca-20261105.pem")
+_CA = Path("/app/config/tls/railway-postgres-root-ca-20261104.pem")
 _AAD = b"VowSig/production/first-owner-solo/v1"
 
 

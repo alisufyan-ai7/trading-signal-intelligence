@@ -1,4 +1,5 @@
 """Pure offline unit tests. Never contact Railway, production PG, AWS or B2."""
+# PR-only validation of the complete production worker and independent restore guards.
 import importlib.util
 import io
 import json

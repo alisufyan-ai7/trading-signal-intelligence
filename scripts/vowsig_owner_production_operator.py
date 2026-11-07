@@ -129,7 +129,7 @@ def run():
     signed, pub, body, master, factor = _decrypt(token, passphrase)
     pin = hashlib.sha256(pub).hexdigest()
     with psycopg.connect(
-        host="vowsig-production-pg18.railway.internal",
+        host="postgres.railway.internal",
         port=5432,
         dbname=os.environ["VOWSIG_OWNER_PRODUCTION_DATABASE"],
         user="vowsig_migrator",

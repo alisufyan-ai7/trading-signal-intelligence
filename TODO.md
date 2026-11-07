@@ -1,3 +1,5 @@
+> **POSTLAUNCH CORRECTION (verified 2026-11-07):** PR #93 **MERGED** and VowSig authenticated product **LIVE**; commit aa74a9b11de96a2f254c1ad9f90bc3c3dfa88dbe, successful Railway deployment c154324e-a18a-44ee-858d-e64dbd62aec9. The older prelaunch checkbox rows below are retained as *dated history*, not current tasks. Railway production app and PG healthy, no pending patch. Immediate backlog: (1) independent encrypted scheduled AWS+B2 **customer PG18** backup + actual dual-provider cold restores (draft PR #96 code prepared, **not deployed**, DATABASE_RECOVERY_UNVERIFIED, alert delivery HOLD); (2) real production member/session/mobile acceptance; (3) production first-owner TOTP enrollment; (4) operational monitoring; (5) product backlog. See [postlaunch PG recovery runbook](docs/vowsig-postlaunch-pg18-backup-implementation-2026-11-07.md). Never rerun production migrations 001-010 or remerge PR #93.
+
 # TODO
 
 ## CURRENT PRODUCTION LAUNCH ACTIONS — 2026-11-06

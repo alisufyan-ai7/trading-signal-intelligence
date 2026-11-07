@@ -79,6 +79,7 @@ def test_corrupt_second_provider_fails_closed(monkeypatch):
 def test_production_dsn_strict_guard(monkeypatch, tmp_path):
     ca = tmp_path / "ca.pem"
     ca.write_text("CA")
+    monkeypatch.setenv("VOWSIG_PG_SOURCE_DATABASE", "vowsig")
     monkeypatch.setattr(backup, "EXPECTED_CA", str(ca))
     dsn = f"postgresql://vowsig_backup:pw@postgres.railway.internal:5432/vowsig?sslmode=verify-full&sslrootcert={ca}"
     monkeypatch.setenv("VOWSIG_PG_BACKUP_DSN", dsn)
@@ -134,6 +135,7 @@ def test_dump_includes_explicit_schema_and_does_not_write_plaintext(monkeypatch,
 def test_production_dsn_drops_inherited_libpq_redirects(monkeypatch, tmp_path):
     ca = tmp_path / "ca.pem"
     ca.write_text("CA")
+    monkeypatch.setenv("VOWSIG_PG_SOURCE_DATABASE", "vowsig")
     monkeypatch.setattr(backup, "EXPECTED_CA", str(ca))
     monkeypatch.setenv("VOWSIG_PG_BACKUP_DSN",
         f"postgresql://vowsig_backup:pw@postgres.railway.internal:5432/vowsig"
@@ -164,3 +166,17 @@ def test_throwaway_restore_pins_loopback_hostaddr(monkeypatch):
     assert "PGSERVICE" not in env
     assert env["PGSSLMODE"] == "disable"
     assert env["PGPORT"] == "5432"
+
+
+def test_railway_production_database_name_is_independently_pinned(monkeypatch, tmp_path):
+    ca = tmp_path / "ca.pem"
+    ca.write_text("CA")
+    monkeypatch.setattr(backup, "EXPECTED_CA", str(ca))
+    monkeypatch.setenv("VOWSIG_PG_BACKUP_DSN",
+        f"postgresql://vowsig_backup:pw@postgres.railway.internal:5432/vowsig"
+        f"?sslmode=verify-full&sslrootcert={ca}")
+    monkeypatch.setenv("VOWSIG_PG_SOURCE_DATABASE", "different_database")
+    with pytest.raises(backup.BackupFailure, match="source_database_binding_guard"):
+        backup._pg_env()
+    monkeypatch.setenv("VOWSIG_PG_SOURCE_DATABASE", "vowsig")
+    assert backup._pg_env()["PGDATABASE"] == "vowsig"

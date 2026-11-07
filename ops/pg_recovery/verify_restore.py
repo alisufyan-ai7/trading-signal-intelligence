@@ -42,10 +42,11 @@ def _local_env(database: str) -> dict[str, str]:
         raise RestoreFailure("local_restore_password_missing")
     env = os.environ.copy()
     env.update({
-        "PGHOST": "127.0.0.1", "PGPORT": "5432", "PGUSER": "postgres",
+        "PGHOST": "127.0.0.1", "PGHOSTADDR": "127.0.0.1", "PGPORT": "5432", "PGUSER": "postgres",
         "PGPASSWORD": password, "PGSSLMODE": "disable", "PGCONNECT_TIMEOUT": "5",
     })
-    env.pop("VOWSIG_PG_BACKUP_DSN", None)
+    for extra in ("VOWSIG_PG_BACKUP_DSN", "PGSERVICE", "PGSERVICEFILE", "PGPASSFILE", "PGOPTIONS", "PGTARGETSESSIONATTRS"):
+        env.pop(extra, None)
     env.pop("VOWSIG_LOCAL_RESTORE_PASSWORD", None)
     version = _run(["psql", "-X", "--dbname=postgres", "-At", "-c", "SHOW server_version_num"], env)
     if not version.startswith("18"):
@@ -71,7 +72,7 @@ def verify(ciphertext: Path, manifest_path: Path, age_key: Path, database: str) 
         raise RestoreFailure("invalid_manifest") from None
     if (
         manifest.get("format") != "vowsig-pg18-dual-provider-v1"
-        or manifest.get("dump_format") != "pg_dump_-Fc_18_no-owner_no-acl"
+        or manifest.get("dump_format") != "pg_dump_-Fc_18_vowsig_schema_no-owner_no-acl"
         or manifest.get("encrypted") is not True
         or manifest.get("production_restore_permitted") is not False
         or manifest.get("cloud_pruning_authorized") is not False
@@ -122,7 +123,25 @@ def verify(ciphertext: Path, manifest_path: Path, age_key: Path, database: str) 
     ], local)
     if tables < 16 or required != "4":
         raise RestoreFailure("restored_schema_contract_failed")
+    # Full logical recovery of current VowSig accounts must include at
+    # least one verified identity and its enrolled owner factor. The
+    # counts are aggregate evidence only; no PII ever leaves this host.
+    metrics = _run([
+        "psql", "-X", "--dbname=" + database, "-At", "-c",
+        "SELECT (SELECT count(*) FROM vowsig.vowsig_accounts)::text || '|' || "
+        "(SELECT count(*) FROM vowsig.vowsig_account_identities)::text || '|' || "
+        "(SELECT count(*) FROM vowsig.vowsig_owner_totp_credentials)::text",
+    ], local)
+    try:
+        account_rows, identity_rows, owner_factor_rows = map(int, metrics.split("|"))
+    except (ValueError, TypeError):
+        raise RestoreFailure("restored_identity_counts_unavailable") from None
+    if min(account_rows, identity_rows, owner_factor_rows) < 1:
+        raise RestoreFailure("restored_identity_contract_failed")
     return {
+        "vowsig_account_rows": account_rows,
+        "vowsig_identity_rows": identity_rows,
+        "vowsig_owner_factors": owner_factor_rows,
         "status": "ISOLATED_COLD_RESTORE_PASS",
         "backup_id": manifest["backup_id"],
         "ciphertext_sha256": manifest["ciphertext_sha256"],

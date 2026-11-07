@@ -50,6 +50,11 @@ def _pg_env() -> dict[str, str]:
         or query != {"sslmode": ["verify-full"], "sslrootcert": [EXPECTED_CA]}
     ):
         raise BackupFailure("source_dsn_guard")
+    # This value must be a Railway service-variable reference to the existing
+    # Postgres.POSTGRES_DB, never an independently typed target name.
+    expected_db = _required("VOWSIG_PG_SOURCE_DATABASE")
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", expected_db) or url.path[1:] != expected_db:
+        raise BackupFailure("source_database_binding_guard")
     if not Path(EXPECTED_CA).is_file():
         raise BackupFailure("root_ca_missing")
     env = os.environ.copy()

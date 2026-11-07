@@ -162,4 +162,5 @@ def test_throwaway_restore_pins_loopback_hostaddr(monkeypatch):
     env = restore._local_env("vowsig_restore_verify_aws_11223344")
     assert env["PGHOST"] == env["PGHOSTADDR"] == "127.0.0.1"
     assert "PGSERVICE" not in env
-    assert env["PGDATABASE"] if "PGDATABASE" in env else True
+    assert env["PGSSLMODE"] == "disable"
+    assert env["PGPORT"] == "5432"

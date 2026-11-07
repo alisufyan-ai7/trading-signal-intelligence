@@ -64,7 +64,8 @@ def _pg_env() -> dict[str, str]:
         "PGCONNECT_TIMEOUT": "15",
         "PGAPPNAME": "vowsig-pg18-encrypted-backup",
     })
-    env.pop("VOWSIG_PG_BACKUP_DSN", None)
+    for extra in ("VOWSIG_PG_BACKUP_DSN", "PGSERVICE", "PGSERVICEFILE", "PGPASSFILE", "PGOPTIONS", "PGTARGETSESSIONATTRS", "PGHOSTADDR"):
+        env.pop(extra, None)
     return env
 
 
@@ -90,7 +91,7 @@ def _encrypted_dump(path: Path, pg_env: dict[str, str], recipient: str) -> None:
     with path.open("wb") as output:
         try:
             dump = subprocess.Popen(
-                ["pg_dump", "--format=custom", "--no-owner", "--no-acl"],
+                ["pg_dump", "--format=custom", "--no-owner", "--no-acl", "--schema=vowsig"],
                 stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=pg_env,
             )
             assert dump.stdout is not None
@@ -102,7 +103,12 @@ def _encrypted_dump(path: Path, pg_env: dict[str, str], recipient: str) -> None:
                 )
             finally:
                 dump.stdout.close()
-                dump_rc = dump.wait(timeout=30)
+                try:
+                    dump_rc = dump.wait(timeout=30)
+                except subprocess.TimeoutExpired:
+                    dump.kill()
+                    dump.wait(timeout=5)
+                    raise BackupFailure("pg_dump_timeout") from None
         except (OSError, subprocess.SubprocessError):
             raise BackupFailure("encrypted_dump_process_failed") from None
     if cipher.returncode or dump_rc:
@@ -187,8 +193,8 @@ def run() -> dict:
             "format": "vowsig-pg18-dual-provider-v1",
             "backup_id": backup_id,
             "created_at_utc": now.isoformat(),
-            "scope": "full_logical_database_via_restricted_backup_role",
-            "dump_format": "pg_dump_-Fc_18_no-owner_no-acl",
+            "scope": "vowsig_schema_logical_data_via_restricted_backup_role",
+            "dump_format": "pg_dump_-Fc_18_vowsig_schema_no-owner_no-acl",
             "cipher": "age-x25519-recipient",
             "ciphertext_object_key": ciphertext_key,
             "ciphertext_sha256": sha,
